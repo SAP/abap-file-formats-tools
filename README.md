@@ -1,13 +1,23 @@
-# @SAP/repository-template
-Default templates of SAP's repositories. Provides template files including LICENSE, .reuse/dep5, Code of Conduct, etc... All repositories on github.com/SAP will be created based on this template.
+# Tools for ABAP File Formats
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP/abap-file-formats-tools)](https://api.reuse.software/info/github.com/SAP/abap-file-formats-tools)
 
-# Containing files
+## Description
 
-1. The LICENSE file:
-In the most cases, the license of SAP's projects is `Apache 2.0`.
 
-2. The .reuse/dep5 file: 
-The [Reuse Tool](https://reuse.software/) must be used for your open source project. You can find the .reuse/dep5 in the project initial. Please replace the parts inside the single angle quotation marks < > by the specific information for your repository.
+## Contributing
+Comments and suggestions for improvements are most welcome.
 
-3. The README.md file (This file):
-Please edit this file as it is the primary description file for your project.
+More details are found at [Contributing](./CONTRIBUTING.md).
+
+## Code of Conduct
+Find our code of conduct [here](./CODE_OF_CONDUCT.md).
+
+## Licensing
+Please see our [LICENSE](LICENSE) for copyright and license information.
+Detailed information including third-party components and their licensing/copyright information is available via the [REUSE tool](https://api.reuse.software/info/github.com/SAP/abap-file-formats-tools).
+
+## Download & Installation
+Pull the source code with AbapGit into your ABAP system.
+
+## How to Obtain Support
+Feel free to raise issues to ask questions or report bugs.
