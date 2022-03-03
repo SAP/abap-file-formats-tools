@@ -377,7 +377,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     if abap_doc-max_length is not initial.
       data(max_length) = abap_doc-max_length.
     else.
-      max_length = new cl_aff_extreme_values( )->get_max_length( element_description ).
+      max_length = new ZCL_AFF_EXTREME_VALUES( )->get_max_length( element_description ).
     endif.
     if abap_doc-min_length is not initial.
       write_tag( |"minLength": { abap_doc-min_length },| ).
@@ -393,7 +393,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   method handle_extrema.
     if get_value_mapping_for_element( element_name ) is initial.
-      new cl_aff_extreme_values( )->get_extrema(
+      new ZCL_AFF_EXTREME_VALUES( )->get_extrema(
         exporting
           element_description = element_description
         importing
