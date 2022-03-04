@@ -196,7 +196,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     me->formatting_option = zif_aff_writer=>formatting_option-camel_case.
     me->schema_id = schema_id.
     me->format_version = format_version.
-    zif_aff_writer~set_name_mappings(  VALUE #( ( abap = 'schema' json = '$schema' ) ) ) ##NO_TEXT.
+    zif_aff_writer~set_name_mappings( VALUE #( ( abap = 'schema' json = '$schema' ) ) ) ##NO_TEXT.
   ENDMETHOD.
 
 
@@ -215,15 +215,14 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     DATA(splitted_prev_name) = get_splitted_absolute_name( element_description->absolute_name ).
 * Simple Component of a structure, defined in the structure definition
-    IF  lines( stack_of_structure ) > 0.
+    IF lines( stack_of_structure ) > 0.
       get_all_path_information(
         EXPORTING
           name             = element_name
         IMPORTING
           source_type      = DATA(source_type)
           source           = DATA(source)
-          fullname_of_type = DATA(fullname_of_type)
-      ).
+          fullname_of_type = DATA(fullname_of_type)   ).
 
 * Element which is in no structure
     ELSEIF lines( stack_of_structure ) = 0.
@@ -234,28 +233,29 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
-      DATA(abap_doc) = call_reader_and_decode( name_of_source = source element_name   = fullname_of_type ).
+      DATA(abap_doc) = call_reader_and_decode( name_of_source = source
+                                               element_name   = fullname_of_type ).
     ENDIF.
 
     IF already_searched = abap_false.
-      DATA(abap_doc_second) = get_abap_doc_for_absolute_name( absolute_name = element_description->absolute_name ).
+      DATA(abap_doc_second) = get_abap_doc_for_absolute_name( element_description->absolute_name ).
       compare_abap_doc(
         EXPORTING
           abap_doc_additional = abap_doc_second
         CHANGING
-          abap_doc_base       = abap_doc
-      ).
+          abap_doc_base       = abap_doc   ).
     ENDIF.
 
 
     IF abap_doc-required = abap_true AND lines( stack_of_required_tabs ) >= 1.
-      FIELD-SYMBOLS <table1> TYPE stringtab.
-      ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
+
+      ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
 
-    DATA(callback_class) =  to_upper( abap_doc-callback_class ).
-    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class component_name = fullname_of_type ).
+    DATA(callback_class) = to_upper( abap_doc-callback_class ).
+    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class
+                                                                  component_name = fullname_of_type ).
       IF last_operation( ) = zif_aff_writer=>operation-initial.
         open_json_schema_for_element( ).
       ENDIF.
@@ -274,7 +274,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_open_tag( |"{ mapped_and_formatted_name }": \{| ).
     ENDIF.
 
-    DATA(enums) = get_enum_values( element_name = element_name element_description = element_description values_link = abap_doc-enumvalues_link fullname_of_type = fullname_of_type ).
+    DATA(enums) = get_enum_values( element_name = element_name
+                                   element_description = element_description
+                                   values_link = abap_doc-enumvalues_link
+                                   fullname_of_type = fullname_of_type ).
     IF enums IS NOT INITIAL.
       json_type = zif_aff_writer=>type_info-string.
     ENDIF.
@@ -285,42 +288,58 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       check_not_needed = abap_true.
     ENDIF.
 
-    write_title_and_description( type_description = element_description fullname_of_type = fullname_of_type abap_doc = abap_doc check_not_needed = check_not_needed ).
+    write_title_and_description( type_description = element_description
+                                 fullname_of_type = fullname_of_type
+                                 abap_doc = abap_doc
+                                 check_not_needed = check_not_needed ).
 
     IF element_name = c_format_version.
       write_tag( `"type": "string",`).
       write_tag( |"const": "{ format_version }",| ).
     ELSE.
-      write_tag( |"type": "{ get_json_schema_type( element_name = element_name element_description = element_description json_type = json_type ) }",| ).
+      write_tag( |"type": "{ get_json_schema_type( element_name = element_name
+                                                   element_description = element_description
+                                                   json_type = json_type ) }",| ).
       DATA(format) = get_format( element_description ).
       IF format IS NOT INITIAL.
         write_tag( |"format": "{ format }",| ).
       ENDIF.
 
       IF enums IS NOT INITIAL.
-        handle_enums( element_description = element_description element_name = element_name abap_doc = abap_doc enums = enums ).
+        handle_enums( element_description = element_description
+                      element_name = element_name
+                      abap_doc = abap_doc
+                      enums = enums ).
       ELSE. "non- enum
         IF json_type = zif_aff_writer=>type_info-numeric.
-          handle_extrema( element_description = element_description element_name = element_name abap_doc = abap_doc ).
+          handle_extrema( element_description = element_description
+                          element_name = element_name
+                          abap_doc = abap_doc ).
         ELSEIF json_type = zif_aff_writer=>type_info-string AND NOT ( element_description->type_kind = cl_abap_typedescr=>typekind_date OR element_description->type_kind = cl_abap_typedescr=>typekind_time OR
              element_description->type_kind = cl_abap_typedescr=>typekind_utclong ).
           IF is_sy_langu( element_description ).
             handle_language_field( ).
           ELSE.
-            handle_string( element_description = element_description abap_doc = abap_doc ).
+            handle_string( element_description = element_description
+                           abap_doc = abap_doc ).
           ENDIF.
         ENDIF.
       ENDIF.
 
       IF abap_doc-default IS NOT INITIAL.
-        handle_default( element_description = element_description json_type = json_type abap_doc = abap_doc fullname_of_type = fullname_of_type ).
+        handle_default( element_description = element_description
+                        json_type = json_type
+                        abap_doc = abap_doc
+                        fullname_of_type = fullname_of_type ).
       ENDIF.
     ENDIF.
 
 *    remove "," in last line
     IF ignore_til_indent_level > indent_level OR ignore_til_indent_level IS INITIAL.
       DATA(last_line) = content[ lines( content ) ].
-      content[ lines( content ) ] = substring( val = last_line off = 0 len = strlen( last_line ) - 1 ).
+      content[ lines( content ) ] = substring( val = last_line
+                                               off = 0
+                                               len = strlen( last_line ) - 1 ).
     ENDIF.
 
     IF last_operation( ) <> zif_aff_writer=>operation-open_table.
@@ -331,30 +350,35 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   METHOD write_title_and_description.
     IF check_not_needed = abap_false.
-      check_title_and_description( abap_doc = abap_doc fullname_of_type = fullname_of_type ).
+      check_title_and_description( abap_doc = abap_doc
+                                   fullname_of_type = fullname_of_type ).
     ENDIF.
-    DATA(title) = escape( val = abap_doc-title format = cl_abap_format=>e_json_string ).
-    DATA(description) = escape( val = get_description( type_description = type_description abap_doc = abap_doc ) format = cl_abap_format=>e_json_string ).
+    DATA(title) = escape( val = abap_doc-title
+                          format = cl_abap_format=>e_json_string ).
+    DATA(description) = escape( val = get_description( type_description = type_description abap_doc = abap_doc )
+                                format = cl_abap_format=>e_json_string ).
     IF title IS NOT INITIAL.
       write_tag( |"title": "{ title }",| ).
     ENDIF.
     IF description IS NOT INITIAL.
-      write_tag( |"description": "{  description }",|  ).
+      write_tag( |"description": "{ description }",| ).
     ENDIF.
   ENDMETHOD.
 
 
   METHOD handle_enums.
-    write_tag( `"enum": [`) .
+    write_tag( `"enum": [`).
     write_enum_properties( enums ).
 
     IF enum_titles IS NOT INITIAL.
-      write_tag( `"enumTitles": [`) .
+      write_tag( `"enumTitles": [`).
       write_enum_properties( enum_titles ).
     ENDIF.
 
-    DATA(enum_descr) = get_enum_descriptions( element_name = element_name element_description = element_description values_link = abap_doc-enumvalues_link ).
-    write_tag( `"enumDescriptions": [`) .
+    DATA(enum_descr) = get_enum_descriptions( element_name = element_name
+                                              element_description = element_description
+                                              values_link = abap_doc-enumvalues_link ).
+    write_tag( `"enumDescriptions": [`).
     write_enum_properties( enum_descr ).
   ENDMETHOD.
 
@@ -363,9 +387,9 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     indent_level = indent_level + 1.
     LOOP AT property_table ASSIGNING FIELD-SYMBOL(<value>).
       IF sy-tabix < lines( property_table ).
-        write_tag( |"{ <value> }",| ) .
+        write_tag( |"{ <value> }",| ).
       ELSE.
-        write_tag( |"{ <value> }"| ) .
+        write_tag( |"{ <value> }"| ).
       ENDIF.
     ENDLOOP.
     indent_level = indent_level - 1.
@@ -398,15 +422,15 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
           element_description = element_description
         IMPORTING
           max                 = DATA(max_value)
-          min                 = DATA(min_value)
-      ).
+          min                 = DATA(min_value)   ).
     ENDIF.
     DATA(multiple_of) = abap_doc-multiple_of.
 
     IF multiple_of IS INITIAL AND element_description->type_kind = cl_abap_typedescr=>typekind_packed.
       DATA(decimals) = element_description->decimals.
       IF decimals > 0.
-        multiple_of = |0.{ repeat( val = `0`  occ = decimals - 1 ) }1|.
+        multiple_of = |0.{ repeat( val = `0`
+                                   occ = decimals - 1 ) }1|.
       ENDIF.
     ENDIF.
 
@@ -447,16 +471,21 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   METHOD handle_default.
     DATA(default) = abap_doc-default.
     IF abap_doc-default CS '@link'.
-      default = get_default_from_link( link = abap_doc-default fullname_of_type = fullname_of_type element_type = element_description->type_kind ).
+      default = get_default_from_link( link = abap_doc-default
+                                       fullname_of_type = fullname_of_type
+                                       element_type = element_description->type_kind ).
       IF default IS INITIAL.
         RETURN.
       ENDIF.
       default = |"{ default }"|.
-    ELSEIF is_default_value_valid( element_description = element_description default_value = default fullname_of_type = fullname_of_type ).
-      IF json_type =  zif_aff_writer=>type_info-numeric OR json_type = zif_aff_writer=>type_info-boolean.
+    ELSEIF is_default_value_valid( element_description = element_description
+                                   default_value = default
+                                   fullname_of_type = fullname_of_type ).
+      IF json_type = zif_aff_writer=>type_info-numeric OR json_type = zif_aff_writer=>type_info-boolean.
         REPLACE ALL OCCURRENCES OF `"` IN default WITH ``.
       ELSEIF json_type = zif_aff_writer=>type_info-date_time.
-        default = `"` && date_time_from_abap_to_json( date_time_abap = default element_description = element_description ) && `"`.
+        default = `"` && date_time_from_abap_to_json( date_time_abap = default
+                                                      element_description = element_description ) && `"`.
       ENDIF.
       IF json_type = zif_aff_writer=>type_info-numeric.
         REPLACE `E` IN default WITH `e`.
@@ -477,11 +506,13 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD open_structure.
+      FIELD-SYMBOLS <table1> TYPE stringtab.
 *  add a new empty required_table to the stack
     IF last_operation( ) = zif_aff_writer=>operation-initial.
       INSERT VALUE #( name = structure_name absolute_name = structure_description->absolute_name ) INTO me->stack_of_structure INDEX 1.
-      add_required_table_to_stack(  ).
-      open_json_schema_for_structure( structure_name = structure_name structure_description = structure_description ).
+      add_required_table_to_stack( ).
+      open_json_schema_for_structure( structure_name = structure_name
+                                      structure_description = structure_description ).
       INSERT VALUE #( name = structure_name number_brackets = 2 ) INTO me->structure_buffer INDEX 1.
       RETURN.
     ENDIF.
@@ -504,12 +535,12 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         IMPORTING
           source_type      = source_type
           source           = source
-          fullname_of_type = fullname_of_type
-      ).
+          fullname_of_type = fullname_of_type   ).
     ENDIF.
 
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
-      DATA(abap_doc) = call_reader_and_decode( name_of_source = source element_name   = fullname_of_type ).
+      DATA(abap_doc) = call_reader_and_decode( name_of_source = source
+                                               element_name   = fullname_of_type ).
     ENDIF.
     IF ( ( abap_doc-title IS INITIAL AND abap_doc-description IS INITIAL )
         OR ( abap_doc-callback_class IS INITIAL ) ) AND already_found = abap_false.
@@ -518,12 +549,12 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         EXPORTING
           abap_doc_additional = abap_doc_second
         CHANGING
-          abap_doc_base       = abap_doc
-      ).
+          abap_doc_base       = abap_doc   ).
     ENDIF.
 
-    DATA(callback_class) =  to_upper( abap_doc-callback_class ).
-    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class component_name = fullname_of_type ).
+    DATA(callback_class) = to_upper( abap_doc-callback_class ).
+    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class
+                                                                  component_name = fullname_of_type ).
       write_subschema( callback_class = callback_class ).
     ENDIF.
 
@@ -536,16 +567,18 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       INSERT VALUE #( name = structure_name number_brackets = 1 ) INTO me->structure_buffer INDEX 1.
     ENDIF.
 
-    write_title_and_description( type_description = structure_description fullname_of_type = fullname_of_type abap_doc = abap_doc ).
+    write_title_and_description( type_description = structure_description
+                                 fullname_of_type = fullname_of_type
+                                 abap_doc = abap_doc ).
 
     IF abap_doc-required = abap_true.
-      FIELD-SYMBOLS <table1> TYPE stringtab.
-      ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
+
+      ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
     write_tag( `"type": "object",` ).
     write_open_tag( `"properties": {` ).
-    add_required_table_to_stack(  ).
+    add_required_table_to_stack( ).
   ENDMETHOD.
 
 
@@ -566,8 +599,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD open_table.
+      FIELD-SYMBOLS <table1> TYPE stringtab.
     IF last_operation( ) = zif_aff_writer=>operation-initial.
-      open_json_schema_for_table( table_name = table_name  table_description = CAST cl_abap_tabledescr( table_description ) ).
+      open_json_schema_for_table( table_name = table_name
+                                  table_description = CAST cl_abap_tabledescr( table_description ) ).
       INSERT VALUE #( name = table_name number_brackets = 2 ) INTO TABLE me->table_buffer.
       RETURN.
     ENDIF.
@@ -581,8 +616,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         IMPORTING
           source_type      = DATA(source_type)
           source           = DATA(source)
-          fullname_of_type = DATA(fullname_of_type)
-      ).
+          fullname_of_type = DATA(fullname_of_type)   ).
     ELSE.
       DATA(absolute_name) = table_description->absolute_name.
       DATA(splitted_absolute_name) = get_splitted_absolute_name( absolute_name ).
@@ -593,28 +627,29 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
-      DATA(abap_doc) = call_reader_and_decode(  name_of_source = source element_name   = fullname_of_type ).
+      DATA(abap_doc) = call_reader_and_decode( name_of_source = source
+                                                element_name   = fullname_of_type ).
     ENDIF.
 
     IF ( ( abap_doc-title IS INITIAL AND abap_doc-description IS INITIAL )
-      OR abap_doc-callback_class IS INITIAL ) AND already_searched = abap_false .
-      DATA(abap_doc_second) = get_abap_doc_for_absolute_name( absolute_name =  table_description->absolute_name ).
+        OR abap_doc-callback_class IS INITIAL ) AND already_searched = abap_false.
+      DATA(abap_doc_second) = get_abap_doc_for_absolute_name( absolute_name = table_description->absolute_name ).
       compare_abap_doc(
         EXPORTING
           abap_doc_additional = abap_doc_second
         CHANGING
-          abap_doc_base       = abap_doc
-      ).
+          abap_doc_base       = abap_doc   ).
     ENDIF.
 
     IF abap_doc-required = abap_true AND lines( stack_of_required_tabs ) >= 1.
-      FIELD-SYMBOLS <table1> TYPE stringtab.
-      ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
+
+      ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
 
     DATA(callback_class) = to_upper( abap_doc-callback_class ).
-    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class component_name = fullname_of_type ).
+    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class
+                                                                  component_name = fullname_of_type ).
       write_subschema( callback_class = callback_class ).
     ENDIF.
 
@@ -625,7 +660,9 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       INSERT VALUE #( name = table_name number_brackets = 1 ) INTO TABLE me->table_buffer.
     ENDIF.
 
-    write_title_and_description( type_description = table_description fullname_of_type = fullname_of_type abap_doc = abap_doc ).
+    write_title_and_description( type_description = table_description
+                                 fullname_of_type = fullname_of_type
+                                 abap_doc = abap_doc ).
 
     write_tag( `"type": "array",` ).
     IF CAST cl_abap_tabledescr( table_description )->has_unique_key = abap_true.
@@ -646,7 +683,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   METHOD append_comma_to_prev_line.
     IF ( last_operation( ) = zif_aff_writer=>operation-write_element OR
-       last_operation( ) = zif_aff_writer=>operation-close_structure OR
+        last_operation( ) = zif_aff_writer=>operation-close_structure OR
        last_operation( ) = zif_aff_writer=>operation-close_table ) AND ( ignore_til_indent_level > indent_level OR ignore_til_indent_level IS INITIAL ).
       append_to_previous_line( `,` ).
     ENDIF.
@@ -679,18 +716,22 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     DATA(source_type) = splitted_absolute_name[ 1 ].
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
       DATA(source) = splitted_absolute_name[ 2 ].
-      DATA(abap_doc) = call_reader_and_decode( name_of_source = source element_name = structure_name ).
+      DATA(abap_doc) = call_reader_and_decode( name_of_source = source
+                                               element_name = structure_name ).
     ENDIF.
     write_open_tag( '{' ).
     write_tag( |"$comment": "This file is autogenerated, do not edit manually, see { c_link_to_repository } for more information.",| ) ##NO_TEXT.
     write_tag( |"$schema": "{ c_schema_specification }",| ).
-    write_tag( |"$id": "{ me->schema_id }",| ).
+    write_tag( |"$id": "{ schema_id }",| ).
     DATA(callback_class) = to_upper( abap_doc-callback_class ).
-    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class component_name = structure_name ).
+    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class
+                                                                  component_name = structure_name ).
       write_subschema( callback_class = callback_class ).
     ENDIF.
 
-    write_title_and_description( type_description = structure_description fullname_of_type = structure_name abap_doc = abap_doc ).
+    write_title_and_description( type_description = structure_description
+                                 fullname_of_type = structure_name
+                                 abap_doc = abap_doc ).
 
     write_tag( '"type": "object",' ).
     write_open_tag( '"properties": {' ).
@@ -703,20 +744,24 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     DATA(source_type) = splitted_absolute_name[ 1 ].
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
       DATA(source) = splitted_absolute_name[ 2 ].
-      DATA(abap_doc) = call_reader_and_decode( name_of_source = source element_name   = table_name ).
+      DATA(abap_doc) = call_reader_and_decode( name_of_source = source
+                                               element_name   = table_name ).
     ENDIF.
 
     write_open_tag( '{' ).
     write_tag( |"$comment": "This file is autogenerated, do not edit manually, see { c_link_to_repository } for more information.",| ) ##NO_TEXT.
     write_tag( |"$schema": "{ c_schema_specification }",| ).
-    write_tag( |"$id": "{ me->schema_id }",| ).
+    write_tag( |"$id": "{ schema_id }",| ).
 
     DATA(callback_class) = to_upper( abap_doc-callback_class ).
-    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class component_name = table_name ).
+    IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class
+                                                                  component_name = table_name ).
       write_subschema( callback_class = callback_class ).
     ENDIF.
 
-    write_title_and_description( type_description = table_description fullname_of_type = table_name abap_doc = abap_doc ).
+    write_title_and_description( type_description = table_description
+                                 fullname_of_type = table_name
+                                 abap_doc = abap_doc ).
 
     write_tag( '"type": "array",' ).
     IF table_description->has_unique_key = abap_true.
@@ -772,13 +817,16 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_enum_values.
+        DATA text TYPE string.
     DATA(value_mapping) = get_value_mapping_for_element( element_name ).
     IF value_mapping IS NOT INITIAL.
       LOOP AT value_mapping-value_mappings ASSIGNING FIELD-SYMBOL(<mapping>).
         APPEND <mapping>-json  TO result.
       ENDLOOP.
     ELSEIF values_link IS NOT INITIAL.
-      set_enum_properties( values_link = values_link fullname_of_type = fullname_of_type enum_type = element_description->type_kind ).
+      set_enum_properties( values_link = values_link
+                           fullname_of_type = fullname_of_type
+                           enum_type = element_description->type_kind ).
       result = enum_values.
     ELSEIF element_description IS INSTANCE OF cl_abap_enumdescr.
       DATA(enum_description) = CAST cl_abap_enumdescr( element_description ).
@@ -856,8 +904,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       IMPORTING
         structure_of_values = DATA(structure_of_values)
         name_of_source      = DATA(name_of_source)
-        name_of_constant    = DATA(name_of_constant)
-    ).
+        name_of_constant    = DATA(name_of_constant)   ).
 
     IF structure_of_values IS NOT INITIAL.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
@@ -865,14 +912,16 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
           RAISE EXCEPTION TYPE cx_aff_root MESSAGE e122(saff_core) WITH name_of_constant fullname_of_type.
         ENDIF.
         DATA(fullname_of_value) = name_of_constant && '-' && <component>-name.
-        DATA(abap_doc) = call_reader_and_decode( name_of_source = name_of_source element_name   = fullname_of_value ).
+        DATA(abap_doc) = call_reader_and_decode( name_of_source = name_of_source
+                                                 element_name   = fullname_of_value ).
         DATA(enum_value) = apply_formatting( CONV #( <component>-name ) ).
 
         APPEND enum_value TO enum_values.
         APPEND abap_doc-description TO enum_descriptions.
         APPEND abap_doc-title TO enum_titles.
 
-        check_title_and_description( abap_doc = abap_doc fullname_of_type = fullname_of_value ).
+        check_title_and_description( abap_doc = abap_doc
+                                     fullname_of_type = fullname_of_value ).
       ENDLOOP.
     ENDIF.
   ENDMETHOD.
@@ -924,7 +973,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   METHOD write_tag.
     IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level.
-      APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
+      APPEND |{ repeat( val = ` `
+                        occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
     ENDIF.
   ENDMETHOD.
 
@@ -945,7 +995,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ELSEIF element_description->type_kind = cl_abap_typedescr=>typekind_time.
       DATA(difference) = 6 - strlen( abap_date ).
       IF difference > 0.
-        abap_date = abap_date && repeat( val = '0' occ = difference ).
+        abap_date = abap_date && repeat( val = '0'
+                                         occ = difference ).
       ENDIF.
       date_time_json = abap_date+0(2) && `:` && abap_date+2(2) && `:` && abap_date+4(2).
     ENDIF.
@@ -968,15 +1019,18 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level. "Only write message if no callback class provided
       IF abap_doc-title IS INITIAL.
         MESSAGE i119(saff_core) WITH 'Title' fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
-        log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        log->add_info( message = cl_aff_log=>get_sy_message( )
+                       object = VALUE #( ) ).
       ENDIF.
 
       IF abap_doc-description IS INITIAL.
         MESSAGE i119(saff_core) WITH 'Description' fullname_of_type INTO message ##NEEDED ##NO_TEXT.
-        log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        log->add_info( message = cl_aff_log=>get_sy_message( )
+                       object = VALUE #( ) ).
       ELSEIF strlen( abap_doc-description ) > c_max_length_of_description.
         MESSAGE w125(saff_core) WITH fullname_of_type c_max_length_of_description INTO message ##NEEDED ##NO_TEXT.
-        log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        log->add_warning( message = cl_aff_log=>get_sy_message( )
+                          object = VALUE #( ) ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -989,7 +1043,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         json_reader->next_node( ).
         json_reader->skip_node( ).
       CATCH cx_aff_root cx_sxml_parse_error INTO DATA(exception).
-        log->add_exception( exception = exception object = VALUE #( ) ).
+        log->add_exception( exception = exception
+                            object = VALUE #( ) ).
         RETURN.
     ENDTRY.
     result = abap_true.
