@@ -264,8 +264,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         abap_element   = to_upper( abap_value_mapping-abap_element )
         target_type    = abap_value_mapping-target_type
         value_mappings = abap_value_mapping-value_mappings
-      )
-    ).
+      ) ).
     result = VALUE #( abap_value_mappings_upper[ abap_element = abap_element_upper ] OPTIONAL ) ##WARN_OK.
   ENDMETHOD.
 
@@ -286,8 +285,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       FOR name_mapping IN name_mappings (
         abap = to_upper( name_mapping-abap )
         json = name_mapping-json
-      )
-    ).
+      ) ).
     result = VALUE #( name_mappings_upper[ abap = name_upper ]-json OPTIONAL ) ##WARN_OK.
   ENDMETHOD.
 
@@ -308,7 +306,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       WHEN cl_abap_typedescr=>typekind_string OR cl_abap_typedescr=>typekind_csequence OR
            cl_abap_typedescr=>typekind_clike OR cl_abap_typedescr=>typekind_char OR
            cl_abap_typedescr=>typekind_w OR cl_abap_typedescr=>typekind_xstring OR
-           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum .
+           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum.
         result = COND #( WHEN is_type_boolean( element_description ) THEN zif_aff_writer=>type_info-boolean
                          ELSE zif_aff_writer=>type_info-string ).
       WHEN cl_abap_typedescr=>typekind_float OR cl_abap_typedescr=>typekind_int OR
@@ -446,15 +444,13 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             clif_name    = CONV #( name_of_source )
             element_name = element_name
           RECEIVING
-            result       = DATA(result)
-        ).
+            result       = DATA(result)   ).
         read_abap_doc = abap_doc_parser->parse(
           EXPORTING
             component_name = element_name
             to_parse       = result
           CHANGING
-            log            = log
-        ).
+            log            = log   ).
       CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
     ENDTRY.
   ENDMETHOD.
@@ -515,14 +511,12 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         values_link      = link_to_values
       IMPORTING
         name_of_source   = name_of_source
-        name_of_constant = name_of_constant
-    ).
+        name_of_constant = name_of_constant   ).
 
     structure_of_values = get_constant_as_struc(
       name_of_source   = name_of_source
       name_of_constant = name_of_constant
-      fullname_of_type = fullname_of_type
-    ).
+      fullname_of_type = fullname_of_type   ).
   ENDMETHOD.
 
   METHOD get_constant_as_struc.
@@ -553,8 +547,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             p_descr_ref         = DATA(constant)
           EXCEPTIONS
             attribute_not_found = 1
-            OTHERS              = 2
-        ).
+            OTHERS              = 2   ).
         IF sy-subrc <> 0.
 *      constant in interface does not exist
           MESSAGE w104(saff_core) WITH name_of_source && '=>' && name_of_constant fullname_of_type INTO message ##NEEDED.
@@ -569,8 +562,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             p_descr_ref         = constant
           EXCEPTIONS
             attribute_not_found = 1
-            OTHERS              = 2
-        ).
+            OTHERS              = 2   ).
         IF sy-subrc <> 0.
 *      constant in class does not exits
           MESSAGE w104(saff_core) WITH name_of_source && '=>' && name_of_constant fullname_of_type INTO message ##NEEDED.
@@ -678,8 +670,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       DATA(constant_description) = get_constant_as_struc(
         name_of_source   = source_name
         name_of_constant = constant_name
-        fullname_of_type = fullname_of_type
-      ).
+        fullname_of_type = fullname_of_type   ).
       IF constant_description IS NOT INITIAL.
         DATA(components) = constant_description->get_components( ).
         DATA(row) = VALUE #( components[ name = component_name ] OPTIONAL ).
