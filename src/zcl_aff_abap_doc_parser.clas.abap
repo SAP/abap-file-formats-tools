@@ -235,7 +235,9 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
     DATA mixed_result_table TYPE tt_mixed_table_entry.
     LOOP AT result_table_value ASSIGNING FIELD-SYMBOL(<default_value>).
-      INSERT VALUE #( offset = <default_value>-offset length = <default_value>-length is_link = abap_false ) INTO TABLE mixed_result_table.
+      INSERT VALUE #( offset = <default_value>-offset
+                      length = <default_value>-length
+                      is_link = abap_false ) INTO TABLE mixed_result_table.
     ENDLOOP.
     LOOP AT result_table_link ASSIGNING FIELD-SYMBOL(<default_link>).
       INSERT VALUE #( offset = <default_link>-offset length = <default_link>-length is_link = abap_true ) INTO TABLE mixed_result_table.
@@ -252,9 +254,14 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDIF.
     DATA(warning_set) = abap_false.
     LOOP AT mixed_result_table ASSIGNING FIELD-SYMBOL(<entry>).
-      check_next_word( offset = <entry>-offset + <entry>-length text_to_check = string_to_parse ).
+      check_next_word( offset = <entry>-offset + <entry>-length
+                       text_to_check = string_to_parse ).
       IF <entry>-is_link = abap_false AND decoded_abap_doc-default IS INITIAL.
-        decoded_abap_doc-default = `"` && get_annotation_value( length = <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_false ) && `"`.
+        decoded_abap_doc-default = `"` && get_annotation_value( length = <entry>-length - 1
+                                                                offset = <entry>-offset
+                                                                to_decode = string_to_parse
+                                                                length_of_annotation = 9
+                                                                remove_whitespaces = abap_false ) && `"`.
       ELSEIF <entry>-is_link = abap_true AND decoded_abap_doc-default IS INITIAL.
         DATA(link) = get_annotation_value( length = <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_true ).
         DATA(link_for_testing) = link.
@@ -294,8 +301,13 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       DATA(offset_found) = <entry>-offset.
       DATA(length_found) = <entry>-length.
-      DATA(link) = get_annotation_value( length = length_found - 1  offset = offset_found to_decode = string_to_parse length_of_annotation = 13 remove_whitespaces = abap_true ).
-      check_next_word( offset = offset_found + length_found text_to_check = string_to_parse ).
+      DATA(link) = get_annotation_value( length = length_found - 1
+                                         offset = offset_found
+                                         to_decode = string_to_parse
+                                         length_of_annotation = 13
+                                         remove_whitespaces = abap_true ).
+      check_next_word( offset = offset_found + length_found
+                       text_to_check = string_to_parse ).
       DATA(link_for_testing) = link.
       REPLACE ALL OCCURRENCES OF PCRE `\s` IN link_for_testing WITH ``.
       REPLACE ALL OCCURRENCES OF PCRE `data:` IN link_for_testing WITH ``.
@@ -322,7 +334,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDIF.
     decoded_abap_doc-required = abap_true.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
-      check_next_word( offset = <entry>-offset + <entry>-length text_to_check = abap_doc_string ).
+      check_next_word( offset = <entry>-offset + <entry>-length
+                       text_to_check = abap_doc_string ).
     ENDLOOP.
   ENDMETHOD.
 
@@ -338,7 +351,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDIF.
     decoded_abap_doc-showalways = abap_true.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
-      check_next_word( offset = <entry>-offset + <entry>-length text_to_check = abap_doc_string ).
+      check_next_word( offset = <entry>-offset + <entry>-length
+                       text_to_check = abap_doc_string ).
     ENDLOOP.
   ENDMETHOD.
 
@@ -405,7 +419,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       remove_leading_trailing_spaces( CHANGING string_to_work_on = number_candidate ).
       DATA(matcher) = regex_of_number_expressions->create_matcher( text = number_candidate ).
       DATA(match) = matcher->match( ).
-      check_next_word( offset = offset_found + length_found text_to_check = abap_doc ).
+      check_next_word( offset = offset_found + length_found
+                       text_to_check = abap_doc ).
       IF match = abap_true AND number IS INITIAL.
         number = number_candidate.
       ELSEIF match = abap_false AND warning_written = abap_false.
@@ -458,7 +473,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   METHOD write_description_message.
     IF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS INITIAL.
       MESSAGE w115(saff_core) WITH component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      parser_log->add_warning( message = cl_aff_log=>get_sy_message( )
+                               object = VALUE #( ) ).
     ELSEIF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS NOT INITIAL.
       MESSAGE i116(saff_core) WITH component_name INTO message ##NEEDED.
       parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).

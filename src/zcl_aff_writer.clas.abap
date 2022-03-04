@@ -341,7 +341,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
 
   METHOD zif_aff_writer~write_element.
-    write_element( element_name = element_name element_description = element_description ).
+    write_element( element_name = element_name
+                   element_description = element_description ).
     add_to_stack( VALUE #( operation = zif_aff_writer=>operation-write_element name = element_name ) ).
   ENDMETHOD.
 
@@ -349,11 +350,13 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD zif_aff_writer~open_node.
     CASE node_description->kind.
       WHEN cl_abap_typedescr=>kind_struct.
-        open_structure( structure_name = node_name  structure_description = node_description ).
+        open_structure( structure_name = node_name
+                        structure_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-open_structure name = node_name ) ).
 
       WHEN cl_abap_typedescr=>kind_table.
-        open_table( table_name = node_name  table_description = node_description ).
+        open_table( table_name = node_name
+                    table_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-open_table name = node_name ) ).
       WHEN OTHERS.
         RAISE EXCEPTION TYPE cx_aff_root MESSAGE e101(saff_core) WITH node_description->kind.
@@ -364,11 +367,13 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD zif_aff_writer~close_node.
     CASE node_description->kind.
       WHEN cl_abap_typedescr=>kind_struct.
-        close_structure( structure_name = node_name  structure_description = node_description ).
+        close_structure( structure_name = node_name
+                         structure_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-close_structure name = node_name ) ).
 
       WHEN cl_abap_typedescr=>kind_table.
-        close_table( table_name = node_name  table_description = node_description ).
+        close_table( table_name = node_name
+                     table_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-close_table name = node_name ) ).
 
       WHEN OTHERS.
@@ -386,7 +391,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
 
   METHOD write_tag_with_variable_indent.
-    APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
+    APPEND |{ repeat( val = ` `
+                      occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
   ENDMETHOD.
 
 
@@ -533,7 +539,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     IF sy-subrc <> 0.
 *    class or interface doesn't exist
       MESSAGE w103(saff_core) WITH name_of_source fullname_of_type INTO DATA(message) ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      log->add_warning( message = cl_aff_log=>get_sy_message( )
+                        object = VALUE #( ) ).
     ELSE.
       DATA(constant_descr) = cl_abap_typedescr=>describe_by_name( name_of_source ).
 
@@ -594,7 +601,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       DATA(source) = splitted_prev_name[ 2 ].
       DATA(fullname_of_type) = splitted_prev_name[ 4 ].
       IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
-        abap_doc = call_reader_and_decode( name_of_source = source element_name   = fullname_of_type ).
+        abap_doc = call_reader_and_decode( name_of_source = source
+                                           element_name   = fullname_of_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -635,7 +643,9 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF PCRE `(@link|data:)` IN link_to_work_on WITH ``.
     REPLACE ALL OCCURRENCES OF PCRE `[\s]` IN link_to_work_on WITH ``.
     SPLIT link_to_work_on AT '.' INTO TABLE DATA(splitted).
-    IF validate_default_link( splitted_link = splitted fullname_of_type = fullname_of_type element_type = element_type ) = abap_true.
+    IF validate_default_link( splitted_link = splitted
+                              fullname_of_type = fullname_of_type
+                              element_type = element_type ) = abap_true.
       DATA(default_abap) = splitted[ lines( splitted ) ].
       default_value = apply_formatting( default_abap ).
     ENDIF.
@@ -717,7 +727,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             SHIFT string LEFT DELETING LEADING '0'.
           ENDIF.
           IF element_description->type_kind = cl_abap_typedescr=>typekind_time.
-            default = default && repeat( val = '0' occ = 6 - strlen( default ) ).
+            default = default && repeat( val = '0'
+                                         occ = 6 - strlen( default ) ).
           ENDIF.
           IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
             REPLACE PCRE `T|t` IN default WITH ` `.
