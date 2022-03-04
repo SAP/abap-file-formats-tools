@@ -74,15 +74,15 @@ CLASS zcl_aff_generator IMPLEMENTATION.
 
   METHOD constructor.
     me->writer = writer.
-    me->log = cl_aff_factory=>create_log( ).
+    log = cl_aff_factory=>create_log( ).
   ENDMETHOD.
 
   METHOD generate_type.
     DATA(type_description) = cl_abap_typedescr=>describe_by_data( data ).
     check_input( type_description ).
-    me->process_type_description( type_description ).
-    result = me->writer->get_output( ).
-    me->log->join( log_to_join = me->writer->get_log( ) ).
+    process_type_description( type_description ).
+    result = writer->get_output( ).
+    log->join( log_to_join = writer->get_log( ) ).
   ENDMETHOD.
 
   METHOD check_input.
@@ -126,7 +126,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
   METHOD process_element.
     DATA(name) = COND #( WHEN element_name IS NOT INITIAL THEN element_name
                          ELSE element_description->get_relative_name( ) ).
-    me->writer->write_element(
+    writer->write_element(
       element_name        = name
       element_description = element_description ).
   ENDMETHOD.
@@ -134,21 +134,21 @@ CLASS zcl_aff_generator IMPLEMENTATION.
   METHOD process_structure.
     DATA(name) = COND #( WHEN structure_name IS NOT INITIAL THEN structure_name
                          ELSE structure_description->get_relative_name( ) ).
-    me->writer->open_node(
+    writer->open_node(
       node_name        = name
       node_description = structure_description ).
     DATA(components) = structure_description->get_components( ).
     process_components( components ).
-    me->writer->close_node(
+    writer->close_node(
       node_name        = name
       node_description = structure_description ).
   ENDMETHOD.
 
   METHOD process_include.
     DATA(components) = structure_description->get_components( ).
-    me->writer->open_include( structure_description ).
+    writer->open_include( structure_description ).
     process_components( components ).
-    me->writer->close_include( ).
+    writer->close_include( ).
   ENDMETHOD.
 
   METHOD process_components.
@@ -166,12 +166,12 @@ CLASS zcl_aff_generator IMPLEMENTATION.
   METHOD process_table.
     DATA(name) = COND #( WHEN table_name IS NOT INITIAL THEN table_name
                          ELSE table_description->get_relative_name( ) ).
-    me->writer->open_node(
+    writer->open_node(
       node_name        = name
       node_description = table_description ).
     DATA(line_description) = table_description->get_table_line_type( ).
     process_type_description( line_description ).
-    me->writer->close_node(
+    writer->close_node(
       node_name        = name
       node_description = table_description ).
   ENDMETHOD.
