@@ -201,6 +201,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD write_element.
+    FIELD-SYMBOLS <table1> TYPE stringtab.
     IF ignore_next_elements = abap_true.
       RETURN.
     ENDIF.
@@ -572,7 +573,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
                                  abap_doc = abap_doc ).
 
     IF abap_doc-required = abap_true.
-
       ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
@@ -847,7 +847,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         RETURN.
       ENDIF.
       LOOP AT ddic_fixed_values ASSIGNING FIELD-SYMBOL(<value>).
-        DATA text TYPE string.
         text = <value>-ddtext.
         REPLACE ALL OCCURRENCES OF PCRE '\s' IN text WITH '_'.
         APPEND apply_formatting( text ) TO result.
