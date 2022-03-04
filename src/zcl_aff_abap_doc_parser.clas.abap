@@ -107,7 +107,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     CLEAR description_warning_is_needed.
     CLEAR decoded_abap_doc.
     abap_doc_string = to_parse.
-    me->component_name =  component_name.
+    me->component_name = component_name.
     parser_log = log.
     parse_title( ).
     parse_annotations( ).
@@ -256,7 +256,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       IF <entry>-is_link = abap_false AND decoded_abap_doc-default IS INITIAL.
         decoded_abap_doc-default = `"` && get_annotation_value( length = <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_false ) && `"`.
       ELSEIF <entry>-is_link = abap_true AND decoded_abap_doc-default IS INITIAL.
-        DATA(link) = get_annotation_value( length =  <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_true ).
+        DATA(link) = get_annotation_value( length = <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_true ).
         DATA(link_for_testing) = link.
         REPLACE ALL OCCURRENCES OF PCRE `\s` IN link_for_testing WITH ``.
         REPLACE ALL OCCURRENCES OF PCRE `(@link|data:)` IN link_for_testing WITH ``.

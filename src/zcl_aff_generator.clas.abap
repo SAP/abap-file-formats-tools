@@ -148,7 +148,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
     DATA(components) = structure_description->get_components( ).
     me->writer->open_include( structure_description ).
     process_components( components ).
-    me->writer->close_include(  ).
+    me->writer->close_include( ).
   ENDMETHOD.
 
   METHOD process_components.
