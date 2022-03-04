@@ -260,7 +260,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD get_value_mapping_for_element.
     DATA(abap_element_upper) = to_upper( abap_element ).
     DATA(abap_value_mappings_upper) = VALUE zif_aff_writer=>ty_abap_value_mappings(
-      FOR abap_value_mapping IN me->abap_value_mappings (
+      FOR abap_value_mapping IN abap_value_mappings (
         abap_element   = to_upper( abap_value_mapping-abap_element )
         target_type    = abap_value_mapping-target_type
         value_mappings = abap_value_mapping-value_mappings
@@ -271,11 +271,11 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
 
   METHOD map_and_format_name.
-    DATA(mapped_name) = me->get_mapped_name( name ).
+    DATA(mapped_name) = get_mapped_name( name ).
     IF mapped_name IS NOT INITIAL.
       result = mapped_name.
     ELSE.
-      result = me->apply_formatting( name ).
+      result = apply_formatting( name ).
     ENDIF.
   ENDMETHOD.
 
@@ -283,7 +283,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD get_mapped_name.
     DATA(name_upper) = to_upper( name ).
     DATA(name_mappings_upper) = VALUE zif_aff_writer=>ty_name_mappings(
-      FOR name_mapping IN me->name_mappings (
+      FOR name_mapping IN name_mappings (
         abap = to_upper( name_mapping-abap )
         json = name_mapping-json
       )
@@ -413,7 +413,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
 
   METHOD append_to_previous_line.
-    DATA(index) = lines( me->content ).
+    DATA(index) = lines( content ).
     IF index > 0.
       me->content[ index ] = me->content[ index ] && string.
     ELSE.
