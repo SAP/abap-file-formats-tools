@@ -1,184 +1,184 @@
-class zcl_aff_generator definition
-  public
-  final
-  create public.
+CLASS zcl_aff_generator DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
 
-  public section.
-    methods constructor
-      importing
-        writer type ref to Zif_aff_writer.
+  PUBLIC SECTION.
+    METHODS constructor
+      IMPORTING
+        writer TYPE REF TO zif_aff_writer.
 
-    methods generate_type
-      importing
-        data          type data
-      returning
-        value(result) type rswsourcet
-      raising
+    METHODS generate_type
+      IMPORTING
+        data          TYPE data
+      RETURNING
+        VALUE(result) TYPE rswsourcet
+      RAISING
         cx_aff_root.
 
-    methods get_log
-      returning
-        value(log) type ref to if_aff_log.
+    METHODS get_log
+      RETURNING
+        VALUE(log) TYPE REF TO if_aff_log.
 
-  private section.
-    data:
-      writer type ref to Zif_aff_writer,
-      log    type ref to if_aff_log.
+  PRIVATE SECTION.
+    DATA:
+      writer TYPE REF TO zif_aff_writer,
+      log    TYPE REF TO if_aff_log.
 
-    methods:
+    METHODS:
       check_input
-        importing
-          type_description type ref to cl_abap_typedescr,
+        IMPORTING
+          type_description TYPE REF TO cl_abap_typedescr,
       process_type_description
-        importing
-          type_description type ref to cl_abap_typedescr
-          type_name        type string optional
-        raising
+        IMPORTING
+          type_description TYPE REF TO cl_abap_typedescr
+          type_name        TYPE string OPTIONAL
+        RAISING
           cx_aff_root,
       process_element
-        importing
-          element_description type ref to cl_abap_elemdescr
-          element_name        type string optional
-        raising
+        IMPORTING
+          element_description TYPE REF TO cl_abap_elemdescr
+          element_name        TYPE string OPTIONAL
+        RAISING
           cx_aff_root,
       process_structure
-        importing
-          structure_description type ref to cl_abap_structdescr
-          structure_name        type string
-        raising
+        IMPORTING
+          structure_description TYPE REF TO cl_abap_structdescr
+          structure_name        TYPE string
+        RAISING
           cx_aff_root,
       process_table
-        importing
-          table_description type ref to cl_abap_tabledescr
-          table_name        type string
-        raising
+        IMPORTING
+          table_description TYPE REF TO cl_abap_tabledescr
+          table_name        TYPE string
+        RAISING
           cx_aff_root,
       process_include
-        importing
-          structure_description type ref to cl_abap_structdescr
-        raising
+        IMPORTING
+          structure_description TYPE REF TO cl_abap_structdescr
+        RAISING
           cx_aff_root,
       process_components
-        importing
-          components type cl_abap_structdescr=>component_table
-        raising
+        IMPORTING
+          components TYPE cl_abap_structdescr=>component_table
+        RAISING
           cx_aff_root,
       check_mandatory_fields
-        importing
-          structure_description type ref to cl_abap_structdescr.
+        IMPORTING
+          structure_description TYPE REF TO cl_abap_structdescr.
 
-endclass.
+ENDCLASS.
 
 
-class zcl_aff_generator implementation.
+CLASS zcl_aff_generator IMPLEMENTATION.
 
-  method constructor.
+  METHOD constructor.
     me->writer = writer.
     me->log = cl_aff_factory=>create_log( ).
-  endmethod.
+  ENDMETHOD.
 
-  method generate_type.
-    data(type_description) = cl_abap_typedescr=>describe_by_data( data ).
+  METHOD generate_type.
+    DATA(type_description) = cl_abap_typedescr=>describe_by_data( data ).
     check_input( type_description ).
     me->process_type_description( type_description ).
     result = me->writer->get_output( ).
     me->log->join( log_to_join = me->writer->get_log( ) ).
-  endmethod.
+  ENDMETHOD.
 
-  method check_input.
-    try.
-        data(structure_description) = cast cl_abap_structdescr( type_description ).
+  METHOD check_input.
+    TRY.
+        DATA(structure_description) = CAST cl_abap_structdescr( type_description ).
         check_mandatory_fields( structure_description ).
-      catch cx_sy_move_cast_error.
-        message w123(saff_core) into data(message) ##NEEDED.
-        log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endtry.
+      CATCH cx_sy_move_cast_error.
+        MESSAGE w123(saff_core) INTO DATA(message) ##NEEDED.
+        log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDTRY.
 
-  endmethod.
+  ENDMETHOD.
 
-  method check_mandatory_fields.
-    data(components) = structure_description->get_components( ).
-    if not ( line_exists( components[ name = 'HEADER' ] ) and line_exists( components[ name = 'FORMAT_VERSION' ] ) ).
-      message w124(saff_core) into data(message)  ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
-  endmethod.
+  METHOD check_mandatory_fields.
+    DATA(components) = structure_description->get_components( ).
+    IF NOT ( line_exists( components[ name = 'HEADER' ] ) AND line_exists( components[ name = 'FORMAT_VERSION' ] ) ).
+      MESSAGE w124(saff_core) INTO DATA(message)  ##NEEDED.
+      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
+  ENDMETHOD.
 
-  method process_type_description.
-    case type_description->kind.
-      when cl_abap_typedescr=>kind_elem.
+  METHOD process_type_description.
+    CASE type_description->kind.
+      WHEN cl_abap_typedescr=>kind_elem.
         process_element(
           element_name        = type_name
-          element_description = cast #( type_description ) ).
-      when cl_abap_typedescr=>kind_struct.
+          element_description = CAST #( type_description ) ).
+      WHEN cl_abap_typedescr=>kind_struct.
         process_structure(
           structure_name        = type_name
-          structure_description = cast #( type_description ) ).
-      when cl_abap_typedescr=>kind_table.
+          structure_description = CAST #( type_description ) ).
+      WHEN cl_abap_typedescr=>kind_table.
         process_table(
           table_name        = type_name
-          table_description = cast #( type_description ) ).
-      when others.
-        raise exception type cx_aff_root message e100(saff_core) with type_description->kind.
-    endcase.
-  endmethod.
+          table_description = CAST #( type_description ) ).
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE cx_aff_root MESSAGE e100(saff_core) WITH type_description->kind.
+    ENDCASE.
+  ENDMETHOD.
 
-  method process_element.
-    data(name) = cond #( when element_name is not initial then element_name
-                         else element_description->get_relative_name( ) ).
+  METHOD process_element.
+    DATA(name) = COND #( WHEN element_name IS NOT INITIAL THEN element_name
+                         ELSE element_description->get_relative_name( ) ).
     me->writer->write_element(
       element_name        = name
       element_description = element_description ).
-  endmethod.
+  ENDMETHOD.
 
-  method process_structure.
-    data(name) = cond #( when structure_name is not initial then structure_name
-                         else structure_description->get_relative_name( ) ).
+  METHOD process_structure.
+    DATA(name) = COND #( WHEN structure_name IS NOT INITIAL THEN structure_name
+                         ELSE structure_description->get_relative_name( ) ).
     me->writer->open_node(
       node_name        = name
       node_description = structure_description ).
-    data(components) = structure_description->get_components( ).
+    DATA(components) = structure_description->get_components( ).
     process_components( components ).
     me->writer->close_node(
       node_name        = name
       node_description = structure_description ).
-  endmethod.
+  ENDMETHOD.
 
-  method process_include.
-    data(components) = structure_description->get_components( ).
+  METHOD process_include.
+    DATA(components) = structure_description->get_components( ).
     me->writer->open_include( structure_description ).
     process_components( components ).
     me->writer->close_include(  ).
-  endmethod.
+  ENDMETHOD.
 
-  method process_components.
-    loop at components assigning field-symbol(<component>).
-      if <component>-as_include = abap_true.
-        process_include( cast #( <component>-type ) ).
-      else.
+  METHOD process_components.
+    LOOP AT components ASSIGNING FIELD-SYMBOL(<component>).
+      IF <component>-as_include = abap_true.
+        process_include( CAST #( <component>-type ) ).
+      ELSE.
         process_type_description(
           type_name        = <component>-name
           type_description = <component>-type ).
-      endif.
-    endloop.
-  endmethod.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
 
-  method process_table.
-    data(name) = cond #( when table_name is not initial then table_name
-                         else table_description->get_relative_name( ) ).
+  METHOD process_table.
+    DATA(name) = COND #( WHEN table_name IS NOT INITIAL THEN table_name
+                         ELSE table_description->get_relative_name( ) ).
     me->writer->open_node(
       node_name        = name
       node_description = table_description ).
-    data(line_description) = table_description->get_table_line_type( ).
+    DATA(line_description) = table_description->get_table_line_type( ).
     process_type_description( line_description ).
     me->writer->close_node(
       node_name        = name
       node_description = table_description ).
-  endmethod.
+  ENDMETHOD.
 
 
-  method get_log.
+  METHOD get_log.
     log = me->log.
-  endmethod.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.

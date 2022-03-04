@@ -1,85 +1,85 @@
-class zcl_aff_extreme_values definition
-  public
-  final
-  create public .
+CLASS zcl_aff_extreme_values DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
 
-  public section.
-    methods:
+  PUBLIC SECTION.
+    METHODS:
       get_max_length
-        importing element_description type ref to cl_abap_elemdescr
-        returning value(result)       type string,
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
+        RETURNING VALUE(result)       TYPE string,
 
       get_extrema
-        importing element_description type ref to cl_abap_elemdescr
-        exporting value(max)          type string
-                  value(min)          type string.
-  protected section.
-  private section.
-    methods
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
+        EXPORTING VALUE(max)          TYPE string
+                  VALUE(min)          TYPE string.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS
       remove_leading_trailing_spaces
-        changing
-          string_to_work_on type string.
-endclass.
+        CHANGING
+          string_to_work_on TYPE string.
+ENDCLASS.
 
 
 
-class zcl_aff_extreme_values implementation.
+CLASS zcl_aff_extreme_values IMPLEMENTATION.
 
-  method get_max_length.
-    data(length) = element_description->output_length.
-    if length > 0.
-      data length_as_string type string.
+  METHOD get_max_length.
+    DATA(length) = element_description->output_length.
+    IF length > 0.
+      DATA length_as_string TYPE string.
       length_as_string = length.
-      remove_leading_trailing_spaces( changing string_to_work_on = length_as_string ).
+      remove_leading_trailing_spaces( CHANGING string_to_work_on = length_as_string ).
       result = length_as_string.
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
-  method remove_leading_trailing_spaces.
-    shift string_to_work_on right deleting trailing space.
-    shift string_to_work_on left deleting leading space.
-  endmethod.
+  METHOD remove_leading_trailing_spaces.
+    SHIFT string_to_work_on RIGHT DELETING TRAILING space.
+    SHIFT string_to_work_on LEFT DELETING LEADING space.
+  ENDMETHOD.
 
 
-  method get_extrema.
-    data r_field type ref to data.
-    field-symbols <field> type any.
-    create data r_field type handle element_description.
-    assign r_field->* to <field>.
+  METHOD get_extrema.
+    DATA r_field TYPE REF TO data.
+    FIELD-SYMBOLS <field> TYPE any.
+    CREATE DATA r_field TYPE HANDLE element_description.
+    ASSIGN r_field->* TO <field>.
 
-    data(max_val) = cl_abap_exceptional_values=>get_max_value( <field> ).
-    assign max_val->* to field-symbol(<max>).
-    if <max> is assigned.
+    DATA(max_val) = cl_abap_exceptional_values=>get_max_value( <field> ).
+    ASSIGN max_val->* TO FIELD-SYMBOL(<max>).
+    IF <max> IS ASSIGNED.
       max = <max>.
-      replace all occurrences of 'E' in max with 'e'.
-      replace all occurrences of '+' in max with ''.
-      remove_leading_trailing_spaces( changing string_to_work_on = max ).
-    endif.
+      REPLACE ALL OCCURRENCES OF 'E' IN max WITH 'e'.
+      REPLACE ALL OCCURRENCES OF '+' IN max WITH ''.
+      remove_leading_trailing_spaces( CHANGING string_to_work_on = max ).
+    ENDIF.
 
-    if element_description->type_kind = cl_abap_typedescr=>typekind_decfloat or
-          element_description->type_kind = cl_abap_typedescr=>typekind_decfloat16 or
+    IF element_description->type_kind = cl_abap_typedescr=>typekind_decfloat OR
+          element_description->type_kind = cl_abap_typedescr=>typekind_decfloat16 OR
           element_description->type_kind = cl_abap_typedescr=>typekind_decfloat34.
-      if <max> is assigned.
+      IF <max> IS ASSIGNED.
         min = '-' && max.
-      endif.
-    else.
-      data(min_val) = cl_abap_exceptional_values=>get_min_value( <field> ).
-      assign min_val->* to field-symbol(<min>).
-      if <min> is assigned.
-        data min_str type string.
+      ENDIF.
+    ELSE.
+      DATA(min_val) = cl_abap_exceptional_values=>get_min_value( <field> ).
+      ASSIGN min_val->* TO FIELD-SYMBOL(<min>).
+      IF <min> IS ASSIGNED.
+        DATA min_str TYPE string.
         min_str = <min>.
-        data(length) = strlen( min_str ) - 1.
-        data(front) = substring( val = min_str off = 0  len = length ).
-        data(back) = substring( val = min_str off = length  len = 1 ).
-        if back = '-'.
+        DATA(length) = strlen( min_str ) - 1.
+        DATA(front) = substring( val = min_str off = 0  len = length ).
+        DATA(back) = substring( val = min_str off = length  len = 1 ).
+        IF back = '-'.
           min = back && front.
-        else.
+        ELSE.
           min = min_str.
-        endif.
-        replace all occurrences of 'E' in min with 'e'.
-        replace all occurrences of '+' in min with ''.
-        remove_leading_trailing_spaces( changing string_to_work_on = min ).
-      endif.
-    endif.
-  endmethod.
-endclass.
+        ENDIF.
+        REPLACE ALL OCCURRENCES OF 'E' IN min WITH 'e'.
+        REPLACE ALL OCCURRENCES OF '+' IN min WITH ''.
+        remove_leading_trailing_spaces( CHANGING string_to_work_on = min ).
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.

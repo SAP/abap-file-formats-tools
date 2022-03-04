@@ -1,93 +1,93 @@
-interface zif_aff_writer
-  public .
+INTERFACE zif_aff_writer
+  PUBLIC.
 
-  types:
-    begin of enum enum_formatting_option structure formatting_option,
-      no_formatting value is initial,
-      camel_case    value 1,
-    end of enum enum_formatting_option structure formatting_option,
+  TYPES:
+    BEGIN OF ENUM enum_formatting_option STRUCTURE formatting_option,
+      no_formatting VALUE IS INITIAL,
+      camel_case    VALUE 1,
+    END OF ENUM enum_formatting_option STRUCTURE formatting_option,
 
-    begin of enum enum_type_info structure type_info,
+    BEGIN OF ENUM enum_type_info STRUCTURE type_info,
       string,
       numeric,
       boolean,
       date_time,
-    end of enum enum_type_info structure type_info,
+    END OF ENUM enum_type_info STRUCTURE type_info,
 
-    begin of enum enum_operation structure operation,
+    BEGIN OF ENUM enum_operation STRUCTURE operation,
       initial,
       write_element,
       open_structure,
       close_structure,
       open_table,
       close_table,
-    end of enum enum_operation structure operation.
+    END OF ENUM enum_operation STRUCTURE operation.
 
-  types:
-    begin of ty_name_mapping,
-      abap type abap_compname,
-      json type string,
-    end of ty_name_mapping,
-    ty_name_mappings type hashed table of ty_name_mapping with unique key abap.
+  TYPES:
+    BEGIN OF ty_name_mapping,
+      abap TYPE abap_compname,
+      json TYPE string,
+    END OF ty_name_mapping,
+    ty_name_mappings TYPE HASHED TABLE OF ty_name_mapping WITH UNIQUE KEY abap.
 
-  types:
-    begin of ty_value_mapping,
-      abap type string,
-      json type string,
-    end of ty_value_mapping,
-    ty_value_mappings type hashed table of ty_value_mapping with unique key abap.
+  TYPES:
+    BEGIN OF ty_value_mapping,
+      abap TYPE string,
+      json TYPE string,
+    END OF ty_value_mapping,
+    ty_value_mappings TYPE HASHED TABLE OF ty_value_mapping WITH UNIQUE KEY abap.
 
-  types:
-    begin of ty_abap_value_mapping,
-      abap_element   type abap_compname,
-      target_type    type enum_type_info,
-      value_mappings type ty_value_mappings,
-    end of ty_abap_value_mapping,
-    ty_abap_value_mappings type hashed table of ty_abap_value_mapping with unique key abap_element.
+  TYPES:
+    BEGIN OF ty_abap_value_mapping,
+      abap_element   TYPE abap_compname,
+      target_type    TYPE enum_type_info,
+      value_mappings TYPE ty_value_mappings,
+    END OF ty_abap_value_mapping,
+    ty_abap_value_mappings TYPE HASHED TABLE OF ty_abap_value_mapping WITH UNIQUE KEY abap_element.
 
-  methods:
+  METHODS:
     set_name_mappings
-      importing
-        name_mappings type ty_name_mappings,
+      IMPORTING
+        name_mappings TYPE ty_name_mappings,
 
     set_abap_value_mappings
-      importing
-        abap_value_mappings type ty_abap_value_mappings,
+      IMPORTING
+        abap_value_mappings TYPE ty_abap_value_mappings,
 
     set_formatting_option
-      importing
-        formatting_option type zif_aff_writer=>enum_formatting_option,
+      IMPORTING
+        formatting_option TYPE zif_aff_writer=>enum_formatting_option,
 
     write_element
-      importing
-        element_name        type string
-        element_description type ref to cl_abap_elemdescr
-      raising
+      IMPORTING
+        element_name        TYPE string
+        element_description TYPE REF TO cl_abap_elemdescr
+      RAISING
         cx_aff_root,
 
     "! open node. for example table or object
     "! @parameter node_description | description for node
     open_node
-      importing
-        node_description type ref to cl_abap_typedescr
-        node_name        type string
-      raising
+      IMPORTING
+        node_description TYPE REF TO cl_abap_typedescr
+        node_name        TYPE string
+      RAISING
         cx_aff_root,
 
     "! close node. for example table or object
     "! @parameter node_description | description for node
     close_node
-      importing
-        node_description type ref to cl_abap_typedescr
-        node_name        type string
-      raising
+      IMPORTING
+        node_description TYPE REF TO cl_abap_typedescr
+        node_name        TYPE string
+      RAISING
         cx_aff_root,
 
     get_output
-      returning value(result) type rswsourcet,
+      RETURNING VALUE(result) TYPE rswsourcet,
 
     get_log
-      returning value(log) type ref to if_aff_log,
+      RETURNING VALUE(log) TYPE REF TO if_aff_log,
 
     "! Validate the given source and writes messages into the log
     "!
@@ -95,14 +95,14 @@ interface zif_aff_writer
     "! @parameter log | log to write messages
     "! @parameter result | true, if the source is valid, false if not
     validate
-      importing source        type rswsourcet
-                log           type ref to if_aff_log
-      returning value(result) type abap_bool,
+      IMPORTING source        TYPE rswsourcet
+                log           TYPE REF TO if_aff_log
+      RETURNING VALUE(result) TYPE abap_bool,
 
     open_include
-      importing
-        include_description type ref to cl_abap_structdescr,
+      IMPORTING
+        include_description TYPE REF TO cl_abap_structdescr,
 
     close_include.
 
-endinterface.
+ENDINTERFACE.
