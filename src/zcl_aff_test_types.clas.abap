@@ -25,7 +25,7 @@ class zcl_aff_test_types definition
 
     types:
       "! Default type does not match constant type
-      "! $default {@link zcl_aff_test.data:co_test.test}
+      "! $default {@link zcl_aff_test_types.data:co_test.test}
       default_link type i.
     constants:
       begin of co_test,
