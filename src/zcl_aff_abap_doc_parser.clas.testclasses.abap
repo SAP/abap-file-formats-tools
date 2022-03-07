@@ -28,8 +28,6 @@ class ltcl_aff_abap_doc_parser definition final for testing
     methods wrong_usage_enum_values for testing raising cx_static_check.
     methods wrong_value_number_annotation for testing raising cx_static_check.
     methods wrong_links for testing raising cx_static_check.
-    methods required_and_showalways for testing raising cx_static_check.
-    methods default_and_required for testing raising cx_static_check.
     methods description_at_false_position for testing raising cx_static_check.
     methods text_between_annotations for testing raising cx_static_check.
     methods title_at_wrong_position for testing raising cx_static_check.
@@ -188,13 +186,13 @@ class ltcl_aff_abap_doc_parser implementation.
     cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
                                                       exp_message = value #( msgid = 'SAFF_CORE'
                                                                              msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum
+                                                                             attr1 = cl_aff_abap_doc_parser=>abap_doc_annotation-minimum
                                                                              attr2 = `Component Name` )
                                                       exp_type    =  if_aff_log=>c_message_type-info ).
     cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
                                                       exp_message = value #( msgid = 'SAFF_CORE'
                                                                              msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum
+                                                                             attr1 = cl_aff_abap_doc_parser=>abap_doc_annotation-maximum
                                                                              attr2 = `Component Name` )
                                                        exp_type   =  if_aff_log=>c_message_type-info ).
   endmethod.
@@ -454,42 +452,6 @@ class ltcl_aff_abap_doc_parser implementation.
                                                                              msgno = 111
                                                                              attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
                                                                              attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
-  endmethod.
-
-  method required_and_showalways.
-    data(abap_doc_to_parse) = `Required and showalways are set. $required $showAlways`.
-    data(act_abap_doc) = parser->parse(
-                               exporting
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               changing
-                                 log            = log
-                             ).
-    exp_abap_doc = value #( description = `Required and showalways are set.` required = abap_true showalways = abap_true ).
-    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = value #( msgid = 'SAFF_CORE'
-                                                                             msgno = 112
-                                                                             attr1 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
-  endmethod.
-
-  method default_and_required.
-    data(abap_doc_to_parse) = `Default and required are set. $default '5' $required`.
-    data(act_abap_doc) = parser->parse(
-                               exporting
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               changing
-                                 log            = log
-                             ).
-    exp_abap_doc = value #( description = `Default and required are set.` required = abap_true default = '"5"' ).
-    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = value #( msgid = 'SAFF_CORE'
-                                                                             msgno = 126
-                                                                             attr1 = `Component Name` )
                                                       exp_type    =  if_aff_log=>c_message_type-warning ).
   endmethod.
 
