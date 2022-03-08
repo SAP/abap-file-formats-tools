@@ -29,6 +29,7 @@ class ltcl_json_writer definition final for testing
       get_expected_description
         importing typename           type ddobjname
         returning value(description) type string.
+
 endclass.
 
 class zcl_aff_writer_json_schema definition local friends ltcl_json_writer.
@@ -313,9 +314,9 @@ class ltcl_json_writer implementation.
         ftype      type f, "2.2250738585072014E-308 to 1.7976931348623157E+308, positive as well as negative
         packed     type p length 14 decimals 2, "length multiplied by 2 minus 1 digits and can have a maximum of 14 decimal places
         integer2   type int2,
-        integer1   type int1,
       end of component_description.
     data(act_schema) = test_generator->generate_type( value component_description(  ) ).
+
 
     data(exp_schema) = value rswsourcet(
 ( `{` )
@@ -360,12 +361,6 @@ class ltcl_json_writer implementation.
 ( `            "type": "integer",` )
 ( `            "minimum": -32768,` )
 ( `            "maximum": 32767` )
-( `        },` )
-( `        "integer1": {` )
-( |            "description": "{ get_expected_description( 'INT1' ) }",| )
-( `            "type": "integer",` )
-( `            "minimum": 0,` )
-( `            "maximum": 255` )
 ( `        }` )
 ( `    },` )
 ( `    "additionalProperties": false` )
@@ -547,7 +542,9 @@ class ltcl_json_writer_abap_doc definition final for testing
       type_of_enumtype_and_co_differ for testing raising cx_static_check,
       structure_with_include for testing raising cx_static_check,
       description_too_long for testing raising cx_static_check,
-      structure_with_default_problem for testing raising cx_static_check.
+      structure_with_default_problem for testing raising cx_static_check,
+    get_extrema FOR TESTING RAISING cx_static_check,
+    calculate_max_length FOR TESTING RAISING cx_static_check.
 
 
 endclass.
@@ -1301,7 +1298,7 @@ class ltcl_json_writer_abap_doc implementation.
     cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
                                                       exp_message = value #( msgid = 'SAFF_CORE'
                                                                              msgno = 104
-                                                                             attr1 = `zcl_aff_test_types=>ENUM_VALUES_WRONG`
+                                                                             attr1 = `ZCL_AFF_TEST_TYPES=>ENUM_VALUES_WRONG`
                                                                              attr2 = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO` )
                                                       exp_type    = if_aff_log=>c_message_type-warning ).
   endmethod.
@@ -2536,5 +2533,65 @@ class ltcl_json_writer_abap_doc implementation.
                                                       exp_type    = if_aff_log=>c_message_type-warning ).
   endmethod.
 
+  method get_extrema.
+    data: integer    type i, "-2147483648 to +2147483647 for i
+          decfloat16 type decfloat16, "1E385(1E-16 - 1) to -1E-383, 0, +1E-383 to 1E385(1 - 1E-16) for decfloat16
+          ftype      type f, "2.2250738585072014E-308 to 1.7976931348623157E+308, positive as well as negative
+          packed     type p length 14 decimals 2, "length multiplied by 2 minus 1 digits and can have a maximum of 14 decimal places
+          integer1   type int1.
+    data table_of_descriptions type standard table of ref to cl_abap_elemdescr with default key.
+    types: begin of line_of_table,
+             min type string,
+             max type string,
+           end of line_of_table.
+    data table_of_expected type standard table of line_of_table with default key.
+    insert cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( integer ) ) into table table_of_descriptions.
+    insert value #( min = `-2147483648` max = `2147483647` ) into table table_of_expected.
+
+    insert cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( decfloat16 ) ) into table table_of_descriptions.
+    insert value #( min = `-9.999999999999999e384` max = `9.999999999999999e384` ) into table table_of_expected.
+
+    insert cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( ftype ) ) into table table_of_descriptions.
+    insert value #( min = `-1.7976931348623157e308` max = `1.7976931348623157e308` ) into table table_of_expected.
+
+    insert cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( packed ) ) into table table_of_descriptions.
+    insert value #( min = `-9999999999999999999999999.99` max = `9999999999999999999999999.99` ) into table table_of_expected.
+
+    insert cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( integer1 ) ) into table table_of_descriptions.
+    insert value #( min = `0` max = `255` ) into table table_of_expected.
+
+    loop at table_of_descriptions assigning field-symbol(<description>).
+      data(table_index) = sy-tabix.
+      cut->get_extrema(
+        exporting
+          element_description = <description>
+        importing
+          max                 = data(max)
+          min                 = data(min)
+      ).
+      cl_abap_unit_assert=>assert_equals( exp = table_of_expected[ table_index ]-min act = min ).
+      cl_abap_unit_assert=>assert_equals( exp = table_of_expected[ table_index ]-max act = max ).
+    endloop.
+  endmethod.
+
+  method calculate_max_length.
+    data c_length_30 type c length 30.
+    data(max_length) = cut->get_max_length(
+        element_description = cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_30 ) )
+    ).
+    cl_abap_unit_assert=>assert_equals( exp = 30 act = max_length ).
+
+    data c_length_60 type c length 60.
+    max_length = cut->get_max_length(
+        element_description = cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_60 ) )
+    ).
+    cl_abap_unit_assert=>assert_equals( exp = 60 act = max_length ).
+
+    data n_length_10 type n length 10.
+    max_length = cut->get_max_length(
+        element_description = cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( n_length_10 ) )
+    ).
+    cl_abap_unit_assert=>assert_equals( exp = 10 act = max_length ).
+  endmethod.
 
 endclass.
