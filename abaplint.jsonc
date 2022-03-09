@@ -142,7 +142,7 @@
     "try_without_catch": true,
     "type_form_parameters": true,
     "types_naming": false,
-    "uncaught_exception": true,
+    "uncaught_exception": false,
     "unknown_types": true,
     "unreachable_code": true,
     "unsecure_fae": true,
