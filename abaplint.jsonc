@@ -147,8 +147,12 @@
     "unreachable_code": true,
     "unsecure_fae": true,
     "unused_methods": true,
-    "unused_types": true,
-    "unused_variables": true,
+    "unused_types": {
+      "exclude": ["zcl_aff_test_types"]
+    },
+    "unused_variables": {
+      "exclude": ["zcl_aff_test_types"]
+    },
     "use_bool_expression": true,
     "use_class_based_exceptions": true,
     "use_line_exists": true,
