@@ -1,519 +1,519 @@
-CLASS zcl_aff_writer DEFINITION
-  PUBLIC
-  ABSTRACT
-  CREATE PUBLIC .
+class zcl_aff_writer definition
+  public
+  abstract
+  create public .
 
-  PUBLIC SECTION.
-    INTERFACES zif_aff_writer
-      FINAL METHODS open_node close_node write_element get_output.
+  public section.
+    interfaces zif_aff_writer
+      final methods open_node close_node write_element get_output.
 
-    METHODS constructor.
+    methods constructor.
 
-  PROTECTED SECTION.
-    TYPES:
-      BEGIN OF ty_stack_entry,
-        operation TYPE zif_aff_writer=>enum_operation,
-        name      TYPE string,
-      END OF ty_stack_entry.
+  protected section.
+    types:
+      begin of ty_stack_entry,
+        operation type zif_aff_writer=>enum_operation,
+        name      type string,
+      end of ty_stack_entry.
 
-    TYPES:
-      BEGIN OF ty_structure_stack,
-        name          TYPE string,
-        absolute_name TYPE abap_abstypename,
-      END OF ty_structure_stack,
-      tt_structure_stack TYPE STANDARD TABLE OF ty_structure_stack.
+    types:
+      begin of ty_structure_stack,
+        name          type string,
+        absolute_name type abap_abstypename,
+      end of ty_structure_stack,
+      tt_structure_stack type standard table of ty_structure_stack.
 
-    DATA:
-      output                     TYPE rswsourcet,
-      formatting_option          TYPE zif_aff_writer=>enum_formatting_option,
-      name_mappings              TYPE zif_aff_writer=>ty_name_mappings,
-      abap_value_mappings        TYPE zif_aff_writer=>ty_abap_value_mappings,
-      content                    TYPE rswsourcet,
-      stack_of_structure         TYPE tt_structure_stack,
-      stack                      TYPE STANDARD TABLE OF ty_stack_entry,
-      indent_level               TYPE i VALUE 0,
-      c_indent_number_characters TYPE i VALUE 2,
-      log                        TYPE REF TO if_aff_log,
-      abap_doc_parser            TYPE REF TO zcl_aff_abap_doc_parser,
-      ignore_til_indent_level    TYPE i,
-      abap_doc                   TYPE zcl_aff_abap_doc_parser=>abap_doc,
-      fullname_of_type           TYPE string.
+    data:
+      output                     type rswsourcet,
+      formatting_option          type zif_aff_writer=>enum_formatting_option,
+      name_mappings              type zif_aff_writer=>ty_name_mappings,
+      abap_value_mappings        type zif_aff_writer=>ty_abap_value_mappings,
+      content                    type rswsourcet,
+      stack_of_structure         type tt_structure_stack,
+      stack                      type standard table of ty_stack_entry,
+      indent_level               type i value 0,
+      c_indent_number_characters type i value 2,
+      log                        type ref to if_aff_log,
+      abap_doc_parser            type ref to zcl_aff_abap_doc_parser,
+      ignore_til_indent_level    type i,
+      abap_doc                   type zcl_aff_abap_doc_parser=>abap_doc,
+      fullname_of_type           type string.
 
-    METHODS: get_value_mapping_for_element
-      IMPORTING abap_element  TYPE string
-      RETURNING VALUE(result) TYPE zif_aff_writer=>ty_abap_value_mapping,
+    methods: get_value_mapping_for_element
+      importing abap_element  type string
+      returning value(result) type zif_aff_writer=>ty_abap_value_mapping,
       map_and_format_name
-        IMPORTING name          TYPE string
-        RETURNING VALUE(result) TYPE string,
+        importing name          type string
+        returning value(result) type string,
       get_json_type_from_description
-        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING VALUE(result)       TYPE zif_aff_writer=>enum_type_info
-        RAISING   cx_aff_root,
+        importing element_description type ref to cl_abap_elemdescr
+        returning value(result)       type zif_aff_writer=>enum_type_info
+        raising   cx_aff_root,
 
-      write_open_tag FINAL
-        IMPORTING
-          line TYPE string,
-      write_tag_with_variable_indent FINAL
-        IMPORTING
-          line         TYPE string
-          indent_level TYPE i,
-      write_closing_tag FINAL
-        IMPORTING
-          line TYPE string,
-      add_to_stack FINAL
-        IMPORTING
-          entry TYPE ty_stack_entry,
-      last_operation FINAL
-        RETURNING VALUE(result) TYPE zif_aff_writer=>enum_operation,
-      append_to_previous_line FINAL
-        IMPORTING
-          string TYPE string,
+      write_open_tag final
+        importing
+          line type string,
+      write_tag_with_variable_indent final
+        importing
+          line         type string
+          indent_level type i,
+      write_closing_tag final
+        importing
+          line type string,
+      add_to_stack final
+        importing
+          entry type ty_stack_entry,
+      last_operation final
+        returning value(result) type zif_aff_writer=>enum_operation,
+      append_to_previous_line final
+        importing
+          string type string,
       append_before_output,
       append_after_output,
 
-      write_tag ABSTRACT
-        IMPORTING
-          line TYPE string,
+      write_tag abstract
+        importing
+          line type string,
 
-      write_element ABSTRACT
-        IMPORTING
-                  element_name        TYPE string
-                  element_description TYPE REF TO cl_abap_elemdescr
-        RAISING   cx_aff_root,
+      write_element abstract
+        importing
+                  element_name        type string
+                  element_description type ref to cl_abap_elemdescr
+        raising   cx_aff_root,
 
-      open_structure ABSTRACT
-        IMPORTING
-                  structure_name        TYPE string
-                  structure_description TYPE REF TO cl_abap_typedescr
-        RAISING   cx_aff_root,
+      open_structure abstract
+        importing
+                  structure_name        type string
+                  structure_description type ref to cl_abap_typedescr
+        raising   cx_aff_root,
 
-      close_structure ABSTRACT
-        IMPORTING
-                  structure_name        TYPE string
-                  structure_description TYPE REF TO cl_abap_typedescr
-        RAISING   cx_aff_root,
+      close_structure abstract
+        importing
+                  structure_name        type string
+                  structure_description type ref to cl_abap_typedescr
+        raising   cx_aff_root,
 
-      open_table ABSTRACT
-        IMPORTING
-                  table_name        TYPE string
-                  table_description TYPE REF TO cl_abap_typedescr
-        RAISING   cx_aff_root,
+      open_table abstract
+        importing
+                  table_name        type string
+                  table_description type ref to cl_abap_typedescr
+        raising   cx_aff_root,
 
-      close_table ABSTRACT
-        IMPORTING
-                  table_name        TYPE string
-                  table_description TYPE REF TO cl_abap_typedescr
-        RAISING   cx_aff_root,
+      close_table abstract
+        importing
+                  table_name        type string
+                  table_description type ref to cl_abap_typedescr
+        raising   cx_aff_root,
 
       apply_formatting
-        IMPORTING name          TYPE string
-        RETURNING VALUE(result) TYPE string,
+        importing name          type string
+        returning value(result) type string,
 
       call_reader_and_decode
-        IMPORTING
-          name_of_source       TYPE string
-          element_name         TYPE string
-        RETURNING
-          VALUE(read_abap_doc) TYPE zcl_aff_abap_doc_parser=>abap_doc,
+        importing
+          name_of_source       type string
+          element_name         type string
+        returning
+          value(read_abap_doc) type zcl_aff_abap_doc_parser=>abap_doc,
 
       delete_first_of_struc_stack,
 
       get_all_path_information
-        IMPORTING
-          name                    TYPE string
-        EXPORTING
-          VALUE(source_type)      TYPE string
-          VALUE(source)           TYPE string
-          VALUE(fullname_of_type) TYPE string,
+        importing
+          name                    type string
+        exporting
+          value(source_type)      type string
+          value(source)           type string
+          value(fullname_of_type) type string,
 
       get_structure_of_enum_values
-        IMPORTING
-          link_to_values             TYPE string
-          fullname_of_type           TYPE string
-        EXPORTING
-          VALUE(structure_of_values) TYPE REF TO cl_abap_structdescr
-          VALUE(name_of_source)      TYPE string
-          VALUE(name_of_constant)    TYPE string,
+        importing
+          link_to_values             type string
+          fullname_of_type           type string
+        exporting
+          value(structure_of_values) type ref to cl_abap_structdescr
+          value(name_of_source)      type string
+          value(name_of_constant)    type string,
 
 
       get_abap_doc_for_absolute_name
-        IMPORTING
-          absolute_name   TYPE abap_abstypename
-        RETURNING
-          VALUE(abap_doc) TYPE zcl_aff_abap_doc_parser=>abap_doc,
+        importing
+          absolute_name   type abap_abstypename
+        returning
+          value(abap_doc) type zcl_aff_abap_doc_parser=>abap_doc,
 
       compare_abap_doc
-        IMPORTING
-          abap_doc_additional TYPE zcl_aff_abap_doc_parser=>abap_doc
-        CHANGING
-          abap_doc_base       TYPE zcl_aff_abap_doc_parser=>abap_doc,
+        importing
+          abap_doc_additional type zcl_aff_abap_doc_parser=>abap_doc
+        changing
+          abap_doc_base       type zcl_aff_abap_doc_parser=>abap_doc,
 
       get_splitted_absolute_name
-        IMPORTING
-          absolute_name TYPE abap_abstypename
-        RETURNING
-          VALUE(result) TYPE rswsourcet,
+        importing
+          absolute_name type abap_abstypename
+        returning
+          value(result) type rswsourcet,
 
       get_default_from_link
-        IMPORTING
-          link                 TYPE string
-          fullname_of_type     TYPE string
-          element_type         TYPE abap_typekind
-        RETURNING
-          VALUE(default_value) TYPE string,
+        importing
+          link                 type string
+          fullname_of_type     type string
+          element_type         type abap_typekind
+        returning
+          value(default_value) type string,
 
       remove_leading_trailing_spaces
-        CHANGING
-          string_to_work_on TYPE string,
+        changing
+          string_to_work_on type string,
 
       is_callback_class_valid
-        IMPORTING
-          class_name      TYPE string
-          component_name  TYPE string
-        RETURNING
-          VALUE(is_valid) TYPE abap_boolean,
+        importing
+          class_name      type string
+          component_name  type string
+        returning
+          value(is_valid) type abap_boolean,
 
       is_default_value_valid
-        IMPORTING
-                  element_description TYPE REF TO cl_abap_elemdescr
-                  default_value       TYPE string
-                  fullname_of_type    TYPE string
-        RETURNING VALUE(is_valid)     TYPE abap_boolean
-        RAISING
+        importing
+                  element_description type ref to cl_abap_elemdescr
+                  default_value       type string
+                  fullname_of_type    type string
+        returning value(is_valid)     type abap_boolean
+        raising
                   cx_aff_root,
 
       is_sy_langu
-        IMPORTING
-          element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING
-          VALUE(result)       TYPE abap_bool,
+        importing
+          element_description type ref to cl_abap_elemdescr
+        returning
+          value(result)       type abap_bool,
 
       clear_type_specifics,
 
       check_redundant_annotations.
 
-  PRIVATE SECTION.
-    CONSTANTS:
-      BEGIN OF c_abap_types,
-        boolean   TYPE string VALUE `ABAP_BOOLEAN;ABAP_BOOL;BOOLEAN;BOOLE_D;XFELD;XSDBOOLEAN;FLAG`,
-        timestamp TYPE string VALUE `TIMESTAMP;TIMESTAMPL`,
-      END OF c_abap_types.
+  private section.
+    constants:
+      begin of c_abap_types,
+        boolean   type string value `ABAP_BOOLEAN;ABAP_BOOL;BOOLEAN;BOOLE_D;XFELD;XSDBOOLEAN;FLAG`,
+        timestamp type string value `TIMESTAMP;TIMESTAMPL`,
+      end of c_abap_types.
 
 
-    METHODS:
+    methods:
       get_mapped_name
-        IMPORTING name          TYPE string
-        RETURNING VALUE(result) TYPE string,
+        importing name          type string
+        returning value(result) type string,
 
       is_type_timestamp
-        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING VALUE(result)       TYPE abap_boolean,
+        importing element_description type ref to cl_abap_elemdescr
+        returning value(result)       type abap_boolean,
 
       is_type_boolean
-        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING VALUE(result)       TYPE abap_boolean,
+        importing element_description type ref to cl_abap_elemdescr
+        returning value(result)       type abap_boolean,
 
       get_constant_as_struc
-        IMPORTING
-          name_of_source           TYPE string
-          name_of_constant         TYPE string
-          fullname_of_type         TYPE string
-        RETURNING
-          VALUE(constant_as_struc) TYPE REF TO cl_abap_structdescr,
+        importing
+          name_of_source           type string
+          name_of_constant         type string
+          fullname_of_type         type string
+        returning
+          value(constant_as_struc) type ref to cl_abap_structdescr,
 
       get_infos_of_values_link
-        IMPORTING
-          values_link             TYPE string
-        EXPORTING
-          VALUE(name_of_source)   TYPE string
-          VALUE(name_of_constant) TYPE string,
+        importing
+          values_link             type string
+        exporting
+          value(name_of_source)   type string
+          value(name_of_constant) type string,
 
       validate_default_link
-        IMPORTING
-          splitted_link    TYPE rswsourcet
-          fullname_of_type TYPE string
-          element_type     TYPE abap_typekind
-        RETURNING
-          VALUE(is_valid)  TYPE abap_boolean.
+        importing
+          splitted_link    type rswsourcet
+          fullname_of_type type string
+          element_type     type abap_typekind
+        returning
+          value(is_valid)  type abap_boolean.
 
 
 
-ENDCLASS.
+endclass.
 
-CLASS zcl_aff_writer IMPLEMENTATION.
+class zcl_aff_writer implementation.
 
-  METHOD constructor.
+  method constructor.
     log = cl_aff_factory=>create_log( ).
-    abap_doc_parser = NEW zcl_aff_abap_doc_parser( ).
-  ENDMETHOD.
+    abap_doc_parser = new zcl_aff_abap_doc_parser( ).
+  endmethod.
 
 
-  METHOD zif_aff_writer~set_abap_value_mappings.
+  method zif_aff_writer~set_abap_value_mappings.
     me->abap_value_mappings = abap_value_mappings.
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD zif_aff_writer~set_name_mappings.
+  method zif_aff_writer~set_name_mappings.
     me->name_mappings = name_mappings.
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD zif_aff_writer~set_formatting_option.
+  method zif_aff_writer~set_formatting_option.
     me->formatting_option = formatting_option.
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD get_value_mapping_for_element.
-    DATA(abap_element_upper) = to_upper( abap_element ).
-    DATA(abap_value_mappings_upper) = VALUE zif_aff_writer=>ty_abap_value_mappings(
-      FOR abap_value_mapping IN me->abap_value_mappings (
+  method get_value_mapping_for_element.
+    data(abap_element_upper) = to_upper( abap_element ).
+    data(abap_value_mappings_upper) = value zif_aff_writer=>ty_abap_value_mappings(
+      for abap_value_mapping in me->abap_value_mappings (
         abap_element   = to_upper( abap_value_mapping-abap_element )
         target_type    = abap_value_mapping-target_type
         value_mappings = abap_value_mapping-value_mappings
       )
     ).
-    result = VALUE #( abap_value_mappings_upper[ abap_element = abap_element_upper ] OPTIONAL ) ##WARN_OK.
-  ENDMETHOD.
+    result = value #( abap_value_mappings_upper[ abap_element = abap_element_upper ] optional ) ##WARN_OK.
+  endmethod.
 
 
-  METHOD map_and_format_name.
-    DATA(mapped_name) = me->get_mapped_name( name ).
-    IF mapped_name IS NOT INITIAL.
+  method map_and_format_name.
+    data(mapped_name) = me->get_mapped_name( name ).
+    if mapped_name is not initial.
       result = mapped_name.
-    ELSE.
+    else.
       result = me->apply_formatting( name ).
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
 
-  METHOD get_mapped_name.
-    DATA(name_upper) = to_upper( name ).
-    DATA(name_mappings_upper) = VALUE zif_aff_writer=>ty_name_mappings(
-      FOR name_mapping IN me->name_mappings (
+  method get_mapped_name.
+    data(name_upper) = to_upper( name ).
+    data(name_mappings_upper) = value zif_aff_writer=>ty_name_mappings(
+      for name_mapping in me->name_mappings (
         abap = to_upper( name_mapping-abap )
         json = name_mapping-json
       )
     ).
-    result = VALUE #( name_mappings_upper[ abap = name_upper ]-json OPTIONAL ) ##WARN_OK.
-  ENDMETHOD.
+    result = value #( name_mappings_upper[ abap = name_upper ]-json optional ) ##WARN_OK.
+  endmethod.
 
 
-  METHOD apply_formatting.
-    CASE me->formatting_option.
-      WHEN zif_aff_writer=>formatting_option-camel_case.
-        DATA(lower_name) = to_lower( name ).
+  method apply_formatting.
+    case me->formatting_option.
+      when zif_aff_writer=>formatting_option-camel_case.
+        data(lower_name) = to_lower( name ).
         result = to_mixed( lower_name ).
-      WHEN OTHERS.
+      when others.
         result = name.
-    ENDCASE.
-  ENDMETHOD.
+    endcase.
+  endmethod.
 
 
-  METHOD get_json_type_from_description.
-    CASE element_description->type_kind.
-      WHEN cl_abap_typedescr=>typekind_string OR cl_abap_typedescr=>typekind_csequence OR
-           cl_abap_typedescr=>typekind_clike OR cl_abap_typedescr=>typekind_char OR
-           cl_abap_typedescr=>typekind_w OR cl_abap_typedescr=>typekind_xstring OR
-           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum .
-        result = COND #( WHEN is_type_boolean( element_description ) THEN zif_aff_writer=>type_info-boolean
-                         ELSE zif_aff_writer=>type_info-string ).
-      WHEN cl_abap_typedescr=>typekind_float OR cl_abap_typedescr=>typekind_int OR
-           cl_abap_typedescr=>typekind_int1 OR cl_abap_typedescr=>typekind_int2 OR
-           cl_abap_typedescr=>typekind_int8 OR cl_abap_typedescr=>typekind_decfloat OR
-           cl_abap_typedescr=>typekind_decfloat16 OR cl_abap_typedescr=>typekind_decfloat34  OR cl_abap_typedescr=>typekind_numeric.
+  method get_json_type_from_description.
+    case element_description->type_kind.
+      when cl_abap_typedescr=>typekind_string or cl_abap_typedescr=>typekind_csequence or
+           cl_abap_typedescr=>typekind_clike or cl_abap_typedescr=>typekind_char or
+           cl_abap_typedescr=>typekind_w or cl_abap_typedescr=>typekind_xstring or
+           cl_abap_typedescr=>typekind_hex or cl_abap_typedescr=>typekind_num or cl_abap_typedescr=>typekind_enum .
+        result = cond #( when is_type_boolean( element_description ) then zif_aff_writer=>type_info-boolean
+                         else zif_aff_writer=>type_info-string ).
+      when cl_abap_typedescr=>typekind_float or cl_abap_typedescr=>typekind_int or
+           cl_abap_typedescr=>typekind_int1 or cl_abap_typedescr=>typekind_int2 or
+           cl_abap_typedescr=>typekind_int8 or cl_abap_typedescr=>typekind_decfloat or
+           cl_abap_typedescr=>typekind_decfloat16 or cl_abap_typedescr=>typekind_decfloat34  or cl_abap_typedescr=>typekind_numeric.
         result = zif_aff_writer=>type_info-numeric.
-      WHEN cl_abap_typedescr=>typekind_packed.
-        result = COND #( WHEN is_type_timestamp( element_description ) THEN zif_aff_writer=>type_info-date_time
-                         ELSE zif_aff_writer=>type_info-numeric ).
-      WHEN cl_abap_typedescr=>typekind_date OR cl_abap_typedescr=>typekind_time OR
+      when cl_abap_typedescr=>typekind_packed.
+        result = cond #( when is_type_timestamp( element_description ) then zif_aff_writer=>type_info-date_time
+                         else zif_aff_writer=>type_info-numeric ).
+      when cl_abap_typedescr=>typekind_date or cl_abap_typedescr=>typekind_time or
            cl_abap_typedescr=>typekind_utclong.
         result = zif_aff_writer=>type_info-date_time.
-      WHEN OTHERS.
-        RAISE EXCEPTION TYPE cx_aff_root MESSAGE e100(saff_core) WITH element_description->type_kind.
-    ENDCASE.
-  ENDMETHOD.
+      when others.
+        raise exception type cx_aff_root message e100(saff_core) with element_description->type_kind.
+    endcase.
+  endmethod.
 
 
-  METHOD is_type_boolean.
-    DATA(type_name) = element_description->get_relative_name( ).
-    result = xsdbool( element_description->output_length = 1 AND ( type_name IS NOT INITIAL AND c_abap_types-boolean CS type_name ) ).
-  ENDMETHOD.
+  method is_type_boolean.
+    data(type_name) = element_description->get_relative_name( ).
+    result = xsdbool( element_description->output_length = 1 and ( type_name is not initial and c_abap_types-boolean cs type_name ) ).
+  endmethod.
 
 
-  METHOD is_type_timestamp.
-    DATA(type_name) = element_description->get_relative_name( ).
-    result = xsdbool( type_name IS NOT INITIAL AND c_abap_types-timestamp CS type_name ).
-  ENDMETHOD.
+  method is_type_timestamp.
+    data(type_name) = element_description->get_relative_name( ).
+    result = xsdbool( type_name is not initial and c_abap_types-timestamp cs type_name ).
+  endmethod.
 
 
-  METHOD zif_aff_writer~write_element.
+  method zif_aff_writer~write_element.
     write_element( element_name = element_name element_description = element_description ).
-    add_to_stack( VALUE #( operation = zif_aff_writer=>operation-write_element name = element_name ) ).
-  ENDMETHOD.
+    add_to_stack( value #( operation = zif_aff_writer=>operation-write_element name = element_name ) ).
+  endmethod.
 
 
-  METHOD zif_aff_writer~open_node.
-    CASE node_description->kind.
-      WHEN cl_abap_typedescr=>kind_struct.
+  method zif_aff_writer~open_node.
+    case node_description->kind.
+      when cl_abap_typedescr=>kind_struct.
         open_structure( structure_name = node_name  structure_description = node_description ).
-        add_to_stack( VALUE #( operation = zif_aff_writer=>operation-open_structure name = node_name ) ).
+        add_to_stack( value #( operation = zif_aff_writer=>operation-open_structure name = node_name ) ).
 
-      WHEN cl_abap_typedescr=>kind_table.
+      when cl_abap_typedescr=>kind_table.
         open_table( table_name = node_name  table_description = node_description ).
-        add_to_stack( VALUE #( operation = zif_aff_writer=>operation-open_table name = node_name ) ).
-      WHEN OTHERS.
-        RAISE EXCEPTION TYPE cx_aff_root MESSAGE e101(saff_core) WITH node_description->kind.
-    ENDCASE.
-  ENDMETHOD.
+        add_to_stack( value #( operation = zif_aff_writer=>operation-open_table name = node_name ) ).
+      when others.
+        raise exception type cx_aff_root message e101(saff_core) with node_description->kind.
+    endcase.
+  endmethod.
 
 
-  METHOD zif_aff_writer~close_node.
-    CASE node_description->kind.
-      WHEN cl_abap_typedescr=>kind_struct.
+  method zif_aff_writer~close_node.
+    case node_description->kind.
+      when cl_abap_typedescr=>kind_struct.
         close_structure( structure_name = node_name  structure_description = node_description ).
-        add_to_stack( VALUE #( operation = zif_aff_writer=>operation-close_structure name = node_name ) ).
+        add_to_stack( value #( operation = zif_aff_writer=>operation-close_structure name = node_name ) ).
 
-      WHEN cl_abap_typedescr=>kind_table.
+      when cl_abap_typedescr=>kind_table.
         close_table( table_name = node_name  table_description = node_description ).
-        add_to_stack( VALUE #( operation = zif_aff_writer=>operation-close_table name = node_name ) ).
+        add_to_stack( value #( operation = zif_aff_writer=>operation-close_table name = node_name ) ).
 
-      WHEN OTHERS.
-        RAISE EXCEPTION TYPE cx_aff_root MESSAGE e101(saff_core) WITH node_description->kind.
-    ENDCASE.
-  ENDMETHOD.
+      when others.
+        raise exception type cx_aff_root message e101(saff_core) with node_description->kind.
+    endcase.
+  endmethod.
 
 
-  METHOD zif_aff_writer~get_output.
+  method zif_aff_writer~get_output.
     append_before_output( ).
-    APPEND LINES OF content TO output.
+    append lines of content to output.
     append_after_output( ).
     result = output.
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD write_tag_with_variable_indent.
-    APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
-  ENDMETHOD.
+  method write_tag_with_variable_indent.
+    append |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| to content.
+  endmethod.
 
 
-  METHOD write_open_tag.
+  method write_open_tag.
     write_tag( line ).
     indent_level += 1.
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD write_closing_tag.
+  method write_closing_tag.
     indent_level -= 1.
     write_tag( line ).
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD add_to_stack.
-    INSERT entry INTO stack INDEX 1.
-  ENDMETHOD.
+  method add_to_stack.
+    insert entry into stack index 1.
+  endmethod.
 
 
-  METHOD last_operation.
-    result = VALUE #( stack[ 1 ]-operation OPTIONAL ).
-  ENDMETHOD.
+  method last_operation.
+    result = value #( stack[ 1 ]-operation optional ).
+  endmethod.
 
 
-  METHOD append_to_previous_line.
-    DATA(index) = lines( me->content ).
-    IF index > 0.
+  method append_to_previous_line.
+    data(index) = lines( me->content ).
+    if index > 0.
       me->content[ index ] = me->content[ index ] && string.
-    ELSE.
-      INSERT string INTO TABLE me->content.
-    ENDIF.
-  ENDMETHOD.
+    else.
+      insert string into table me->content.
+    endif.
+  endmethod.
 
 
-  METHOD append_after_output ##NEEDED.
+  method append_after_output ##NEEDED.
 
-  ENDMETHOD.
-
-
-  METHOD append_before_output ##NEEDED.
-
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD call_reader_and_decode.
-    DATA(reader) = NEW cl_oo_abap_doc_reader( ).
-    TRY.
+  method append_before_output ##NEEDED.
+
+  endmethod.
+
+
+  method call_reader_and_decode.
+    data(reader) = new cl_oo_abap_doc_reader( ).
+    try.
         reader->get_abap_doc_for_element(
-          EXPORTING
-            clif_name    = CONV #( name_of_source )
+          exporting
+            clif_name    = conv #( name_of_source )
             element_name = element_name
-          RECEIVING
-            result       = DATA(result)
+          receiving
+            result       = data(result)
         ).
         read_abap_doc = abap_doc_parser->parse(
-          EXPORTING
+          exporting
             component_name = element_name
             to_parse       = result
-          CHANGING
+          changing
             log            = log
         ).
-      CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
-    ENDTRY.
-  ENDMETHOD.
+      catch cx_root ##NO_HANDLER ##CATCH_ALL.
+    endtry.
+  endmethod.
 
 
-  METHOD remove_leading_trailing_spaces.
-    SHIFT string_to_work_on RIGHT DELETING TRAILING space.
-    SHIFT string_to_work_on LEFT DELETING LEADING space.
-  ENDMETHOD.
+  method remove_leading_trailing_spaces.
+    shift string_to_work_on right deleting trailing space.
+    shift string_to_work_on left deleting leading space.
+  endmethod.
 
 
-  METHOD delete_first_of_struc_stack.
-    IF stack_of_structure IS NOT INITIAL.
-      DELETE stack_of_structure INDEX 1.
-    ENDIF.
-  ENDMETHOD.
+  method delete_first_of_struc_stack.
+    if stack_of_structure is not initial.
+      delete stack_of_structure index 1.
+    endif.
+  endmethod.
 
 
-  METHOD get_all_path_information.
-    DATA previous_absolute_name TYPE abap_abstypename.
-    DATA splitted_prev_name TYPE  rswsourcet.
-    DATA(index) = 0.
-    WHILE lines( splitted_prev_name ) <= 2.
-      IF index >= lines( stack_of_structure ).
-        RETURN.
-      ENDIF.
+  method get_all_path_information.
+    data previous_absolute_name type abap_abstypename.
+    data splitted_prev_name type  rswsourcet.
+    data(index) = 0.
+    while lines( splitted_prev_name ) <= 2.
+      if index >= lines( stack_of_structure ).
+        return.
+      endif.
       index = index + 1.
       previous_absolute_name = stack_of_structure[ index ]-absolute_name.
       splitted_prev_name = get_splitted_absolute_name( previous_absolute_name ).
-    ENDWHILE.
-    DATA(name_of_prev) = splitted_prev_name[ lines( splitted_prev_name ) ].
+    endwhile.
+    data(name_of_prev) = splitted_prev_name[ lines( splitted_prev_name ) ].
     source_type = splitted_prev_name[ 1 ].
     source = splitted_prev_name[ 2 ].
     fullname_of_type = name_of_prev && '-'.
     index = index - 1.
-    WHILE index > 0.
+    while index > 0.
       fullname_of_type = fullname_of_type  && stack_of_structure[ index ]-name && '-'.
       index = index - 1.
-    ENDWHILE.
+    endwhile.
     fullname_of_type = fullname_of_type && name.
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD get_splitted_absolute_name.
-    DATA(place_of_type) = absolute_name.
-    SPLIT place_of_type AT '\' INTO TABLE DATA(splitted_in_componets).
-    LOOP AT splitted_in_componets ASSIGNING FIELD-SYMBOL(<component>).
-      IF <component> IS NOT INITIAL.
-        SPLIT <component> AT '=' INTO TABLE DATA(splitted_in_details).
-        APPEND LINES OF splitted_in_details TO result.
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
+  method get_splitted_absolute_name.
+    data(place_of_type) = absolute_name.
+    split place_of_type at '\' into table data(splitted_in_componets).
+    loop at splitted_in_componets assigning field-symbol(<component>).
+      if <component> is not initial.
+        split <component> at '=' into table data(splitted_in_details).
+        append lines of splitted_in_details to result.
+      endif.
+    endloop.
+  endmethod.
 
-  METHOD get_structure_of_enum_values.
+  method get_structure_of_enum_values.
     get_infos_of_values_link(
-      EXPORTING
+      exporting
         values_link      = link_to_values
-      IMPORTING
+      importing
         name_of_source   = name_of_source
         name_of_constant = name_of_constant
     ).
@@ -523,275 +523,275 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       name_of_constant = name_of_constant
       fullname_of_type = fullname_of_type
     ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD get_constant_as_struc.
-    DATA clstype TYPE  seoclstype.
-    CALL FUNCTION 'SEO_CLIF_EXISTENCE_CHECK'
-      EXPORTING
-        cifkey        = CONV seoclskey( name_of_source )
-      IMPORTING
+  method get_constant_as_struc.
+    data clstype type  seoclstype.
+    call function 'SEO_CLIF_EXISTENCE_CHECK'
+      exporting
+        cifkey        = conv seoclskey( name_of_source )
+      importing
         clstype       = clstype
-      EXCEPTIONS
+      exceptions
         not_specified = 1
         not_existing  = 2
-        OTHERS        = 3.
-    IF sy-subrc <> 0.
+        others        = 3.
+    if sy-subrc <> 0.
 *    class or interface doesn't exist
-      MESSAGE w103(saff_core) WITH name_of_source fullname_of_type INTO DATA(message) ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-    ELSE.
-      DATA(constant_descr) = cl_abap_typedescr=>describe_by_name( name_of_source ).
+      message w103(saff_core) with name_of_source fullname_of_type into data(message) ##NEEDED.
+      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+    else.
+      data(constant_descr) = cl_abap_typedescr=>describe_by_name( name_of_source ).
 
-      IF clstype = seoc_clstype_interface.
-        DATA(constant_descr_intf) = CAST cl_abap_intfdescr( constant_descr ).
+      if clstype = seoc_clstype_interface.
+        data(constant_descr_intf) = cast cl_abap_intfdescr( constant_descr ).
         constant_descr_intf->get_attribute_type(
-          EXPORTING
+          exporting
             p_name              = name_of_constant
-          RECEIVING
-            p_descr_ref         = DATA(constant)
-          EXCEPTIONS
+          receiving
+            p_descr_ref         = data(constant)
+          exceptions
             attribute_not_found = 1
-            OTHERS              = 2
+            others              = 2
         ).
-        IF sy-subrc <> 0.
+        if sy-subrc <> 0.
 *      constant in interface does not exist
-          MESSAGE w104(saff_core) WITH name_of_source && '=>' && name_of_constant fullname_of_type INTO message ##NEEDED.
-          log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-        ENDIF.
-      ELSEIF clstype = seoc_clstype_class.
-        DATA(constant_descr_clas) = CAST cl_abap_classdescr( constant_descr ).
+          message w104(saff_core) with name_of_source && '=>' && name_of_constant fullname_of_type into message ##NEEDED.
+          log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+        endif.
+      elseif clstype = seoc_clstype_class.
+        data(constant_descr_clas) = cast cl_abap_classdescr( constant_descr ).
         constant_descr_clas->get_attribute_type(
-          EXPORTING
+          exporting
             p_name              = name_of_constant
-          RECEIVING
+          receiving
             p_descr_ref         = constant
-          EXCEPTIONS
+          exceptions
             attribute_not_found = 1
-            OTHERS              = 2
+            others              = 2
         ).
-        IF sy-subrc <> 0.
+        if sy-subrc <> 0.
 *      constant in class does not exits
-          MESSAGE w104(saff_core) WITH name_of_source && '=>' && name_of_constant fullname_of_type INTO message ##NEEDED.
-          log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-        ENDIF.
-      ENDIF.
-      constant_as_struc = CAST cl_abap_structdescr( constant ).
-    ENDIF.
-  ENDMETHOD.
+          message w104(saff_core) with name_of_source && '=>' && name_of_constant fullname_of_type into message ##NEEDED.
+          log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+        endif.
+      endif.
+      constant_as_struc = cast cl_abap_structdescr( constant ).
+    endif.
+  endmethod.
 
 
-  METHOD get_infos_of_values_link.
-    DATA(link) = values_link.
-    REPLACE ALL OCCURRENCES OF PCRE `[\s]` IN link WITH ``.
-    REPLACE ALL OCCURRENCES OF `data:` IN link WITH ``.
-    SPLIT link AT '.' INTO TABLE DATA(split_at_point).
-    IF lines( split_at_point ) = 2.
+  method get_infos_of_values_link.
+    data(link) = values_link.
+    replace all occurrences of pcre `[\s]` in link with ``.
+    replace all occurrences of `data:` in link with ``.
+    split link at '.' into table data(split_at_point).
+    if lines( split_at_point ) = 2.
       name_of_source = to_upper( split_at_point[ 1 ] ).
       name_of_constant = to_upper( split_at_point[ 2 ] ).
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
 
-  METHOD get_abap_doc_for_absolute_name.
-    DATA(splitted_prev_name) = get_splitted_absolute_name( absolute_name ).
-    IF lines( splitted_prev_name ) >= 4.
-      DATA(source_type) = splitted_prev_name[ 1 ].
-      DATA(source) = splitted_prev_name[ 2 ].
-      DATA(fullname_of_type) = splitted_prev_name[ 4 ].
-      IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
+  method get_abap_doc_for_absolute_name.
+    data(splitted_prev_name) = get_splitted_absolute_name( absolute_name ).
+    if lines( splitted_prev_name ) >= 4.
+      data(source_type) = splitted_prev_name[ 1 ].
+      data(source) = splitted_prev_name[ 2 ].
+      data(fullname_of_type) = splitted_prev_name[ 4 ].
+      if source_type = 'CLASS' or source_type = 'INTERFACE'.
         abap_doc = call_reader_and_decode( name_of_source = source element_name   = fullname_of_type ).
-      ENDIF.
-    ENDIF.
-  ENDMETHOD.
+      endif.
+    endif.
+  endmethod.
 
 
-  METHOD compare_abap_doc.
-    IF abap_doc_base-enumvalues_link IS INITIAL.
+  method compare_abap_doc.
+    if abap_doc_base-enumvalues_link is initial.
       abap_doc_base-enumvalues_link = abap_doc_additional-enumvalues_link.
-    ENDIF.
-    IF abap_doc_base-title IS INITIAL AND abap_doc_base-description IS INITIAL.
+    endif.
+    if abap_doc_base-title is initial and abap_doc_base-description is initial.
       abap_doc_base-title = abap_doc_additional-title.
       abap_doc_base-description = abap_doc_additional-description.
-    ENDIF.
-    IF abap_doc_base-minimum IS INITIAL AND abap_doc_base-maximum IS INITIAL AND abap_doc_base-exclusive_maximum IS INITIAL AND abap_doc_base-exclusive_minimum IS INITIAL.
+    endif.
+    if abap_doc_base-minimum is initial and abap_doc_base-maximum is initial and abap_doc_base-exclusive_maximum is initial and abap_doc_base-exclusive_minimum is initial.
       abap_doc_base-minimum = abap_doc_additional-minimum.
       abap_doc_base-maximum = abap_doc_additional-maximum.
       abap_doc_base-exclusive_minimum = abap_doc_additional-exclusive_minimum.
       abap_doc_base-exclusive_maximum = abap_doc_additional-exclusive_maximum.
-    ENDIF.
-    IF abap_doc_base-multiple_of IS INITIAL.
+    endif.
+    if abap_doc_base-multiple_of is initial.
       abap_doc_base-multiple_of = abap_doc_additional-multiple_of.
-    ENDIF.
-    IF abap_doc_base-max_length IS INITIAL AND abap_doc_base-min_length IS INITIAL.
+    endif.
+    if abap_doc_base-max_length is initial and abap_doc_base-min_length is initial.
       abap_doc_base-min_length = abap_doc_additional-min_length.
       abap_doc_base-max_length = abap_doc_additional-max_length.
-    ENDIF.
-    IF abap_doc_base-default IS INITIAL.
+    endif.
+    if abap_doc_base-default is initial.
       abap_doc_base-default = abap_doc_additional-default.
-    ENDIF.
-    IF abap_doc_base-callback_class IS INITIAL.
+    endif.
+    if abap_doc_base-callback_class is initial.
       abap_doc_base-callback_class = abap_doc_additional-callback_class.
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
 
-  METHOD get_default_from_link.
-    DATA(link_to_work_on) = link.
-    REPLACE ALL OCCURRENCES OF PCRE `(@link|data:)` IN link_to_work_on WITH ``.
-    REPLACE ALL OCCURRENCES OF PCRE `[\s]` IN link_to_work_on WITH ``.
-    SPLIT link_to_work_on AT '.' INTO TABLE DATA(splitted).
-    IF validate_default_link( splitted_link = splitted fullname_of_type = fullname_of_type element_type = element_type ) = abap_true.
-      DATA(default_abap) = splitted[ lines( splitted ) ].
+  method get_default_from_link.
+    data(link_to_work_on) = link.
+    replace all occurrences of pcre `(@link|data:)` in link_to_work_on with ``.
+    replace all occurrences of pcre `[\s]` in link_to_work_on with ``.
+    split link_to_work_on at '.' into table data(splitted).
+    if validate_default_link( splitted_link = splitted fullname_of_type = fullname_of_type element_type = element_type ) = abap_true.
+      data(default_abap) = splitted[ lines( splitted ) ].
       default_value = apply_formatting( default_abap ).
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD zif_aff_writer~get_log.
+  method zif_aff_writer~get_log.
     log = me->log.
-  ENDMETHOD.
+  endmethod.
 
-  METHOD is_callback_class_valid.
-    DATA(name_of_callback_class) = to_upper( class_name ).
-    SELECT SINGLE @abap_true FROM seoclass WHERE clsname = @name_of_callback_class INTO @DATA(callback_class_exists).
-    IF callback_class_exists = abap_true.
-      SELECT SINGLE @abap_true FROM seocompo WHERE clsname = @name_of_callback_class AND cmpname = 'GET_SUBSCHEMA' AND cmptype = 1 INTO @DATA(get_subschema_exists).
-      SELECT SINGLE @abap_true FROM seocompo WHERE clsname = @name_of_callback_class AND cmpname = 'SERIALIZE' AND cmptype = 1 INTO @DATA(serialize_exists).
-      SELECT SINGLE @abap_true FROM seocompo WHERE clsname = @name_of_callback_class AND cmpname = 'DESERIALIZE' AND cmptype = 1 INTO @DATA(deserialize_exists).
-      is_valid = xsdbool( get_subschema_exists = abap_true AND serialize_exists = abap_true AND deserialize_exists = abap_true ).
-    ENDIF.
-    IF is_valid = abap_false.
-      MESSAGE w106(saff_core) WITH component_name INTO DATA(message) ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-    ENDIF.
-  ENDMETHOD.
+  method is_callback_class_valid.
+    data(name_of_callback_class) = to_upper( class_name ).
+    select single @abap_true from seoclass where clsname = @name_of_callback_class into @data(callback_class_exists).
+    if callback_class_exists = abap_true.
+      select single @abap_true from seocompo where clsname = @name_of_callback_class and cmpname = 'GET_SUBSCHEMA' and cmptype = 1 into @data(get_subschema_exists).
+      select single @abap_true from seocompo where clsname = @name_of_callback_class and cmpname = 'SERIALIZE' and cmptype = 1 into @data(serialize_exists).
+      select single @abap_true from seocompo where clsname = @name_of_callback_class and cmpname = 'DESERIALIZE' and cmptype = 1 into @data(deserialize_exists).
+      is_valid = xsdbool( get_subschema_exists = abap_true and serialize_exists = abap_true and deserialize_exists = abap_true ).
+    endif.
+    if is_valid = abap_false.
+      message w106(saff_core) with component_name into data(message) ##NEEDED.
+      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+    endif.
+  endmethod.
 
-  METHOD validate_default_link.
-    IF lines( splitted_link ) = 3.
-      DATA(source_name) = to_upper( splitted_link[ 1 ] ).
-      DATA(constant_name) = to_upper( splitted_link[ 2 ] ).
-      DATA(component_name) = to_upper( splitted_link[ 3 ] ).
-      DATA(constant_description) = get_constant_as_struc(
+  method validate_default_link.
+    if lines( splitted_link ) = 3.
+      data(source_name) = to_upper( splitted_link[ 1 ] ).
+      data(constant_name) = to_upper( splitted_link[ 2 ] ).
+      data(component_name) = to_upper( splitted_link[ 3 ] ).
+      data(constant_description) = get_constant_as_struc(
         name_of_source   = source_name
         name_of_constant = constant_name
         fullname_of_type = fullname_of_type
       ).
-      IF constant_description IS NOT INITIAL.
-        DATA(components) = constant_description->get_components( ).
-        DATA(row) = VALUE #( components[ name = component_name ] OPTIONAL ).
-        IF row IS NOT INITIAL.
-          IF row-type->type_kind = element_type.
+      if constant_description is not initial.
+        data(components) = constant_description->get_components( ).
+        data(row) = value #( components[ name = component_name ] optional ).
+        if row is not initial.
+          if row-type->type_kind = element_type.
             is_valid = abap_true.
-          ELSE.
-            MESSAGE w122(saff_core) WITH constant_name fullname_of_type INTO DATA(message) ##NEEDED.
-            log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-          ENDIF.
-        ELSE.
-          MESSAGE w105(saff_core) WITH component_name constant_name fullname_of_type INTO message ##NEEDED.
-          log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-        ENDIF.
-      ENDIF.
-    ENDIF.
-  ENDMETHOD.
+          else.
+            message w122(saff_core) with constant_name fullname_of_type into data(message) ##NEEDED.
+            log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+          endif.
+        else.
+          message w105(saff_core) with component_name constant_name fullname_of_type into message ##NEEDED.
+          log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+        endif.
+      endif.
+    endif.
+  endmethod.
 
 
-  METHOD is_default_value_valid.
-    DATA(default) = default_value.
-    REPLACE ALL OCCURRENCES OF `"` IN default WITH ``.
-    DATA(type) = get_json_type_from_description( element_description ).
-    DATA r_field TYPE REF TO data.
-    FIELD-SYMBOLS <field> TYPE any.
-    CREATE DATA r_field TYPE HANDLE element_description.
-    ASSIGN r_field->* TO <field>.
-    IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
+  method is_default_value_valid.
+    data(default) = default_value.
+    replace all occurrences of `"` in default with ``.
+    data(type) = get_json_type_from_description( element_description ).
+    data r_field type ref to data.
+    field-symbols <field> type any.
+    create data r_field type handle element_description.
+    assign r_field->* to <field>.
+    if element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
 *      No support for default with utclong
-      MESSAGE w117(saff_core) WITH 'UTCLONG'  fullname_of_type INTO DATA(message) ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      message w117(saff_core) with 'UTCLONG'  fullname_of_type into data(message) ##NEEDED.
+      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
       is_valid = abap_false.
-      RETURN.
-    ELSEIF type = zif_aff_writer=>type_info-boolean.
+      return.
+    elseif type = zif_aff_writer=>type_info-boolean.
       default = to_lower( default ).
-      IF default = 'abap_true' OR default = 'x' OR default = 'abap_false' OR default = ''.
+      if default = 'abap_true' or default = 'x' or default = 'abap_false' or default = ''.
         is_valid = abap_true.
-      ENDIF.
-    ELSEIF type = zif_aff_writer=>type_info-string OR type = zif_aff_writer=>type_info-date_time.
-      DATA string TYPE string.
-      TRY.
+      endif.
+    elseif type = zif_aff_writer=>type_info-string or type = zif_aff_writer=>type_info-date_time.
+      data string type string.
+      try.
           <field> = default.
           string = <field>.
-          IF element_description->type_kind = cl_abap_typedescr=>typekind_num OR element_description->type_kind = cl_abap_typedescr=>typekind_numeric.
-            SHIFT string LEFT DELETING LEADING '0'.
-          ENDIF.
-          IF element_description->type_kind = cl_abap_typedescr=>typekind_time.
+          if element_description->type_kind = cl_abap_typedescr=>typekind_num or element_description->type_kind = cl_abap_typedescr=>typekind_numeric.
+            shift string left deleting leading '0'.
+          endif.
+          if element_description->type_kind = cl_abap_typedescr=>typekind_time.
             default = default && repeat( val = '0' occ = 6 - strlen( default ) ).
-          ENDIF.
-          IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
-            REPLACE PCRE `T|t` IN default WITH ` `.
-          ENDIF.
-          remove_leading_trailing_spaces( CHANGING string_to_work_on = string ).
-          remove_leading_trailing_spaces( CHANGING string_to_work_on = default ).
-          IF string = default.
+          endif.
+          if element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
+            replace pcre `T|t` in default with ` `.
+          endif.
+          remove_leading_trailing_spaces( changing string_to_work_on = string ).
+          remove_leading_trailing_spaces( changing string_to_work_on = default ).
+          if string = default.
             is_valid = abap_true.
-          ELSE.
+          else.
             is_valid = abap_false.
-          ENDIF.
-        CATCH cx_root.
+          endif.
+        catch cx_root.
           is_valid = abap_false.
-      ENDTRY.
-    ELSEIF type = zif_aff_writer=>type_info-numeric.
-      TRY.
+      endtry.
+    elseif type = zif_aff_writer=>type_info-numeric.
+      try.
           <field> = default.
-          IF <field> - default = 0.
+          if <field> - default = 0.
             is_valid = abap_true.
-          ELSE.
+          else.
             is_valid = abap_false.
-          ENDIF.
-        CATCH cx_root.
+          endif.
+        catch cx_root.
           is_valid = abap_false.
-      ENDTRY.
-    ENDIF.
-    IF is_valid = abap_false.
-      MESSAGE w114(saff_core) WITH fullname_of_type INTO message ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-    ENDIF.
-  ENDMETHOD.
+      endtry.
+    endif.
+    if is_valid = abap_false.
+      message w114(saff_core) with fullname_of_type into message ##NEEDED.
+      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+    endif.
+  endmethod.
 
 
-  METHOD zif_aff_writer~validate.
+  method zif_aff_writer~validate.
     result = abap_true.
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD zif_aff_writer~close_include.
+  method zif_aff_writer~close_include.
     delete_first_of_struc_stack( ).
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD zif_aff_writer~open_include.
-    INSERT VALUE #( absolute_name = include_description->absolute_name ) INTO me->stack_of_structure INDEX 1.
-  ENDMETHOD.
+  method zif_aff_writer~open_include.
+    insert value #( absolute_name = include_description->absolute_name ) into me->stack_of_structure index 1.
+  endmethod.
 
 
-  METHOD is_sy_langu.
-    DATA(sy_langu_description) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( VALUE sy-langu( ) ) ).
+  method is_sy_langu.
+    data(sy_langu_description) = cast cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( value sy-langu( ) ) ).
     result = xsdbool( sy_langu_description->edit_mask = element_description->edit_mask ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD clear_type_specifics.
-    CLEAR abap_doc.
-    CLEAR fullname_of_type.
-  ENDMETHOD.
+  method clear_type_specifics.
+    clear abap_doc.
+    clear fullname_of_type.
+  endmethod.
 
-  METHOD check_redundant_annotations.
-    IF abap_doc-showalways = abap_true AND abap_doc-required = abap_true.
-      MESSAGE i112(saff_core) WITH fullname_of_type INTO DATA(message) ##NEEDED.
-      log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-    ENDIF.
+  method check_redundant_annotations.
+    if abap_doc-showalways = abap_true and abap_doc-required = abap_true.
+      message i112(saff_core) with fullname_of_type into data(message) ##NEEDED.
+      log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+    endif.
 
-    IF abap_doc-required = abap_true AND abap_doc-default IS NOT INITIAL.
-      MESSAGE w126(saff_core) WITH fullname_of_type INTO message ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
-    ENDIF.
-  ENDMETHOD.
+    if abap_doc-required = abap_true and abap_doc-default is not initial.
+      message w126(saff_core) with fullname_of_type into message ##NEEDED.
+      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+    endif.
+  endmethod.
 
-ENDCLASS.
+endclass.
