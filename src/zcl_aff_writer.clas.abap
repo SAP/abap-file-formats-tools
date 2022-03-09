@@ -517,7 +517,9 @@ class zcl_aff_writer implementation.
         name_of_source   = name_of_source
         name_of_constant = name_of_constant
     ).
-	@@ -523,275 +523,275 @@ class zcl_aff_writer implementation.
+
+    structure_of_values = get_constant_as_struc(
+      name_of_source   = name_of_source
       name_of_constant = name_of_constant
       fullname_of_type = fullname_of_type
     ).
