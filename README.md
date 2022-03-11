@@ -22,7 +22,7 @@ Pull the source code with [abapGit](https://github.com/abapGit/abapGit/) into yo
 The latest abapGit build can be downloaded [here](https://raw.githubusercontent.com/abapGit/build/main/zabapgit.abap).
 
 The development of the ABAP file formats tools takes place in the `Z` namespace.
-Coding policies are stated and verified by [abaplint](https://github.com/marketplace/abaplint), see configuration file [here](abaplint.jsonc), that run on every Pull request.
+Coding policies are stated and verified by [abaplint](https://github.com/marketplace/abaplint), see configuration file [here](abaplint.jsonc), that run on every pull request.
 
 ## How to Obtain Support
 Feel free to raise issues to ask questions or report bugs.
