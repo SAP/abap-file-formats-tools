@@ -76,7 +76,7 @@
     "inline_data_old_versions": true,
     "intf_referencing_clas": false,
     "keep_single_parameter_on_one_line": true,
-    "keyword_case": false,
+    "keyword_case": true,
     "line_break_multiple_parameters": false,
     "line_break_style": false,
     "line_length": false,
