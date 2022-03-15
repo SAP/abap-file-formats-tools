@@ -1,109 +1,109 @@
-class zcl_aff_abap_doc_parser definition
-  public
-  final
-  create public .
+CLASS zcl_aff_abap_doc_parser DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-  public section.
-    constants: begin of abap_doc_annotation,
-                 callback_class    type string value `$callbackClass`,
-                 default           type string value `$default`,
-                 values            type string value `$values`,
-                 required          type string value `$required`,
-                 show_always       type string value `$showAlways`,
-                 minimum           type string value `$minimum`,
-                 maximum           type string value `$maximum`,
-                 exclusive_minimum type string value `$exclusiveMinimum`,
-                 exclusive_maximum type string value `$exclusiveMaximum`,
-                 max_length        type string value `$maxLength`,
-                 min_length        type string value `$minLength`,
-                 multiple_of       type string value `$multipleOf`,
-               end of abap_doc_annotation.
+  PUBLIC SECTION.
+    CONSTANTS: BEGIN OF abap_doc_annotation,
+                 callback_class    TYPE string VALUE `$callbackClass`,
+                 default           TYPE string VALUE `$default`,
+                 values            TYPE string VALUE `$values`,
+                 required          TYPE string VALUE `$required`,
+                 show_always       TYPE string VALUE `$showAlways`,
+                 minimum           TYPE string VALUE `$minimum`,
+                 maximum           TYPE string VALUE `$maximum`,
+                 exclusive_minimum TYPE string VALUE `$exclusiveMinimum`,
+                 exclusive_maximum TYPE string VALUE `$exclusiveMaximum`,
+                 max_length        TYPE string VALUE `$maxLength`,
+                 min_length        TYPE string VALUE `$minLength`,
+                 multiple_of       TYPE string VALUE `$multipleOf`,
+               END OF abap_doc_annotation.
 
-    types:
-      begin of abap_doc,
-        required          type abap_bool,
-        showalways        type abap_bool,
-        title             type string,
-        description       type string,
-        enumvalues_link   type string,
-        minimum           type string,
-        maximum           type string,
-        exclusive_minimum type string,
-        exclusive_maximum type string,
-        multiple_of       type string,
-        default           type string,
-        min_length        type string,
-        max_length        type string,
-        callback_class    type string,
-      end of abap_doc.
+    TYPES:
+      BEGIN OF abap_doc,
+        required          TYPE abap_bool,
+        showalways        TYPE abap_bool,
+        title             TYPE string,
+        description       TYPE string,
+        enumvalues_link   TYPE string,
+        minimum           TYPE string,
+        maximum           TYPE string,
+        exclusive_minimum TYPE string,
+        exclusive_maximum TYPE string,
+        multiple_of       TYPE string,
+        default           TYPE string,
+        min_length        TYPE string,
+        max_length        TYPE string,
+        callback_class    TYPE string,
+      END OF abap_doc.
 
-    methods: parse
-      importing
-        component_name        type string
-        to_parse              type string
-      changing
-        log                   type ref to if_aff_log
-      returning
-        value(found_abap_doc) type abap_doc.
+    METHODS: parse
+      IMPORTING
+        component_name        TYPE string
+        to_parse              TYPE string
+      CHANGING
+        log                   TYPE REF TO if_aff_log
+      RETURNING
+        VALUE(found_abap_doc) TYPE abap_doc.
 
-  protected section.
-  private section.
-    types:
-      begin of ty_mixed_table_entry,
-        offset  type i,
-        length  type i,
-        is_link type abap_boolean,
-      end of ty_mixed_table_entry,
-      tt_mixed_table_entry type sorted table of ty_mixed_table_entry with unique key offset.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    TYPES:
+      BEGIN OF ty_mixed_table_entry,
+        offset  TYPE i,
+        length  TYPE i,
+        is_link TYPE abap_boolean,
+      END OF ty_mixed_table_entry,
+      tt_mixed_table_entry TYPE SORTED TABLE OF ty_mixed_table_entry WITH UNIQUE KEY offset.
 
-    data abap_doc_string type string.
-    data parser_log type ref to if_aff_log.
-    data component_name type string.
-    data decoded_abap_doc type abap_doc.
-    data description_warning_is_needed type abap_boolean.
+    DATA abap_doc_string TYPE string.
+    DATA parser_log TYPE REF TO if_aff_log.
+    DATA component_name TYPE string.
+    DATA decoded_abap_doc TYPE abap_doc.
+    DATA description_warning_is_needed TYPE abap_boolean.
 
-    methods: parse_title,
+    METHODS: parse_title,
       parse_description,
       remove_leading_trailing_spaces
-        changing string_to_work_on type string,
+        CHANGING string_to_work_on TYPE string,
       parse_annotations,
       parse_callback_class,
       get_annotation_value
-        importing
-          length                  type i
-          offset                  type i
-          to_decode               type string
-          length_of_annotation    type i
-          remove_whitespaces      type abap_boolean
-        returning
-          value(annotation_value) type string,
+        IMPORTING
+          length                  TYPE i
+          offset                  TYPE i
+          to_decode               TYPE string
+          length_of_annotation    TYPE i
+          remove_whitespaces      TYPE abap_boolean
+        RETURNING
+          VALUE(annotation_value) TYPE string,
       parse_default,
       parse_enum_values,
       parse_required,
       parse_show_always,
       parse_number_annotations
-        importing
-          key_word type string,
+        IMPORTING
+          key_word TYPE string,
       get_number_annotation
-        importing
-          annotation_name type string
-        returning
-          value(number)   type string,
+        IMPORTING
+          annotation_name TYPE string
+        RETURNING
+          VALUE(number)   TYPE string,
       check_next_word
-        importing
-          offset        type i
-          text_to_check type string,
+        IMPORTING
+          offset        TYPE i
+          text_to_check TYPE string,
       write_description_message.
 
-endclass.
+ENDCLASS.
 
 
-class zcl_aff_abap_doc_parser implementation.
+CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
-  method parse.
-    clear description_warning_is_needed.
-    clear decoded_abap_doc.
+  METHOD parse.
+    CLEAR description_warning_is_needed.
+    CLEAR decoded_abap_doc.
     abap_doc_string = to_parse.
     me->component_name =  component_name.
     parser_log = log.
@@ -112,354 +112,354 @@ class zcl_aff_abap_doc_parser implementation.
     parse_description( ).
     found_abap_doc = decoded_abap_doc.
     write_description_message( ).
-  endmethod.
+  ENDMETHOD.
 
 
-  method parse_title.
-    replace all occurrences of pcre `[\s]*(<p[\s]+class="shorttext([\s]+synchronized)?"([\s]+lang="[a-zA-Z]{2}")?[\s]*>)[\s]*`
-        in abap_doc_string with `<p class="shorttext">` ##NO_TEXT.
-    find all occurrences of pcre `<p\sclass="shorttext">.*?</p>` in abap_doc_string results data(result_table).
-    if lines( result_table ) = 0.
-      return.
-    elseif lines( result_table ) > 1.
-      message i107(saff_core) with `'Title'` component_name into data(message) ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
-    data(offset) = result_table[ 1 ]-offset.
-    if offset <> 0.
-      message i113(saff_core) with component_name into message ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
-    data(length) = result_table[ 1 ]-length.
-    data(title) = abap_doc_string+offset(length).
-    replace `</p>` in title with ``.
-    replace `<p class="shorttext">` in title with ``.
-    remove_leading_trailing_spaces( changing string_to_work_on = title ).
+  METHOD parse_title.
+    REPLACE ALL OCCURRENCES OF PCRE `[\s]*(<p[\s]+class="shorttext([\s]+synchronized)?"([\s]+lang="[a-zA-Z]{2}")?[\s]*>)[\s]*`
+        IN abap_doc_string WITH `<p class="shorttext">` ##NO_TEXT.
+    FIND ALL OCCURRENCES OF PCRE `<p\sclass="shorttext">.*?</p>` IN abap_doc_string RESULTS DATA(result_table).
+    IF lines( result_table ) = 0.
+      RETURN.
+    ELSEIF lines( result_table ) > 1.
+      MESSAGE i107(saff_core) WITH `'Title'` component_name INTO DATA(message) ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
+    DATA(offset) = result_table[ 1 ]-offset.
+    IF offset <> 0.
+      MESSAGE i113(saff_core) WITH component_name INTO message ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
+    DATA(length) = result_table[ 1 ]-length.
+    DATA(title) = abap_doc_string+offset(length).
+    REPLACE `</p>` IN title WITH ``.
+    REPLACE `<p class="shorttext">` IN title WITH ``.
+    remove_leading_trailing_spaces( CHANGING string_to_work_on = title ).
     decoded_abap_doc-title = title.
-    replace all occurrences of pcre `[\s]*<p\sclass="shorttext">.*?</p>[\s]*` in abap_doc_string with ``.
-  endmethod.
+    REPLACE ALL OCCURRENCES OF PCRE `[\s]*<p\sclass="shorttext">.*?</p>[\s]*` IN abap_doc_string WITH ``.
+  ENDMETHOD.
 
 
-  method parse_description.
-    find first occurrence of pcre `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength)`
-      in abap_doc_string match offset data(offset).
-    if sy-subrc = 0.
-      data(description) = abap_doc_string+0(offset).
-      remove_leading_trailing_spaces( changing string_to_work_on = description ).
+  METHOD parse_description.
+    FIND FIRST OCCURRENCE OF PCRE `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength)`
+      IN abap_doc_string MATCH OFFSET DATA(offset).
+    IF sy-subrc = 0.
+      DATA(description) = abap_doc_string+0(offset).
+      remove_leading_trailing_spaces( CHANGING string_to_work_on = description ).
       decoded_abap_doc-description = description.
-    else.
-      remove_leading_trailing_spaces( changing string_to_work_on = abap_doc_string ).
+    ELSE.
+      remove_leading_trailing_spaces( CHANGING string_to_work_on = abap_doc_string ).
       decoded_abap_doc-description = abap_doc_string.
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
 
-  method parse_annotations.
-    find all occurrences of pcre `\$[a-zA-Z]+` in abap_doc_string results data(result_table) ##NO_TEXT.
-    data(modified_abap_doc_string) = abap_doc_string.
-    loop at result_table assigning field-symbol(<entry>).
-      data(offset) = <entry>-offset.
-      data(length) = <entry>-length.
-      data(key_word) = abap_doc_string+offset(length).
-      case key_word.
-        when abap_doc_annotation-callback_class.
+  METHOD parse_annotations.
+    FIND ALL OCCURRENCES OF PCRE `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(result_table) ##NO_TEXT.
+    DATA(modified_abap_doc_string) = abap_doc_string.
+    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
+      DATA(offset) = <entry>-offset.
+      DATA(length) = <entry>-length.
+      DATA(key_word) = abap_doc_string+offset(length).
+      CASE key_word.
+        WHEN abap_doc_annotation-callback_class.
           parse_callback_class( ).
-        when abap_doc_annotation-default.
+        WHEN abap_doc_annotation-default.
           parse_default( ).
-        when abap_doc_annotation-values.
+        WHEN abap_doc_annotation-values.
           parse_enum_values( ).
-        when abap_doc_annotation-required.
+        WHEN abap_doc_annotation-required.
           parse_required( ).
-        when abap_doc_annotation-show_always.
+        WHEN abap_doc_annotation-show_always.
           parse_show_always( ).
-        when abap_doc_annotation-minimum or abap_doc_annotation-maximum or abap_doc_annotation-exclusive_minimum or abap_doc_annotation-exclusive_maximum
-             or abap_doc_annotation-max_length or abap_doc_annotation-multiple_of or abap_doc_annotation-min_length.
+        WHEN abap_doc_annotation-minimum OR abap_doc_annotation-maximum OR abap_doc_annotation-exclusive_minimum OR abap_doc_annotation-exclusive_maximum
+             OR abap_doc_annotation-max_length OR abap_doc_annotation-multiple_of OR abap_doc_annotation-min_length.
           parse_number_annotations( key_word = key_word ).
-        when others.
-          replace key_word in modified_abap_doc_string with ''.
-          message w108(saff_core) with key_word component_name into data(message) ##NEEDED.
-          parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-      endcase.
-    endloop.
+        WHEN OTHERS.
+          REPLACE key_word IN modified_abap_doc_string WITH ''.
+          MESSAGE w108(saff_core) WITH key_word component_name INTO DATA(message) ##NEEDED.
+          parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      ENDCASE.
+    ENDLOOP.
     abap_doc_string = modified_abap_doc_string.
-  endmethod.
+  ENDMETHOD.
 
-  method parse_callback_class.
-    if decoded_abap_doc-callback_class is not initial.
-      return.
-    endif.
-    data(string_to_parse) = abap_doc_string.
-    replace all occurrences of pcre `\$callbackClass[\s]*(:[\s]*)?\{[\s]*@link` in string_to_parse with `\$callbackClass\{@link`.
-    find all occurrences of pcre `\$callbackClass\{@link[^\}]+\}` in string_to_parse results data(result_table).
-    if lines( result_table ) = 0.
-      message w109(saff_core) with abap_doc_annotation-callback_class component_name into data(message) ##NEEDED.
-      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-      return.
-    endif.
-    if lines( result_table ) > 1.
-      message i107(saff_core) with abap_doc_annotation-callback_class component_name into message ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
-    data(offset_found) = result_table[ 1 ]-offset.
-    data(length_found) = result_table[ 1 ]-length.
+  METHOD parse_callback_class.
+    IF decoded_abap_doc-callback_class IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    DATA(string_to_parse) = abap_doc_string.
+    REPLACE ALL OCCURRENCES OF PCRE `\$callbackClass[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$callbackClass\{@link`.
+    FIND ALL OCCURRENCES OF PCRE `\$callbackClass\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table).
+    IF lines( result_table ) = 0.
+      MESSAGE w109(saff_core) WITH abap_doc_annotation-callback_class component_name INTO DATA(message) ##NEEDED.
+      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      RETURN.
+    ENDIF.
+    IF lines( result_table ) > 1.
+      MESSAGE i107(saff_core) WITH abap_doc_annotation-callback_class component_name INTO message ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
+    DATA(offset_found) = result_table[ 1 ]-offset.
+    DATA(length_found) = result_table[ 1 ]-length.
     decoded_abap_doc-callback_class = get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 20 remove_whitespaces = abap_true ).
-    loop at result_table assigning field-symbol(<entry>).
+    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       check_next_word( offset = <entry>-offset + <entry>-length text_to_check = string_to_parse ).
-    endloop.
-  endmethod.
+    ENDLOOP.
+  ENDMETHOD.
 
-  method get_annotation_value.
-    data(step) = offset + length_of_annotation.
-    data(length_of_annotation_value) = length - length_of_annotation.
-    data(value) = to_decode+step(length_of_annotation_value).
-    if remove_whitespaces = abap_true.
-      remove_leading_trailing_spaces( changing string_to_work_on = value ).
-    endif.
+  METHOD get_annotation_value.
+    DATA(step) = offset + length_of_annotation.
+    DATA(length_of_annotation_value) = length - length_of_annotation.
+    DATA(value) = to_decode+step(length_of_annotation_value).
+    IF remove_whitespaces = abap_true.
+      remove_leading_trailing_spaces( CHANGING string_to_work_on = value ).
+    ENDIF.
     annotation_value = value.
-  endmethod.
+  ENDMETHOD.
 
 
-  method parse_default.
-    if decoded_abap_doc-default is not initial.
-      return.
-    endif.
-    data(string_to_parse) = abap_doc_string.
-    replace all occurrences of pcre `\$default[\s]*(:[\s]*)?'` in string_to_parse with `\$default'`.
-    replace all occurrences of pcre `\$default[\s]*(:[\s]*)?\{[\s]*@link` in string_to_parse with `\$default\{@link`.
+  METHOD parse_default.
+    IF decoded_abap_doc-default IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    DATA(string_to_parse) = abap_doc_string.
+    REPLACE ALL OCCURRENCES OF PCRE `\$default[\s]*(:[\s]*)?'` IN string_to_parse WITH `\$default'`.
+    REPLACE ALL OCCURRENCES OF PCRE `\$default[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$default\{@link`.
 
-    find all occurrences of pcre `\$default'[^']*'` in string_to_parse results data(result_table_value).
-    find all occurrences of pcre `\$default\{@link[^\}]+\}` in string_to_parse results data(result_table_link).
+    FIND ALL OCCURRENCES OF PCRE `\$default'[^']*'` IN string_to_parse RESULTS DATA(result_table_value).
+    FIND ALL OCCURRENCES OF PCRE `\$default\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table_link).
 
-    data mixed_result_table type tt_mixed_table_entry.
-    loop at result_table_value assigning field-symbol(<default_value>).
-      insert value #( offset = <default_value>-offset length = <default_value>-length is_link = abap_false ) into table mixed_result_table.
-    endloop.
-    loop at result_table_link assigning field-symbol(<default_link>).
-      insert value #( offset = <default_link>-offset length = <default_link>-length is_link = abap_true ) into table mixed_result_table.
-    endloop.
+    DATA mixed_result_table TYPE tt_mixed_table_entry.
+    LOOP AT result_table_value ASSIGNING FIELD-SYMBOL(<default_value>).
+      INSERT VALUE #( offset = <default_value>-offset length = <default_value>-length is_link = abap_false ) INTO TABLE mixed_result_table.
+    ENDLOOP.
+    LOOP AT result_table_link ASSIGNING FIELD-SYMBOL(<default_link>).
+      INSERT VALUE #( offset = <default_link>-offset length = <default_link>-length is_link = abap_true ) INTO TABLE mixed_result_table.
+    ENDLOOP.
 
-    if lines( mixed_result_table ) = 0.
-      message w109(saff_core) with abap_doc_annotation-default component_name into data(message) ##NEEDED.
-      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-      return.
-    endif.
-    if lines( mixed_result_table ) > 1.
-      message i107(saff_core) with abap_doc_annotation-default component_name into message ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
-    data(warning_set) = abap_false.
-    loop at mixed_result_table assigning field-symbol(<entry>).
+    IF lines( mixed_result_table ) = 0.
+      MESSAGE w109(saff_core) WITH abap_doc_annotation-default component_name INTO DATA(message) ##NEEDED.
+      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      RETURN.
+    ENDIF.
+    IF lines( mixed_result_table ) > 1.
+      MESSAGE i107(saff_core) WITH abap_doc_annotation-default component_name INTO message ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
+    DATA(warning_set) = abap_false.
+    LOOP AT mixed_result_table ASSIGNING FIELD-SYMBOL(<entry>).
       check_next_word( offset = <entry>-offset + <entry>-length text_to_check = string_to_parse ).
-      if <entry>-is_link = abap_false and decoded_abap_doc-default is initial.
+      IF <entry>-is_link = abap_false AND decoded_abap_doc-default IS INITIAL.
         decoded_abap_doc-default = `"` && get_annotation_value( length = <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_false ) && `"`.
-      elseif <entry>-is_link = abap_true and decoded_abap_doc-default is initial.
-        data(link) = get_annotation_value( length =  <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_true ).
-        data(link_for_testing) = link.
-        replace all occurrences of pcre `\s` in link_for_testing with ``.
-        replace all occurrences of pcre `(@link|data:)` in link_for_testing with ``.
-        split link_for_testing at '.' into table data(splitted).
-        if lines( splitted ) = 3.
+      ELSEIF <entry>-is_link = abap_true AND decoded_abap_doc-default IS INITIAL.
+        DATA(link) = get_annotation_value( length =  <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_true ).
+        DATA(link_for_testing) = link.
+        REPLACE ALL OCCURRENCES OF PCRE `\s` IN link_for_testing WITH ``.
+        REPLACE ALL OCCURRENCES OF PCRE `(@link|data:)` IN link_for_testing WITH ``.
+        SPLIT link_for_testing AT '.' INTO TABLE DATA(splitted).
+        IF lines( splitted ) = 3.
           decoded_abap_doc-default = link.
-        elseif warning_set = abap_false.
-          message w111(saff_core) with abap_doc_annotation-default component_name into message ##NEEDED.
-          parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+        ELSEIF warning_set = abap_false.
+          MESSAGE w111(saff_core) WITH abap_doc_annotation-default component_name INTO message ##NEEDED.
+          parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
           warning_set = abap_true.
-        endif.
-      endif.
-    endloop.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method parse_enum_values.
-    if decoded_abap_doc-enumvalues_link is not initial.
-      return.
-    endif.
-    data(string_to_parse) = abap_doc_string.
-    replace all occurrences of pcre `\$values[\s]*(:[\s]*)?\{[\s]*@link` in string_to_parse with `\$values\{@link`.
-    find all occurrences of pcre `\$values\{@link([^\}]+)\}` in string_to_parse results data(result_table).
-    if lines( result_table ) = 0.
-      message w109(saff_core) with abap_doc_annotation-values component_name into data(message) ##NEEDED.
-      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-      return.
-    endif.
-    if lines( result_table ) > 1.
-      message i107(saff_core) with abap_doc_annotation-values component_name into message ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
-    data(warning_written) = abap_false.
-    loop at result_table assigning field-symbol(<entry>).
-      data(offset_found) = <entry>-offset.
-      data(length_found) = <entry>-length.
-      data(link) = get_annotation_value( length = length_found - 1  offset = offset_found to_decode = string_to_parse length_of_annotation = 13 remove_whitespaces = abap_true ).
+  METHOD parse_enum_values.
+    IF decoded_abap_doc-enumvalues_link IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    DATA(string_to_parse) = abap_doc_string.
+    REPLACE ALL OCCURRENCES OF PCRE `\$values[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$values\{@link`.
+    FIND ALL OCCURRENCES OF PCRE `\$values\{@link([^\}]+)\}` IN string_to_parse RESULTS DATA(result_table).
+    IF lines( result_table ) = 0.
+      MESSAGE w109(saff_core) WITH abap_doc_annotation-values component_name INTO DATA(message) ##NEEDED.
+      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      RETURN.
+    ENDIF.
+    IF lines( result_table ) > 1.
+      MESSAGE i107(saff_core) WITH abap_doc_annotation-values component_name INTO message ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
+    DATA(warning_written) = abap_false.
+    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
+      DATA(offset_found) = <entry>-offset.
+      DATA(length_found) = <entry>-length.
+      DATA(link) = get_annotation_value( length = length_found - 1  offset = offset_found to_decode = string_to_parse length_of_annotation = 13 remove_whitespaces = abap_true ).
       check_next_word( offset = offset_found + length_found text_to_check = string_to_parse ).
-      data(link_for_testing) = link.
-      replace all occurrences of pcre `\s` in link_for_testing with ``.
-      replace all occurrences of pcre `data:` in link_for_testing with ``.
-      split link_for_testing at '.' into table data(splitted).
-      if lines( splitted ) = 2 and decoded_abap_doc-enumvalues_link is initial.
+      DATA(link_for_testing) = link.
+      REPLACE ALL OCCURRENCES OF PCRE `\s` IN link_for_testing WITH ``.
+      REPLACE ALL OCCURRENCES OF PCRE `data:` IN link_for_testing WITH ``.
+      SPLIT link_for_testing AT '.' INTO TABLE DATA(splitted).
+      IF lines( splitted ) = 2 AND decoded_abap_doc-enumvalues_link IS INITIAL.
         decoded_abap_doc-enumvalues_link = link.
-      elseif lines( splitted ) <> 2 and warning_written = abap_false.
-        message w111(saff_core) with abap_doc_annotation-values component_name into message ##NEEDED.
-        parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+      ELSEIF lines( splitted ) <> 2 AND warning_written = abap_false.
+        MESSAGE w111(saff_core) WITH abap_doc_annotation-values component_name INTO message ##NEEDED.
+        parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
         warning_written = abap_true.
-      endif.
-    endloop.
-  endmethod.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
 
 
-  method parse_required.
-    if decoded_abap_doc-required is not initial.
-      return.
-    endif.
-    find all occurrences of abap_doc_annotation-required in abap_doc_string results data(result_table).
-    if lines( result_table ) > 1.
-      message i107(saff_core) with abap_doc_annotation-required component_name into data(message) ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
+  METHOD parse_required.
+    IF decoded_abap_doc-required IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    FIND ALL OCCURRENCES OF abap_doc_annotation-required IN abap_doc_string RESULTS DATA(result_table).
+    IF lines( result_table ) > 1.
+      MESSAGE i107(saff_core) WITH abap_doc_annotation-required component_name INTO DATA(message) ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
     decoded_abap_doc-required = abap_true.
-    loop at result_table assigning field-symbol(<entry>).
+    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       check_next_word( offset = <entry>-offset + <entry>-length text_to_check = abap_doc_string ).
-    endloop.
-  endmethod.
+    ENDLOOP.
+  ENDMETHOD.
 
 
-  method parse_show_always.
-    if decoded_abap_doc-showalways is not initial.
-      return.
-    endif.
-    find all occurrences of abap_doc_annotation-show_always in abap_doc_string results data(result_table).
-    if lines( result_table ) > 1.
-      message i107(saff_core) with abap_doc_annotation-show_always component_name into data(message) ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
+  METHOD parse_show_always.
+    IF decoded_abap_doc-showalways IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    FIND ALL OCCURRENCES OF abap_doc_annotation-show_always IN abap_doc_string RESULTS DATA(result_table).
+    IF lines( result_table ) > 1.
+      MESSAGE i107(saff_core) WITH abap_doc_annotation-show_always component_name INTO DATA(message) ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
     decoded_abap_doc-showalways = abap_true.
-    loop at result_table assigning field-symbol(<entry>).
+    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       check_next_word( offset = <entry>-offset + <entry>-length text_to_check = abap_doc_string ).
-    endloop.
-  endmethod.
+    ENDLOOP.
+  ENDMETHOD.
 
 
-  method parse_number_annotations.
-    case key_word.
-      when abap_doc_annotation-minimum.
-        if decoded_abap_doc-minimum is initial.
+  METHOD parse_number_annotations.
+    CASE key_word.
+      WHEN abap_doc_annotation-minimum.
+        IF decoded_abap_doc-minimum IS INITIAL.
           decoded_abap_doc-minimum = get_number_annotation( annotation_name = key_word ).
-        endif.
-      when abap_doc_annotation-maximum.
-        if decoded_abap_doc-maximum is initial.
+        ENDIF.
+      WHEN abap_doc_annotation-maximum.
+        IF decoded_abap_doc-maximum IS INITIAL.
           decoded_abap_doc-maximum = get_number_annotation( annotation_name = key_word ).
-        endif.
-      when abap_doc_annotation-exclusive_minimum.
-        if decoded_abap_doc-exclusive_minimum is initial.
+        ENDIF.
+      WHEN abap_doc_annotation-exclusive_minimum.
+        IF decoded_abap_doc-exclusive_minimum IS INITIAL.
           decoded_abap_doc-exclusive_minimum = get_number_annotation( annotation_name = key_word ).
-        endif.
-      when abap_doc_annotation-exclusive_maximum.
-        if decoded_abap_doc-exclusive_maximum is initial.
+        ENDIF.
+      WHEN abap_doc_annotation-exclusive_maximum.
+        IF decoded_abap_doc-exclusive_maximum IS INITIAL.
           decoded_abap_doc-exclusive_maximum = get_number_annotation( annotation_name = key_word ).
-        endif.
-      when abap_doc_annotation-multiple_of.
-        if decoded_abap_doc-multiple_of is initial.
+        ENDIF.
+      WHEN abap_doc_annotation-multiple_of.
+        IF decoded_abap_doc-multiple_of IS INITIAL.
           decoded_abap_doc-multiple_of = get_number_annotation( annotation_name = key_word ).
-        endif.
-      when abap_doc_annotation-min_length.
-        if decoded_abap_doc-min_length is initial.
+        ENDIF.
+      WHEN abap_doc_annotation-min_length.
+        IF decoded_abap_doc-min_length IS INITIAL.
           decoded_abap_doc-min_length = get_number_annotation( annotation_name = key_word ).
-        endif.
-      when abap_doc_annotation-max_length.
-        if decoded_abap_doc-max_length is initial.
+        ENDIF.
+      WHEN abap_doc_annotation-max_length.
+        IF decoded_abap_doc-max_length IS INITIAL.
           decoded_abap_doc-max_length = get_number_annotation( annotation_name = key_word ).
-        endif.
-    endcase.
-  endmethod.
+        ENDIF.
+    ENDCASE.
+  ENDMETHOD.
 
 
-  method get_number_annotation.
-    data(abap_doc) = abap_doc_string.
-    data(dummy_annotation) = `$dummyannotation`.
-    replace all occurrences of annotation_name in abap_doc with dummy_annotation.
-    replace all occurrences of pcre `\$dummyannotation[\s]*(:[\s]*)?` in abap_doc with `\$dummyannotation`.
-    find all occurrences of pcre `\$dummyannotation[^\s]+` in abap_doc results data(result_table).
-    if lines( result_table ) = 0.
-      message w109(saff_core) with abap_doc_annotation-values component_name into data(message) ##NEEDED.
-      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-      return.
-    endif.
-    if lines( result_table ) > 1.
-      message i107(saff_core) with annotation_name component_name into message ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
-    data(annotation_length) = strlen( dummy_annotation ).
-    data(regex_of_number_expressions) = cl_abap_regex=>create_pcre( pattern     = `(\+|-)?[0-9]+(.[0-9]+)?(e(\+|-)?[0-9]+)?`
+  METHOD get_number_annotation.
+    DATA(abap_doc) = abap_doc_string.
+    DATA(dummy_annotation) = `$dummyannotation`.
+    REPLACE ALL OCCURRENCES OF annotation_name IN abap_doc WITH dummy_annotation.
+    REPLACE ALL OCCURRENCES OF PCRE `\$dummyannotation[\s]*(:[\s]*)?` IN abap_doc WITH `\$dummyannotation`.
+    FIND ALL OCCURRENCES OF PCRE `\$dummyannotation[^\s]+` IN abap_doc RESULTS DATA(result_table).
+    IF lines( result_table ) = 0.
+      MESSAGE w109(saff_core) WITH abap_doc_annotation-values component_name INTO DATA(message) ##NEEDED.
+      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      RETURN.
+    ENDIF.
+    IF lines( result_table ) > 1.
+      MESSAGE i107(saff_core) WITH annotation_name component_name INTO message ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
+    DATA(annotation_length) = strlen( dummy_annotation ).
+    DATA(regex_of_number_expressions) = cl_abap_regex=>create_pcre( pattern     = `(\+|-)?[0-9]+(.[0-9]+)?(e(\+|-)?[0-9]+)?`
                                                                     ignore_case = abap_true ).
-    data(warning_written) = abap_false.
-    loop at result_table assigning field-symbol(<entry>).
-      data(offset_found) = <entry>-offset.
-      data(length_found) = <entry>-length.
-      data(begin_of_number) = offset_found + annotation_length.
-      data(length_of_number) = length_found - annotation_length.
-      data(number_candidate) = abap_doc+begin_of_number(length_of_number).
-      remove_leading_trailing_spaces( changing string_to_work_on = number_candidate ).
-      data(matcher) = regex_of_number_expressions->create_matcher( text = number_candidate ).
-      data(match) = matcher->match( ).
+    DATA(warning_written) = abap_false.
+    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
+      DATA(offset_found) = <entry>-offset.
+      DATA(length_found) = <entry>-length.
+      DATA(begin_of_number) = offset_found + annotation_length.
+      DATA(length_of_number) = length_found - annotation_length.
+      DATA(number_candidate) = abap_doc+begin_of_number(length_of_number).
+      remove_leading_trailing_spaces( CHANGING string_to_work_on = number_candidate ).
+      DATA(matcher) = regex_of_number_expressions->create_matcher( text = number_candidate ).
+      DATA(match) = matcher->match( ).
       check_next_word( offset = offset_found + length_found text_to_check = abap_doc ).
-      if match = abap_true and number is initial.
+      IF match = abap_true AND number IS INITIAL.
         number = number_candidate.
-      elseif match = abap_false and warning_written = abap_false.
-        message w110(saff_core) with annotation_name component_name into message ##NEEDED.
-        parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
+      ELSEIF match = abap_false AND warning_written = abap_false.
+        MESSAGE w110(saff_core) WITH annotation_name component_name INTO message ##NEEDED.
+        parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
         warning_written = abap_true.
-      endif.
-    endloop.
-  endmethod.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
 
 
-  method remove_leading_trailing_spaces.
-    shift string_to_work_on right deleting trailing space.
-    shift string_to_work_on left deleting leading space.
-  endmethod.
+  METHOD remove_leading_trailing_spaces.
+    SHIFT string_to_work_on RIGHT DELETING TRAILING space.
+    SHIFT string_to_work_on LEFT DELETING LEADING space.
+  ENDMETHOD.
 
 
-  method check_next_word.
-    if description_warning_is_needed = abap_true.
-      return.
-    endif.
-    data(current_offset) = offset.
-    data next_word type string.
-    data next_char type c.
+  METHOD check_next_word.
+    IF description_warning_is_needed = abap_true.
+      RETURN.
+    ENDIF.
+    DATA(current_offset) = offset.
+    DATA next_word TYPE string.
+    DATA next_char TYPE c.
 
-    while next_char = space and current_offset < strlen( text_to_check ).
+    WHILE next_char = space AND current_offset < strlen( text_to_check ).
       next_char = text_to_check+current_offset(1).
       current_offset += 1.
-    endwhile.
+    ENDWHILE.
     next_word = next_char.
-    if current_offset >= strlen( text_to_check ).
-      return.
-    endif.
-    data(regex_of_letter) = cl_abap_regex=>create_pcre( pattern = `[a-zA-Z]` ) ##NO_TEXT.
-    do.
+    IF current_offset >= strlen( text_to_check ).
+      RETURN.
+    ENDIF.
+    DATA(regex_of_letter) = cl_abap_regex=>create_pcre( pattern = `[a-zA-Z]` ) ##NO_TEXT.
+    DO.
       next_char = text_to_check+current_offset(1).
       current_offset += 1.
       next_word = next_word && next_char.
-      if regex_of_letter->create_matcher( text = next_char )->match( ) = abap_false or current_offset >= strlen( text_to_check ).
-        exit.
-      endif.
-    enddo.
-    remove_leading_trailing_spaces( changing string_to_work_on = next_word ).
-    if strlen( next_word ) = 1 or next_word+0(1) <> `$`.
+      IF regex_of_letter->create_matcher( text = next_char )->match( ) = abap_false OR current_offset >= strlen( text_to_check ).
+        EXIT.
+      ENDIF.
+    ENDDO.
+    remove_leading_trailing_spaces( CHANGING string_to_work_on = next_word ).
+    IF strlen( next_word ) = 1 OR next_word+0(1) <> `$`.
       description_warning_is_needed = abap_true.
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
 
-  method write_description_message.
-    if description_warning_is_needed = abap_true and decoded_abap_doc-description is initial.
-      message w115(saff_core) with component_name into data(message) ##NEEDED.
-      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    elseif description_warning_is_needed = abap_true and decoded_abap_doc-description is not initial.
-      message i116(saff_core) with component_name into message ##NEEDED.
-      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = value #( ) ).
-    endif.
-  endmethod.
+  METHOD write_description_message.
+    IF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS INITIAL.
+      MESSAGE w115(saff_core) WITH component_name INTO DATA(message) ##NEEDED.
+      parser_log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ELSEIF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS NOT INITIAL.
+      MESSAGE i116(saff_core) WITH component_name INTO message ##NEEDED.
+      parser_log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+    ENDIF.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.
