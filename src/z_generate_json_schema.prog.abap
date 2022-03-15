@@ -9,7 +9,7 @@ START-OF-SELECTION.
 
 
   " use your defined type
-  DATA my_type TYPE zif_aff_sajc_v1=>ty_main.
+  DATA my_type TYPE zif_aff_sajc=>ty_main.
 
   " set up the writer
   DATA(writer) = NEW zcl_aff_writer_json_schema( '' ).

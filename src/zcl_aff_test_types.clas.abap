@@ -909,7 +909,6 @@ CLASS zcl_aff_test_types IMPLEMENTATION.
         writer->write_attribute( name = 'name' value = 'elementName' ) ##NO_TEXT.
         writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
         writer->close_element(  ).
-      WHEN OTHERS.
     ENDCASE.
   ENDMETHOD.
 

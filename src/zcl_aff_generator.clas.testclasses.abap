@@ -24,7 +24,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-TYPES END OF include_in_include.
+  TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -102,7 +102,7 @@ TYPES END OF include_in_include.
       fixpt          TYPE vseoclass-fixpt,
       msg_id         TYPE vseoclass-msg_id.
       INCLUDE TYPE ty_clif_properties.
-TYPES END OF ty_class_properties.
+  TYPES END OF ty_class_properties.
 
   TYPES:
     BEGIN OF ty_header,
@@ -127,7 +127,7 @@ TYPES END OF ty_class_properties.
 
 ENDINTERFACE.
 
-CLASS lcl_unit_test_writer DEFINITION CREATE PUBLIC FOR TESTING INHERITING FROM zcl_aff_writer FINAL.
+CLASS ltcl_unit_test_writer DEFINITION CREATE PUBLIC FOR TESTING INHERITING FROM zcl_aff_writer FINAL.
 
   PUBLIC SECTION.
   PROTECTED SECTION.
@@ -145,7 +145,7 @@ CLASS lcl_unit_test_writer DEFINITION CREATE PUBLIC FOR TESTING INHERITING FROM 
 
 ENDCLASS.
 
-CLASS lcl_unit_test_writer IMPLEMENTATION.
+CLASS ltcl_unit_test_writer IMPLEMENTATION.
 
   METHOD write_element.
     APPEND |{ repeat( val = ` `  occ = 4 * depth ) }{ element_name } : { element_description->type_kind }| TO output.
@@ -219,7 +219,7 @@ CLASS zcl_aff_generator DEFINITION LOCAL FRIENDS ltcl_type_generator.
 CLASS ltcl_type_generator IMPLEMENTATION.
 
   METHOD setup.
-    cut = NEW zcl_aff_generator( NEW lcl_unit_test_writer( ) ).
+    cut = NEW zcl_aff_generator( NEW ltcl_unit_test_writer( ) ).
   ENDMETHOD.
 
   METHOD element.

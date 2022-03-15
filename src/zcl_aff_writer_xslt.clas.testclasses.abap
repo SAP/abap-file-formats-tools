@@ -1045,7 +1045,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
         act = act_data
         exp = test_type
     ).
@@ -1097,7 +1096,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
         act = act_data
         exp = test_type
     ).
@@ -1134,7 +1132,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
         act = act_data
         exp = test_type
     ).
@@ -1173,7 +1170,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
         act = act_data
         exp = test_type
     ).
@@ -1229,9 +1225,8 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
-        exp = test_type
+      act = act_data
+      exp = test_type
     ).
   ENDMETHOD.
 
@@ -1272,8 +1267,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1304,8 +1298,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1335,8 +1328,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1366,8 +1358,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1397,8 +1388,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1436,8 +1426,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1475,8 +1464,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1526,8 +1514,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1565,8 +1552,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1603,8 +1589,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1642,8 +1627,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -1676,8 +1660,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
@@ -3689,8 +3672,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     ).
 
     cl_abap_unit_assert=>assert_equals(
-      EXPORTING
-        act = act_data
+      act = act_data
         exp = test_type
     ).
   ENDMETHOD.
