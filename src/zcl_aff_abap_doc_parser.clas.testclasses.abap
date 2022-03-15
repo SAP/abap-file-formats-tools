@@ -87,7 +87,7 @@ CLASS ltzcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD showalways_exclmax_multipleOf.
+  METHOD showalways_exclmax_multipleof.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $exclusiveMaximum 12 $multipleOf 2 $showAlways `.
     DATA(act_abap_doc) = parser->parse(
                                EXPORTING
