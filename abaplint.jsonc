@@ -27,7 +27,9 @@
     "ambiguous_statement": true,
     "avoid_use": false,
     "begin_end_names": true,
-    "begin_single_include": true,
+    "begin_single_include": {
+      "exclude": ["testclasses"]
+    },
     "call_transaction_authority_check": true,
     "chain_mainly_declarations": true,
     "check_abstract": true,
