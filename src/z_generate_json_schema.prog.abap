@@ -38,9 +38,9 @@ CLASS lcl_generator_helper IMPLEMENTATION.
     DATA(type_description) = cl_abap_typedescr=>describe_by_name( absolute_name ).
 
     cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_name RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
-    if sy-subrc = 1.
-      raise exception type cx_aff_root.
-    endif.
+    IF sy-subrc = 1.
+      RAISE EXCEPTION TYPE cx_aff_root.
+    ENDIF.
     r_elemdescr ?= r_typedescr.
     DATA r_field TYPE REF TO data.
     FIELD-SYMBOLS <field> TYPE any.
@@ -81,7 +81,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
         DATA(regx) = '[[:alpha:]]+'.
 *      check if the token only contains digits
         DATA(contains_chars) = xsdbool( count( val = last regex = regx ) > 0 ) ##REGEX_POSIX.
-        data(default_format_version) = 1.
+        DATA(default_format_version) = 1.
         IF contains_chars = abap_false.
           format_version  = last.
         ELSE.
