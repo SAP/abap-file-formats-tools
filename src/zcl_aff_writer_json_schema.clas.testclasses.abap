@@ -1320,7 +1320,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `        "description": "Description of the ABAP object", ` )
 ( `        "type": "string"` )
 ( `      }, ` )
-( `      "masterLanguage": { ` )
+( `      "originalLanguage": { ` )
 ( `        "title": "Original Language",  ` )
 ( `        "description": "Original language of the ABAP object", ` )
 ( `        "type": "string",` )

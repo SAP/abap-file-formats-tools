@@ -2308,9 +2308,9 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `          <tt:value ref="DESCRIPTION"/>`,
 `        </str>`,
 `      </tt:cond>`,
-`      <tt:cond s-check="not-initial(MASTER_LANGUAGE)" frq="?">`,
-`        <str name="masterLanguage">`,
-`          <tt:value ref="MASTER_LANGUAGE"/>`,
+`      <tt:cond s-check="not-initial(ORIGINAL_LANGUAGE)" frq="?">`,
+`        <str name="originalLanguage">`,
+`          <tt:value ref="ORIGINAL_LANGUAGE"/>`,
 `        </str>`,
 `      </tt:cond>`,
 `      <tt:cond s-check="not-initial(ABAP_LANGU_VERSION)" frq="?">`,
@@ -2324,7 +2324,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `      <tt:d-cond frq="*">`,
 `         <_ tt:lax="on">`,
 `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="CHECK_ELEMENT_TYPE" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'description;masterLanguage;abapLanguVersion;'"/>`,
+`            <tt:with-parameter name="MEMBERS" val="'description;originalLanguage;abapLanguVersion;'"/>`,
 `          </tt:call-method>`,
 `          <tt:skip/>`,
 `        </_>`,
@@ -3325,13 +3325,13 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA act_data LIKE test_type.
     test_type = VALUE #(
       description = 'Header description'
-      master_language = 'EN'
+      original_language = 'EN'
       abap_langu_version = '5').
 
     append_to exp_json:
 `{`,
 ` "description":"Header description",`,
-`  "masterLanguage":"EN",`,
+`  "originalLanguage":"EN",`,
 `  "abapLanguVersion":"cloudDevelopment"`,
 `}`.
 
