@@ -727,7 +727,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     write_open_tag( |<tt:d-cond frq="*">| ).
     write_open_tag( | <_ tt:lax="on">| ).
-    write_open_tag( |<tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="CHECK_ELEMENT_TYPE" reader="IO_READER">| ).
+    write_open_tag( |<tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">| ).
 
     DATA(components) = structure_description->get_components( ).
     DATA str_comp TYPE string.
