@@ -31,21 +31,19 @@ CLASS lcl_generator_helper IMPLEMENTATION.
 
   METHOD generate.
     DATA(absolute_name) = |\\INTERFACE={ interface_name }\\TYPE={ type_name }|.
-    DATA r_typedescr TYPE REF TO cl_abap_typedescr.
-    DATA r_elemdescr TYPE REF TO cl_abap_structdescr.
+    DATA type_descrition TYPE REF TO cl_abap_typedescr.
+    DATA element_description TYPE REF TO cl_abap_structdescr.
     DATA type TYPE if_aff_intf_v1=>ty_main.
-    DATA(description) = cl_abap_typedescr=>describe_by_data( type ).
-    DATA(type_description) = cl_abap_typedescr=>describe_by_name( absolute_name ).
 
-    cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_name RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
+    cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_name RECEIVING p_descr_ref = type_descrition EXCEPTIONS type_not_found = 1 ).
     IF sy-subrc = 1.
-      RAISE EXCEPTION TYPE cx_aff_root.
+      RAISE EXCEPTION NEW cx_aff_root( ).
     ENDIF.
-    r_elemdescr ?= r_typedescr.
-    DATA r_field TYPE REF TO data.
+    element_description ?= type_descrition.
+    DATA field TYPE REF TO data.
     FIELD-SYMBOLS <field> TYPE any.
-    CREATE DATA r_field TYPE HANDLE r_elemdescr.
-    ASSIGN r_field->* TO <field>.
+    CREATE DATA field TYPE HANDLE element_description.
+    ASSIGN field->* TO <field>.
     DATA my_type TYPE REF TO data.
     GET REFERENCE OF <field> INTO my_type.
 
@@ -99,7 +97,7 @@ START-OF-SELECTION.
 
   PARAMETERS:
     p_schema TYPE c RADIOBUTTON GROUP sel USER-COMMAND upd DEFAULT 'X',
-    p_xslt   TYPE c RADIOBUTTON GROUP sel,
+    p_xslt   TYPE c RADIOBUTTON GROUP sel ##NEEDED,
     p_objtyp TYPE trobjtype,
     p_intf   TYPE sobj_name,
     p_type   TYPE sobj_name.
