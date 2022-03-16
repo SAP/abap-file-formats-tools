@@ -33,7 +33,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
     DATA(absolute_name) = |\\INTERFACE={ interface_name }\\TYPE={ type_name }|.
     DATA type_descrition TYPE REF TO cl_abap_typedescr.
     DATA element_description TYPE REF TO cl_abap_structdescr.
-    DATA type TYPE if_aff_intf_v1=>ty_main.
+    
 
     cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_name RECEIVING p_descr_ref = type_descrition EXCEPTIONS type_not_found = 1 ).
     IF sy-subrc = 1.
