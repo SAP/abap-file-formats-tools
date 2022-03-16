@@ -45,8 +45,8 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 *  base type / base structure/ ohne (integer)
     TYPES:
       BEGIN OF ENUM category,
-        general      ,
-        classic_badi,
+        general ##NEEDED,
+        classic_badi ##NEEDED,
       END OF ENUM category.
 
     DATA(act_schema) = test_generator->generate_type( VALUE category( ) ).
