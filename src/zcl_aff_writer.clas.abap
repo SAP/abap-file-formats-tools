@@ -87,19 +87,19 @@ CLASS zcl_aff_writer DEFINITION
         IMPORTING
                   structure_name        TYPE string
                   structure_description TYPE REF TO cl_abap_typedescr
-        RAISING   cx_aff_root,
+        RAISING   cx_aff_root ##NEEDED,
 
       open_table ABSTRACT
         IMPORTING
                   table_name        TYPE string
-                  table_description TYPE REF TO cl_abap_typedescr ##NEEDED
+                  table_description TYPE REF TO cl_abap_typedescr
         RAISING   cx_aff_root,
 
       close_table ABSTRACT
         IMPORTING
                   table_name        TYPE string
                   table_description TYPE REF TO cl_abap_typedescr
-        RAISING   cx_aff_root,
+        RAISING   cx_aff_root ##NEEDED,
 
       apply_formatting
         IMPORTING name          TYPE string
@@ -385,9 +385,6 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     append_after_output( ).
     result = output.
   ENDMETHOD.
-
-
-
 
 
   METHOD write_open_tag.
