@@ -108,7 +108,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_output.
-    DATA(exp_output) = VALUE string_table( ( `line1` ) ( `line2` ) ).
+    DATA(exp_output) = VALUE rswsourcet( ( `line1` ) ( `line2` ) ).
     cut->output = exp_output.
 
     DATA(act_output) = cut->zif_aff_writer~get_output( ).

@@ -12,7 +12,7 @@ CLASS zcl_aff_generator DEFINITION
       IMPORTING
         data          TYPE data
       RETURNING
-        VALUE(result) TYPE string_table
+        VALUE(result) TYPE rswsourcet
       RAISING
         cx_aff_root.
 

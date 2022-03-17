@@ -84,7 +84,7 @@ INTERFACE zif_aff_writer
         cx_aff_root,
 
     get_output
-      RETURNING VALUE(result) TYPE string_table,
+      RETURNING VALUE(result) TYPE rswsourcet,
 
     get_log
       RETURNING VALUE(log) TYPE REF TO if_aff_log,
@@ -95,7 +95,7 @@ INTERFACE zif_aff_writer
     "! @parameter log | log to write messages
     "! @parameter result | true, if the source is valid, false if not
     validate
-      IMPORTING source        TYPE string_table
+      IMPORTING source        TYPE rswsourcet
                 log           TYPE REF TO if_aff_log
       RETURNING VALUE(result) TYPE abap_bool,
 

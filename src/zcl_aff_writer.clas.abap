@@ -24,11 +24,11 @@ CLASS zcl_aff_writer DEFINITION
       tt_structure_stack TYPE STANDARD TABLE OF ty_structure_stack.
 
     DATA:
-      output                     TYPE string_table,
+      output                     TYPE rswsourcet,
       formatting_option          TYPE zif_aff_writer=>enum_formatting_option,
       name_mappings              TYPE zif_aff_writer=>ty_name_mappings,
       abap_value_mappings        TYPE zif_aff_writer=>ty_abap_value_mappings,
-      content                    TYPE string_table,
+      content                    TYPE rswsourcet,
       stack_of_structure         TYPE tt_structure_stack,
       stack                      TYPE STANDARD TABLE OF ty_stack_entry,
       indent_level               TYPE i VALUE 0,
@@ -148,7 +148,7 @@ CLASS zcl_aff_writer DEFINITION
         IMPORTING
           absolute_name TYPE abap_abstypename
         RETURNING
-          VALUE(result) TYPE string_table,
+          VALUE(result) TYPE rswsourcet,
 
       get_default_from_link
         IMPORTING
@@ -226,7 +226,7 @@ CLASS zcl_aff_writer DEFINITION
 
       validate_default_link
         IMPORTING
-          splitted_link    TYPE string_table
+          splitted_link    TYPE rswsourcet
           fullname_of_type TYPE string
           element_type     TYPE abap_typekind
         RETURNING
@@ -469,7 +469,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD get_all_path_information.
     DATA previous_absolute_name TYPE abap_abstypename.
-    DATA splitted_prev_name TYPE  string_table.
+    DATA splitted_prev_name TYPE  rswsourcet.
     DATA(index) = 0.
     WHILE lines( splitted_prev_name ) <= 2.
       IF index >= lines( stack_of_structure ).

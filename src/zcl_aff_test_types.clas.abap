@@ -837,14 +837,14 @@ CLASS zcl_aff_test_types DEFINITION
                  outer_table     TYPE string VALUE `outer_table`,
                END OF choose_codes.
 
-    CLASS-DATA subschema TYPE string_table.
+    CLASS-DATA subschema TYPE rswsourcet.
 
     CLASS-DATA choose_code TYPE string.
 
     CLASS-DATA expected_var TYPE REF TO data.
 
     CLASS-METHODS get_subschema
-      RETURNING VALUE(subschema) TYPE string_table.
+      RETURNING VALUE(subschema) TYPE rswsourcet.
 
     CLASS-METHODS serialize
       IMPORTING
