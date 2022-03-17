@@ -29,6 +29,36 @@
      <ENTRY>Helper for automated generation of XSLT</ENTRY>
      <LENGTH>39</LENGTH>
     </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_INTF</KEY>
+     <ENTRY> Interface Name</ENTRY>
+     <LENGTH>23</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_OBJTYP</KEY>
+     <ENTRY>Object Type</ENTRY>
+     <LENGTH>19</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_SCHEMA</KEY>
+     <ENTRY>Generate Schema</ENTRY>
+     <LENGTH>23</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_TYPE</KEY>
+     <ENTRY>Type Name</ENTRY>
+     <LENGTH>17</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_XSLT</KEY>
+     <ENTRY>Generate Simple Transformation</ENTRY>
+     <LENGTH>38</LENGTH>
+    </item>
    </TPOOL>
    <I18N_TPOOL>
     <item>

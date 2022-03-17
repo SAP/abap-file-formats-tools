@@ -424,7 +424,7 @@ CLASS zcl_aff_test_types DEFINITION
         description        TYPE string,
         "! <p class="shorttext"> Original Language</p>
         "! Original language of the ABAP object
-        master_language    TYPE c LENGTH 2,
+        original_language    TYPE c LENGTH 2,
         "! <p class="shorttext"> ABAP Language Version</p>
         "! ABAP language version
         abap_langu_version TYPE language_version,
@@ -909,7 +909,6 @@ CLASS zcl_aff_test_types IMPLEMENTATION.
         writer->write_attribute( name = 'name' value = 'elementName' ) ##NO_TEXT.
         writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
         writer->close_element(  ).
-      WHEN OTHERS.
     ENDCASE.
   ENDMETHOD.
 

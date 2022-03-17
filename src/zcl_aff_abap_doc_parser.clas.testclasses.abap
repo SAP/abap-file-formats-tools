@@ -1,5 +1,5 @@
 "!@testing CL_AFF_ABAP_DOC_PARSER
-CLASS ltzcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
+CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
   PRIVATE SECTION.
@@ -35,7 +35,7 @@ CLASS ltzcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
 
 ENDCLASS.
 
-CLASS ltzcl_aff_abap_doc_parser IMPLEMENTATION.
+CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD setup.
     parser = NEW zcl_aff_abap_doc_parser( ).

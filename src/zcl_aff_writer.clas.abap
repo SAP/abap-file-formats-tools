@@ -53,10 +53,6 @@ CLASS zcl_aff_writer DEFINITION
       write_open_tag FINAL
         IMPORTING
           line TYPE string,
-      write_tag_with_variable_indent FINAL
-        IMPORTING
-          line         TYPE string
-          indent_level TYPE i,
       write_closing_tag FINAL
         IMPORTING
           line TYPE string,
@@ -96,7 +92,7 @@ CLASS zcl_aff_writer DEFINITION
       open_table ABSTRACT
         IMPORTING
                   table_name        TYPE string
-                  table_description TYPE REF TO cl_abap_typedescr
+                  table_description TYPE REF TO cl_abap_typedescr ##NEEDED
         RAISING   cx_aff_root,
 
       close_table ABSTRACT
@@ -391,9 +387,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD write_tag_with_variable_indent.
-    APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
-  ENDMETHOD.
+
 
 
   METHOD write_open_tag.
