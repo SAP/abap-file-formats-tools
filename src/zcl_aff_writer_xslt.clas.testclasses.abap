@@ -117,7 +117,7 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
 
   PRIVATE SECTION.
     DATA:
-      exp_transformation TYPE rswsourcet,
+      exp_transformation TYPE string_table,
       cut                TYPE REF TO zcl_aff_writer_xslt,
       test_generator     TYPE REF TO zcl_aff_generator,
       st_root_name       TYPE string VALUE 'root' ##NO_TEXT.
@@ -148,7 +148,7 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
       setup,
       validate_output
         IMPORTING
-          act TYPE rswsourcet.
+          act TYPE string_table.
 
 ENDCLASS.
 
@@ -771,7 +771,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD validate_valid_xslt.
-    DATA transformation TYPE rswsourcet.
+    DATA transformation TYPE string_table.
     DATA(log) = cl_aff_factory=>create_log( ).
     append_to transformation:
       `<?sap.transform simple?>`,
@@ -806,7 +806,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD validate_invalid_xslt.
-    DATA transformation TYPE rswsourcet.
+    DATA transformation TYPE string_table.
     DATA(log) = cl_aff_factory=>create_log( ).
     append_to transformation:
       `<?sap.transform simple?>`,
@@ -867,7 +867,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD validate_output.
-    DATA exp TYPE rswsourcet.
+    DATA exp TYPE string_table.
 
     APPEND `<?sap.transform simple?>` TO exp.
     APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO exp.
@@ -895,7 +895,7 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
 
     CLASS-DATA st_execution_counter TYPE i.
 
-    DATA exp_json TYPE rswsourcet.
+    DATA exp_json TYPE string_table.
 
     METHODS: structure_with_incl FOR TESTING RAISING cx_static_check,
       structure_include_in_include FOR TESTING RAISING cx_static_check,
@@ -930,7 +930,7 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
           value_mappings TYPE zif_aff_writer=>ty_abap_value_mappings OPTIONAL
           formatting     TYPE zif_aff_writer=>enum_formatting_option DEFAULT zif_aff_writer=>formatting_option-no_formatting
         EXPORTING
-          VALUE(result)  TYPE rswsourcet
+          VALUE(result)  TYPE string_table
           VALUE(json)    TYPE xstring
         RAISING
           cx_aff_root
@@ -1683,7 +1683,7 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
 
   PRIVATE SECTION.
     DATA:
-      exp_transformation TYPE rswsourcet,
+      exp_transformation TYPE string_table,
       cut                TYPE REF TO zcl_aff_writer_xslt,
       test_generator     TYPE REF TO zcl_aff_generator,
       st_root_name       TYPE string VALUE 'root' ##NO_TEXT,
@@ -1692,7 +1692,7 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
     METHODS: setup,
       validate_output
         IMPORTING
-          act          TYPE rswsourcet
+          act          TYPE string_table
           no_log_check TYPE abap_boolean DEFAULT abap_false,
       simple_integer FOR TESTING RAISING cx_static_check,
       simple_string FOR TESTING RAISING cx_static_check,
@@ -2722,7 +2722,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD simple_element_with_callack.
     DATA test_type TYPE zcl_aff_test_types=>string_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE rswsourcet(
+    DATA(exp_schema) = VALUE string_table(
 ( `  <str>` )
 ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
 ( |      <tt:with-parameter name="string_callback" ref=".{ st_root_name }"/>| )
@@ -2735,7 +2735,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD table_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>table_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE rswsourcet(
+    DATA(exp_schema) = VALUE string_table(
 ( `  <array>` )
 ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
 ( |      <tt:with-parameter name="table_with_callback" ref=".{ st_root_name }"/>| )
@@ -2748,7 +2748,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD table_with_call_of_struc.
     DATA test_type TYPE zcl_aff_test_types=>table_call_of_struc.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE rswsourcet(
+    DATA(exp_schema) = VALUE string_table(
 ( `  <array>` )
 ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
 ( |      <tt:with-parameter name="table_call_of_struc" ref=".{ st_root_name }"/>| )
@@ -2761,7 +2761,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD table_with_call_of_table.
     DATA test_type TYPE zcl_aff_test_types=>table_call_of_table.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE rswsourcet(
+    DATA(exp_schema) = VALUE string_table(
 ( `  <array>` )
 ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
 ( |      <tt:with-parameter name="table_call_of_table" ref=".{ st_root_name }"/>| )
@@ -2774,7 +2774,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE rswsourcet(
+    DATA(exp_schema) = VALUE string_table(
 ( `  <object>` )
 ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
 ( |      <tt:with-parameter name="structure_with_callback" ref=".{ st_root_name }"/>| )
@@ -2931,7 +2931,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD validate_output.
-    DATA exp TYPE rswsourcet.
+    DATA exp TYPE string_table.
 
     APPEND `<?sap.transform simple?>` TO exp.
     APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO exp.
@@ -2962,7 +2962,7 @@ RISK LEVEL DANGEROUS.
 
     CLASS-DATA st_execution_counter TYPE i.
 
-    DATA exp_json TYPE rswsourcet.
+    DATA exp_json TYPE string_table.
     DATA manually_changed_json TYPE string.
 
     METHODS: simple_struc_with_extra_field FOR TESTING RAISING cx_static_check,
@@ -3019,7 +3019,7 @@ RISK LEVEL DANGEROUS.
         IMPORTING
           test_type     TYPE data
         EXPORTING
-          VALUE(result) TYPE rswsourcet
+          VALUE(result) TYPE string_table
           VALUE(json)   TYPE xstring
         RAISING
           cx_aff_root
