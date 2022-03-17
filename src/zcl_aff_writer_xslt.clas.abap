@@ -686,7 +686,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_open_tag( line = |<tt:call-method class="{ name_of_callback_class }" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">| ).
     DATA(parameter_name_to_lower) = to_lower( parameter_name ).
     write_tag( line = |<tt:with-parameter name="{ parameter_name_to_lower }" ref="{ ref_name }"/>| ).
-    write_closing_tag( '</tt:call-method>').
+    write_closing_tag( '</tt:call-method>' ).
   ENDMETHOD.
 
 

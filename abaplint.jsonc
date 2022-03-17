@@ -17,7 +17,7 @@
   "syntax": {
     "version": "v755",
     "errorNamespace": "^(Z|Y|LCL_|TY_|LIF_)",
-    "globalConstants": ["seoc_clstype_interface", "seoc_clstype_class"]
+    "globalConstants": ["seoc_clstype_interface", "seoc_clstype_class", "srext_ext_xslt_source"]
   },
   "rules": {
     "7bit_ascii": true,
@@ -27,7 +27,9 @@
     "ambiguous_statement": true,
     "avoid_use": false,
     "begin_end_names": true,
-    "begin_single_include": true,
+    "begin_single_include": {
+      "exclude": ["testclasses"]
+    },
     "call_transaction_authority_check": true,
     "chain_mainly_declarations": true,
     "check_abstract": true,
@@ -46,7 +48,7 @@
     "constructor_visibility_public": true,
     "contains_tab": true,
     "cyclomatic_complexity": true,
-    "dangerous_statement": true,
+    "dangerous_statement": false,
     "db_operation_in_loop": true,
     "definitions_top": false,
     "description_empty": false,
@@ -55,7 +57,7 @@
     "empty_line_in_statement": false,
     "empty_statement": true,
     "empty_structure": true,
-    "exit_or_check": true,
+    "exit_or_check": false,
     "exporting": true,
     "forbidden_identifier": true,
     "forbidden_pseudo_and_pragma": true,

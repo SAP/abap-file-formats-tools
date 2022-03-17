@@ -1,516 +1,516 @@
-*interface lif_test_types.
-*  types:
-*    element type string.
-*
-*  types:
-*    begin of structure,
-*      element_1 type i,
-*      element_2 type element,
-*    end of structure.
-*
-*  types:
-*    begin of include,
-*      include_element_1 type string,
-*      include_element_2 type i,
-*    end of include.
-*
-*  types:
-*    begin of structure_with_include.
-*      include type include.
-*  types element_1 type i.
-*  types element_2 type element.
-*  types end of structure_with_include.
-*
-*  types:
-*    begin of include_in_include.
-*      include type include.
-*types end of include_in_include.
-*
-*  types:
-*    begin of structure_include_in_include.
-*      include type include_in_include.
-*  types element type string.
-*  types end of structure_include_in_include.
-*
-*  types:
-*    begin of structure_in_structure,
-*      structure type structure,
-*      element   type element,
-*    end of structure_in_structure.
-*
-*  types:
-*    table_structure type standard table of structure with default key.
-*
-*  types:
-*    table_build_in_type type standard table of string with default key.
-*
-*  types:
-*    begin of structure_with_table,
-*      table type table_structure,
-*    end of structure_with_table.
-*
-*  types:
-*    begin of include_table.
-*      include type structure_with_table.
-*  types include_element_1 type i.
-*  types end of include_table.
-*
-*  types:
-*    table_in_table type standard table of table_build_in_type with default key.
-*
-*  types:
-*    begin of nested_table,
-*      second_table type table_build_in_type,
-*    end of nested_table,
-*    first_table_type type standard table of nested_table with default key,
-*    begin of struc_tab_struc_tab,
-*      first_table type first_table_type,
-*    end of struc_tab_struc_tab.
-*
-*  types:
-*    begin of ty_component,
-*      name        type seocmpname,
-*      description type seodescr,
-*    end of ty_component,
-*    ty_components    type sorted table of ty_component with unique key name,
-*    ty_subcomponents type sorted table of ty_component with unique key name,
-*    begin of ty_method,
-*      name        type seocmpname,
-*      description type seodescr,
-*      parameters  type ty_subcomponents,
-*      exceptions  type ty_subcomponents,
-*    end of ty_method,
-*    ty_methods type sorted table of ty_method with unique key name,
-*    begin of ty_event,
-*      name        type seocmpname,
-*      description type seodescr,
-*      parameters  type ty_subcomponents,
-*    end of ty_event,
-*    ty_events type sorted table of ty_event with unique key name,
-*    begin of ty_clif_properties,
-*      attributes type ty_components,
-*      methods    type ty_methods,
-*      events     type ty_events,
-*      types      type ty_components,
-*    end of ty_clif_properties.
-*
-*  types:
-*    begin of ty_class_properties,
-*      format_version type if_aff_types_v1=>ty_format_version,
-*      header         type if_aff_types_v1=>ty_header_60_src,
-*      category       type vseoclass-category,
-*      fixpt          type vseoclass-fixpt,
-*      msg_id         type vseoclass-msg_id.
-*      include type ty_clif_properties.
-*types end of ty_class_properties.
-*
-*  types:
-*    begin of ty_header,
-*      description type c length 30,
-*    end of ty_header.
-*  types:
-*    begin of ty_abap_type,
-*      format_version  type string,
-*      header          type ty_header,
-*      other_component type i,
-*    end of ty_abap_type.
-*  types:
-*    begin of ty_abap_type_no_header,
-*      format_version  type string,
-*      other_component type i,
-*    end of ty_abap_type_no_header.
-*  types:
-*    begin of ty_abap_type_no_format,
-*      header          type ty_header,
-*      other_component type i,
-*    end of ty_abap_type_no_format.
-*
-*endinterface.
-*
-*class lcl_unit_test_writer definition create public for testing inheriting from cl_aff_type_writer final.
-*
-*  public section.
-*  protected section.
-*    methods:
-*      write_element redefinition,
-*      open_structure redefinition,
-*      close_structure redefinition,
-*      open_table redefinition,
-*      write_tag redefinition,
-*      close_table redefinition.
-*
-*  private section.
-*    data:
-*      depth          type i value 0.
-*
-*endclass.
-*
-*class lcl_unit_test_writer implementation.
-*
-*  method write_element.
-*    append |{ repeat( val = ` `  occ = 4 * depth ) }{ element_name } : { element_description->type_kind }| to output.
-*  endmethod.
-*
-*  method close_structure.
-*    append |{ repeat( val = ` `  occ = 4 * ( depth - 1 ) ) }CLOSE_STRUCTURE { structure_name }| to output.
-*    depth -= 1.
-*  endmethod.
-*
-*  method close_table.
-*    append |{ repeat( val = ` `  occ = 4 * ( depth - 1 ) ) }CLOSE_TABLE { table_name }| to output.
-*    depth -= 1.
-*  endmethod.
-*
-*  method open_structure.
-*    append |{ repeat( val = ` `  occ = 4 * depth ) }OPEN_STRUCTURE { structure_name }| to output.
-*    depth += 1.
-*  endmethod.
-*
-*  method open_table.
-*    append |{ repeat( val = ` `  occ = 4 * depth ) }OPEN_TABLE { table_name }| to output.
-*    depth += 1.
-*  endmethod.
-*
-*  method write_tag ##NEEDED.
-*  endmethod.
-*
-*
-*endclass.
-*
-*class ltcl_type_generator definition final for testing
-*  duration short
-*  risk level harmless.
-*
-*  public section.
-*    interfaces lif_test_types.
-*
-*  private section.
-*    data:
-*      cut        type ref to zcl_aff_generator,
-*      exp_result type rswsourcet.
-*
-*    methods:
-*      element for testing raising cx_static_check,
-*      structure for testing raising cx_static_check,
-*      include for testing raising cx_static_check,
-*      table_build_in_type for testing raising cx_static_check,
-*      include_in_include for testing raising cx_static_check,
-*      structure_in_structure for testing raising cx_static_check,
-*      table_structure for testing raising cx_static_check,
-*      structure_with_table for testing raising cx_static_check,
-*      include_table for testing raising cx_static_check,
-*      table_in_table for testing raising cx_static_check,
-*      struc_tab_struc_tab for testing raising cx_static_check,
-*      unsupported_type for testing raising cx_static_check,
-*      complex_structure_aff_class for testing raising cx_static_check,
-*      mandatory_fields for testing raising cx_static_check,
-*      no_header for testing raising cx_static_check,
-*      no_format_version for testing raising cx_static_check,
-*      no_structure for testing raising cx_static_check,
-*      setup,
-*      assert_output_equals
-*        importing
-*          act type rswsourcet
-*          exp type rswsourcet.
-*endclass.
-*
-*class zcl_aff_generator definition local friends ltcl_type_generator.
-*
-*class ltcl_type_generator implementation.
-*
-*  method setup.
-*    cut = new zcl_aff_generator( new lcl_unit_test_writer( ) ).
-*  endmethod.
-*
-*  method element.
-*    data test_data type lif_test_types=>element.
-*    data(act_result) = cut->generate_type( test_data ).
-*
-*    exp_result = value #( ( `ELEMENT : g` ) ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method structure.
-*    data test_data type lif_test_types=>structure.
-*    data(act_result) = cut->generate_type( test_data ).
-*
-*    exp_result = value #(
-*      ( `OPEN_STRUCTURE STRUCTURE` )
-*      ( `    ELEMENT_1 : I` )
-*      ( `    ELEMENT_2 : g` )
-*      ( `CLOSE_STRUCTURE STRUCTURE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method include.
-*    data test_data type lif_test_types=>structure_with_include.
-*    data(act_result) = cut->generate_type( test_data ).
-*
-*    exp_result = value #(
-*      ( `OPEN_STRUCTURE STRUCTURE_WITH_INCLUDE` )
-*      ( `    INCLUDE_ELEMENT_1 : g` )
-*      ( `    INCLUDE_ELEMENT_2 : I` )
-*      ( `    ELEMENT_1 : I` )
-*      ( `    ELEMENT_2 : g` )
-*      ( `CLOSE_STRUCTURE STRUCTURE_WITH_INCLUDE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method include_in_include.
-*    data test_data type lif_test_types=>structure_include_in_include.
-*    data(act_result) = cut->generate_type( test_data ).
-*
-*    exp_result = value #(
-*      ( `OPEN_STRUCTURE STRUCTURE_INCLUDE_IN_INCLUDE` )
-*      ( `    INCLUDE_ELEMENT_1 : g` )
-*      ( `    INCLUDE_ELEMENT_2 : I` )
-*      ( `    ELEMENT : g` )
-*      ( `CLOSE_STRUCTURE STRUCTURE_INCLUDE_IN_INCLUDE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method structure_in_structure.
-*    data test_data type lif_test_types=>structure_in_structure.
-*    data(act_result) = cut->generate_type( test_data ).
-*
-*    exp_result = value #(
-*      ( `OPEN_STRUCTURE STRUCTURE_IN_STRUCTURE` )
-*      ( `    OPEN_STRUCTURE STRUCTURE` )
-*      ( `        ELEMENT_1 : I` )
-*      ( `        ELEMENT_2 : g` )
-*      ( `    CLOSE_STRUCTURE STRUCTURE` )
-*      ( `    ELEMENT : g` )
-*      ( `CLOSE_STRUCTURE STRUCTURE_IN_STRUCTURE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method table_build_in_type.
-*    data table_build_in_type type lif_test_types=>table_build_in_type.
-*
-*    data(act_result) = cut->generate_type( table_build_in_type ).
-*
-*    exp_result = value #(
-*      ( `OPEN_TABLE TABLE_BUILD_IN_TYPE` )
-*      ( `    STRING : g` )
-*      ( `CLOSE_TABLE TABLE_BUILD_IN_TYPE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method table_structure.
-*    data table_structure type lif_test_types=>table_structure.
-*    data(act_result) = cut->generate_type( table_structure ).
-*
-*    exp_result = value #(
-*      ( `OPEN_TABLE TABLE_STRUCTURE` )
-*      ( `    OPEN_STRUCTURE STRUCTURE` )
-*      ( `        ELEMENT_1 : I` )
-*      ( `        ELEMENT_2 : g` )
-*      ( `    CLOSE_STRUCTURE STRUCTURE` )
-*      ( `CLOSE_TABLE TABLE_STRUCTURE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method structure_with_table.
-*    data structure_with_table type lif_test_types=>structure_with_table.
-*    data(act_result) = cut->generate_type( structure_with_table ).
-*
-*    exp_result = value #(
-*      ( `OPEN_STRUCTURE STRUCTURE_WITH_TABLE` )
-*      ( `    OPEN_TABLE TABLE` )
-*      ( `        OPEN_STRUCTURE STRUCTURE` )
-*      ( `            ELEMENT_1 : I` )
-*      ( `            ELEMENT_2 : g` )
-*      ( `        CLOSE_STRUCTURE STRUCTURE` )
-*      ( `    CLOSE_TABLE TABLE` )
-*      ( `CLOSE_STRUCTURE STRUCTURE_WITH_TABLE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method include_table.
-*    data include_table type lif_test_types=>include_table.
-*    data(act_result) = cut->generate_type( include_table ).
-*
-*    exp_result = value #(
-*      ( `OPEN_STRUCTURE INCLUDE_TABLE` )
-*      ( `    OPEN_TABLE TABLE` )
-*      ( `        OPEN_STRUCTURE STRUCTURE` )
-*      ( `            ELEMENT_1 : I` )
-*      ( `            ELEMENT_2 : g` )
-*      ( `        CLOSE_STRUCTURE STRUCTURE` )
-*      ( `    CLOSE_TABLE TABLE` )
-*      ( `    INCLUDE_ELEMENT_1 : I` )
-*      ( `CLOSE_STRUCTURE INCLUDE_TABLE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method table_in_table.
-*    data table_in_table type lif_test_types=>table_in_table.
-*    data(act_result) = cut->generate_type( table_in_table ).
-*
-*    exp_result = value #(
-*      ( `OPEN_TABLE TABLE_IN_TABLE` )
-*      ( `    OPEN_TABLE TABLE_BUILD_IN_TYPE` )
-*      ( `        STRING : g` )
-*      ( `    CLOSE_TABLE TABLE_BUILD_IN_TYPE` )
-*      ( `CLOSE_TABLE TABLE_IN_TABLE` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method struc_tab_struc_tab.
-*    data struc_tab_struc_tab type lif_test_types=>struc_tab_struc_tab.
-*    data(act_result) = cut->generate_type( struc_tab_struc_tab ).
-*
-*    exp_result = value #(
-*      ( `OPEN_STRUCTURE STRUC_TAB_STRUC_TAB` )
-*      ( `    OPEN_TABLE FIRST_TABLE` )
-*      ( `        OPEN_STRUCTURE NESTED_TABLE` )
-*      ( `            OPEN_TABLE SECOND_TABLE` )
-*      ( `                STRING : g` )
-*      ( `            CLOSE_TABLE SECOND_TABLE` )
-*      ( `        CLOSE_STRUCTURE NESTED_TABLE` )
-*      ( `    CLOSE_TABLE FIRST_TABLE` )
-*      ( `CLOSE_STRUCTURE STRUC_TAB_STRUC_TAB` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method unsupported_type.
-*    data class_reference type ref to zcl_aff_generator ##NEEDED.
-*    try.
-*        data(act_result) = cut->generate_type( class_reference ).
-*        cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
-*      catch cx_aff_root into data(exception) ##NO_HANDLER.
-*    endtry.
-*
-*    cl_abap_unit_assert=>assert_initial( act_result ).
-*    cl_abap_unit_assert=>assert_equals( exp = 'SAFF_CORE' act = exception->if_t100_message~t100key-msgid ).
-*    cl_abap_unit_assert=>assert_equals( exp = 100 act = exception->if_t100_message~t100key-msgno ).
-*  endmethod.
-*
-*  method complex_structure_aff_class.
-*    data aff_class type lif_test_types=>ty_class_properties.
-*
-*    data(act_result) = cut->generate_type( aff_class ).
-*
-*    exp_result = value #(
-*      ( `OPEN_STRUCTURE TY_CLASS_PROPERTIES` )
-*
-*      ( `    FORMAT_VERSION : g` )
-*
-*      ( `    OPEN_STRUCTURE HEADER` )
-*      ( `        DESCRIPTION : C` )
-*      ( `        ORIGINAL_LANGUAGE : C` )
-*      ( `        ABAP_LANGUAGE_VERSION : C` )
-*      ( `    CLOSE_STRUCTURE HEADER` )
-*
-*      ( `    CATEGORY : N` )
-*      ( `    FIXPT : C` )
-*      ( `    MSG_ID : C` )
-*
-*      ( `    OPEN_TABLE ATTRIBUTES` )
-*      ( `        OPEN_STRUCTURE TY_COMPONENT` )
-*      ( `            NAME : C` )
-*      ( `            DESCRIPTION : C` )
-*      ( `        CLOSE_STRUCTURE TY_COMPONENT` )
-*      ( `    CLOSE_TABLE ATTRIBUTES` )
-*
-*      ( `    OPEN_TABLE METHODS` )
-*      ( `        OPEN_STRUCTURE TY_METHOD` )
-*      ( `            NAME : C` )
-*      ( `            DESCRIPTION : C` )
-*      ( `            OPEN_TABLE PARAMETERS` )
-*      ( `                OPEN_STRUCTURE TY_COMPONENT` )
-*      ( `                    NAME : C` )
-*      ( `                    DESCRIPTION : C` )
-*      ( `                CLOSE_STRUCTURE TY_COMPONENT` )
-*      ( `            CLOSE_TABLE PARAMETERS` )
-*      ( `            OPEN_TABLE EXCEPTIONS` )
-*      ( `                OPEN_STRUCTURE TY_COMPONENT` )
-*      ( `                    NAME : C` )
-*      ( `                    DESCRIPTION : C` )
-*      ( `                CLOSE_STRUCTURE TY_COMPONENT` )
-*      ( `            CLOSE_TABLE EXCEPTIONS` )
-*      ( `        CLOSE_STRUCTURE TY_METHOD` )
-*      ( `    CLOSE_TABLE METHODS` )
-*
-*      ( `    OPEN_TABLE EVENTS` )
-*      ( `        OPEN_STRUCTURE TY_EVENT` )
-*      ( `            NAME : C` )
-*      ( `            DESCRIPTION : C` )
-*      ( `            OPEN_TABLE PARAMETERS` )
-*      ( `                OPEN_STRUCTURE TY_COMPONENT` )
-*      ( `                    NAME : C` )
-*      ( `                    DESCRIPTION : C` )
-*      ( `                CLOSE_STRUCTURE TY_COMPONENT` )
-*      ( `            CLOSE_TABLE PARAMETERS` )
-*      ( `        CLOSE_STRUCTURE TY_EVENT` )
-*      ( `    CLOSE_TABLE EVENTS` )
-*
-*      ( `    OPEN_TABLE TYPES` )
-*      ( `        OPEN_STRUCTURE TY_COMPONENT` )
-*      ( `            NAME : C` )
-*      ( `            DESCRIPTION : C` )
-*      ( `        CLOSE_STRUCTURE TY_COMPONENT` )
-*      ( `    CLOSE_TABLE TYPES` )
-*
-*      ( `CLOSE_STRUCTURE TY_CLASS_PROPERTIES` )
-*    ).
-*    assert_output_equals( exp = exp_result act = act_result ).
-*  endmethod.
-*
-*  method mandatory_fields.
-*    data abap_type type lif_test_types=>ty_abap_type.
-*    cut->generate_type( abap_type ).
-*    data(log) = cut->get_log( ).
-*    cl_aff_unit_test_helper=>assert_log_has_no_message( log ).
-*  endmethod.
-*
-*  method no_header.
-*    data no_header type lif_test_types=>ty_abap_type_no_header.
-*    cut->generate_type( no_header ).
-*    data(log) = cut->get_log( ).
-*    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-*                                                      exp_message = value #( msgid = 'SAFF_CORE'
-*                                                                             msgno = 124 )
-*                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-*  endmethod.
-*
-*  method no_format_version.
-*    data no_format_version type lif_test_types=>ty_abap_type_no_format.
-*    cut->generate_type( no_format_version ).
-*    data(log) = cut->get_log( ).
-*    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-*                                                      exp_message = value #( msgid = 'SAFF_CORE'
-*                                                                             msgno = 124 )
-*                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-*  endmethod.
-*
-*  method no_structure.
-*    data no_structure type lif_test_types=>table_in_table.
-*    cut->generate_type( no_structure ).
-*    data(log) = cut->get_log( ).
-*    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-*                                                      exp_message = value #( msgid = 'SAFF_CORE'
-*                                                                             msgno = 123 )
-*                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-*  endmethod.
-*
-*
-*  method assert_output_equals.
-*    cl_abap_unit_assert=>assert_equals( exp = lines( exp ) act = lines( act ) msg = `Number of entries doesn't match expectation` ).
-*    loop at exp assigning field-symbol(<exp_line>).
-*      data(act_line) = act[ sy-tabix ].
-*      cl_abap_unit_assert=>assert_equals( exp = <exp_line> act = act_line msg = |line { sy-tabix } doesn't match expectation| quit = if_abap_unit_constant=>quit-no ).
-*    endloop.
-*  endmethod.
-*
-*endclass.
+INTERFACE lif_test_types.
+  TYPES:
+    element TYPE string.
+
+  TYPES:
+    BEGIN OF structure,
+      element_1 TYPE i,
+      element_2 TYPE element,
+    END OF structure.
+
+  TYPES:
+    BEGIN OF include,
+      include_element_1 TYPE string,
+      include_element_2 TYPE i,
+    END OF include.
+
+  TYPES:
+    BEGIN OF structure_with_include.
+      INCLUDE TYPE include.
+  TYPES element_1 TYPE i.
+  TYPES element_2 TYPE element.
+  TYPES END OF structure_with_include.
+
+  TYPES:
+    BEGIN OF include_in_include.
+      INCLUDE TYPE include.
+  TYPES END OF include_in_include.
+
+  TYPES:
+    BEGIN OF structure_include_in_include.
+      INCLUDE TYPE include_in_include.
+  TYPES element TYPE string.
+  TYPES END OF structure_include_in_include.
+
+  TYPES:
+    BEGIN OF structure_in_structure,
+      structure TYPE structure,
+      element   TYPE element,
+    END OF structure_in_structure.
+
+  TYPES:
+    table_structure TYPE STANDARD TABLE OF structure WITH DEFAULT KEY.
+
+  TYPES:
+    table_build_in_type TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
+
+  TYPES:
+    BEGIN OF structure_with_table,
+      table TYPE table_structure,
+    END OF structure_with_table.
+
+  TYPES:
+    BEGIN OF include_table.
+      INCLUDE TYPE structure_with_table.
+  TYPES include_element_1 TYPE i.
+  TYPES END OF include_table.
+
+  TYPES:
+    table_in_table TYPE STANDARD TABLE OF table_build_in_type WITH DEFAULT KEY.
+
+  TYPES:
+    BEGIN OF nested_table,
+      second_table TYPE table_build_in_type,
+    END OF nested_table,
+    first_table_type TYPE STANDARD TABLE OF nested_table WITH DEFAULT KEY,
+    BEGIN OF struc_tab_struc_tab,
+      first_table TYPE first_table_type,
+    END OF struc_tab_struc_tab.
+
+  TYPES:
+    BEGIN OF ty_component,
+      name        TYPE seocmpname,
+      description TYPE seodescr,
+    END OF ty_component,
+    ty_components    TYPE SORTED TABLE OF ty_component WITH UNIQUE KEY name,
+    ty_subcomponents TYPE SORTED TABLE OF ty_component WITH UNIQUE KEY name,
+    BEGIN OF ty_method,
+      name        TYPE seocmpname,
+      description TYPE seodescr,
+      parameters  TYPE ty_subcomponents,
+      exceptions  TYPE ty_subcomponents,
+    END OF ty_method,
+    ty_methods TYPE SORTED TABLE OF ty_method WITH UNIQUE KEY name,
+    BEGIN OF ty_event,
+      name        TYPE seocmpname,
+      description TYPE seodescr,
+      parameters  TYPE ty_subcomponents,
+    END OF ty_event,
+    ty_events TYPE SORTED TABLE OF ty_event WITH UNIQUE KEY name,
+    BEGIN OF ty_clif_properties,
+      attributes TYPE ty_components,
+      methods    TYPE ty_methods,
+      events     TYPE ty_events,
+      types      TYPE ty_components,
+    END OF ty_clif_properties.
+
+  TYPES:
+    BEGIN OF ty_class_properties,
+      format_version TYPE if_aff_types_v1=>ty_format_version,
+      header         TYPE if_aff_types_v1=>ty_header_60_src,
+      category       TYPE vseoclass-category,
+      fixpt          TYPE vseoclass-fixpt,
+      msg_id         TYPE vseoclass-msg_id.
+      INCLUDE TYPE ty_clif_properties.
+  TYPES END OF ty_class_properties.
+
+  TYPES:
+    BEGIN OF ty_header,
+      description TYPE c LENGTH 30,
+    END OF ty_header.
+  TYPES:
+    BEGIN OF ty_abap_type,
+      format_version  TYPE string,
+      header          TYPE ty_header,
+      other_component TYPE i,
+    END OF ty_abap_type.
+  TYPES:
+    BEGIN OF ty_abap_type_no_header,
+      format_version  TYPE string,
+      other_component TYPE i,
+    END OF ty_abap_type_no_header.
+  TYPES:
+    BEGIN OF ty_abap_type_no_format,
+      header          TYPE ty_header,
+      other_component TYPE i,
+    END OF ty_abap_type_no_format.
+
+ENDINTERFACE.
+
+CLASS ltcl_unit_test_writer DEFINITION CREATE PUBLIC FOR TESTING INHERITING FROM zcl_aff_writer FINAL.
+
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+    METHODS:
+      write_element REDEFINITION,
+      open_structure REDEFINITION,
+      close_structure REDEFINITION,
+      open_table REDEFINITION,
+      write_tag REDEFINITION,
+      close_table REDEFINITION.
+
+  PRIVATE SECTION.
+    DATA:
+      depth          TYPE i VALUE 0.
+
+ENDCLASS.
+
+CLASS ltcl_unit_test_writer IMPLEMENTATION.
+
+  METHOD write_element.
+    APPEND |{ repeat( val = ` `  occ = 4 * depth ) }{ element_name } : { element_description->type_kind }| TO output.
+  ENDMETHOD.
+
+  METHOD close_structure.
+    APPEND |{ repeat( val = ` `  occ = 4 * ( depth - 1 ) ) }CLOSE_STRUCTURE { structure_name }| TO output.
+    depth -= 1.
+  ENDMETHOD.
+
+  METHOD close_table.
+    APPEND |{ repeat( val = ` `  occ = 4 * ( depth - 1 ) ) }CLOSE_TABLE { table_name }| TO output.
+    depth -= 1.
+  ENDMETHOD.
+
+  METHOD open_structure.
+    APPEND |{ repeat( val = ` `  occ = 4 * depth ) }OPEN_STRUCTURE { structure_name }| TO output.
+    depth += 1.
+  ENDMETHOD.
+
+  METHOD open_table.
+    APPEND |{ repeat( val = ` `  occ = 4 * depth ) }OPEN_TABLE { table_name }| TO output.
+    depth += 1.
+  ENDMETHOD.
+
+  METHOD write_tag ##NEEDED.
+  ENDMETHOD.
+
+
+ENDCLASS.
+
+CLASS ltcl_type_generator DEFINITION FINAL FOR TESTING
+  DURATION SHORT
+  RISK LEVEL HARMLESS.
+
+  PUBLIC SECTION.
+    INTERFACES lif_test_types.
+
+  PRIVATE SECTION.
+    DATA:
+      cut        TYPE REF TO zcl_aff_generator,
+      exp_result TYPE rswsourcet.
+
+    METHODS:
+      element FOR TESTING RAISING cx_static_check,
+      structure FOR TESTING RAISING cx_static_check,
+      include FOR TESTING RAISING cx_static_check,
+      table_build_in_type FOR TESTING RAISING cx_static_check,
+      include_in_include FOR TESTING RAISING cx_static_check,
+      structure_in_structure FOR TESTING RAISING cx_static_check,
+      table_structure FOR TESTING RAISING cx_static_check,
+      structure_with_table FOR TESTING RAISING cx_static_check,
+      include_table FOR TESTING RAISING cx_static_check,
+      table_in_table FOR TESTING RAISING cx_static_check,
+      struc_tab_struc_tab FOR TESTING RAISING cx_static_check,
+      unsupported_type FOR TESTING RAISING cx_static_check,
+      complex_structure_aff_class FOR TESTING RAISING cx_static_check,
+      mandatory_fields FOR TESTING RAISING cx_static_check,
+      no_header FOR TESTING RAISING cx_static_check,
+      no_format_version FOR TESTING RAISING cx_static_check,
+      no_structure FOR TESTING RAISING cx_static_check,
+      setup,
+      assert_output_equals
+        IMPORTING
+          act TYPE rswsourcet
+          exp TYPE rswsourcet.
+ENDCLASS.
+
+CLASS zcl_aff_generator DEFINITION LOCAL FRIENDS ltcl_type_generator.
+
+CLASS ltcl_type_generator IMPLEMENTATION.
+
+  METHOD setup.
+    cut = NEW zcl_aff_generator( NEW ltcl_unit_test_writer( ) ).
+  ENDMETHOD.
+
+  METHOD element.
+    DATA test_data TYPE lif_test_types=>element.
+    DATA(act_result) = cut->generate_type( test_data ).
+
+    exp_result = VALUE #( ( `ELEMENT : g` ) ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD structure.
+    DATA test_data TYPE lif_test_types=>structure.
+    DATA(act_result) = cut->generate_type( test_data ).
+
+    exp_result = VALUE #(
+      ( `OPEN_STRUCTURE STRUCTURE` )
+      ( `    ELEMENT_1 : I` )
+      ( `    ELEMENT_2 : g` )
+      ( `CLOSE_STRUCTURE STRUCTURE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD include.
+    DATA test_data TYPE lif_test_types=>structure_with_include.
+    DATA(act_result) = cut->generate_type( test_data ).
+
+    exp_result = VALUE #(
+      ( `OPEN_STRUCTURE STRUCTURE_WITH_INCLUDE` )
+      ( `    INCLUDE_ELEMENT_1 : g` )
+      ( `    INCLUDE_ELEMENT_2 : I` )
+      ( `    ELEMENT_1 : I` )
+      ( `    ELEMENT_2 : g` )
+      ( `CLOSE_STRUCTURE STRUCTURE_WITH_INCLUDE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD include_in_include.
+    DATA test_data TYPE lif_test_types=>structure_include_in_include.
+    DATA(act_result) = cut->generate_type( test_data ).
+
+    exp_result = VALUE #(
+      ( `OPEN_STRUCTURE STRUCTURE_INCLUDE_IN_INCLUDE` )
+      ( `    INCLUDE_ELEMENT_1 : g` )
+      ( `    INCLUDE_ELEMENT_2 : I` )
+      ( `    ELEMENT : g` )
+      ( `CLOSE_STRUCTURE STRUCTURE_INCLUDE_IN_INCLUDE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD structure_in_structure.
+    DATA test_data TYPE lif_test_types=>structure_in_structure.
+    DATA(act_result) = cut->generate_type( test_data ).
+
+    exp_result = VALUE #(
+      ( `OPEN_STRUCTURE STRUCTURE_IN_STRUCTURE` )
+      ( `    OPEN_STRUCTURE STRUCTURE` )
+      ( `        ELEMENT_1 : I` )
+      ( `        ELEMENT_2 : g` )
+      ( `    CLOSE_STRUCTURE STRUCTURE` )
+      ( `    ELEMENT : g` )
+      ( `CLOSE_STRUCTURE STRUCTURE_IN_STRUCTURE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD table_build_in_type.
+    DATA table_build_in_type TYPE lif_test_types=>table_build_in_type.
+
+    DATA(act_result) = cut->generate_type( table_build_in_type ).
+
+    exp_result = VALUE #(
+      ( `OPEN_TABLE TABLE_BUILD_IN_TYPE` )
+      ( `    STRING : g` )
+      ( `CLOSE_TABLE TABLE_BUILD_IN_TYPE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD table_structure.
+    DATA table_structure TYPE lif_test_types=>table_structure.
+    DATA(act_result) = cut->generate_type( table_structure ).
+
+    exp_result = VALUE #(
+      ( `OPEN_TABLE TABLE_STRUCTURE` )
+      ( `    OPEN_STRUCTURE STRUCTURE` )
+      ( `        ELEMENT_1 : I` )
+      ( `        ELEMENT_2 : g` )
+      ( `    CLOSE_STRUCTURE STRUCTURE` )
+      ( `CLOSE_TABLE TABLE_STRUCTURE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD structure_with_table.
+    DATA structure_with_table TYPE lif_test_types=>structure_with_table.
+    DATA(act_result) = cut->generate_type( structure_with_table ).
+
+    exp_result = VALUE #(
+      ( `OPEN_STRUCTURE STRUCTURE_WITH_TABLE` )
+      ( `    OPEN_TABLE TABLE` )
+      ( `        OPEN_STRUCTURE STRUCTURE` )
+      ( `            ELEMENT_1 : I` )
+      ( `            ELEMENT_2 : g` )
+      ( `        CLOSE_STRUCTURE STRUCTURE` )
+      ( `    CLOSE_TABLE TABLE` )
+      ( `CLOSE_STRUCTURE STRUCTURE_WITH_TABLE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD include_table.
+    DATA include_table TYPE lif_test_types=>include_table.
+    DATA(act_result) = cut->generate_type( include_table ).
+
+    exp_result = VALUE #(
+      ( `OPEN_STRUCTURE INCLUDE_TABLE` )
+      ( `    OPEN_TABLE TABLE` )
+      ( `        OPEN_STRUCTURE STRUCTURE` )
+      ( `            ELEMENT_1 : I` )
+      ( `            ELEMENT_2 : g` )
+      ( `        CLOSE_STRUCTURE STRUCTURE` )
+      ( `    CLOSE_TABLE TABLE` )
+      ( `    INCLUDE_ELEMENT_1 : I` )
+      ( `CLOSE_STRUCTURE INCLUDE_TABLE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD table_in_table.
+    DATA table_in_table TYPE lif_test_types=>table_in_table.
+    DATA(act_result) = cut->generate_type( table_in_table ).
+
+    exp_result = VALUE #(
+      ( `OPEN_TABLE TABLE_IN_TABLE` )
+      ( `    OPEN_TABLE TABLE_BUILD_IN_TYPE` )
+      ( `        STRING : g` )
+      ( `    CLOSE_TABLE TABLE_BUILD_IN_TYPE` )
+      ( `CLOSE_TABLE TABLE_IN_TABLE` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD struc_tab_struc_tab.
+    DATA struc_tab_struc_tab TYPE lif_test_types=>struc_tab_struc_tab.
+    DATA(act_result) = cut->generate_type( struc_tab_struc_tab ).
+
+    exp_result = VALUE #(
+      ( `OPEN_STRUCTURE STRUC_TAB_STRUC_TAB` )
+      ( `    OPEN_TABLE FIRST_TABLE` )
+      ( `        OPEN_STRUCTURE NESTED_TABLE` )
+      ( `            OPEN_TABLE SECOND_TABLE` )
+      ( `                STRING : g` )
+      ( `            CLOSE_TABLE SECOND_TABLE` )
+      ( `        CLOSE_STRUCTURE NESTED_TABLE` )
+      ( `    CLOSE_TABLE FIRST_TABLE` )
+      ( `CLOSE_STRUCTURE STRUC_TAB_STRUC_TAB` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD unsupported_type.
+    DATA class_reference TYPE REF TO zcl_aff_generator ##NEEDED.
+    TRY.
+        DATA(act_result) = cut->generate_type( class_reference ).
+        cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
+      CATCH cx_aff_root INTO DATA(exception) ##NO_HANDLER.
+    ENDTRY.
+
+    cl_abap_unit_assert=>assert_initial( act_result ).
+    cl_abap_unit_assert=>assert_equals( exp = 'SAFF_CORE' act = exception->if_t100_message~t100key-msgid ).
+    cl_abap_unit_assert=>assert_equals( exp = 100 act = exception->if_t100_message~t100key-msgno ).
+  ENDMETHOD.
+
+  METHOD complex_structure_aff_class.
+    DATA aff_class TYPE lif_test_types=>ty_class_properties.
+
+    DATA(act_result) = cut->generate_type( aff_class ).
+
+    exp_result = VALUE #(
+      ( `OPEN_STRUCTURE TY_CLASS_PROPERTIES` )
+
+      ( `    FORMAT_VERSION : g` )
+
+      ( `    OPEN_STRUCTURE HEADER` )
+      ( `        DESCRIPTION : C` )
+      ( `        ORIGINAL_LANGUAGE : C` )
+      ( `        ABAP_LANGUAGE_VERSION : C` )
+      ( `    CLOSE_STRUCTURE HEADER` )
+
+      ( `    CATEGORY : N` )
+      ( `    FIXPT : C` )
+      ( `    MSG_ID : C` )
+
+      ( `    OPEN_TABLE ATTRIBUTES` )
+      ( `        OPEN_STRUCTURE TY_COMPONENT` )
+      ( `            NAME : C` )
+      ( `            DESCRIPTION : C` )
+      ( `        CLOSE_STRUCTURE TY_COMPONENT` )
+      ( `    CLOSE_TABLE ATTRIBUTES` )
+
+      ( `    OPEN_TABLE METHODS` )
+      ( `        OPEN_STRUCTURE TY_METHOD` )
+      ( `            NAME : C` )
+      ( `            DESCRIPTION : C` )
+      ( `            OPEN_TABLE PARAMETERS` )
+      ( `                OPEN_STRUCTURE TY_COMPONENT` )
+      ( `                    NAME : C` )
+      ( `                    DESCRIPTION : C` )
+      ( `                CLOSE_STRUCTURE TY_COMPONENT` )
+      ( `            CLOSE_TABLE PARAMETERS` )
+      ( `            OPEN_TABLE EXCEPTIONS` )
+      ( `                OPEN_STRUCTURE TY_COMPONENT` )
+      ( `                    NAME : C` )
+      ( `                    DESCRIPTION : C` )
+      ( `                CLOSE_STRUCTURE TY_COMPONENT` )
+      ( `            CLOSE_TABLE EXCEPTIONS` )
+      ( `        CLOSE_STRUCTURE TY_METHOD` )
+      ( `    CLOSE_TABLE METHODS` )
+
+      ( `    OPEN_TABLE EVENTS` )
+      ( `        OPEN_STRUCTURE TY_EVENT` )
+      ( `            NAME : C` )
+      ( `            DESCRIPTION : C` )
+      ( `            OPEN_TABLE PARAMETERS` )
+      ( `                OPEN_STRUCTURE TY_COMPONENT` )
+      ( `                    NAME : C` )
+      ( `                    DESCRIPTION : C` )
+      ( `                CLOSE_STRUCTURE TY_COMPONENT` )
+      ( `            CLOSE_TABLE PARAMETERS` )
+      ( `        CLOSE_STRUCTURE TY_EVENT` )
+      ( `    CLOSE_TABLE EVENTS` )
+
+      ( `    OPEN_TABLE TYPES` )
+      ( `        OPEN_STRUCTURE TY_COMPONENT` )
+      ( `            NAME : C` )
+      ( `            DESCRIPTION : C` )
+      ( `        CLOSE_STRUCTURE TY_COMPONENT` )
+      ( `    CLOSE_TABLE TYPES` )
+
+      ( `CLOSE_STRUCTURE TY_CLASS_PROPERTIES` )
+    ).
+    assert_output_equals( exp = exp_result act = act_result ).
+  ENDMETHOD.
+
+  METHOD mandatory_fields.
+    DATA abap_type TYPE lif_test_types=>ty_abap_type.
+    cut->generate_type( abap_type ).
+    DATA(log) = cut->get_log( ).
+    cl_aff_unit_test_helper=>assert_log_has_no_message( log ).
+  ENDMETHOD.
+
+  METHOD no_header.
+    DATA no_header TYPE lif_test_types=>ty_abap_type_no_header.
+    cut->generate_type( no_header ).
+    DATA(log) = cut->get_log( ).
+    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+                                                                             msgno = 124 )
+                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+  ENDMETHOD.
+
+  METHOD no_format_version.
+    DATA no_format_version TYPE lif_test_types=>ty_abap_type_no_format.
+    cut->generate_type( no_format_version ).
+    DATA(log) = cut->get_log( ).
+    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+                                                                             msgno = 124 )
+                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+  ENDMETHOD.
+
+  METHOD no_structure.
+    DATA no_structure TYPE lif_test_types=>table_in_table.
+    cut->generate_type( no_structure ).
+    DATA(log) = cut->get_log( ).
+    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+                                                                             msgno = 123 )
+                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+  ENDMETHOD.
+
+
+  METHOD assert_output_equals.
+    cl_abap_unit_assert=>assert_equals( exp = lines( exp ) act = lines( act ) msg = `Number of entries doesn't match expectation` ).
+    LOOP AT exp ASSIGNING FIELD-SYMBOL(<exp_line>).
+      DATA(act_line) = act[ sy-tabix ].
+      cl_abap_unit_assert=>assert_equals( exp = <exp_line> act = act_line msg = |line { sy-tabix } doesn't match expectation| quit = if_abap_unit_constant=>quit-no ).
+    ENDLOOP.
+  ENDMETHOD.
+
+ENDCLASS.

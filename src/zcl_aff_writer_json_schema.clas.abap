@@ -259,7 +259,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     write_title_and_description( type_description = element_description check_not_needed = check_not_needed ).
 
     IF element_name = c_format_version.
-      write_tag( `"type": "string",`).
+      write_tag( `"type": "string",` ).
       write_tag( |"const": "{ format_version }",| ).
     ELSE.
       write_tag( |"type": "{ get_json_schema_type( element_name = element_name element_description = element_description json_type = json_type ) }",| ).
@@ -316,16 +316,16 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD handle_enums.
-    write_tag( `"enum": [`) .
+    write_tag( `"enum": [` ) .
     write_enum_properties( enums ).
 
     IF enum_titles IS NOT INITIAL.
-      write_tag( `"enumTitles": [`) .
+      write_tag( `"enumTitles": [` ) .
       write_enum_properties( enum_titles ).
     ENDIF.
 
     DATA(enum_descr) = get_enum_descriptions( element_name = element_name element_description = element_description ).
-    write_tag( `"enumDescriptions": [`) .
+    write_tag( `"enumDescriptions": [` ) .
     write_enum_properties( enum_descr ).
   ENDMETHOD.
 
@@ -541,7 +541,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     write_tag( `"type": "array",` ).
     IF CAST cl_abap_tabledescr( table_description )->has_unique_key = abap_true.
-      write_tag( `"uniqueItems": true,`).
+      write_tag( `"uniqueItems": true,` ).
     ENDIF.
     write_open_tag( `"items": {` ).
   ENDMETHOD.
@@ -706,7 +706,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     write_tag( '"type": "array",' ).
     IF table_description->has_unique_key = abap_true.
-      write_tag( '"uniqueItems": true,').
+      write_tag( '"uniqueItems": true,' ).
     ENDIF.
     write_open_tag( '"items": {' ).
   ENDMETHOD.
