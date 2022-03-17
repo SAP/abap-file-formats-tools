@@ -15,7 +15,7 @@ CLASS lcl_generator_helper DEFINITION
                 object_type     TYPE trobjtype
                 interface_name  TYPE sobj_name
                 type_name       TYPE sobj_name
-      RETURNING VALUE(result)   TYPE rswsourcet
+      RETURNING VALUE(result)   TYPE string_table
       RAISING
                 cx_aff_root.
   PRIVATE SECTION.

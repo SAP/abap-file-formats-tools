@@ -14,7 +14,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
 
   PROTECTED SECTION.
 
-    DATA: st_content TYPE rswsourcet.
+    DATA: st_content TYPE string_table.
 
     METHODS:
       write_open_structure
@@ -52,7 +52,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
 
     DATA:
       st_root_name                  TYPE string,
-      st_template_imports           TYPE rswsourcet,
+      st_template_imports           TYPE string_table,
       next_tag_without_name_and_ref TYPE abap_boolean,
       stack_default_comp_of_struc   TYPE tt_components_with_default,
       ignore_next_elements          TYPE abap_boolean.
