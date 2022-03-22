@@ -83,7 +83,16 @@
     "line_break_style": false,
     "line_length": false,
     "line_only_punc": false,
-    "local_class_naming": true,
+    "local_class_naming": {
+      "exclude": [],
+      "severity": "Error",
+      "patternKind": "required",
+      "ignoreNames": [],
+      "ignorePatterns": [],
+      "local": "^LCL_.+$",
+      "exception": "^LCX_.+$",
+      "test": "^LTC(L|X)_.+$"
+    },
     "local_testclass_location": true,
     "local_variable_names": false,
     "main_file_contents": true,
@@ -109,7 +118,8 @@
     "object_naming": {
       "clas": "^ZC(L|X)\\_AFF\\_",
       "intf": "^ZIF\\_AFF\\_",
-      "prog": "^Z"
+      "prog": "^Z",
+      "msag": "^ZAFF\\_",
     },
     "obsolete_statement": true,
     "omit_parameter_name": false,
