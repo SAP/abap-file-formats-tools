@@ -24,7 +24,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-  TYPES END OF include_in_include.
+TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -102,7 +102,7 @@ INTERFACE lif_test_types.
       fixpt          TYPE vseoclass-fixpt,
       msg_id         TYPE vseoclass-msg_id.
       INCLUDE TYPE ty_clif_properties.
-  TYPES END OF ty_class_properties.
+TYPES END OF ty_class_properties.
 
   TYPES:
     BEGIN OF ty_header,
@@ -388,11 +388,11 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     TRY.
         DATA(act_result) = cut->generate_type( class_reference ).
         cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
-      CATCH cx_aff_root INTO DATA(exception) ##NO_HANDLER.
+      CATCH zcx_aff_tools INTO DATA(exception) ##NO_HANDLER.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_initial( act_result ).
-    cl_abap_unit_assert=>assert_equals( exp = 'SAFF_CORE' act = exception->if_t100_message~t100key-msgid ).
+    cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
     cl_abap_unit_assert=>assert_equals( exp = 100 act = exception->if_t100_message~t100key-msgno ).
   ENDMETHOD.
 
@@ -471,37 +471,37 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     DATA abap_type TYPE lif_test_types=>ty_abap_type.
     cut->generate_type( abap_type ).
     DATA(log) = cut->get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log ).
   ENDMETHOD.
 
   METHOD no_header.
     DATA no_header TYPE lif_test_types=>ty_abap_type_no_header.
     cut->generate_type( no_header ).
     DATA(log) = cut->get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 124 )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 124 )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD no_format_version.
     DATA no_format_version TYPE lif_test_types=>ty_abap_type_no_format.
     cut->generate_type( no_format_version ).
     DATA(log) = cut->get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 124 )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 124 )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD no_structure.
     DATA no_structure TYPE lif_test_types=>table_in_table.
     cut->generate_type( no_structure ).
     DATA(log) = cut->get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 123 )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 123 )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
 

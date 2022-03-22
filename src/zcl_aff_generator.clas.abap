@@ -14,16 +14,16 @@ CLASS zcl_aff_generator DEFINITION
       RETURNING
         VALUE(result) TYPE string_table
       RAISING
-        cx_aff_root.
+        zcx_aff_tools.
 
     METHODS get_log
       RETURNING
-        VALUE(log) TYPE REF TO if_aff_log.
+        VALUE(log) TYPE REF TO zif_aff_log.
 
   PRIVATE SECTION.
     DATA:
       writer TYPE REF TO zif_aff_writer,
-      log    TYPE REF TO if_aff_log.
+      log    TYPE REF TO zif_aff_log.
 
     METHODS:
       check_input
@@ -34,35 +34,35 @@ CLASS zcl_aff_generator DEFINITION
           type_description TYPE REF TO cl_abap_typedescr
           type_name        TYPE string OPTIONAL
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       process_element
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           element_name        TYPE string OPTIONAL
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       process_structure
         IMPORTING
           structure_description TYPE REF TO cl_abap_structdescr
           structure_name        TYPE string
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       process_table
         IMPORTING
           table_description TYPE REF TO cl_abap_tabledescr
           table_name        TYPE string
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       process_include
         IMPORTING
           structure_description TYPE REF TO cl_abap_structdescr
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       process_components
         IMPORTING
           components TYPE cl_abap_structdescr=>component_table
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       check_mandatory_fields
         IMPORTING
           structure_description TYPE REF TO cl_abap_structdescr.
@@ -74,7 +74,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
 
   METHOD constructor.
     me->writer = writer.
-    log = cl_aff_factory=>create_log( ).
+    log = new zcl_aff_log( ).
   ENDMETHOD.
 
   METHOD generate_type.
@@ -90,8 +90,8 @@ CLASS zcl_aff_generator IMPLEMENTATION.
         DATA(structure_description) = CAST cl_abap_structdescr( type_description ).
         check_mandatory_fields( structure_description ).
       CATCH cx_sy_move_cast_error.
-        MESSAGE w123(saff_core) INTO DATA(message) ##NEEDED.
-        log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        MESSAGE w123(z_aff_tools) INTO DATA(message) ##NEEDED.
+        log->add_warning( zcl_aff_log=>get_sy_message( ) ).
     ENDTRY.
 
   ENDMETHOD.
@@ -99,8 +99,8 @@ CLASS zcl_aff_generator IMPLEMENTATION.
   METHOD check_mandatory_fields.
     DATA(components) = structure_description->get_components( ).
     IF NOT ( line_exists( components[ name = 'HEADER' ] ) AND line_exists( components[ name = 'FORMAT_VERSION' ] ) ).
-      MESSAGE w124(saff_core) INTO DATA(message)  ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      MESSAGE w124(z_aff_tools) INTO DATA(message)  ##NEEDED.
+      log->add_warning( zcl_aff_log=>get_sy_message( ) ).
     ENDIF.
   ENDMETHOD.
 
@@ -119,7 +119,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
           table_name        = type_name
           table_description = CAST #( type_description ) ).
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE cx_aff_root MESSAGE e100(saff_core) WITH type_description->kind.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(z_aff_tools) WITH type_description->kind.
     ENDCASE.
   ENDMETHOD.
 

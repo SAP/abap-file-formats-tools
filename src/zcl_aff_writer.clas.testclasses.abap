@@ -324,15 +324,15 @@ CLASS ltcl_type_writer IMPLEMENTATION.
   METHOD get_abap_doc_for_absolute_name.
     DATA(absolute_name) = `\CLASS=ZCL_AFF_TEST_TYPES\TYPE=MY_STRUCTURE`.
     DATA(act_abap_doc) = cut->get_abap_doc_for_absolute_name( absolute_name = CONV #( absolute_name ) ).
-    DATA exp_abap_doc TYPE cl_aff_abap_doc_parser=>abap_doc.
+    DATA exp_abap_doc TYPE zcl_aff_abap_doc_parser=>abap_doc.
     exp_abap_doc = VALUE #( title = `mySimpleStructure` description = `This is a simple structure` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
   ENDMETHOD.
 
   METHOD compare_abap_doc.
-    DATA abap_doc_base TYPE cl_aff_abap_doc_parser=>abap_doc.
-    DATA abap_doc_additional TYPE cl_aff_abap_doc_parser=>abap_doc.
-    DATA exp_abap_doc TYPE cl_aff_abap_doc_parser=>abap_doc.
+    DATA abap_doc_base TYPE zcl_aff_abap_doc_parser=>abap_doc.
+    DATA abap_doc_additional TYPE zcl_aff_abap_doc_parser=>abap_doc.
+    DATA exp_abap_doc TYPE zcl_aff_abap_doc_parser=>abap_doc.
 
     abap_doc_base = VALUE #( title = `This is the title` required = abap_true ).
     abap_doc_additional = VALUE #( description = `This should not be written` enumvalues_link = `This link should be written` ).
@@ -390,7 +390,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     DATA(is_valid) = cut->is_callback_class_valid( class_name = class_name component_name = 'Component Name' ).
     DATA(log) = cut->zif_aff_writer~get_log( ).
     cl_abap_unit_assert=>assert_equals( exp = abap_true act = is_valid ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -399,11 +399,11 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     DATA(is_valid) = cut->is_callback_class_valid( class_name = class_name component_name = 'Component Name' ).
     DATA(log) = cut->zif_aff_writer~get_log( ).
     cl_abap_unit_assert=>assert_equals( exp = abap_false act = is_valid ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 106
                                                                              attr1 = `Component Name` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD validate_default.

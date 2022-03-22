@@ -22,7 +22,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
           structure_name        TYPE string
           structure_description TYPE REF TO cl_abap_typedescr
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       append_after_output REDEFINITION,
       append_before_output REDEFINITION,
       write_element REDEFINITION,
@@ -63,7 +63,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
       RETURNING
         VALUE(result) TYPE string
       RAISING
-        cx_aff_root,
+        zcx_aff_tools,
 
       get_option
         IMPORTING
@@ -72,7 +72,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RETURNING
           VALUE(result)       TYPE string
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
       write_value_mappings
         IMPORTING
@@ -81,7 +81,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
           element_name        TYPE string
           value_mapping       TYPE zif_aff_writer=>ty_abap_value_mapping
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
       get_abap_value
         IMPORTING
@@ -113,7 +113,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RETURNING
           VALUE(condition) TYPE string
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
       get_condition_for_element
         IMPORTING
@@ -124,7 +124,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RETURNING
           VALUE(condition)    TYPE string
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
       get_value_mapping_via_enum
         IMPORTING
@@ -132,7 +132,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RETURNING
           VALUE(value_mappings) TYPE zif_aff_writer=>ty_abap_value_mapping
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
 
       get_default_value_from_default
@@ -143,7 +143,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RETURNING
           VALUE(default)      TYPE string
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
       get_prefixed_default
         IMPORTING
@@ -152,7 +152,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RETURNING
           VALUE(result)       TYPE string
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
       write_callback_template
         IMPORTING
@@ -160,7 +160,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
           description  TYPE REF TO cl_abap_typedescr
           tag          TYPE string OPTIONAL
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       reset_indent_level_tag,
       write_defaults,
       write_callback
@@ -183,7 +183,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RETURNING
           VALUE(default)      TYPE string
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
       set_abapdoc_fullname_tab_struc
         IMPORTING
           type_description TYPE REF TO cl_abap_typedescr
@@ -391,7 +391,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN zif_aff_writer=>type_info-numeric.
         result = `num`.
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE cx_aff_root MESSAGE e102(saff_core) WITH json_type.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(z_aff_tools) WITH json_type.
     ENDCASE.
   ENDMETHOD.
 
@@ -410,7 +410,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         WHEN zif_aff_writer=>type_info-numeric.
           result = ` option="format(alpha)"` ##NO_TEXT.
         WHEN OTHERS.
-          RAISE EXCEPTION TYPE cx_aff_root MESSAGE e102(saff_core) WITH json_type.
+          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(z_aff_tools) WITH json_type.
       ENDCASE.
     ENDIF.
   ENDMETHOD.
@@ -534,7 +534,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
         IF <component>-type_kind <> enum_type.
-          RAISE EXCEPTION TYPE cx_aff_root MESSAGE e122(saff_core) WITH name_of_constant fullname_of_type.
+          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(z_aff_tools) WITH name_of_constant fullname_of_type.
         ENDIF.
         DATA(json_name) = map_and_format_name( CONV #( <component>-name ) ).
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
@@ -544,8 +544,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         ENDIF.
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        MESSAGE w127(saff_core) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
-        log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        MESSAGE w127(z_aff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
+        log->add_warning( zcl_aff_log=>get_sy_message( ) ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -560,8 +560,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_default_value_from_default.
     IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
-      MESSAGE w117(saff_core) WITH 'UTCLONG'  fullname_of_type INTO DATA(message) ##NEEDED.
-      log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+      MESSAGE w117(z_aff_tools) WITH 'UTCLONG'  fullname_of_type INTO DATA(message) ##NEEDED.
+      log->add_warning( zcl_aff_log=>get_sy_message( ) ).
       RETURN.
     ENDIF.
 
@@ -624,9 +624,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN cl_abap_typedescr=>typekind_time.
         result = |T('{ value }')|.
       WHEN cl_abap_typedescr=>typekind_utclong.
-        RAISE EXCEPTION TYPE cx_aff_root MESSAGE e117(saff_core) WITH `UTCLONG` fullname_of_type.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e117(z_aff_tools) WITH `UTCLONG` fullname_of_type.
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE cx_aff_root MESSAGE e100(saff_core) WITH element_description->type_kind.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(z_aff_tools) WITH element_description->type_kind.
     ENDCASE.
   ENDMETHOD.
 
@@ -712,7 +712,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF lines( errors ) > 0 OR exception IS BOUND.
       LOOP AT errors ASSIGNING FIELD-SYMBOL(<error>).
         cl_message_helper=>set_msg_vars_for_clike( <error>-text ).
-        log->add_error( message = VALUE #( msgid = 'SAFF_CORE' msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ) object = VALUE #( ) ).
+        log->add_error( VALUE #( msgid = 'Z_AFF_TOOLS' msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ) ).
       ENDLOOP.
       RETURN.
     ENDIF.

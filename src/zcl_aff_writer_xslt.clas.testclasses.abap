@@ -772,7 +772,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
   METHOD validate_valid_xslt.
     DATA transformation TYPE string_table.
-    DATA(log) = cl_aff_factory=>create_log( ).
+    DATA(log) = new zcl_aff_log( ).
     append_to transformation:
       `<?sap.transform simple?>`,
       `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">`,
@@ -802,12 +802,12 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA(is_valid) = cut->zif_aff_writer~validate( source = transformation log = log ).
 
     cl_abap_unit_assert=>assert_true( is_valid ).
-    cl_abap_unit_assert=>assert_false( log->has_messages( ) ).
+    cl_abap_unit_assert=>assert_false( log->zif_aff_log~has_messages( ) ).
   ENDMETHOD.
 
   METHOD validate_invalid_xslt.
     DATA transformation TYPE string_table.
-    DATA(log) = cl_aff_factory=>create_log( ).
+    DATA(log) = new zcl_aff_log( ).
     append_to transformation:
       `<?sap.transform simple?>`,
       `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">`,
@@ -837,7 +837,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA(is_valid) = cut->zif_aff_writer~validate( source = transformation log = log ).
 
     cl_abap_unit_assert=>assert_false( is_valid ).
-    cl_abap_unit_assert=>assert_true( log->has_messages( ) ).
+    cl_abap_unit_assert=>assert_true( log->zif_aff_log~has_messages( ) ).
   ENDMETHOD.
 
   METHOD open_unsupported_node.
@@ -846,11 +846,11 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
           node_description = cl_abap_typedescr=>describe_by_data( VALUE i( ) )
           node_name        = 'Unssuprted Type' ).
         cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
-      CATCH cx_aff_root INTO DATA(exception) ##NO_HANDLER.
+      CATCH zcx_aff_tools INTO DATA(exception) ##NO_HANDLER.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_equals( exp = '101' act = exception->if_t100_message~t100key-msgno ).
-    cl_abap_unit_assert=>assert_equals( exp = 'SAFF_CORE' act = exception->if_t100_message~t100key-msgid ).
+    cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
   ENDMETHOD.
 
   METHOD close_unsupported_node.
@@ -859,11 +859,11 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
           node_description = cl_abap_typedescr=>describe_by_data( VALUE i( ) )
           node_name        = 'Unssuprted Type' ).
         cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
-      CATCH cx_aff_root INTO DATA(exception) ##NO_HANDLER.
+      CATCH zcx_aff_tools INTO DATA(exception) ##NO_HANDLER.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_equals( exp = '101' act = exception->if_t100_message~t100key-msgno ).
-    cl_abap_unit_assert=>assert_equals( exp = 'SAFF_CORE' act = exception->if_t100_message~t100key-msgid ).
+    cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
   ENDMETHOD.
 
   METHOD validate_output.
@@ -880,7 +880,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     APPEND `</tt:ref>` TO exp.
     APPEND `</tt:template>` TO exp.
     APPEND `</tt:transform>` TO exp.
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( exp_data = exp act_data = act ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( exp_data = exp act_data = act ).
   ENDMETHOD.
 
 ENDCLASS.
@@ -920,8 +920,9 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
         EXPORTING
           result TYPE data
         RAISING
-          cx_aff_root
-          cx_sxml_illegal_argument_error,
+          zcx_aff_tools
+          cx_sxml_illegal_argument_error
+          cx_aff_root,
 
       from_abap_to_json
         IMPORTING
@@ -933,6 +934,7 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
           VALUE(result)  TYPE string_table
           VALUE(json)    TYPE xstring
         RAISING
+          zcx_aff_tools
           cx_aff_root
           cx_sxml_illegal_argument_error,
       teardown,
@@ -998,7 +1000,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
           IMPORTING
             data    = result
         ).
-      CATCH cx_aff_root INTO DATA(exception).
+      CATCH zcx_aff_tools INTO DATA(exception).
         DELETE REPORT st_name.
         cl_abap_unit_assert=>fail( ).
     ENDTRY.
@@ -1687,7 +1689,7 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       cut                TYPE REF TO zcl_aff_writer_xslt,
       test_generator     TYPE REF TO zcl_aff_generator,
       st_root_name       TYPE string VALUE 'root' ##NO_TEXT,
-      log                TYPE REF TO if_aff_log.
+      log                TYPE REF TO zif_aff_log.
 
     METHODS: setup,
       validate_output
@@ -1840,12 +1842,12 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `</tt:cond>`.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 108
                                                                              attr1 = `$ructure`
                                                                              attr2 = `MY_STRUCTURE2` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_in_structure.
@@ -1942,11 +1944,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_different_enum.
     test_generator->generate_type( test_type ).
     DATA(log) = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 127
                                                                              attr1 = `STRUCTURE_WITH_DIFFERENT_ENUM-ENUM_WITHOUT_ALL` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
 
 
   ENDMETHOD.
@@ -1985,12 +1987,12 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `</tt:cond>`.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 104
                                                                              attr1 = `ZCL_AFF_TEST_TYPES=>ENUM_VALUES_WRONG`
                                                                              attr2 = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_with_enum_values.
@@ -2466,12 +2468,12 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `</tt:cond>`.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 117
                                                                              attr1 = `UTCLONG`
                                                                              attr2 = `STRUCTURE_DIFFERENT_DEFAULT-DATE_TIME_FIELD` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_with_default_problem.
@@ -2525,16 +2527,16 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `</tt:cond>`.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 126
                                                                              attr1 = `STRUCTURE_WITH_DEFAULT_PROBLEM-INTEGER` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 126
                                                                              attr1 = `STRUCTURE_WITH_DEFAULT_PROBLEM-ENUM_REQUIRED` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
 
   ENDMETHOD.
 
@@ -2620,10 +2622,10 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 *    expect error /no output (type of type and constant has to be the same)
         test_generator->generate_type( test_type ).
         cl_abap_unit_assert=>fail( ).
-      CATCH cx_aff_root INTO DATA(ex).
+      CATCH zcx_aff_tools INTO DATA(ex).
         cl_abap_unit_assert=>assert_equals( exp = 'CO_ENUM' act = ex->if_t100_dyn_msg~msgv1 ).
         cl_abap_unit_assert=>assert_equals( exp = 'ENUM' act = ex->if_t100_dyn_msg~msgv2 ).
-        cl_abap_unit_assert=>assert_equals( exp = 'SAFF_CORE' act = ex->if_t100_message~t100key-msgid ).
+        cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = ex->if_t100_message~t100key-msgid ).
         cl_abap_unit_assert=>assert_equals( exp = 122 act = ex->if_t100_message~t100key-msgno ).
     ENDTRY.
   ENDMETHOD.
@@ -2657,12 +2659,12 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 122
                                                                              attr1 = `CO_TEST`
                                                                              attr2 = `STRUC_LINK_WRONG_TYPE-DEFAULT_LINK` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_with_wrong_default.
@@ -2704,19 +2706,19 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `</tt:cond>`.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 105
                                                                              attr1 = `WRONG_COMPONENT`
                                                                              attr2 = `ENUM_VALUES`
                                                                              attr3 = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_ONE` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 111
                                                                              attr1 = `$default`
                                                                              attr2 = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_TWO` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD simple_element_with_callack.
@@ -2917,17 +2919,17 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `</tt:cond>`.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 106
                                                                              attr1 = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                      exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
                                                                              msgno = 109
                                                                              attr1 = `$callbackClass`
                                                                              attr2 = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+                                                      exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD validate_output.
@@ -2944,10 +2946,10 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     APPEND `</tt:ref>` TO exp.
     APPEND `</tt:template>` TO exp.
     APPEND `</tt:transform>` TO exp.
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( exp_data = exp act_data = act ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( exp_data = exp act_data = act ).
     IF no_log_check = abap_false.
       log = cut->zif_aff_writer~get_log( ).
-      cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+      zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
     ENDIF.
   ENDMETHOD.
 ENDCLASS.
@@ -3022,15 +3024,16 @@ RISK LEVEL DANGEROUS.
           VALUE(result) TYPE string_table
           VALUE(json)   TYPE xstring
         RAISING
-          cx_aff_root
-          cx_sxml_illegal_argument_error,
+          zcx_aff_tools
+          cx_sxml_illegal_argument_error
+          cx_aff_root,
       from_json_to_abap
         IMPORTING
           json   TYPE xstring
         EXPORTING
           result TYPE data
         RAISING
-          cx_aff_root
+          zcx_aff_tools
           cx_sxml_illegal_argument_error,
       teardown,
       assert_json_equals
@@ -3043,8 +3046,9 @@ RISK LEVEL DANGEROUS.
         CHANGING
           act_data  TYPE any
         RAISING
-          cx_aff_root
-          cx_sxml_illegal_argument_error,
+          zcx_aff_tools
+          cx_sxml_illegal_argument_error
+          cx_aff_root,
       setup.
 ENDCLASS.
 

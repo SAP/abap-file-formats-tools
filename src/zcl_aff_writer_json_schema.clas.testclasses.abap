@@ -8,7 +8,8 @@ CLASS ltcl_json_writer DEFINITION FINAL FOR TESTING
 
     DATA:
       cut            TYPE REF TO zcl_aff_writer_json_schema,
-      test_generator TYPE REF TO zcl_aff_generator.
+      test_generator TYPE REF TO zcl_aff_generator,
+      log            TYPE REF TO zif_aff_log.
 
     METHODS: use_ddic_info_for_element FOR TESTING RAISING cx_static_check,
       value_mapping FOR TESTING RAISING cx_static_check,
@@ -67,7 +68,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    ]` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD date_time_element.
@@ -82,7 +83,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    "format" :"date-time"` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD use_ddic_info_for_element.
@@ -107,7 +108,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    ]` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD use_ddic_info_for_max_length.
@@ -123,7 +124,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    "maxLength": 40` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD no_formatting.
@@ -149,7 +150,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    "additionalProperties": false` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD value_mapping.
@@ -186,7 +187,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    "additionalProperties": false` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD name_mapping.
@@ -212,7 +213,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    "additionalProperties": false` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD structure_in_table.
@@ -241,7 +242,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    }` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD nested_table.
@@ -265,7 +266,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    }` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD max_length.
@@ -301,7 +302,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    "additionalProperties": false` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
   METHOD number_max_value.
@@ -366,7 +367,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    "additionalProperties": false` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
   ENDMETHOD.
 
 
@@ -441,7 +442,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    }` )
 ( `}` ) ).
 
-    DATA(log) = cl_aff_factory=>create_log( ).
+    DATA(log) = cut->zif_aff_writer~get_log( ).
     DATA(is_valid) = cut->zif_aff_writer~validate( source = invalid_json_schema log = log ).
 
     cl_abap_unit_assert=>assert_false( is_valid ).
@@ -467,7 +468,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `    }` )
 ( `}` ) ).
 
-    DATA(log) = cl_aff_factory=>create_log( ).
+    DATA(log) = cut->zif_aff_writer~get_log( ).
     DATA(is_valid) = cut->zif_aff_writer~validate( source = invalid_json_schema log = log ).
 
     cl_abap_unit_assert=>assert_true( is_valid ).
@@ -496,7 +497,7 @@ CLASS ltcl_json_writer_abap_doc DEFINITION FINAL FOR TESTING
         schema_id TYPE string VALUE 'schema/id.json'.
     DATA cut TYPE REF TO zcl_aff_writer_json_schema.
     DATA test_generator TYPE REF TO zcl_aff_generator.
-    DATA log TYPE REF TO if_aff_log.
+    DATA log TYPE REF TO zif_aff_log.
 
     METHODS setup.
 
@@ -573,24 +574,24 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "maximum": 2147483647` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 122
-                                                                             attr1 = `CO_TEST`
-                                                                             attr2 = `DEFAULT_LINK` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 122
+                                                                                    attr1 = `CO_TEST`
+                                                                                    attr2 = `DEFAULT_LINK` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD type_of_enumtype_and_co_differ.
     TRY.
         test_generator->generate_type( VALUE zcl_aff_test_types=>enum( ) ).
         cl_abap_unit_assert=>fail( ).
-      CATCH cx_aff_root INTO DATA(ex).
+      CATCH zcx_aff_tools INTO DATA(ex).
         cl_abap_unit_assert=>assert_equals( exp = 'CO_ENUM' act = ex->if_t100_dyn_msg~msgv1 ).
         cl_abap_unit_assert=>assert_equals( exp = 'ENUM' act = ex->if_t100_dyn_msg~msgv2 ).
-        cl_abap_unit_assert=>assert_equals( exp = 'SAFF_CORE' act = ex->if_t100_message~t100key-msgid ).
+        cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = ex->if_t100_message~t100key-msgid ).
         cl_abap_unit_assert=>assert_equals( exp = 122 act = ex->if_t100_message~t100key-msgno ).
     ENDTRY.
   ENDMETHOD.
@@ -607,14 +608,14 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "type": "string"` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 108
-                                                                             attr1 = `$hiddenabc`
-                                                                             attr2 = `UNKNOWN_ANNOTATION` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 108
+                                                                                    attr1 = `$hiddenabc`
+                                                                                    attr2 = `UNKNOWN_ANNOTATION` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD unknown_abap_doc_tag.
@@ -630,9 +631,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "type": "string"` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD title_and_desc_escaped.
@@ -649,9 +650,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "pattern": "^[0-9]+$"` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD format_version.
@@ -682,9 +683,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `     "additionalProperties": false` )
 ( `   }` )
 ( ) ) .
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -702,9 +703,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "maximum": 2147483647` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -721,9 +722,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "maxLength": 3` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -740,9 +741,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "format" :"date-time"` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -774,9 +775,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "additionalProperties": false` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -811,14 +812,14 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    ]` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 108
-                                                                             attr1 = `$ructure`
-                                                                             attr2 = `MY_STRUCTURE2` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 108
+                                                                                    attr1 = `$ructure`
+                                                                                    attr2 = `MY_STRUCTURE2` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
 
@@ -858,9 +859,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    ]` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -882,9 +883,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    }` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD hashed_table.
@@ -921,9 +922,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    }` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD structure_with_tables.
@@ -994,9 +995,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "additionalProperties": false` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1004,11 +1005,11 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     DATA(test) = VALUE zcl_aff_test_types=>structure_with_different_enum( ).
     test_generator->generate_type( test ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 127
-                                                                             attr1 = `STRUCTURE_WITH_DIFFERENT_ENUM-ENUM_WITHOUT_ALL` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 127
+                                                                                    attr1 = `STRUCTURE_WITH_DIFFERENT_ENUM-ENUM_WITHOUT_ALL` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
 
@@ -1091,9 +1092,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "additionalProperties": false` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1170,9 +1171,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    ] ` )
 ( `  } ` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1234,9 +1235,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( `    ] ` )
     ( `  } ` )
     ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1260,9 +1261,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    } ` )
 ( `  } ` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1293,14 +1294,14 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "additionalProperties": false ` )
 ( `  } ` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 104
-                                                                             attr1 = `ZCL_AFF_TEST_TYPES=>ENUM_VALUES_WRONG`
-                                                                             attr2 = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 104
+                                                                                    attr1 = `ZCL_AFF_TEST_TYPES=>ENUM_VALUES_WRONG`
+                                                                                    attr2 = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
 
@@ -1347,9 +1348,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "additionalProperties": false ` )
 ( `  } ` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1402,9 +1403,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    ] ` )
 ( `  }` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1422,9 +1423,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "pattern": "^[0-9]+$"` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1487,9 +1488,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( `    "additionalProperties": false ` )
     ( `  }` )
     ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1642,13 +1643,13 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `  } ` )
 ( ) ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 117
-                                                                             attr1 = `UTCLONG`
-                                                                             attr2 = `STRUCTURE_DIFFERENT_DEFAULT-DATE_TIME_FIELD` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 117
+                                                                                    attr1 = `UTCLONG`
+                                                                                    attr2 = `STRUCTURE_DIFFERENT_DEFAULT-DATE_TIME_FIELD` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_with_default_problem.
@@ -1721,17 +1722,17 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `   }` )
 ( ) ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 126
-                                                                             attr1 = `STRUCTURE_WITH_DEFAULT_PROBLEM-INTEGER` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 126
-                                                                             attr1 = `STRUCTURE_WITH_DEFAULT_PROBLEM-ENUM_REQUIRED` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 126
+                                                                                    attr1 = `STRUCTURE_WITH_DEFAULT_PROBLEM-INTEGER` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 126
+                                                                                    attr1 = `STRUCTURE_WITH_DEFAULT_PROBLEM-ENUM_REQUIRED` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
 
 
   ENDMETHOD.
@@ -1789,9 +1790,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `     "additionalProperties": false ` )
 ( `   } ` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD structure_with_wrong_default.
@@ -1844,27 +1845,27 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( `   } ` )
     ( )
     ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 105
-                                                                             attr1 = `WRONG_COMPONENT`
-                                                                             attr2 = `ENUM_VALUES`
-                                                                             attr3 = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_ONE` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 111
-                                                                             attr1 = cl_aff_abap_doc_parser=>abap_doc_annotation-default
-                                                                             attr2 = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_TWO` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Title`
-                                                                             attr2 = `ENUM_VALUES-CLASSIC_BADI` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 105
+                                                                                    attr1 = `WRONG_COMPONENT`
+                                                                                    attr2 = `ENUM_VALUES`
+                                                                                    attr3 = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_ONE` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 111
+                                                                                    attr1 = cl_aff_abap_doc_parser=>abap_doc_annotation-default
+                                                                                    attr2 = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_TWO` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Title`
+                                                                                    attr2 = `ENUM_VALUES-CLASSIC_BADI` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1888,9 +1889,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "maxLength": 3` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1923,9 +1924,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    }` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -1989,9 +1990,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    }` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -2032,9 +2033,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    } ` )
 ( `  } ` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -2075,9 +2076,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    }` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -2130,9 +2131,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `  ]` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD struc_with_struc_callback.
@@ -2197,9 +2198,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `  ]` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -2242,9 +2243,9 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    ]` )
 ( `}` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
@@ -2279,19 +2280,19 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `     ] ` )
 ( `   } ` )
 ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 106
-                                                                             attr1 = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 109
-                                                                             attr1 = cl_aff_abap_doc_parser=>abap_doc_annotation-callback_class
-                                                                             attr2 = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT` )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 106
+                                                                                    attr1 = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 109
+                                                                                    attr1 = cl_aff_abap_doc_parser=>abap_doc_annotation-callback_class
+                                                                                    attr2 = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_no_title_descr.
@@ -2331,44 +2332,44 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   ( `   "additionalProperties": false ` )
   ( ` } ` )
   ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Title`
-                                                                             attr2 = `STRUCTURE_NO_TITLE_DESCR` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Description`
-                                                                             attr2 = `STRUCTURE_NO_TITLE_DESCR` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Title`
-                                                                             attr2 = `STRUCTURE_NO_TITLE_DESCR-FIELD1` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Description`
-                                                                             attr2 = `STRUCTURE_NO_TITLE_DESCR-INNER_STRUC` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                                 msgno = 119
-                                                                                 attr1 = `Title`
-                                                                                 attr2 = `STRUCTURE_NO_TITLE_DESCR-INNER_TABLE` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Description`
-                                                                             attr2 = `STRUCTURE_NO_TITLE_DESCR-INNER_TABLE` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Title`
+                                                                                    attr2 = `STRUCTURE_NO_TITLE_DESCR` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Description`
+                                                                                    attr2 = `STRUCTURE_NO_TITLE_DESCR` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Title`
+                                                                                    attr2 = `STRUCTURE_NO_TITLE_DESCR-FIELD1` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Description`
+                                                                                    attr2 = `STRUCTURE_NO_TITLE_DESCR-INNER_STRUC` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                        msgno = 119
+                                                                                        attr1 = `Title`
+                                                                                        attr2 = `STRUCTURE_NO_TITLE_DESCR-INNER_TABLE` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Description`
+                                                                                    attr2 = `STRUCTURE_NO_TITLE_DESCR-INNER_TABLE` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD element_no_title_descr.
@@ -2381,20 +2382,20 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( `    "type": "string" ` )
     ( ` } ` )
     ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Title`
-                                                                             attr2 = `ELEMENT_NO_TITLE_DESCR` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Description`
-                                                                             attr2 = `ELEMENT_NO_TITLE_DESCR` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Title`
+                                                                                    attr2 = `ELEMENT_NO_TITLE_DESCR` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Description`
+                                                                                    attr2 = `ELEMENT_NO_TITLE_DESCR` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD table_no_title_descr.
@@ -2410,20 +2411,20 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( `    } ` )
     ( ` } ` )
     ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Title`
-                                                                             attr2 = `TABLE_NO_TITLE_DESCR` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Description`
-                                                                             attr2 = `TABLE_NO_TITLE_DESCR` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Title`
+                                                                                    attr2 = `TABLE_NO_TITLE_DESCR` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Description`
+                                                                                    attr2 = `TABLE_NO_TITLE_DESCR` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD structure_with_include.
@@ -2505,32 +2506,32 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( `   ]` )
     ( ` } ` )
     ( ) ).
-    cl_aff_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
+    zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Title`
-                                                                             attr2 = `STRUCTURE_WITH_INCLUDE-OTHER_ELEMENT` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 119
-                                                                             attr1 = `Description`
-                                                                             attr2 = `TY_INCLUDE_TYPE-FIRST_ELEMENT` )
-                                                      exp_type    = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Title`
+                                                                                    attr2 = `STRUCTURE_WITH_INCLUDE-OTHER_ELEMENT` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 119
+                                                                                    attr1 = `Description`
+                                                                                    attr2 = `TY_INCLUDE_TYPE-FIRST_ELEMENT` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
 
   ENDMETHOD.
 
   METHOD description_too_long.
     test_generator->generate_type( VALUE zcl_aff_test_types=>type_with_long_description( ) ).
     log = cut->zif_aff_writer~get_log( ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 125
-                                                                             attr1 = `TYPE_WITH_LONG_DESCRIPTION`
-                                                                             attr2 = zcl_aff_writer_json_schema=>c_max_length_of_description )
-                                                      exp_type    = if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                                                    msgno = 125
+                                                                                    attr1 = `TYPE_WITH_LONG_DESCRIPTION`
+                                                                                    attr2 = zcl_aff_writer_json_schema=>c_max_length_of_description )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD get_extrema.
@@ -2577,19 +2578,19 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   METHOD calculate_max_length.
     DATA c_length_30 TYPE c LENGTH 30.
     DATA(max_length) = cut->get_max_length(
-        element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_30 ) )
+      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_30 ) )
     ).
     cl_abap_unit_assert=>assert_equals( exp = 30 act = max_length ).
 
     DATA c_length_60 TYPE c LENGTH 60.
     max_length = cut->get_max_length(
-        element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_60 ) )
+      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_60 ) )
     ).
     cl_abap_unit_assert=>assert_equals( exp = 60 act = max_length ).
 
     DATA n_length_10 TYPE n LENGTH 10.
     max_length = cut->get_max_length(
-        element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( n_length_10 ) )
+      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( n_length_10 ) )
     ).
     cl_abap_unit_assert=>assert_equals( exp = 10 act = max_length ).
   ENDMETHOD.

@@ -66,17 +66,17 @@ CLASS zcl_aff_writer_json_schema DEFINITION
                   element_description TYPE REF TO cl_abap_elemdescr
                   json_type           TYPE zif_aff_writer=>enum_type_info
         RETURNING VALUE(result)       TYPE string
-        RAISING   cx_aff_root,
+        RAISING   zcx_aff_tools,
 
       open_json_schema_for_structure
         IMPORTING structure_name        TYPE string
                   structure_description TYPE REF TO cl_abap_typedescr
-        RAISING   cx_aff_root,
+        RAISING   zcx_aff_tools,
 
       open_json_schema_for_table
         IMPORTING table_name        TYPE string
                   table_description TYPE REF TO cl_abap_tabledescr
-        RAISING   cx_aff_root,
+        RAISING   zcx_aff_tools,
 
       open_json_schema_for_element,
 
@@ -89,7 +89,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
                   element_description TYPE REF TO cl_abap_elemdescr
         RETURNING VALUE(result)       TYPE rswsourcet
         RAISING
-                  cx_aff_root,
+                  zcx_aff_tools,
 
       get_enum_descriptions
         IMPORTING element_name        TYPE string
@@ -106,7 +106,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING
           enum_type TYPE abap_typekind
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
       add_required_table_to_stack,
 
@@ -132,7 +132,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
           element_description TYPE REF TO cl_abap_elemdescr
           json_type           TYPE zif_aff_writer=>enum_type_info
         RAISING
-          cx_aff_root,
+          zcx_aff_tools,
 
       handle_extrema
         IMPORTING
@@ -162,7 +162,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
           property_table TYPE rswsourcet,
 
       check_title_and_description
-        IMPORTING abap_doc_to_check        TYPE cl_aff_abap_doc_parser=>abap_doc
+        IMPORTING abap_doc_to_check        TYPE zcl_aff_abap_doc_parser=>abap_doc
                   fullname_of_checked_type TYPE string,
 
 
@@ -853,7 +853,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
         IF <component>-type_kind <> enum_type.
-          RAISE EXCEPTION TYPE cx_aff_root MESSAGE e122(saff_core) WITH name_of_constant fullname_of_type.
+          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(z_aff_tools) WITH name_of_constant fullname_of_type.
         ENDIF.
 
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
@@ -871,8 +871,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         check_title_and_description( abap_doc_to_check = abap_doc_of_component fullname_of_checked_type = fullname_of_value ).
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        MESSAGE w127(saff_core) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
-        log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        MESSAGE w127(z_aff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
+        log->add_warning( zcl_aff_log=>get_sy_message( ) ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -967,16 +967,16 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   METHOD check_title_and_description.
     IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level. "Only write message if no callback class provided
       IF abap_doc_to_check-title IS INITIAL.
-        MESSAGE i119(saff_core) WITH 'Title' fullname_of_checked_type INTO DATA(message) ##NEEDED ##NO_TEXT.
-        log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        MESSAGE i119(z_aff_tools) WITH 'Title' fullname_of_checked_type INTO DATA(message) ##NEEDED ##NO_TEXT.
+        log->add_info( zcl_aff_log=>get_sy_message( ) ).
       ENDIF.
 
       IF abap_doc_to_check-description IS INITIAL.
-        MESSAGE i119(saff_core) WITH 'Description' fullname_of_checked_type INTO message ##NEEDED ##NO_TEXT.
-        log->add_info( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        MESSAGE i119(z_aff_tools) WITH 'Description' fullname_of_checked_type INTO message ##NEEDED ##NO_TEXT.
+        log->add_info( zcl_aff_log=>get_sy_message( ) ).
       ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
-        MESSAGE w125(saff_core) WITH fullname_of_checked_type c_max_length_of_description INTO message ##NEEDED ##NO_TEXT.
-        log->add_warning( message = cl_aff_log=>get_sy_message( ) object = VALUE #( ) ).
+        MESSAGE w125(z_aff_tools) WITH fullname_of_checked_type c_max_length_of_description INTO message ##NEEDED ##NO_TEXT.
+        log->add_warning( zcl_aff_log=>get_sy_message( ) ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -989,7 +989,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         json_reader->next_node( ).
         json_reader->skip_node( ).
       CATCH cx_aff_root cx_sxml_parse_error INTO DATA(exception).
-        log->add_exception( exception = exception object = VALUE #( ) ).
+        log->add_exception( exception ).
         RETURN.
     ENDTRY.
     result = abap_true.
