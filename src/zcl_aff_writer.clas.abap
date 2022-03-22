@@ -93,7 +93,7 @@ CLASS zcl_aff_writer DEFINITION
         IMPORTING
                   table_name        TYPE string
                   table_description TYPE REF TO cl_abap_typedescr
-        RAISING   zcx_aff_tools  ##NEEDED,
+        RAISING   zcx_aff_tools ##NEEDED,
 
       close_table ABSTRACT
         IMPORTING
@@ -239,7 +239,7 @@ ENDCLASS.
 CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD constructor.
-    log = new zcl_aff_log( ).
+    log = NEW zcl_aff_log( ).
     abap_doc_parser = NEW zcl_aff_abap_doc_parser( ).
   ENDMETHOD.
 

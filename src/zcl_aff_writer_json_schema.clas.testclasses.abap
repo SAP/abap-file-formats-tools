@@ -8,8 +8,7 @@ CLASS ltcl_json_writer DEFINITION FINAL FOR TESTING
 
     DATA:
       cut            TYPE REF TO zcl_aff_writer_json_schema,
-      test_generator TYPE REF TO zcl_aff_generator,
-      log            TYPE REF TO zif_aff_log.
+      test_generator TYPE REF TO zcl_aff_generator.
 
     METHODS: use_ddic_info_for_element FOR TESTING RAISING cx_static_check,
       value_mapping FOR TESTING RAISING cx_static_check,

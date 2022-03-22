@@ -78,13 +78,7 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
 
     DATA(max_severity) = log->get_max_severity( ).
     IF line_exists( types_to_report[ table_line = max_severity ] ).
-      DATA detail TYPE string.
-      LOOP AT log->get_messages( ) ASSIGNING FIELD-SYMBOL(<message>).
-        IF line_exists( types_to_report[ table_line = <message>-type ] ).
-          detail = detail && <message>-text && cl_abap_char_utilities=>newline.
-        ENDIF.
-      ENDLOOP.
-      cl_abap_unit_assert=>fail( msg = |Log contains messages with severity >= { message_severity_threshold }| detail = detail ).
+      cl_abap_unit_assert=>fail( |Log contains messages with severity >= { message_severity_threshold }| ).
     ENDIF.
   ENDMETHOD.
 

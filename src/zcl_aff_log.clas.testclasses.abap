@@ -9,7 +9,7 @@ ENDCLASS.
 CLASS ltcx_classic_exception IMPLEMENTATION.
 ENDCLASS.
 
-CLASS lcl_log_unit_test DEFINITION FINAL FOR TESTING
+CLASS ltcl_log_unit_test DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
 
@@ -37,12 +37,11 @@ CLASS lcl_log_unit_test DEFINITION FINAL FOR TESTING
         IMPORTING
           act_message TYPE zif_aff_log=>ty_log_out
           type        TYPE c
-          exp_message TYPE symsg
-          object      TYPE REF TO if_aff_obj OPTIONAL.
+          exp_message TYPE symsg.
 ENDCLASS.
 
 
-CLASS lcl_log_unit_test IMPLEMENTATION.
+CLASS ltcl_log_unit_test IMPLEMENTATION.
 
   METHOD setup.
     log = NEW zcl_aff_log( ).
