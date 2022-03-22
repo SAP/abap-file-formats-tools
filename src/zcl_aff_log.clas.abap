@@ -103,7 +103,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
 
 
   METHOD zif_aff_log~has_messages.
-    has_messages = boolc( me->messages IS NOT INITIAL ).
+    has_messages = xsdbool( me->messages IS NOT INITIAL ).
   ENDMETHOD.
 
 
