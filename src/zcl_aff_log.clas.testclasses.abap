@@ -1,14 +1,3 @@
-"! Classic exception without t100 message
-CLASS ltcx_classic_exception DEFINITION FINAL FOR TESTING
-  DURATION SHORT
-  RISK LEVEL HARMLESS
-    INHERITING FROM cx_static_check.
-  PUBLIC SECTION.
-ENDCLASS.
-
-CLASS ltcx_classic_exception IMPLEMENTATION.
-ENDCLASS.
-
 CLASS ltcl_log_unit_test DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
@@ -106,7 +95,7 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
 
 
   METHOD add_classic_exception.
-    DATA(exception) = NEW ltcx_classic_exception( ).
+    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 101 ) ).
 
     log->add_exception( exception ).
 
@@ -114,7 +103,7 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = 1 act = lines( messages ) ).
     assert_message( act_message = messages[ 1 ]
                     type        = 'E'
-                    exp_message = VALUE #( msgid = '00' msgno = 1 msgv1 = exception->get_text( ) ) ).
+                    exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 101 ) ).
   ENDMETHOD.
 
 
