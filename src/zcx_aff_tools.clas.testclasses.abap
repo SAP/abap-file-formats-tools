@@ -1,34 +1,34 @@
-class ltcl_aff_root definition final for testing
-  duration short
-  risk level harmless.
+CLASS ltcl_aff_root DEFINITION FINAL FOR TESTING
+  DURATION SHORT
+  RISK LEVEL HARMLESS.
 
-  private section.
-    methods:
-      default_message for testing raising cx_static_check,
-      exception_with_message for testing raising cx_static_check,
-      message_is_supplied for testing raising cx_static_check.
-endclass.
+  PRIVATE SECTION.
+    METHODS:
+      default_message FOR TESTING RAISING cx_static_check,
+      exception_with_message FOR TESTING RAISING cx_static_check,
+      message_is_supplied FOR TESTING RAISING cx_static_check.
+ENDCLASS.
 
-class ltcl_aff_root implementation.
+CLASS ltcl_aff_root IMPLEMENTATION.
 
-  method default_message.
-    data(exception) = new zcx_aff_tools( ).
+  METHOD default_message.
+    DATA(exception) = NEW zcx_aff_tools( ).
 
     cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
     cl_abap_unit_assert=>assert_equals( exp = 001 act = exception->if_t100_message~t100key-msgno ).
-  endmethod.
+  ENDMETHOD.
 
-  method exception_with_message.
-    data(exception) = new zcx_aff_tools( textid = value #( msgid = 'Z_AFF_TOOLS' msgno = 100 ) ).
+  METHOD exception_with_message.
+    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 100 ) ).
 
     cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
     cl_abap_unit_assert=>assert_equals( exp = 100 act = exception->if_t100_message~t100key-msgno ).
-  endmethod.
+  ENDMETHOD.
 
-  method message_is_supplied.
-    data message type string.
+  METHOD message_is_supplied.
+    DATA message TYPE string.
     message = 'This is a very long test message for testing purposes. It has no further meaning'.
-    data(exception) = new zcx_aff_tools( message = message ).
+    DATA(exception) = NEW zcx_aff_tools( message = message ).
 
     cl_message_helper=>set_msg_vars_for_clike( message ).
 
@@ -44,6 +44,6 @@ class ltcl_aff_root implementation.
     cl_abap_unit_assert=>assert_equals( exp = 'IF_T100_DYN_MSG~MSGV3' act = exception->if_t100_message~t100key-attr3 ).
     cl_abap_unit_assert=>assert_equals( exp = 'IF_T100_DYN_MSG~MSGV4' act = exception->if_t100_message~t100key-attr4 ).
     cl_abap_unit_assert=>assert_equals( exp = message act = exception->get_text( ) ).
-  endmethod.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.

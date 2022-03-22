@@ -1,34 +1,34 @@
-class zcx_aff_tools definition
-  public
-  inheriting from cx_static_check
-  create public.
+CLASS zcx_aff_tools DEFINITION
+  PUBLIC
+  INHERITING FROM cx_static_check
+  CREATE PUBLIC.
 
-  public section.
-    interfaces if_t100_dyn_msg .
-    interfaces if_t100_message .
+  PUBLIC SECTION.
+    INTERFACES if_t100_dyn_msg .
+    INTERFACES if_t100_message .
 
-    methods constructor
-      importing
-        message   type string optional
-        !textid   like if_t100_message=>t100key optional
-        !previous like previous optional.
+    METHODS constructor
+      IMPORTING
+        message   TYPE string OPTIONAL
+        !textid   LIKE if_t100_message=>t100key OPTIONAL
+        !previous LIKE previous OPTIONAL.
 
-  protected section.
-  private section.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
-endclass.
+ENDCLASS.
 
-class zcx_aff_tools implementation.
+CLASS zcx_aff_tools IMPLEMENTATION.
 
-  method constructor ##ADT_SUPPRESS_GENERATION.
+  METHOD constructor ##ADT_SUPPRESS_GENERATION.
     " trigger task
-    call method super->constructor
-      exporting
+    CALL METHOD super->constructor
+      EXPORTING
         previous = previous.
-    clear me->textid.
-    if message is not initial.
+    CLEAR me->textid.
+    IF message IS NOT INITIAL.
       cl_message_helper=>set_msg_vars_for_clike( message ).
-      if_t100_message~t100key = value #( msgid = 'Z_AFF_TOOLS'
+      if_t100_message~t100key = VALUE #( msgid = 'Z_AFF_TOOLS'
                                          msgno = 000
                                          attr1 = 'IF_T100_DYN_MSG~MSGV1'
                                          attr2 = 'IF_T100_DYN_MSG~MSGV2'
@@ -39,11 +39,11 @@ class zcx_aff_tools implementation.
       if_t100_dyn_msg~msgv2 = sy-msgv2.
       if_t100_dyn_msg~msgv3 = sy-msgv3.
       if_t100_dyn_msg~msgv4 = sy-msgv4.
-    elseif textid is initial.
-      if_t100_message~t100key = value #( msgid = 'Z_AFF_TOOLS' msgno = 001 ).
-    else.
+    ELSEIF textid IS INITIAL.
+      if_t100_message~t100key = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 001 ).
+    ELSE.
       if_t100_message~t100key = textid.
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.
