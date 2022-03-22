@@ -74,7 +74,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
 
   METHOD constructor.
     me->writer = writer.
-    log = new zcl_aff_log( ).
+    log = NEW zcl_aff_log( ).
   ENDMETHOD.
 
   METHOD generate_type.

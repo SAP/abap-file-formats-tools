@@ -1,114 +1,114 @@
-class zcl_aff_log definition
-  public
-  final
-  create public.
+CLASS zcl_aff_log DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
 
-  public section.
-    interfaces zif_aff_log.
+  PUBLIC SECTION.
+    INTERFACES zif_aff_log.
 
-    class-methods:
+    CLASS-METHODS:
       "! Writes the actual system message fields into the returned structure
       "!
       "! @parameter result | The actual system message
       get_sy_message
-        returning value(result) type symsg.
+        RETURNING VALUE(result) TYPE symsg.
 
-  protected section.
+  PROTECTED SECTION.
 
-  private section.
-    data:
-      messages     type zif_aff_log=>tt_log_out,
-      max_severity type symsgty.
+  PRIVATE SECTION.
+    DATA:
+      messages     TYPE zif_aff_log=>tt_log_out,
+      max_severity TYPE symsgty.
 
-    methods:
+    METHODS:
       add_message
-        importing
-          type    type symsgty
-          message type symsg,
+        IMPORTING
+          type    TYPE symsgty
+          message TYPE symsg,
       set_max_severity
-        importing
-          type type symsgty.
-endclass.
+        IMPORTING
+          type TYPE symsgty.
+ENDCLASS.
 
 
-class zcl_aff_log implementation.
+CLASS zcl_aff_log IMPLEMENTATION.
 
 
-  method zif_aff_log~get_messages.
+  METHOD zif_aff_log~get_messages.
     messages = me->messages.
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_aff_log~add_info.
+  METHOD zif_aff_log~add_info.
     set_max_severity( zif_aff_log=>c_message_type-info ).
     add_message( type = zif_aff_log=>c_message_type-info message = message ).
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_aff_log~add_warning.
+  METHOD zif_aff_log~add_warning.
     set_max_severity( zif_aff_log=>c_message_type-warning ).
     add_message( type = zif_aff_log=>c_message_type-warning message = message ).
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_aff_log~add_error.
+  METHOD zif_aff_log~add_error.
     set_max_severity( zif_aff_log=>c_message_type-error ).
     add_message( type = zif_aff_log=>c_message_type-error message = message ).
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_aff_log~add_exception.
+  METHOD zif_aff_log~add_exception.
     set_max_severity( message_type ).
 
-    if exception->get_text( ) is not initial.
+    IF exception->get_text( ) IS NOT INITIAL.
       cl_message_helper=>set_msg_vars_for_if_msg( exception ).
       add_message( type = message_type message = get_sy_message( ) ).
-    endif.
+    ENDIF.
 
-    if exception->previous is bound.
+    IF exception->previous IS BOUND.
       zif_aff_log~add_exception( exception = exception->previous message_type = message_type ).
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
 
-  method add_message.
+  METHOD add_message.
 
-    message
-      id message-msgid
-      type type
-      number message-msgno
-      with message-msgv1 message-msgv2 message-msgv3 message-msgv4
-      into data(text).
+    MESSAGE
+      ID message-msgid
+      TYPE type
+      NUMBER message-msgno
+      WITH message-msgv1 message-msgv2 message-msgv3 message-msgv4
+      INTO DATA(text).
 
-    append value #( type    = type
+    APPEND VALUE #( type    = type
                     text    = text
-                    message = get_sy_message( ) ) to me->messages.
-  endmethod.
+                    message = get_sy_message( ) ) TO me->messages.
+  ENDMETHOD.
 
 
-  method zif_aff_log~join.
-    append lines of log_to_join->get_messages( ) to me->messages.
+  METHOD zif_aff_log~join.
+    APPEND LINES OF log_to_join->get_messages( ) TO me->messages.
     set_max_severity( log_to_join->get_max_severity( ) ).
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_aff_log~clear.
-    clear me->messages.
-  endmethod.
+  METHOD zif_aff_log~clear.
+    CLEAR me->messages.
+  ENDMETHOD.
 
 
-  method zif_aff_log~get_max_severity.
+  METHOD zif_aff_log~get_max_severity.
     max_severity = me->max_severity.
-  endmethod.
+  ENDMETHOD.
 
 
-  method zif_aff_log~has_messages.
-    has_messages = boolc( me->messages is not initial ).
-  endmethod.
+  METHOD zif_aff_log~has_messages.
+    has_messages = boolc( me->messages IS NOT INITIAL ).
+  ENDMETHOD.
 
 
-  method get_sy_message.
-    result = value #(
+  METHOD get_sy_message.
+    result = VALUE #(
       msgid = sy-msgid
       msgno = sy-msgno
       msgty = sy-msgty
@@ -116,21 +116,21 @@ class zcl_aff_log implementation.
       msgv2 = sy-msgv2
       msgv3 = sy-msgv3
       msgv4 = sy-msgv4 ).
-  endmethod.
+  ENDMETHOD.
 
 
-  method set_max_severity.
-    if type = zif_aff_log=>c_message_type-error.
+  METHOD set_max_severity.
+    IF type = zif_aff_log=>c_message_type-error.
       max_severity = zif_aff_log=>c_message_type-error.
-    elseif type = zif_aff_log=>c_message_type-warning.
-      if max_severity <> zif_aff_log=>c_message_type-error.
+    ELSEIF type = zif_aff_log=>c_message_type-warning.
+      IF max_severity <> zif_aff_log=>c_message_type-error.
         max_severity = zif_aff_log=>c_message_type-warning.
-      endif.
-    elseif type = zif_aff_log=>c_message_type-info.
-      if max_severity is initial.
+      ENDIF.
+    ELSEIF type = zif_aff_log=>c_message_type-info.
+      IF max_severity IS INITIAL.
         max_severity = zif_aff_log=>c_message_type-info.
-      endif.
-    endif.
-  endmethod.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.
