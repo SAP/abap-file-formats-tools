@@ -3,194 +3,188 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <T100A>
-    <ARBGB>Z_AFF_TOOLS</ARBGB>
+    <ARBGB>ZAFF_TOOLS</ARBGB>
     <MASTERLANG>E</MASTERLANG>
     <STEXT>Message class for AFF tools</STEXT>
    </T100A>
    <T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>000</MSGNR>
      <TEXT>&amp;1&amp;2&amp;3&amp;4</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>001</MSGNR>
      <TEXT>An error has occurred in the AFF tools framework</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
-     <MSGNR>099</MSGNR>
-     <TEXT>#######100-200: Messages for Schema and XSLT Writer#########</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>100</MSGNR>
      <TEXT>The type &amp;1 is not supported by the generator</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>101</MSGNR>
      <TEXT>The node &amp;1 is not supported by the generator</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>102</MSGNR>
      <TEXT>The JSON type &amp;1 is not supported by the XSLT writer</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>103</MSGNR>
      <TEXT>Class/Interface &amp;1 for element &amp;2 given in ABAP Doc link doesn&apos;t exist</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>104</MSGNR>
      <TEXT>Constant &amp;1 for element &amp;2 given in ABAP Doc link doesn&apos;t exist</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>105</MSGNR>
      <TEXT>Component &amp;1 of constant &amp;2 for element &amp;3 in ABAP Doc link doesn&apos;t exist</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>106</MSGNR>
      <TEXT>Invalid callback class of element &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>107</MSGNR>
      <TEXT>Several occurrences of annotation &amp;1 for element &amp;2. First valid is used</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>108</MSGNR>
      <TEXT>Unknown annotation &amp;1 for element &amp;2</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>109</MSGNR>
      <TEXT>Wrong usage of annotation &amp;1 for element &amp;2</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>110</MSGNR>
      <TEXT>No number provided for annotation &amp;1 for element &amp;2</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>111</MSGNR>
      <TEXT>Wrong link in annotation &amp;1 for element &amp;2</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>112</MSGNR>
      <TEXT>For element &amp;1: If $$required is set, $$showAlways is redundant</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>113</MSGNR>
      <TEXT>Title for element &amp;1 at wrong position</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>114</MSGNR>
      <TEXT>Invalid default argument of element &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>115</MSGNR>
      <TEXT>Description for element &amp;1 at wrong position</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>116</MSGNR>
      <TEXT>Text between annotations for element &amp;1 will not be parsed</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>117</MSGNR>
      <TEXT>Annotation $$default for type &amp;1 of element &amp;2 is not supported</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>118</MSGNR>
      <TEXT>Annotation &amp;1 for element &amp;2 is not allowed</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>119</MSGNR>
      <TEXT>&amp;1 is missing for element &amp;2</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>120</MSGNR>
      <TEXT>Mandatory field &quot;FORMAT_VERSION&quot; is not contained in the type</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>121</MSGNR>
      <TEXT>Mandatory field &quot;header&quot; is not contained in the type</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>122</MSGNR>
      <TEXT>Type of constant &amp;1 does not match type of &amp;2</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>123</MSGNR>
      <TEXT>No structure provided for type generator</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>124</MSGNR>
      <TEXT>Given structure must have mandatory fields format_version and header</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>125</MSGNR>
      <TEXT>Description for element &amp;1 exceeds &amp;2 characters and might be too long</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>126</MSGNR>
      <TEXT>For element &amp;1: For required fields, a default handling is not possible</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
-     <ARBGB>Z_AFF_TOOLS</ARBGB>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>127</MSGNR>
      <TEXT>Element &amp;1 of type enum should be required or have a default</TEXT>
     </T100>

@@ -24,7 +24,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-  TYPES END OF include_in_include.
+TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -102,7 +102,7 @@ INTERFACE lif_test_types.
       fixpt          TYPE vseoclass-fixpt,
       msg_id         TYPE vseoclass-msg_id.
       INCLUDE TYPE ty_clif_properties.
-  TYPES END OF ty_class_properties.
+TYPES END OF ty_class_properties.
 
   TYPES:
     BEGIN OF ty_header,
@@ -392,7 +392,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_initial( act_result ).
-    cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
+    cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
     cl_abap_unit_assert=>assert_equals( exp = 100 act = exception->if_t100_message~t100key-msgno ).
   ENDMETHOD.
 
@@ -479,7 +479,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     cut->generate_type( no_header ).
     DATA(log) = cut->get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 124 )
                                                              exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
@@ -489,7 +489,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     cut->generate_type( no_format_version ).
     DATA(log) = cut->get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 124 )
                                                              exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
@@ -499,7 +499,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     cut->generate_type( no_structure ).
     DATA(log) = cut->get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 123 )
                                                              exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.

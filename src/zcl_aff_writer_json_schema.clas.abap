@@ -853,7 +853,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
         IF <component>-type_kind <> enum_type.
-          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(z_aff_tools) WITH name_of_constant fullname_of_type.
+          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(zaff_tools) WITH name_of_constant fullname_of_type.
         ENDIF.
 
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
@@ -871,7 +871,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         check_title_and_description( abap_doc_to_check = abap_doc_of_component fullname_of_checked_type = fullname_of_value ).
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        MESSAGE w127(z_aff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
+        MESSAGE w127(zaff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
         log->add_warning( zcl_aff_log=>get_sy_message( ) ).
       ENDIF.
     ENDIF.
@@ -967,15 +967,15 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   METHOD check_title_and_description.
     IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level. "Only write message if no callback class provided
       IF abap_doc_to_check-title IS INITIAL.
-        MESSAGE i119(z_aff_tools) WITH 'Title' fullname_of_checked_type INTO DATA(message) ##NEEDED ##NO_TEXT.
+        MESSAGE i119(zaff_tools) WITH 'Title' fullname_of_checked_type INTO DATA(message) ##NEEDED ##NO_TEXT.
         log->add_info( zcl_aff_log=>get_sy_message( ) ).
       ENDIF.
 
       IF abap_doc_to_check-description IS INITIAL.
-        MESSAGE i119(z_aff_tools) WITH 'Description' fullname_of_checked_type INTO message ##NEEDED ##NO_TEXT.
+        MESSAGE i119(zaff_tools) WITH 'Description' fullname_of_checked_type INTO message ##NEEDED ##NO_TEXT.
         log->add_info( zcl_aff_log=>get_sy_message( ) ).
       ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
-        MESSAGE w125(z_aff_tools) WITH fullname_of_checked_type c_max_length_of_description INTO message ##NEEDED ##NO_TEXT.
+        MESSAGE w125(zaff_tools) WITH fullname_of_checked_type c_max_length_of_description INTO message ##NEEDED ##NO_TEXT.
         log->add_warning( zcl_aff_log=>get_sy_message( ) ).
       ENDIF.
     ENDIF.

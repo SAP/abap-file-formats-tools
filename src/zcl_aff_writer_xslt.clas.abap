@@ -391,7 +391,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN zif_aff_writer=>type_info-numeric.
         result = `num`.
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(z_aff_tools) WITH json_type.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(zaff_tools) WITH json_type.
     ENDCASE.
   ENDMETHOD.
 
@@ -410,7 +410,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         WHEN zif_aff_writer=>type_info-numeric.
           result = ` option="format(alpha)"` ##NO_TEXT.
         WHEN OTHERS.
-          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(z_aff_tools) WITH json_type.
+          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(zaff_tools) WITH json_type.
       ENDCASE.
     ENDIF.
   ENDMETHOD.
@@ -534,7 +534,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
         IF <component>-type_kind <> enum_type.
-          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(z_aff_tools) WITH name_of_constant fullname_of_type.
+          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(zaff_tools) WITH name_of_constant fullname_of_type.
         ENDIF.
         DATA(json_name) = map_and_format_name( CONV #( <component>-name ) ).
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
@@ -544,7 +544,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         ENDIF.
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        MESSAGE w127(z_aff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
+        MESSAGE w127(zaff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
         log->add_warning( zcl_aff_log=>get_sy_message( ) ).
       ENDIF.
     ENDIF.
@@ -560,7 +560,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_default_value_from_default.
     IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
-      MESSAGE w117(z_aff_tools) WITH 'UTCLONG'  fullname_of_type INTO DATA(message) ##NEEDED.
+      MESSAGE w117(zaff_tools) WITH 'UTCLONG'  fullname_of_type INTO DATA(message) ##NEEDED.
       log->add_warning( zcl_aff_log=>get_sy_message( ) ).
       RETURN.
     ENDIF.
@@ -624,9 +624,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN cl_abap_typedescr=>typekind_time.
         result = |T('{ value }')|.
       WHEN cl_abap_typedescr=>typekind_utclong.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e117(z_aff_tools) WITH `UTCLONG` fullname_of_type.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e117(zaff_tools) WITH `UTCLONG` fullname_of_type.
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(z_aff_tools) WITH element_description->type_kind.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(zaff_tools) WITH element_description->type_kind.
     ENDCASE.
   ENDMETHOD.
 
@@ -712,7 +712,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF lines( errors ) > 0 OR exception IS BOUND.
       LOOP AT errors ASSIGNING FIELD-SYMBOL(<error>).
         cl_message_helper=>set_msg_vars_for_clike( <error>-text ).
-        log->add_error( VALUE #( msgid = 'Z_AFF_TOOLS' msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ) ).
+        log->add_error( VALUE #( msgid = 'ZAFF_TOOLS' msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ) ).
       ENDLOOP.
       RETURN.
     ENDIF.

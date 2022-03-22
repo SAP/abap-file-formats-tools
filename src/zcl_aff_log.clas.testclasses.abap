@@ -45,8 +45,8 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
 
   METHOD setup.
     log = NEW zcl_aff_log( ).
-    message = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 100 msgv1 = 'TEST' ).
-    message = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 1 msgv1 = 'TEST' ).
+    message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 100 msgv1 = 'TEST' ).
+    message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 1 msgv1 = 'TEST' ).
   ENDMETHOD.
 
 
@@ -78,21 +78,21 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
 
 
   METHOD add_t100_exception.
-    DATA(previous) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 101 ) ).
-    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 100 ) previous = previous ).
+    DATA(previous) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 101 ) ).
+    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 100 ) previous = previous ).
 
     log->add_exception( exception ).
 
     DATA(messages) = log->get_messages( ).
     cl_abap_unit_assert=>assert_equals( exp = 2 act = lines( messages ) ).
-    assert_message( act_message = messages[ 1 ] type = 'E' exp_message = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 100 ) ).
-    assert_message( act_message = messages[ 2 ] type = 'E' exp_message = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 101 ) ).
+    assert_message( act_message = messages[ 1 ] type = 'E' exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 100 ) ).
+    assert_message( act_message = messages[ 2 ] type = 'E' exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 101 ) ).
   ENDMETHOD.
 
 
   METHOD add_catched_exception.
     TRY.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(z_aff_tools) WITH '1' '2' '3' '4'.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(zaff_tools) WITH '1' '2' '3' '4'.
       CATCH zcx_aff_tools INTO DATA(exception).
         log->add_exception( exception ).
     ENDTRY.
@@ -101,7 +101,7 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = 1 act = lines( messages ) ).
     assert_message( act_message = messages[ 1 ]
                     type        = 'E'
-                    exp_message = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 100 msgv1 = '1' msgv2 = '2' msgv3 = '3' msgv4 = '4' ) ).
+                    exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 100 msgv1 = '1' msgv2 = '2' msgv3 = '3' msgv4 = '4' ) ).
   ENDMETHOD.
 
 
@@ -119,15 +119,15 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
 
 
   METHOD add_exception_as_info.
-    DATA(previous) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 101 ) ).
-    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 100 ) previous = previous ).
+    DATA(previous) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 101 ) ).
+    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 100 ) previous = previous ).
 
     log->add_exception( exception = exception message_type = zif_aff_log=>c_message_type-info ).
 
     DATA(messages) = log->get_messages( ).
     cl_abap_unit_assert=>assert_equals( exp = 2 act = lines( messages ) ).
-    assert_message( act_message = messages[ 1 ] type = 'I' exp_message = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 100 ) ).
-    assert_message( act_message = messages[ 2 ] type = 'I' exp_message = VALUE #( msgid = 'Z_AFF_TOOLS' msgno = 101 ) ).
+    assert_message( act_message = messages[ 1 ] type = 'I' exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 100 ) ).
+    assert_message( act_message = messages[ 2 ] type = 'I' exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 101 ) ).
     cl_abap_unit_assert=>assert_equals( exp = 'I' act = log->get_max_severity( ) ).
   ENDMETHOD.
 
@@ -201,13 +201,13 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
 
 
   METHOD get_sy_message.
-    MESSAGE i000(z_aff_tools) WITH '1' '2' '3' '4' INTO DATA(message) ##NEEDED.
+    MESSAGE i000(zaff_tools) WITH '1' '2' '3' '4' INTO DATA(message) ##NEEDED.
     DATA(act_message) = zcl_aff_log=>get_sy_message( ).
-    cl_abap_unit_assert=>assert_equals( exp = VALUE symsg( msgid = 'Z_AFF_TOOLS' msgno = 000 msgty = 'I' msgv1 = '1' msgv2 = '2' msgv3 = '3' msgv4 = '4' ) act = act_message ).
+    cl_abap_unit_assert=>assert_equals( exp = VALUE symsg( msgid = 'ZAFF_TOOLS' msgno = 000 msgty = 'I' msgv1 = '1' msgv2 = '2' msgv3 = '3' msgv4 = '4' ) act = act_message ).
 
-    MESSAGE e001(z_aff_tools) INTO message.
+    MESSAGE e001(zaff_tools) INTO message.
     act_message = zcl_aff_log=>get_sy_message( ).
-    cl_abap_unit_assert=>assert_equals( exp = VALUE symsg( msgid = 'Z_AFF_TOOLS' msgno = 001 msgty = 'E' ) act = act_message ).
+    cl_abap_unit_assert=>assert_equals( exp = VALUE symsg( msgid = 'ZAFF_TOOLS' msgno = 001 msgty = 'E' ) act = act_message ).
   ENDMETHOD.
 
 ENDCLASS.

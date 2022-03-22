@@ -90,7 +90,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
         DATA(structure_description) = CAST cl_abap_structdescr( type_description ).
         check_mandatory_fields( structure_description ).
       CATCH cx_sy_move_cast_error.
-        MESSAGE w123(z_aff_tools) INTO DATA(message) ##NEEDED.
+        MESSAGE w123(zaff_tools) INTO DATA(message) ##NEEDED.
         log->add_warning( zcl_aff_log=>get_sy_message( ) ).
     ENDTRY.
 
@@ -99,7 +99,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
   METHOD check_mandatory_fields.
     DATA(components) = structure_description->get_components( ).
     IF NOT ( line_exists( components[ name = 'HEADER' ] ) AND line_exists( components[ name = 'FORMAT_VERSION' ] ) ).
-      MESSAGE w124(z_aff_tools) INTO DATA(message)  ##NEEDED.
+      MESSAGE w124(zaff_tools) INTO DATA(message)  ##NEEDED.
       log->add_warning( zcl_aff_log=>get_sy_message( ) ).
     ENDIF.
   ENDMETHOD.
@@ -119,7 +119,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
           table_name        = type_name
           table_description = CAST #( type_description ) ).
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(z_aff_tools) WITH type_description->kind.
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(zaff_tools) WITH type_description->kind.
     ENDCASE.
   ENDMETHOD.
 

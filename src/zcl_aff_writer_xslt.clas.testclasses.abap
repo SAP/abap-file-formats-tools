@@ -31,7 +31,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-  TYPES END OF include_in_include.
+TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -850,7 +850,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_equals( exp = '101' act = exception->if_t100_message~t100key-msgno ).
-    cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
+    cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
   ENDMETHOD.
 
   METHOD close_unsupported_node.
@@ -863,7 +863,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_equals( exp = '101' act = exception->if_t100_message~t100key-msgno ).
-    cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
+    cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
   ENDMETHOD.
 
   METHOD validate_output.
@@ -1843,7 +1843,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 108
                                                                                     attr1 = `$ructure`
                                                                                     attr2 = `MY_STRUCTURE2` )
@@ -1945,7 +1945,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     test_generator->generate_type( test_type ).
     DATA(log) = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 127
                                                                                     attr1 = `STRUCTURE_WITH_DIFFERENT_ENUM-ENUM_WITHOUT_ALL` )
                                                              exp_type    = zif_aff_log=>c_message_type-warning ).
@@ -1988,7 +1988,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 104
                                                                                     attr1 = `ZCL_AFF_TEST_TYPES=>ENUM_VALUES_WRONG`
                                                                                     attr2 = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO` )
@@ -2469,7 +2469,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 117
                                                                                     attr1 = `UTCLONG`
                                                                                     attr2 = `STRUCTURE_DIFFERENT_DEFAULT-DATE_TIME_FIELD` )
@@ -2528,12 +2528,12 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 126
                                                                                     attr1 = `STRUCTURE_WITH_DEFAULT_PROBLEM-INTEGER` )
                                                              exp_type    = zif_aff_log=>c_message_type-warning ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 126
                                                                                     attr1 = `STRUCTURE_WITH_DEFAULT_PROBLEM-ENUM_REQUIRED` )
                                                              exp_type    = zif_aff_log=>c_message_type-warning ).
@@ -2625,7 +2625,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
       CATCH zcx_aff_tools INTO DATA(ex).
         cl_abap_unit_assert=>assert_equals( exp = 'CO_ENUM' act = ex->if_t100_dyn_msg~msgv1 ).
         cl_abap_unit_assert=>assert_equals( exp = 'ENUM' act = ex->if_t100_dyn_msg~msgv2 ).
-        cl_abap_unit_assert=>assert_equals( exp = 'Z_AFF_TOOLS' act = ex->if_t100_message~t100key-msgid ).
+        cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = ex->if_t100_message~t100key-msgid ).
         cl_abap_unit_assert=>assert_equals( exp = 122 act = ex->if_t100_message~t100key-msgno ).
     ENDTRY.
   ENDMETHOD.
@@ -2660,7 +2660,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 122
                                                                                     attr1 = `CO_TEST`
                                                                                     attr2 = `STRUC_LINK_WRONG_TYPE-DEFAULT_LINK` )
@@ -2707,14 +2707,14 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 105
                                                                                     attr1 = `WRONG_COMPONENT`
                                                                                     attr2 = `ENUM_VALUES`
                                                                                     attr3 = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_ONE` )
                                                              exp_type    = zif_aff_log=>c_message_type-warning ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 111
                                                                                     attr1 = `$default`
                                                                                     attr2 = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_TWO` )
@@ -2920,12 +2920,12 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 106
                                                                                     attr1 = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT` )
                                                              exp_type    = zif_aff_log=>c_message_type-warning ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'Z_AFF_TOOLS'
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                     msgno = 109
                                                                                     attr1 = `$callbackClass`
                                                                                     attr2 = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT` )
