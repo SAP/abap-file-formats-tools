@@ -102,7 +102,7 @@ INTERFACE lif_test_types.
       fixpt          TYPE vseoclass-fixpt,
       msg_id         TYPE vseoclass-msg_id.
       INCLUDE TYPE ty_clif_properties.
-TYPES END OF ty_class_properties.
+  TYPES END OF ty_class_properties.
 
   TYPES:
     BEGIN OF ty_header,
