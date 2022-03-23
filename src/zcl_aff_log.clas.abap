@@ -23,8 +23,9 @@ CLASS zcl_aff_log DEFINITION
     METHODS:
       add_message
         IMPORTING
-          type    TYPE symsgty
-          message TYPE symsg,
+          type           TYPE symsgty
+          message        TYPE symsg
+          component_name TYPE string,
       set_max_severity
         IMPORTING
           type TYPE symsgty.
@@ -41,19 +42,19 @@ CLASS zcl_aff_log IMPLEMENTATION.
 
   METHOD zif_aff_log~add_info.
     set_max_severity( zif_aff_log=>c_message_type-info ).
-    add_message( type = zif_aff_log=>c_message_type-info message = message ).
+    add_message( type = zif_aff_log=>c_message_type-info message = message component_name = component_name ).
   ENDMETHOD.
 
 
   METHOD zif_aff_log~add_warning.
     set_max_severity( zif_aff_log=>c_message_type-warning ).
-    add_message( type = zif_aff_log=>c_message_type-warning message = message ).
+    add_message( type = zif_aff_log=>c_message_type-warning message = message component_name = component_name ).
   ENDMETHOD.
 
 
   METHOD zif_aff_log~add_error.
     set_max_severity( zif_aff_log=>c_message_type-error ).
-    add_message( type = zif_aff_log=>c_message_type-error message = message ).
+    add_message( type = zif_aff_log=>c_message_type-error message = message component_name = component_name ).
   ENDMETHOD.
 
 
@@ -62,11 +63,11 @@ CLASS zcl_aff_log IMPLEMENTATION.
 
     IF exception->get_text( ) IS NOT INITIAL.
       cl_message_helper=>set_msg_vars_for_if_msg( exception ).
-      add_message( type = message_type message = get_sy_message( ) ).
+      add_message( type = message_type message = get_sy_message( ) component_name = component_name ).
     ENDIF.
 
     IF exception->previous IS BOUND.
-      zif_aff_log~add_exception( exception = exception->previous message_type = message_type ).
+      zif_aff_log~add_exception( exception = exception->previous message_type = message_type component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
@@ -80,9 +81,10 @@ CLASS zcl_aff_log IMPLEMENTATION.
       WITH message-msgv1 message-msgv2 message-msgv3 message-msgv4
       INTO DATA(text).
 
-    APPEND VALUE #( type    = type
-                    text    = text
-                    message = get_sy_message( ) ) TO me->messages.
+    APPEND VALUE #( component_name = component_name
+                    type         = type
+                    text         = text
+                    message      = get_sy_message( ) ) TO me->messages.
   ENDMETHOD.
 
 

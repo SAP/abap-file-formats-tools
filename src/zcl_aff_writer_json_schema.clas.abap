@@ -872,7 +872,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
         MESSAGE w127(zaff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
-        log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+        log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -968,15 +968,15 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level. "Only write message if no callback class provided
       IF abap_doc_to_check-title IS INITIAL.
         MESSAGE i119(zaff_tools) WITH 'Title' fullname_of_checked_type INTO DATA(message) ##NEEDED ##NO_TEXT.
-        log->add_info( zcl_aff_log=>get_sy_message( ) ).
+        log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type ).
       ENDIF.
 
       IF abap_doc_to_check-description IS INITIAL.
         MESSAGE i119(zaff_tools) WITH 'Description' fullname_of_checked_type INTO message ##NEEDED ##NO_TEXT.
-        log->add_info( zcl_aff_log=>get_sy_message( ) ).
+        log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type  ).
       ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
         MESSAGE w125(zaff_tools) WITH fullname_of_checked_type c_max_length_of_description INTO message ##NEEDED ##NO_TEXT.
-        log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+        log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -989,7 +989,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         json_reader->next_node( ).
         json_reader->skip_node( ).
       CATCH cx_aff_root cx_sxml_parse_error INTO DATA(exception).
-        log->add_exception( exception ).
+        log->add_exception( exception = exception component_name = `` ).
         RETURN.
     ENDTRY.
     result = abap_true.

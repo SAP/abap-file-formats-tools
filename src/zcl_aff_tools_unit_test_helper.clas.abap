@@ -9,9 +9,10 @@ CLASS zcl_aff_tools_unit_test_helper DEFINITION FINAL FOR TESTING
       "! Checks whether the message is contained in the log.
       assert_log_contains_msg
         IMPORTING
-          log         TYPE REF TO zif_aff_log
-          exp_message TYPE scx_t100key
-          exp_type    TYPE symsgty DEFAULT zif_aff_log=>c_message_type-error,
+          log                TYPE REF TO zif_aff_log
+          exp_message        TYPE scx_t100key
+          exp_type           TYPE symsgty DEFAULT zif_aff_log=>c_message_type-error
+          exp_component_name TYPE string OPTIONAL,
 
       "! Asserts that both string tables are equal, ignoring all spaces.
       assert_equals_ignore_spaces
@@ -40,12 +41,13 @@ CLASS zcl_aff_tools_unit_test_helper DEFINITION FINAL FOR TESTING
 
   PROTECTED SECTION.
   PRIVATE SECTION.
+
+
 ENDCLASS.
 
 
 
 CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
-
 
   METHOD assert_log_contains_msg.
     DATA(act_messages) = log->get_messages( ).
@@ -57,8 +59,14 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
       msgv2 = exp_message-attr2
       msgv3 = exp_message-attr3
       msgv4 = exp_message-attr4 ).
-    IF NOT line_exists( act_messages[ type = exp_type message = msg ] ).
-      cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
+    IF exp_component_name IS SUPPLIED.
+      IF NOT line_exists( act_messages[ type = exp_type message = msg component_name = exp_component_name ] ).
+        cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
+      ENDIF.
+    ELSE.
+      IF NOT line_exists( act_messages[ type = exp_type message = msg ] ).
+        cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
+      ENDIF.
     ENDIF.
   ENDMETHOD.
 
@@ -133,6 +141,5 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals( exp = exp_work_copy act = act_work_copy msg = 'Expected and actual abap source does not match' ).
   ENDMETHOD.
-
 
 ENDCLASS.

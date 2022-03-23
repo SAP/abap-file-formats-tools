@@ -10,6 +10,7 @@ CLASS ltcl_unit_test_helper DEFINITION FINAL FOR TESTING
       log_contains_msg_without_env FOR TESTING RAISING cx_static_check,
       assert_no_message_severity FOR TESTING RAISING cx_static_check,
       assert_log_has_no_message FOR TESTING RAISING cx_static_check,
+      log_contains_msg_with_comp FOR TESTING RAISING cx_static_check,
       change_environment_language,
       setup,
       teardown.
@@ -34,7 +35,7 @@ CLASS ltcl_unit_test_helper IMPLEMENTATION.
     TRY.
         RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(zaff_tools) WITH 'TEST_ATTR'.
       CATCH zcx_aff_tools INTO DATA(exception).
-        log->add_exception( exception ).
+        log->add_exception( exception = exception component_name = '' ).
     ENDTRY.
 
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
@@ -46,7 +47,7 @@ CLASS ltcl_unit_test_helper IMPLEMENTATION.
 
     "environment language is not considered. Message still on English
     MESSAGE e100(zaff_tools) WITH 'TEST_ATTR' INTO DATA(message) ##NEEDED.
-    log->add_error( zcl_aff_log=>get_sy_message( ) ).
+    log->add_error( message = zcl_aff_log=>get_sy_message( ) component_name = 'TEST' ).
 
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
                                                              exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = '100' attr1 = 'TEST_ATTR' )
@@ -54,7 +55,7 @@ CLASS ltcl_unit_test_helper IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD assert_no_message_severity.
-    log->add_warning( VALUE #( msgid = 'ZAFF_TOOLS' msgno = 1 ) ).
+    log->add_warning( message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 1 ) component_name = '' ).
 
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-error ).
   ENDMETHOD.
@@ -69,6 +70,19 @@ CLASS ltcl_unit_test_helper IMPLEMENTATION.
     ELSE.
       cl_abap_unit_assert=>skip( msg = 'Skip test since the test is language depended' ).
     ENDIF.
+  ENDMETHOD.
+
+  METHOD log_contains_msg_with_comp.
+    change_environment_language( ).
+
+    "environment language is not considered. Message still on English
+    MESSAGE w100(zaff_tools) WITH 'TEST_ATTR' INTO DATA(message) ##NEEDED.
+    log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = 'EXAMPLE_COMPONENT' ).
+
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
+                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS' msgno = '100' attr1 = 'TEST_ATTR' )
+                                                             exp_component_name = 'EXAMPLE_COMPONENT'
+                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
 ENDCLASS.
