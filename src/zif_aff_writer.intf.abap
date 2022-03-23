@@ -63,7 +63,7 @@ INTERFACE zif_aff_writer
         element_name        TYPE string
         element_description TYPE REF TO cl_abap_elemdescr
       RAISING
-        cx_aff_root,
+        zcx_aff_tools,
 
     "! open node. for example table or object
     "! @parameter node_description | description for node
@@ -72,7 +72,7 @@ INTERFACE zif_aff_writer
         node_description TYPE REF TO cl_abap_typedescr
         node_name        TYPE string
       RAISING
-        cx_aff_root,
+        zcx_aff_tools,
 
     "! close node. for example table or object
     "! @parameter node_description | description for node
@@ -81,13 +81,13 @@ INTERFACE zif_aff_writer
         node_description TYPE REF TO cl_abap_typedescr
         node_name        TYPE string
       RAISING
-        cx_aff_root,
+        zcx_aff_tools,
 
     get_output
       RETURNING VALUE(result) TYPE string_table,
 
     get_log
-      RETURNING VALUE(log) TYPE REF TO if_aff_log,
+      RETURNING VALUE(log) TYPE REF TO zif_aff_log,
 
     "! Validate the given source and writes messages into the log
     "!
@@ -96,7 +96,7 @@ INTERFACE zif_aff_writer
     "! @parameter result | true, if the source is valid, false if not
     validate
       IMPORTING source        TYPE string_table
-                log           TYPE REF TO if_aff_log
+                log           TYPE REF TO zif_aff_log
       RETURNING VALUE(result) TYPE abap_bool,
 
     open_include

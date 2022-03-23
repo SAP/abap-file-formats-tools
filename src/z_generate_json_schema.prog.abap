@@ -17,7 +17,7 @@ CLASS lcl_generator_helper DEFINITION
                 type_name       TYPE sobj_name
       RETURNING VALUE(result)   TYPE string_table
       RAISING
-                cx_aff_root.
+                zcx_aff_tools.
   PRIVATE SECTION.
     CLASS-METHODS get_format_version
       IMPORTING
@@ -36,7 +36,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
 
     cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_name RECEIVING p_descr_ref = type_descrition EXCEPTIONS type_not_found = 1 ).
     IF sy-subrc = 1.
-      RAISE EXCEPTION NEW cx_aff_root( ).
+      RAISE EXCEPTION NEW zcx_aff_tools( ).
     ENDIF.
     element_description ?= type_descrition.
     DATA field TYPE REF TO data.
@@ -110,7 +110,7 @@ START-OF-SELECTION.
   TRY.
       DATA(xslt_content) = lcl_generator_helper=>generate( generate_schema = p_schema interface_name = p_intf object_type = p_objtyp type_name = p_type ).
       cl_demo_output=>write( xslt_content ).
-    CATCH cx_aff_root INTO DATA(exception).
+    CATCH zcx_aff_tools INTO DATA(exception).
       cl_demo_output=>write( exception->get_text( ) ).
   ENDTRY.
   cl_demo_output=>display( ).

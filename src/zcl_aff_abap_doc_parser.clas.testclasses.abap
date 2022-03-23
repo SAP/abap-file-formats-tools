@@ -4,7 +4,7 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
   RISK LEVEL HARMLESS.
   PRIVATE SECTION.
     DATA parser TYPE REF TO zcl_aff_abap_doc_parser.
-    DATA log TYPE REF TO if_aff_log.
+    DATA log TYPE REF TO zif_aff_log.
     DATA exp_abap_doc TYPE zcl_aff_abap_doc_parser=>abap_doc.
     METHODS setup.
     METHODS title_and_description FOR TESTING RAISING cx_static_check.
@@ -39,479 +39,479 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD setup.
     parser = NEW zcl_aff_abap_doc_parser( ).
-    log = NEW cl_aff_log( ).
+    log = NEW zcl_aff_log( ).
   ENDMETHOD.
 
   METHOD title_and_description.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title  </p> This is the description.`.
     DATA(act_abap_doc) = parser->parse(
-                           EXPORTING
-                             component_name = `Component Name`
-                             to_parse       = abap_doc_to_parse
-                           CHANGING
-                             log            = log
-                         ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
   METHOD default_minimum.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $minimum 12 $default '20'`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` minimum = `12` default = `"20"`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
   METHOD required_max_exclmin.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $exclusiveMinimum 12 $maximum 20 $required`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` exclusive_minimum = `12` maximum = `20` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
   METHOD showalways_exclmax_multipleof.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $exclusiveMaximum 12 $multipleOf 2 $showAlways `.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` exclusive_maximum = `12` multiple_of = `2` showalways = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
   METHOD enum_values.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $values    {    @link    cl_aff_test_types_for_writer.data:enum_values    }`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` enumvalues_link = `cl_aff_test_types_for_writer.data:enum_values` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
   METHOD callback_class.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $callbackClass {     @link    cl_aff_test_types_for_writer    } `.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` callback_class = `cl_aff_test_types_for_writer` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
   METHOD default_with_link.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $default {@link cl_aff_test_types_for_writer.data:enum_values.classic_badi } `.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 
   METHOD too_many_titles_and_showalways.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> <p class="shorttext">Title2</p> This is the description $default {@link cl_aff_test_types_for_writer.data:enum_values.classic_badi }  $showAlways $minimum 2 $showAlways`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( title = `Title`  description = `This is the description` showalways = abap_true minimum = `2` default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = `'Title'`
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-show_always
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = `'Title'`
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-show_always
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD too_many_number_annotations.
     DATA(abap_doc_to_parse) = `Here are too many number annotations $minimum 4 $maximum 9 $maximum 19 $minimum 3 `.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here are too many number annotations`  minimum = '4' maximum = '9' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum
-                                                                             attr2 = `Component Name` )
-                                                       exp_type   =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD too_many_default_mixed.
     DATA(abap_doc_to_parse) = `Here are too many defaults  $required $default '10' $minimum 4 $default {@link cl_aff_test_types_for_writer.data:enum_values.classic_badi } $default '11'`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `"10"` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD too_many_default_link.
     DATA(abap_doc_to_parse) = `Here are too many defaults  $required $default {@link cl_aff_test_types_for_writer.data:enum_values.classic_badi } $minimum 4 $default {@link cl_aff_test_types_for_writer.data:enum_values.classic_badi } `.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD too_many_default_value.
     DATA(abap_doc_to_parse) = `Here are too many defaults  $required $default '10' $minimum 4 $default '19' `.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `"10"` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD too_many_value_links.
     DATA(abap_doc_to_parse) = `Here are two many value links. $values { @link    cl_aff_test_types_for_writer.data:enum_values    } $values { @link    cl_aff_test_types_for_writer.data:enum_values } $required`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here are two many value links.` enumvalues_link = `cl_aff_test_types_for_writer.data:enum_values` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-values
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-values
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD too_many_callbackclasses.
     DATA(abap_doc_to_parse) = `Here are too many callbackclass links. $callbackClass { @link cl_aff_test_types_for_writer } $minimum 4 $callbackClass {  @link  cl_aff_test_types_for_writer  }`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here are too many callbackclass links.` callback_class = `cl_aff_test_types_for_writer` minimum = '4').
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD too_many_required_annotations.
     DATA(abap_doc_to_parse) = `Here are too many required annotations. $required $minLength 5 $required $maxLength 10`.
     DATA(act_abap_doc) = parser->parse(
-                                 EXPORTING
-                                   component_name = `Component Name`
-                                   to_parse       = abap_doc_to_parse
-                                 CHANGING
-                                   log            = log
-                               ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here are too many required annotations.` required = abap_true min_length = '5' max_length = '10').
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 107
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-required
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 107
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-required
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD unknown_annotation.
     DATA(abap_doc_to_parse) = `Here is a unknown annoataion. $required $unknown`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here is a unknown annoataion.` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 108
-                                                                             attr1 = `$unknown`
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 108
+                                                                                    attr1 = `$unknown`
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD wrong_usage_callback_class.
     DATA(abap_doc_to_parse) = `Wrong usage of callbackClass annotation. $callbackClass { cl_aff_test_types_for_writer } $default '4' `.
     DATA(act_abap_doc) = parser->parse(
-                              EXPORTING
-                                component_name = `Component Name`
-                                to_parse       = abap_doc_to_parse
-                              CHANGING
-                                log            = log
-                            ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Wrong usage of callbackClass annotation.` default = '"4"').
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 109
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 109
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD wrong_usage_default.
     DATA(abap_doc_to_parse) = `Wrong usage of default  $required $default 10 `.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name1`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name1`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Wrong usage of default` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
 
     abap_doc_to_parse = `Wrong usage of default  $required $default {cl_aff_test_types_for_writer.data:enum_values.classic_badi } `.
     act_abap_doc = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name2`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name2`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Wrong usage of default` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
 
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 109
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
-                                                                             attr2 = `Component Name1` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 109
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
-                                                                             attr2 = `Component Name2` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 109
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
+                                                                                    attr2 = `Component Name1` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 109
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
+                                                                                    attr2 = `Component Name2` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD wrong_usage_enum_values.
     DATA(abap_doc_to_parse) = `Wrong usage of values. $values { cl_aff_test_types_for_writer.data:enum_values} $required`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Wrong usage of values.` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 109
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-values
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 109
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-values
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD wrong_value_number_annotation.
     DATA(abap_doc_to_parse) = `Wrong usage of minimum and maximum. $minimum '2' $maximum basjkasjdsa $default '3' `.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Wrong usage of minimum and maximum.` default = '"3"' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 110
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 110
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 110
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 110
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD wrong_links.
     DATA(abap_doc_to_parse) = `Wrong links for default and values. $values{@link cl_aff_test_types_for_writer.data:enum_values.component} $default{@link cl_aff_test_types_for_writer.data:enum_values}`.
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Wrong links for default and values.` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 111
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-values
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 111
-                                                                             attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
-                                                                             attr2 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 111
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-values
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 111
+                                                                                    attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default
+                                                                                    attr2 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD description_at_false_position.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> $minimum 12 This is the description at wrong position $default '20'`  .
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( title = `Title` minimum = `12` default = `"20"`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 115
-                                                                             attr1 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 115
+                                                                                    attr1 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD text_between_annotations.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> Here is text between annotation $default {@link cl_aff_test_types_for_writer.data:enum_values.classic_badi} Some unused text $required`  .
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Here is text between annotation` title = `Title` required = abap_true default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 116
-                                                                             attr1 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 116
+                                                                                    attr1 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD title_at_wrong_position.
     DATA(abap_doc_to_parse) = `Description first <p class="shorttext">This is the title at wrong position</p> $values{@link cl_aff_test_types_for_writer.data:enum_values} Unused Text`  .
     DATA(act_abap_doc) = parser->parse(
-                               EXPORTING
-                                 component_name = `Component Name`
-                                 to_parse       = abap_doc_to_parse
-                               CHANGING
-                                 log            = log
-                             ).
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
     exp_abap_doc = VALUE #( description = `Description first` title = `This is the title at wrong position` enumvalues_link = `cl_aff_test_types_for_writer.data:enum_values` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 116
-                                                                             attr1 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
-    cl_aff_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                      exp_message = VALUE #( msgid = 'SAFF_CORE'
-                                                                             msgno = 113
-                                                                             attr1 = `Component Name` )
-                                                      exp_type    =  if_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 116
+                                                                                    attr1 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
+                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                    msgno = 113
+                                                                                    attr1 = `Component Name` )
+                                                             exp_type    = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 ENDCLASS.
