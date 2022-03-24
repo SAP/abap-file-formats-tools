@@ -505,7 +505,8 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD type_string.
-    DATA(act_output) = test_generator->generate_type( VALUE char10( ) ).
+    DATA char_10 TYPE c LENGTH 10.
+    DATA(act_output) = test_generator->generate_type( char_10 ).
 
     append_to me->exp_transformation:
 `<tt:cond>`,
@@ -1366,7 +1367,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD type_string.
-    DATA test_type TYPE char10.
+    DATA test_type TYPE c LENGTH 10.
     test_type = '0123abcdef'.
     from_abap_to_json(
       EXPORTING
