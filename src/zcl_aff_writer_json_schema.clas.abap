@@ -56,7 +56,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       enum_values            TYPE rswsourcet,
       enum_titles            TYPE rswsourcet,
       enum_descriptions      TYPE rswsourcet,
-      stack_of_required_tabs TYPE STANDARD TABLE OF stringtab,
+      stack_of_required_tabs TYPE STANDARD TABLE OF string_table,
       format_version         TYPE i.
 
     METHODS: append_comma_to_prev_line,
@@ -220,7 +220,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     set_abapdoc_fullname_element( element_description = element_description element_name = element_name splitted_prev_name = splitted_prev_name ).
 
     IF abap_doc-required = abap_true AND lines( stack_of_required_tabs ) >= 1.
-      FIELD-SYMBOLS <table1> TYPE stringtab.
+      FIELD-SYMBOLS <table1> TYPE string_table.
       ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
@@ -481,7 +481,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     write_title_and_description( structure_description ).
 
     IF abap_doc-required = abap_true.
-      FIELD-SYMBOLS <table1> TYPE stringtab.
+      FIELD-SYMBOLS <table1> TYPE string_table.
       ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
@@ -520,7 +520,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     set_abapdoc_fullname_struc_tab( type_description = table_description type_name = table_name ).
 
     IF abap_doc-required = abap_true AND lines( stack_of_required_tabs ) >= 1.
-      FIELD-SYMBOLS <table1> TYPE stringtab.
+      FIELD-SYMBOLS <table1> TYPE string_table.
       ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
