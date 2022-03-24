@@ -401,8 +401,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = abap_false act = is_valid ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
                                                              exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 106
-                                                                                           attr1 = `Component Name` )
+                                                                                           msgno = 106 )
                                                              exp_component_name = `Component Name`
                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
