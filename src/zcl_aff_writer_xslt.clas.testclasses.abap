@@ -505,7 +505,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD type_string.
-    data char_10 TYPE c LENGTH 10.
+    DATA char_10 TYPE c LENGTH 10.
     DATA(act_output) = test_generator->generate_type( char_10 ).
 
     append_to me->exp_transformation:
