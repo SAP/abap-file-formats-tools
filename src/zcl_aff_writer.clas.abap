@@ -529,7 +529,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         OTHERS        = 3.
     IF sy-subrc <> 0.
 *    class or interface doesn't exist
-      MESSAGE w103(zaff_tools) WITH name_of_source fullname_of_type INTO DATA(message) ##NEEDED.
+      MESSAGE w103(zaff_tools) WITH name_of_source INTO DATA(message) ##NEEDED.
       log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
     ELSE.
       DATA(constant_descr) = cl_abap_typedescr=>describe_by_name( name_of_source ).
@@ -547,7 +547,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         ).
         IF sy-subrc <> 0.
 *      constant in interface does not exist
-          MESSAGE w104(zaff_tools) WITH name_of_source && '=>' && name_of_constant fullname_of_type INTO message ##NEEDED.
+          MESSAGE w104(zaff_tools) WITH name_of_source && '=>' && name_of_constant INTO message ##NEEDED.
           log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
         ENDIF.
       ELSEIF clstype = seoc_clstype_class.
@@ -563,7 +563,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         ).
         IF sy-subrc <> 0.
 *      constant in class does not exits
-          MESSAGE w104(zaff_tools) WITH name_of_source && '=>' && name_of_constant fullname_of_type INTO message ##NEEDED.
+          MESSAGE w104(zaff_tools) WITH name_of_source && '=>' && name_of_constant INTO message ##NEEDED.
           log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
         ENDIF.
       ENDIF.
@@ -652,7 +652,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       is_valid = xsdbool( get_subschema_exists = abap_true AND serialize_exists = abap_true AND deserialize_exists = abap_true ).
     ENDIF.
     IF is_valid = abap_false.
-      MESSAGE w106(zaff_tools) WITH component_name INTO DATA(message) ##NEEDED.
+      MESSAGE w106(zaff_tools) INTO DATA(message) ##NEEDED.
       log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
   ENDMETHOD.
@@ -678,7 +678,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
           ENDIF.
         ELSE.
-          MESSAGE w105(zaff_tools) WITH component_name constant_name fullname_of_type INTO message ##NEEDED.
+          MESSAGE w105(zaff_tools) WITH component_name constant_name INTO message ##NEEDED.
           log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
         ENDIF.
       ENDIF.
@@ -696,7 +696,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     ASSIGN r_field->* TO <field>.
     IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
 *      No support for default with utclong
-      MESSAGE w117(zaff_tools) WITH 'UTCLONG'  fullname_of_type INTO DATA(message) ##NEEDED.
+      MESSAGE w117(zaff_tools) WITH 'UTCLONG' INTO DATA(message) ##NEEDED.
       log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
       is_valid = abap_false.
       RETURN.
@@ -742,7 +742,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       ENDTRY.
     ENDIF.
     IF is_valid = abap_false.
-      MESSAGE w114(zaff_tools) WITH fullname_of_type INTO message ##NEEDED.
+      MESSAGE w114(zaff_tools) INTO message ##NEEDED.
       log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.
@@ -775,12 +775,12 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD check_redundant_annotations.
     IF abap_doc-showalways = abap_true AND abap_doc-required = abap_true.
-      MESSAGE i112(zaff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED.
+      MESSAGE i112(zaff_tools) INTO DATA(message) ##NEEDED.
       log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
     ENDIF.
 
     IF abap_doc-required = abap_true AND abap_doc-default IS NOT INITIAL.
-      MESSAGE w126(zaff_tools) WITH fullname_of_type INTO message ##NEEDED.
+      MESSAGE w126(zaff_tools) INTO message ##NEEDED.
       log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.
