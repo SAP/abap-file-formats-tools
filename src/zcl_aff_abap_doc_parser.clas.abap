@@ -123,12 +123,12 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ELSEIF lines( result_table ) > 1.
       MESSAGE i107(zaff_tools) WITH `'Title'` component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(offset) = result_table[ 1 ]-offset.
     IF offset <> 0.
       MESSAGE i113(zaff_tools) WITH component_name INTO message ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(length) = result_table[ 1 ]-length.
     DATA(title) = abap_doc_string+offset(length).
@@ -178,7 +178,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         WHEN OTHERS.
           REPLACE key_word IN modified_abap_doc_string WITH ''.
           MESSAGE w108(zaff_tools) WITH key_word component_name INTO DATA(message) ##NEEDED.
-          parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+          parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       ENDCASE.
     ENDLOOP.
     abap_doc_string = modified_abap_doc_string.
@@ -193,12 +193,12 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     FIND ALL OCCURRENCES OF PCRE `\$callbackClass\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table).
     IF lines( result_table ) = 0.
       MESSAGE w109(zaff_tools) WITH abap_doc_annotation-callback_class component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       RETURN.
     ENDIF.
     IF lines( result_table ) > 1.
       MESSAGE i107(zaff_tools) WITH abap_doc_annotation-callback_class component_name INTO message ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(offset_found) = result_table[ 1 ]-offset.
     DATA(length_found) = result_table[ 1 ]-length.
@@ -240,12 +240,12 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
     IF lines( mixed_result_table ) = 0.
       MESSAGE w109(zaff_tools) WITH abap_doc_annotation-default component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       RETURN.
     ENDIF.
     IF lines( mixed_result_table ) > 1.
       MESSAGE i107(zaff_tools) WITH abap_doc_annotation-default component_name INTO message ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(warning_set) = abap_false.
     LOOP AT mixed_result_table ASSIGNING FIELD-SYMBOL(<entry>).
@@ -262,7 +262,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
           decoded_abap_doc-default = link.
         ELSEIF warning_set = abap_false.
           MESSAGE w111(zaff_tools) WITH abap_doc_annotation-default component_name INTO message ##NEEDED.
-          parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+          parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
           warning_set = abap_true.
         ENDIF.
       ENDIF.
@@ -280,12 +280,12 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     FIND ALL OCCURRENCES OF PCRE `\$values\{@link([^\}]+)\}` IN string_to_parse RESULTS DATA(result_table).
     IF lines( result_table ) = 0.
       MESSAGE w109(zaff_tools) WITH abap_doc_annotation-values component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       RETURN.
     ENDIF.
     IF lines( result_table ) > 1.
       MESSAGE i107(zaff_tools) WITH abap_doc_annotation-values component_name INTO message ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(warning_written) = abap_false.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
@@ -301,7 +301,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         decoded_abap_doc-enumvalues_link = link.
       ELSEIF lines( splitted ) <> 2 AND warning_written = abap_false.
         MESSAGE w111(zaff_tools) WITH abap_doc_annotation-values component_name INTO message ##NEEDED.
-        parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+        parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
         warning_written = abap_true.
       ENDIF.
     ENDLOOP.
@@ -315,7 +315,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     FIND ALL OCCURRENCES OF abap_doc_annotation-required IN abap_doc_string RESULTS DATA(result_table).
     IF lines( result_table ) > 1.
       MESSAGE i107(zaff_tools) WITH abap_doc_annotation-required component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     decoded_abap_doc-required = abap_true.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
@@ -331,7 +331,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     FIND ALL OCCURRENCES OF abap_doc_annotation-show_always IN abap_doc_string RESULTS DATA(result_table).
     IF lines( result_table ) > 1.
       MESSAGE i107(zaff_tools) WITH abap_doc_annotation-show_always component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     decoded_abap_doc-showalways = abap_true.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
@@ -382,12 +382,12 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     FIND ALL OCCURRENCES OF PCRE `\$dummyannotation[^\s]+` IN abap_doc RESULTS DATA(result_table).
     IF lines( result_table ) = 0.
       MESSAGE w109(zaff_tools) WITH abap_doc_annotation-values component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       RETURN.
     ENDIF.
     IF lines( result_table ) > 1.
       MESSAGE i107(zaff_tools) WITH annotation_name component_name INTO message ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(annotation_length) = strlen( dummy_annotation ).
     DATA(regex_of_number_expressions) = cl_abap_regex=>create_pcre( pattern     = `(\+|-)?[0-9]+(.[0-9]+)?(e(\+|-)?[0-9]+)?`
@@ -407,7 +407,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         number = number_candidate.
       ELSEIF match = abap_false AND warning_written = abap_false.
         MESSAGE w110(zaff_tools) WITH annotation_name component_name INTO message ##NEEDED.
-        parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+        parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
         warning_written = abap_true.
       ENDIF.
     ENDLOOP.
@@ -455,10 +455,10 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   METHOD write_description_message.
     IF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS INITIAL.
       MESSAGE w115(zaff_tools) WITH component_name INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ELSEIF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS NOT INITIAL.
       MESSAGE i116(zaff_tools) WITH component_name INTO message ##NEEDED.
-      parser_log->add_info( zcl_aff_log=>get_sy_message( ) ).
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 

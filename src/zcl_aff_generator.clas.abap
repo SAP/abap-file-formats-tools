@@ -91,7 +91,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
         check_mandatory_fields( structure_description ).
       CATCH cx_sy_move_cast_error.
         MESSAGE w123(zaff_tools) INTO DATA(message) ##NEEDED.
-        log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+        log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = type_description->get_relative_name( ) ).
     ENDTRY.
 
   ENDMETHOD.
@@ -100,7 +100,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
     DATA(components) = structure_description->get_components( ).
     IF NOT ( line_exists( components[ name = 'HEADER' ] ) AND line_exists( components[ name = 'FORMAT_VERSION' ] ) ).
       MESSAGE w124(zaff_tools) INTO DATA(message)  ##NEEDED.
-      log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = structure_description->get_relative_name( ) ).
     ENDIF.
   ENDMETHOD.
 

@@ -478,30 +478,33 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     DATA no_header TYPE lif_test_types=>ty_abap_type_no_header.
     cut->generate_type( no_header ).
     DATA(log) = cut->get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                    msgno = 124 )
-                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
+                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                           msgno = 124 )
+                                                             exp_component_name = 'TY_ABAP_TYPE_NO_HEADER'
+                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD no_format_version.
     DATA no_format_version TYPE lif_test_types=>ty_abap_type_no_format.
     cut->generate_type( no_format_version ).
     DATA(log) = cut->get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                    msgno = 124 )
-                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
+                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                           msgno = 124 )
+                                                             exp_component_name = 'TY_ABAP_TYPE_NO_FORMAT'
+                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD no_structure.
     DATA no_structure TYPE lif_test_types=>table_in_table.
     cut->generate_type( no_structure ).
     DATA(log) = cut->get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                    msgno = 123 )
-                                                             exp_type    = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
+                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                           msgno = 123 )
+                                                             exp_component_name = 'TABLE_IN_TABLE'
+                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
 

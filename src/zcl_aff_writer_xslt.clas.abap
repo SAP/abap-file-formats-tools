@@ -545,7 +545,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
         MESSAGE w127(zaff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
-        log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+        log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -561,7 +561,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   METHOD get_default_value_from_default.
     IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
       MESSAGE w117(zaff_tools) WITH 'UTCLONG'  fullname_of_type INTO DATA(message) ##NEEDED.
-      log->add_warning( zcl_aff_log=>get_sy_message( ) ).
+      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
       RETURN.
     ENDIF.
 
@@ -712,7 +712,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF lines( errors ) > 0 OR exception IS BOUND.
       LOOP AT errors ASSIGNING FIELD-SYMBOL(<error>).
         cl_message_helper=>set_msg_vars_for_clike( <error>-text ).
-        log->add_error( VALUE #( msgid = 'ZAFF_TOOLS' msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ) ).
+        log->add_error( message = VALUE #( msgid = 'ZAFF_TOOLS' msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ) component_name = `` ).
       ENDLOOP.
       RETURN.
     ENDIF.
