@@ -871,7 +871,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         check_title_and_description( abap_doc_to_check = abap_doc_of_component fullname_of_checked_type = fullname_of_value ).
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        MESSAGE w127(zaff_tools) WITH fullname_of_type INTO DATA(message) ##NEEDED ##NO_TEXT.
+        MESSAGE w127(zaff_tools) INTO DATA(message) ##NEEDED ##NO_TEXT.
         log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
@@ -967,15 +967,15 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   METHOD check_title_and_description.
     IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level. "Only write message if no callback class provided
       IF abap_doc_to_check-title IS INITIAL.
-        MESSAGE i119(zaff_tools) WITH 'Title' fullname_of_checked_type INTO DATA(message) ##NEEDED ##NO_TEXT.
+        MESSAGE i119(zaff_tools) WITH 'Title' INTO DATA(message) ##NEEDED ##NO_TEXT.
         log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type ).
       ENDIF.
 
       IF abap_doc_to_check-description IS INITIAL.
-        MESSAGE i119(zaff_tools) WITH 'Description' fullname_of_checked_type INTO message ##NEEDED ##NO_TEXT.
+        MESSAGE i119(zaff_tools) WITH 'Description' INTO message ##NEEDED ##NO_TEXT.
         log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type  ).
       ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
-        MESSAGE w125(zaff_tools) WITH fullname_of_checked_type c_max_length_of_description INTO message ##NEEDED ##NO_TEXT.
+        MESSAGE w125(zaff_tools) WITH c_max_length_of_description INTO message ##NEEDED ##NO_TEXT.
         log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type ).
       ENDIF.
     ENDIF.

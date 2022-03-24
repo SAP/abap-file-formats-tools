@@ -42,103 +42,103 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>103</MSGNR>
-     <TEXT>Class/Interface &amp;1 for element &amp;2 given in ABAP Doc link doesn&apos;t exist</TEXT>
+     <TEXT>Class/Interface &amp;1 given in ABAP Doc link doesn&apos;t exist</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>104</MSGNR>
-     <TEXT>Constant &amp;1 for element &amp;2 given in ABAP Doc link doesn&apos;t exist</TEXT>
+     <TEXT>Constant &amp;1 given in ABAP Doc link doesn&apos;t exist</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>105</MSGNR>
-     <TEXT>Component &amp;1 of constant &amp;2 for element &amp;3 in ABAP Doc link doesn&apos;t exist</TEXT>
+     <TEXT>Component &amp;1 of constant &amp;2 in ABAP Doc link doesn&apos;t exist</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>106</MSGNR>
-     <TEXT>Invalid callback class of element &amp;1</TEXT>
+     <TEXT>Callback class is invalid</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>107</MSGNR>
-     <TEXT>Several occurrences of annotation &amp;1 for element &amp;2. First valid is used</TEXT>
+     <TEXT>There are several occurrences of annotation &amp;1. First valid is used</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>108</MSGNR>
-     <TEXT>Unknown annotation &amp;1 for element &amp;2</TEXT>
+     <TEXT>Annotation &amp;1 is unknown</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>109</MSGNR>
-     <TEXT>Wrong usage of annotation &amp;1 for element &amp;2</TEXT>
+     <TEXT>Annotation &amp;1  was used incorrectly</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>110</MSGNR>
-     <TEXT>No number provided for annotation &amp;1 for element &amp;2</TEXT>
+     <TEXT>No number was provided for annotation &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>111</MSGNR>
-     <TEXT>Wrong link in annotation &amp;1 for element &amp;2</TEXT>
+     <TEXT>Link in annotation &amp;1 is incorrect</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>112</MSGNR>
-     <TEXT>For element &amp;1: If $$required is set, $$showAlways is redundant</TEXT>
+     <TEXT>If $$required is set, $$showAlways is redundant</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>113</MSGNR>
-     <TEXT>Title for element &amp;1 at wrong position</TEXT>
+     <TEXT>Title is at wrong position</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>114</MSGNR>
-     <TEXT>Invalid default argument of element &amp;1</TEXT>
+     <TEXT>Default argument is invalid</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>115</MSGNR>
-     <TEXT>Description for element &amp;1 at wrong position</TEXT>
+     <TEXT>Description is at wrong position</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>116</MSGNR>
-     <TEXT>Text between annotations for element &amp;1 will not be parsed</TEXT>
+     <TEXT>Text between annotations will not be parsed</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>117</MSGNR>
-     <TEXT>Annotation $$default for type &amp;1 of element &amp;2 is not supported</TEXT>
+     <TEXT>Annotation $$default for type &amp;1 is not supported</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>118</MSGNR>
-     <TEXT>Annotation &amp;1 for element &amp;2 is not allowed</TEXT>
+     <TEXT>Annotation &amp;1 is not allowed</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>119</MSGNR>
-     <TEXT>&amp;1 is missing for element &amp;2</TEXT>
+     <TEXT>&amp;1 is missing</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -162,7 +162,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>123</MSGNR>
-     <TEXT>No structure provided for type generator</TEXT>
+     <TEXT>No structure was provided for type generator</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -174,19 +174,19 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>125</MSGNR>
-     <TEXT>Description for element &amp;1 exceeds &amp;2 characters and might be too long</TEXT>
+     <TEXT>Description exceeds &amp;2 characters and might be too long</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>126</MSGNR>
-     <TEXT>For element &amp;1: For required fields, a default handling is not possible</TEXT>
+     <TEXT>For required fields, a default handling is not possible</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>127</MSGNR>
-     <TEXT>Element &amp;1 of type enum should be required or have a default</TEXT>
+     <TEXT>Elements of type enum should be required or have a default</TEXT>
     </T100>
    </T100>
   </asx:values>
