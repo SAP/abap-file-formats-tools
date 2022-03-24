@@ -63,10 +63,8 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
       IF NOT line_exists( act_messages[ type = exp_type message = msg component_name = exp_component_name ] ).
         cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
       ENDIF.
-    ELSE.
-      IF NOT line_exists( act_messages[ type = exp_type message = msg ] ).
-        cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
-      ENDIF.
+    ELSEIF NOT line_exists( act_messages[ type = exp_type message = msg ] ).
+      cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
     ENDIF.
   ENDMETHOD.
 
