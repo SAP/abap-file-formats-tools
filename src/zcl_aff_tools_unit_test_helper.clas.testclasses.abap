@@ -11,9 +11,7 @@ CLASS ltcl_unit_test_helper DEFINITION FINAL FOR TESTING
       assert_no_message_severity FOR TESTING RAISING cx_static_check,
       assert_log_has_no_message FOR TESTING RAISING cx_static_check,
       log_contains_msg_with_comp FOR TESTING RAISING cx_static_check,
-      change_environment_language,
-      setup,
-      teardown.
+      setup.
 ENDCLASS.
 
 
@@ -23,15 +21,7 @@ CLASS ltcl_unit_test_helper IMPLEMENTATION.
     log = NEW zcl_aff_log( ).
   ENDMETHOD.
 
-  METHOD teardown.
-    IF cl_abap_syst=>get_logon_language( ) = 'E'.
-      SET LOCALE LANGUAGE 'E'.
-    ENDIF.
-  ENDMETHOD.
-
   METHOD log_contains_msg_with_env.
-    change_environment_language( ).
-
     TRY.
         RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(zaff_tools) WITH 'TEST_ATTR'.
       CATCH zcx_aff_tools INTO DATA(exception).
@@ -43,9 +33,6 @@ CLASS ltcl_unit_test_helper IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD log_contains_msg_without_env.
-    change_environment_language( ).
-
-    "environment language is not considered. Message still on English
     MESSAGE e100(zaff_tools) WITH 'TEST_ATTR' INTO DATA(message) ##NEEDED.
     log->add_error( message = zcl_aff_log=>get_sy_message( ) component_name = 'TEST' ).
 
@@ -64,18 +51,7 @@ CLASS ltcl_unit_test_helper IMPLEMENTATION.
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log ).
   ENDMETHOD.
 
-  METHOD change_environment_language.
-    IF cl_abap_syst=>get_logon_language( ) = 'E'.
-      SET LOCALE LANGUAGE 'D'.
-    ELSE.
-      cl_abap_unit_assert=>skip( msg = 'Skip test since the test is language depended' ).
-    ENDIF.
-  ENDMETHOD.
-
   METHOD log_contains_msg_with_comp.
-    change_environment_language( ).
-
-    "environment language is not considered. Message still on English
     MESSAGE w100(zaff_tools) WITH 'TEST_ATTR' INTO DATA(message) ##NEEDED.
     log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = 'EXAMPLE_COMPONENT' ).
 
