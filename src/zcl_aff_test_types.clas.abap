@@ -246,13 +246,44 @@ CLASS zcl_aff_test_types DEFINITION
         enum_with_required TYPE category_no_initial,
       END OF structure_with_different_enum.
 
+    "! <p class="shorttext"> ABAP Language Version </p>
+    "! ABAP language version
+    "! $values {@link zcl_aff_test_types.data:co_abap_language_version}
+    TYPES language_version TYPE c LENGTH 1.
+
+    CONSTANTS:
+      "! <p class="shorttext"> ABAP Language Version </p>
+      "! ABAP language version
+      BEGIN OF co_abap_language_version,
+        "! <p class="shorttext">Standard</p>
+        "! Standard
+        standard          TYPE language_version VALUE ' ',
+        "! <p class="shorttext">ABAP Cloud Development</p>
+        "! ABAP cloud development
+        cloud_development TYPE language_version VALUE '5',
+      END OF co_abap_language_version.
+
+    TYPES:
+      "! <p class="shorttext"> Header </p>
+      "! The header for an ABAP main object
+      BEGIN OF header,
+        "! <p class="shorttext"> Description</p>
+        "! Description of the ABAP object
+        description        TYPE string,
+        "! <p class="shorttext"> Original Language</p>
+        "! Original language of the ABAP object
+        original_language  TYPE sy-langu,
+        "! <p class="shorttext"> ABAP Language Version</p>
+        "! ABAP language version
+        abap_language_version TYPE language_version,
+      END OF header.
 
 * complex structure with enum_values
     TYPES:
       "! <p class="shorttext"> Class Properties </p>
       "! Class properties
       BEGIN OF ty_class_properties,
-        header         TYPE if_aff_types_v1=>ty_header_60,
+        header         TYPE header,
         "! <p class="shorttext"> Class Category </p>
         "! Class category
         "! $values {@link zcl_aff_test_types.data:co_class_category}
@@ -398,38 +429,6 @@ CLASS zcl_aff_test_types DEFINITION
       END OF structure_with_wrong_link.
 
 * structure with enum value whose link can be found outside
-    "! <p class="shorttext"> ABAP Language Version </p>
-    "! ABAP language version
-    "! $values {@link zcl_aff_test_types.data:co_abap_language_version}
-    TYPES language_version TYPE c LENGTH 1.
-
-    CONSTANTS:
-      "! <p class="shorttext"> ABAP Language Version </p>
-      "! ABAP language version
-      BEGIN OF co_abap_language_version,
-        "! <p class="shorttext">Standard</p>
-        "! Standard
-        standard          TYPE language_version VALUE ' ',
-        "! <p class="shorttext">ABAP Cloud Development</p>
-        "! ABAP cloud development
-        cloud_development TYPE language_version VALUE '5',
-      END OF co_abap_language_version.
-
-    TYPES:
-      "! <p class="shorttext"> Header </p>
-      "! The header for an ABAP main object
-      BEGIN OF header,
-        "! <p class="shorttext"> Description</p>
-        "! Description of the ABAP object
-        description        TYPE string,
-        "! <p class="shorttext"> Original Language</p>
-        "! Original language of the ABAP object
-        original_language    TYPE c LENGTH 2,
-        "! <p class="shorttext"> ABAP Language Version</p>
-        "! ABAP language version
-        abap_langu_version TYPE language_version,
-      END OF header.
-
 
     TYPES:
       "! <p class="shorttext"> String Table</p>
