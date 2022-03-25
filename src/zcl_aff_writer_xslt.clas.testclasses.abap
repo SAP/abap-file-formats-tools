@@ -1710,7 +1710,6 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       nested_structure_with_table FOR TESTING RAISING cx_static_check,
       enum_values_with_wrong_link FOR TESTING RAISING cx_static_check,
       struc_with_table_not_req FOR TESTING RAISING cx_static_check,
-      enum_with_values_outside FOR TESTING RAISING cx_static_check,
       structure_different_default FOR TESTING RAISING cx_static_check,
       nested_struc_with_default FOR TESTING RAISING cx_static_check,
       structure_with_callback FOR TESTING RAISING cx_static_check,
@@ -2005,25 +2004,23 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `    <tt:group>`,
 `      <tt:cond s-check="not-initial(HEADER)" frq="?">`,
 `        <object name="header" tt:ref="HEADER">`,
-`          <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="C('')"/>`,
 `          <tt:group>`,
-`            <tt:cond frq="?">`,
+`            <tt:cond s-check="not-initial(DESCRIPTION)" frq="?">`,
 `              <str name="description">`,
 `                <tt:value ref="DESCRIPTION"/>`,
 `              </str>`,
 `            </tt:cond>`,
-`            <tt:cond frq="?">`,
+`            <tt:cond s-check="not-initial(ORIGINAL_LANGUAGE)" frq="?">`,
 `              <str name="originalLanguage">`,
 `                <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer"> `,
 `                  <tt:with-parameter name="language" ref="ORIGINAL_LANGUAGE"/>`,
 `                </tt:call-method>`,
 `              </str>`,
 `            </tt:cond>`,
-`            <tt:cond s-check="ABAP_LANGUAGE_VERSION!=C('')" frq="?">`,
+`            <tt:cond s-check="not-initial(ABAP_LANGUAGE_VERSION)" frq="?">`,
 `              <str name="abapLanguageVersion">`,
 `                <tt:value ref="ABAP_LANGUAGE_VERSION" map="`,
 `                  val('')=xml('standard'),`,
-`                  val('2')=xml('keyUser'),`,
 `                  val('5')=xml('cloudDevelopment')`,
 `                "/>`,
 `              </str>`,
@@ -2286,48 +2283,6 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 `         <_ tt:lax="on">`,
 `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
 `            <tt:with-parameter name="MEMBERS" val="'field1;innerStruc;field2;fieldWithValues;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD enum_with_values_outside.
-    DATA test_type TYPE zcl_aff_test_types=>header.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(DESCRIPTION)" frq="?">`,
-`        <str name="description">`,
-`          <tt:value ref="DESCRIPTION"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(ORIGINAL_LANGUAGE)" frq="?">`,
-`        <str name="originalLanguage">`,
-`          <tt:value ref="ORIGINAL_LANGUAGE"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(ABAP_LANGU_VERSION)" frq="?">`,
-`        <str name="abapLanguVersion">`,
-`          <tt:value ref="ABAP_LANGU_VERSION" map="`,
-`            val('')=xml('standard'),`,
-`            val('5')=xml('cloudDevelopment')`,
-`          "/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'description;originalLanguage;abapLanguVersion;'"/>`,
 `          </tt:call-method>`,
 `          <tt:skip/>`,
 `        </_>`,
@@ -2989,8 +2944,6 @@ RISK LEVEL DANGEROUS.
 
       simple_structure_with_required FOR TESTING RAISING cx_static_check,
 
-      enum_with_values_outside FOR TESTING RAISING cx_static_check,
-
       nested_struc_no_default FOR TESTING RAISING cx_static_check,
 
       nested_struc_with_default FOR TESTING RAISING cx_static_check,
@@ -3176,7 +3129,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>ty_class_properties.
     test_type =
           VALUE #(
-            header = VALUE #( description = 'description of the class' abap_language_version = 2 original_language = 'E' )
+            header = VALUE #( description = 'description of the class' abap_language_version = 5 original_language = 'E' )
             class_category = '01' ).
 
     DATA act_data LIKE test_type.
@@ -3186,7 +3139,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 `  "header": {`,
 `    "description":"description of the class",`,
 `    "originalLanguage":"en",`,
-`    "abapLanguageVersion":"keyUser"`,
+`    "abapLanguageVersion":"cloudDevelopment"`,
 `  },`,
 ` "classCategory": "exitClass"`,
 `}`.
@@ -3326,28 +3279,6 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     ).
   ENDMETHOD.
 
-  METHOD enum_with_values_outside.
-    DATA test_type TYPE zcl_aff_test_types=>header.
-    DATA act_data LIKE test_type.
-    test_type = VALUE #(
-      description = 'Header description'
-      original_language = 'EN'
-      abap_langu_version = '5').
-
-    append_to exp_json:
-`{`,
-` "description":"Header description",`,
-`  "originalLanguage":"EN",`,
-`  "abapLanguVersion":"cloudDevelopment"`,
-`}`.
-
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = act_data
-    ).
-  ENDMETHOD.
 
   METHOD nested_struc_no_default.
     DATA test_type TYPE zcl_aff_test_types=>nested_struc_with_default.

@@ -95,19 +95,20 @@ INTERFACE lif_test_types.
     END OF ty_clif_properties.
 
   TYPES:
+    BEGIN OF ty_header,
+      description TYPE c LENGTH 30,
+    END OF ty_header.
+
+  TYPES:
     BEGIN OF ty_class_properties,
-      format_version TYPE if_aff_types_v1=>ty_format_version,
-      header         TYPE if_aff_types_v1=>ty_header_60_src,
+      format_version TYPE string,
+      header         TYPE ty_header,
       category       TYPE vseoclass-category,
       fixpt          TYPE vseoclass-fixpt,
       msg_id         TYPE vseoclass-msg_id.
       INCLUDE TYPE ty_clif_properties.
   TYPES END OF ty_class_properties.
 
-  TYPES:
-    BEGIN OF ty_header,
-      description TYPE c LENGTH 30,
-    END OF ty_header.
   TYPES:
     BEGIN OF ty_abap_type,
       format_version  TYPE string,
@@ -408,8 +409,6 @@ CLASS ltcl_type_generator IMPLEMENTATION.
 
       ( `    OPEN_STRUCTURE HEADER` )
       ( `        DESCRIPTION : C` )
-      ( `        ORIGINAL_LANGUAGE : C` )
-      ( `        ABAP_LANGUAGE_VERSION : C` )
       ( `    CLOSE_STRUCTURE HEADER` )
 
       ( `    CATEGORY : N` )
