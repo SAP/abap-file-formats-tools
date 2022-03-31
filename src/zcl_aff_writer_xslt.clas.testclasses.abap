@@ -1,7 +1,3 @@
-DEFINE append_to.
-  APPEND &2 TO &1.
-END-OF-DEFINITION.
-
 INTERFACE lif_test_types.
   TYPES:
     element      TYPE string,
@@ -165,12 +161,11 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
   METHOD date_time_element.
     DATA(act_output) = test_generator->generate_type( VALUE d( ) ).
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <str>`,
-`        <tt:value option="format(dateTimeOffset)"/>`,
-`    </str >`,
- `</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <str>` TO me->exp_transformation.
+    APPEND `        <tt:value option="format(dateTimeOffset)"/>` TO me->exp_transformation.
+    APPEND `    </str >` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -178,44 +173,43 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>structure_with_include.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">`,
-`        <str name="INCLUDE_ELEMENT_1">`,
-`          <tt:value ref="INCLUDE_ELEMENT_1"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_2)" frq="?">`,
-`        <num name="INCLUDE_ELEMENT_2">`,
-`          <tt:value ref="INCLUDE_ELEMENT_2" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">`,
-`        <num name="ELEMENT_1">`,
-`          <tt:value ref="ELEMENT_1" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">`,
-`        <str name="ELEMENT_2">`,
-`          <tt:value ref="ELEMENT_2"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="INCLUDE_ELEMENT_1">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="INCLUDE_ELEMENT_1"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_2)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="INCLUDE_ELEMENT_2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="INCLUDE_ELEMENT_2" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="ELEMENT_1">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ELEMENT_1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="ELEMENT_2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ELEMENT_2"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -224,39 +218,38 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>structure_include_in_include.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">`,
-`        <str name="INCLUDE_ELEMENT_1">`,
-`          <tt:value ref="INCLUDE_ELEMENT_1"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_2)" frq="?">`,
-`        <num name="INCLUDE_ELEMENT_2">`,
-`          <tt:value ref="INCLUDE_ELEMENT_2" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(ELEMENT)" frq="?">`,
-`        <str name="ELEMENT">`,
-`          <tt:value ref="ELEMENT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'ELEMENT;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="INCLUDE_ELEMENT_1">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="INCLUDE_ELEMENT_1"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_2)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="INCLUDE_ELEMENT_2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="INCLUDE_ELEMENT_2" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="ELEMENT">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ELEMENT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'ELEMENT;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -265,64 +258,63 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>include_table.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(TABLE)" frq="?">`,
-`        <array name="TABLE">`,
-`          <tt:loop ref="TABLE">`,
-`            <tt:group>`,
-`              <tt:cond>`,
-`                <object>`,
-`                  <tt:group>`,
-`                    <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">`,
-`                      <num name="ELEMENT_1">`,
-`                        <tt:value ref="ELEMENT_1" option="format(alpha)"/>`,
-`                      </num>`,
-`                    </tt:cond>`,
-`                    <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">`,
-`                      <str name="ELEMENT_2">`,
-`                        <tt:value ref="ELEMENT_2"/>`,
-`                      </str>`,
-`                    </tt:cond>`,
-`                    <tt:d-cond frq="*">`,
-`                       <_ tt:lax="on">`,
-`                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                          <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>`,
-`                        </tt:call-method>`,
-`                        <tt:skip/>`,
-`                      </_>`,
-`                    </tt:d-cond>`,
-`                    <tt:d-cond frq="?">`,
-`                      <__/>`,
-`                    </tt:d-cond>`,
-`                  </tt:group>`,
-`                </object>`,
-`              </tt:cond>`,
-`            </tt:group>`,
-`          </tt:loop>`,
-`        </array>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">`,
-`        <num name="INCLUDE_ELEMENT_1">`,
-`          <tt:value ref="INCLUDE_ELEMENT_1" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'INCLUDE_ELEMENT_1;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(TABLE)" frq="?">` TO me->exp_transformation.
+    APPEND `        <array name="TABLE">` TO me->exp_transformation.
+    APPEND `          <tt:loop ref="TABLE">` TO me->exp_transformation.
+    APPEND `            <tt:group>` TO me->exp_transformation.
+    APPEND `              <tt:cond>` TO me->exp_transformation.
+    APPEND `                <object>` TO me->exp_transformation.
+    APPEND `                  <tt:group>` TO me->exp_transformation.
+    APPEND `                    <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` TO me->exp_transformation.
+    APPEND `                      <num name="ELEMENT_1">` TO me->exp_transformation.
+    APPEND `                        <tt:value ref="ELEMENT_1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `                      </num>` TO me->exp_transformation.
+    APPEND `                    </tt:cond>` TO me->exp_transformation.
+    APPEND `                    <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` TO me->exp_transformation.
+    APPEND `                      <str name="ELEMENT_2">` TO me->exp_transformation.
+    APPEND `                        <tt:value ref="ELEMENT_2"/>` TO me->exp_transformation.
+    APPEND `                      </str>` TO me->exp_transformation.
+    APPEND `                    </tt:cond>` TO me->exp_transformation.
+    APPEND `                    <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `                       <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                          <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>` TO me->exp_transformation.
+    APPEND `                        </tt:call-method>` TO me->exp_transformation.
+    APPEND `                        <tt:skip/>` TO me->exp_transformation.
+    APPEND `                      </_>` TO me->exp_transformation.
+    APPEND `                    </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                    <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `                      <__/>` TO me->exp_transformation.
+    APPEND `                    </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                  </tt:group>` TO me->exp_transformation.
+    APPEND `                </object>` TO me->exp_transformation.
+    APPEND `              </tt:cond>` TO me->exp_transformation.
+    APPEND `            </tt:group>` TO me->exp_transformation.
+    APPEND `          </tt:loop>` TO me->exp_transformation.
+    APPEND `        </array>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="INCLUDE_ELEMENT_1">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="INCLUDE_ELEMENT_1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'INCLUDE_ELEMENT_1;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -331,62 +323,61 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>struc_tab_struc_tab.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(FIRST_TABLE)" frq="?">`,
-`        <array name="FIRST_TABLE">`,
-`          <tt:loop ref="FIRST_TABLE">`,
-`            <tt:group>`,
-`              <tt:cond>`,
-`                <object>`,
-`                  <tt:group>`,
-`                    <tt:cond s-check="not-initial(SECOND_TABLE)" frq="?">`,
-`                      <array name="SECOND_TABLE">`,
-`                        <tt:loop ref="SECOND_TABLE"> `,
-`                          <tt:group>`,
-`                            <tt:cond>`,
-`                              <str>`,
-`                                <tt:value/>`,
-`                              </str>`,
-`                            </tt:cond>`,
-`                          </tt:group>`,
-`                        </tt:loop>`,
-`                      </array>`,
-`                    </tt:cond>`,
-`                    <tt:d-cond frq="*">`,
-`                       <_ tt:lax="on">`,
-`                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                          <tt:with-parameter name="MEMBERS" val="'SECOND_TABLE;'"/>`,
-`                        </tt:call-method>`,
-`                        <tt:skip/>`,
-`                      </_>`,
-`                    </tt:d-cond>`,
-`                    <tt:d-cond frq="?">`,
-`                      <__/>`,
-`                    </tt:d-cond>`,
-`                  </tt:group>`,
-`                </object>`,
-`              </tt:cond>`,
-`            </tt:group>`,
-`          </tt:loop>`,
-`        </array>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'FIRST_TABLE;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(FIRST_TABLE)" frq="?">` TO me->exp_transformation.
+    APPEND `        <array name="FIRST_TABLE">` TO me->exp_transformation.
+    APPEND `          <tt:loop ref="FIRST_TABLE">` TO me->exp_transformation.
+    APPEND `            <tt:group>` TO me->exp_transformation.
+    APPEND `              <tt:cond>` TO me->exp_transformation.
+    APPEND `                <object>` TO me->exp_transformation.
+    APPEND `                  <tt:group>` TO me->exp_transformation.
+    APPEND `                    <tt:cond s-check="not-initial(SECOND_TABLE)" frq="?">` TO me->exp_transformation.
+    APPEND `                      <array name="SECOND_TABLE">` TO me->exp_transformation.
+    APPEND `                        <tt:loop ref="SECOND_TABLE"> ` TO me->exp_transformation.
+    APPEND `                          <tt:group>` TO me->exp_transformation.
+    APPEND `                            <tt:cond>` TO me->exp_transformation.
+    APPEND `                              <str>` TO me->exp_transformation.
+    APPEND `                                <tt:value/>` TO me->exp_transformation.
+    APPEND `                              </str>` TO me->exp_transformation.
+    APPEND `                            </tt:cond>` TO me->exp_transformation.
+    APPEND `                          </tt:group>` TO me->exp_transformation.
+    APPEND `                        </tt:loop>` TO me->exp_transformation.
+    APPEND `                      </array>` TO me->exp_transformation.
+    APPEND `                    </tt:cond>` TO me->exp_transformation.
+    APPEND `                    <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `                       <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                          <tt:with-parameter name="MEMBERS" val="'SECOND_TABLE;'"/>` TO me->exp_transformation.
+    APPEND `                        </tt:call-method>` TO me->exp_transformation.
+    APPEND `                        <tt:skip/>` TO me->exp_transformation.
+    APPEND `                      </_>` TO me->exp_transformation.
+    APPEND `                    </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                    <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `                      <__/>` TO me->exp_transformation.
+    APPEND `                    </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                  </tt:group>` TO me->exp_transformation.
+    APPEND `                </object>` TO me->exp_transformation.
+    APPEND `              </tt:cond>` TO me->exp_transformation.
+    APPEND `            </tt:group>` TO me->exp_transformation.
+    APPEND `          </tt:loop>` TO me->exp_transformation.
+    APPEND `        </array>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'FIRST_TABLE;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -395,28 +386,27 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>table_in_table.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <array>`,
-`        <tt:loop>`,
-`            <tt:group>`,
-`                <tt:cond>`,
-`                    <array>`,
-`                        <tt:loop>`,
-`                            <tt:group>`,
-`                                <tt:cond>`,
-`                                    <str>`,
-`                                        <tt:value/>`,
-`                                    </str>`,
-`                                </tt:cond>`,
-`                            </tt:group>`,
-`                        </tt:loop>`,
-`                    </array>`,
-`                </tt:cond>`,
-`            </tt:group>`,
-`        </tt:loop>`,
-`    </array>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <array>` TO me->exp_transformation.
+    APPEND `        <tt:loop>` TO me->exp_transformation.
+    APPEND `            <tt:group>` TO me->exp_transformation.
+    APPEND `                <tt:cond>` TO me->exp_transformation.
+    APPEND `                    <array>` TO me->exp_transformation.
+    APPEND `                        <tt:loop>` TO me->exp_transformation.
+    APPEND `                            <tt:group>` TO me->exp_transformation.
+    APPEND `                                <tt:cond>` TO me->exp_transformation.
+    APPEND `                                    <str>` TO me->exp_transformation.
+    APPEND `                                        <tt:value/>` TO me->exp_transformation.
+    APPEND `                                    </str>` TO me->exp_transformation.
+    APPEND `                                </tt:cond>` TO me->exp_transformation.
+    APPEND `                            </tt:group>` TO me->exp_transformation.
+    APPEND `                        </tt:loop>` TO me->exp_transformation.
+    APPEND `                    </array>` TO me->exp_transformation.
+    APPEND `                </tt:cond>` TO me->exp_transformation.
+    APPEND `            </tt:group>` TO me->exp_transformation.
+    APPEND `        </tt:loop>` TO me->exp_transformation.
+    APPEND `    </array>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -425,42 +415,41 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>table_structure.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <array>`,
-`        <tt:loop>`,
-`            <tt:group>`,
-`                <tt:cond>`,
-`                    <object>`,
-`                        <tt:group>`,
-`                            <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">`,
-`                                <num name="ELEMENT_1">`,
-`                                    <tt:value ref="ELEMENT_1" option="format(alpha)"/>`,
-`                                </num>`,
-`                            </tt:cond>`,
-`                            <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">`,
-`                                <str name="ELEMENT_2">`,
-`                                    <tt:value ref="ELEMENT_2"/>`,
-`                                </str>`,
-`                            </tt:cond>`,
-`              <tt:d-cond frq="*">`,
-`                 <_ tt:lax="on">`,
-`                  <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                    <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>`,
-`                  </tt:call-method>`,
-`                  <tt:skip/>`,
-`                </_>`,
-`              </tt:d-cond>`,
-`              <tt:d-cond frq="?">`,
-`                <__/>`,
-`              </tt:d-cond>`,
-`            </tt:group>`,
-`          </object>`,
-`        </tt:cond>`,
-`            </tt:group>`,
-`        </tt:loop>`,
-`    </array>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <array>` TO me->exp_transformation.
+    APPEND `        <tt:loop>` TO me->exp_transformation.
+    APPEND `            <tt:group>` TO me->exp_transformation.
+    APPEND `                <tt:cond>` TO me->exp_transformation.
+    APPEND `                    <object>` TO me->exp_transformation.
+    APPEND `                        <tt:group>` TO me->exp_transformation.
+    APPEND `                            <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` TO me->exp_transformation.
+    APPEND `                                <num name="ELEMENT_1">` TO me->exp_transformation.
+    APPEND `                                    <tt:value ref="ELEMENT_1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `                                </num>` TO me->exp_transformation.
+    APPEND `                            </tt:cond>` TO me->exp_transformation.
+    APPEND `                            <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` TO me->exp_transformation.
+    APPEND `                                <str name="ELEMENT_2">` TO me->exp_transformation.
+    APPEND `                                    <tt:value ref="ELEMENT_2"/>` TO me->exp_transformation.
+    APPEND `                                </str>` TO me->exp_transformation.
+    APPEND `                            </tt:cond>` TO me->exp_transformation.
+    APPEND `              <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `                 <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                  <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                    <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>` TO me->exp_transformation.
+    APPEND `                  </tt:call-method>` TO me->exp_transformation.
+    APPEND `                  <tt:skip/>` TO me->exp_transformation.
+    APPEND `                </_>` TO me->exp_transformation.
+    APPEND `              </tt:d-cond>` TO me->exp_transformation.
+    APPEND `              <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `                <__/>` TO me->exp_transformation.
+    APPEND `              </tt:d-cond>` TO me->exp_transformation.
+    APPEND `            </tt:group>` TO me->exp_transformation.
+    APPEND `          </object>` TO me->exp_transformation.
+    APPEND `        </tt:cond>` TO me->exp_transformation.
+    APPEND `            </tt:group>` TO me->exp_transformation.
+    APPEND `        </tt:loop>` TO me->exp_transformation.
+    APPEND `    </array>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -468,12 +457,11 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD type_timestamp.
     DATA(act_output) = test_generator->generate_type( VALUE timestamp( ) ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <str>`,
-`        <tt:value option="format(dateTimeOffset)"/>`,
-`    </str>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <str>` TO me->exp_transformation.
+    APPEND `        <tt:value option="format(dateTimeOffset)"/>` TO me->exp_transformation.
+    APPEND `    </str>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -481,12 +469,11 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD type_boolean.
     DATA(act_output) = test_generator->generate_type( VALUE abap_bool( ) ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <bool>`,
-`        <tt:value option="format(boolean)"/>`,
-`    </bool>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <bool>` TO me->exp_transformation.
+    APPEND `        <tt:value option="format(boolean)"/>` TO me->exp_transformation.
+    APPEND `    </bool>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -494,12 +481,11 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD type_numeric.
     DATA(act_output) = test_generator->generate_type( VALUE float( ) ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <num>`,
-`        <tt:value option="format(alpha)"/>`,
-`    </num>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <num>` TO me->exp_transformation.
+    APPEND `        <tt:value option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `    </num>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -508,12 +494,11 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA char_10 TYPE c LENGTH 10.
     DATA(act_output) = test_generator->generate_type( char_10 ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <str>`,
-`        <tt:value/>`,
-`    </str>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <str>` TO me->exp_transformation.
+    APPEND `        <tt:value/>` TO me->exp_transformation.
+    APPEND `    </str>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -528,15 +513,14 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <str>`,
-`        <tt:value map="`,
-`          val('X')=xml('true'),`,
-`          val('')=xml('false')`,
-`        "/>`,
-`    </str>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <str>` TO me->exp_transformation.
+    APPEND `        <tt:value map="` TO me->exp_transformation.
+    APPEND `          val('X')=xml('true'),` TO me->exp_transformation.
+    APPEND `          val('')=xml('false')` TO me->exp_transformation.
+    APPEND `        "/>` TO me->exp_transformation.
+    APPEND `    </str>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -551,15 +535,14 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <str>`,
-`        <tt:value map="`,
-`          val(N('01'))=xml('first'),`,
-`          val(N('02'))=xml('second')`,
-`        "/>`,
-`    </str>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <str>` TO me->exp_transformation.
+    APPEND `        <tt:value map="` TO me->exp_transformation.
+    APPEND `          val(N('01'))=xml('first'),` TO me->exp_transformation.
+    APPEND `          val(N('02'))=xml('second')` TO me->exp_transformation.
+    APPEND `        "/>` TO me->exp_transformation.
+    APPEND `    </str>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -574,15 +557,14 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <str>`,
-`        <tt:value map="`,
-`          val('aA')=xml('oneTest'),`,
-`          val('Bb')=xml('twoTest')`,
-`        "/>`,
-`    </str>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <str>` TO me->exp_transformation.
+    APPEND `        <tt:value map="` TO me->exp_transformation.
+    APPEND `          val('aA')=xml('oneTest'),` TO me->exp_transformation.
+    APPEND `          val('Bb')=xml('twoTest')` TO me->exp_transformation.
+    APPEND `        "/>` TO me->exp_transformation.
+    APPEND `    </str>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -597,15 +579,14 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <bool>`,
-`        <tt:value option="format(boolean)" map="`,
-`          val(I(1))=xml('true'),`,
-`          val(I(0))=xml('false')`,
-`        "/>`,
-`    </bool>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <bool>` TO me->exp_transformation.
+    APPEND `        <tt:value option="format(boolean)" map="` TO me->exp_transformation.
+    APPEND `          val(I(1))=xml('true'),` TO me->exp_transformation.
+    APPEND `          val(I(0))=xml('false')` TO me->exp_transformation.
+    APPEND `        "/>` TO me->exp_transformation.
+    APPEND `    </bool>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -616,56 +597,55 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(STRUCTURE)" frq="?">`,
-`        <object name="MAPPED_STRUCTURE" tt:ref="STRUCTURE">`,
-`          <tt:group>`,
-`            <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">`,
-`              <num name="MAPPED_ELEMENT1">`,
-`                <tt:value ref="ELEMENT_1" option="format(alpha)"/>`,
-`              </num>`,
-`            </tt:cond>`,
-`            <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">`,
-`              <str name="ELEMENT_2">`,
-`                <tt:value ref="ELEMENT_2"/>`,
-`              </str>`,
-`            </tt:cond>`,
-`            <tt:d-cond frq="*">`,
-`               <_ tt:lax="on">`,
-`                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                  <tt:with-parameter name="MEMBERS" val="'MAPPED_ELEMENT1;ELEMENT_2;'"/>`,
-`                </tt:call-method>`,
-`                <tt:skip/>`,
-`              </_>`,
-`            </tt:d-cond>`,
-`            <tt:d-cond frq="?">`,
-`              <__/>`,
-`            </tt:d-cond>`,
-`          </tt:group>`,
-`        </object>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(ELEMENT)" frq="?">`,
-`        <str name="ELEMENT">`,
-`          <tt:value ref="ELEMENT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'MAPPED_STRUCTURE;ELEMENT;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(STRUCTURE)" frq="?">` TO me->exp_transformation.
+    APPEND `        <object name="MAPPED_STRUCTURE" tt:ref="STRUCTURE">` TO me->exp_transformation.
+    APPEND `          <tt:group>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` TO me->exp_transformation.
+    APPEND `              <num name="MAPPED_ELEMENT1">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="ELEMENT_1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `              </num>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` TO me->exp_transformation.
+    APPEND `              <str name="ELEMENT_2">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="ELEMENT_2"/>` TO me->exp_transformation.
+    APPEND `              </str>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `               <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="MEMBERS" val="'MAPPED_ELEMENT1;ELEMENT_2;'"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `                <tt:skip/>` TO me->exp_transformation.
+    APPEND `              </_>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `              <__/>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `          </tt:group>` TO me->exp_transformation.
+    APPEND `        </object>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="ELEMENT">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ELEMENT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'MAPPED_STRUCTURE;ELEMENT;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -676,97 +656,96 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(TABLE)" frq="?">`,
-`        <array name="MAPPED_TABLE">`,
-`          <tt:loop ref="TABLE">`,
-`            <tt:group>`,
-`              <tt:cond>`,
-`                <object>`,
-`                  <tt:group>`,
-`                    <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">`,
-`                      <num name="MAPPED_ELEMENT1">`,
-`                        <tt:value ref="ELEMENT_1" option="format(alpha)"/>`,
-`                      </num>`,
-`                    </tt:cond>`,
-`                    <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">`,
-`                      <str name="ELEMENT_2">`,
-`                        <tt:value ref="ELEMENT_2"/>`,
-`                      </str>`,
-`                    </tt:cond>`,
-`                    <tt:d-cond frq="*">`,
-`                       <_ tt:lax="on">`,
-`                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                          <tt:with-parameter name="MEMBERS" val="'MAPPED_ELEMENT1;ELEMENT_2;'"/>`,
-`                        </tt:call-method>`,
-`                        <tt:skip/>`,
-`                      </_>`,
-`                    </tt:d-cond>`,
-`                    <tt:d-cond frq="?">`,
-`                      <__/>`,
-`                    </tt:d-cond>`,
-`                  </tt:group>`,
-`                </object>`,
-`              </tt:cond>`,
-`            </tt:group>`,
-`          </tt:loop>`,
-`        </array>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'MAPPED_TABLE;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(TABLE)" frq="?">` TO me->exp_transformation.
+    APPEND `        <array name="MAPPED_TABLE">` TO me->exp_transformation.
+    APPEND `          <tt:loop ref="TABLE">` TO me->exp_transformation.
+    APPEND `            <tt:group>` TO me->exp_transformation.
+    APPEND `              <tt:cond>` TO me->exp_transformation.
+    APPEND `                <object>` TO me->exp_transformation.
+    APPEND `                  <tt:group>` TO me->exp_transformation.
+    APPEND `                    <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` TO me->exp_transformation.
+    APPEND `                      <num name="MAPPED_ELEMENT1">` TO me->exp_transformation.
+    APPEND `                        <tt:value ref="ELEMENT_1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `                      </num>` TO me->exp_transformation.
+    APPEND `                    </tt:cond>` TO me->exp_transformation.
+    APPEND `                    <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` TO me->exp_transformation.
+    APPEND `                      <str name="ELEMENT_2">` TO me->exp_transformation.
+    APPEND `                        <tt:value ref="ELEMENT_2"/>` TO me->exp_transformation.
+    APPEND `                      </str>` TO me->exp_transformation.
+    APPEND `                    </tt:cond>` TO me->exp_transformation.
+    APPEND `                    <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `                       <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                          <tt:with-parameter name="MEMBERS" val="'MAPPED_ELEMENT1;ELEMENT_2;'"/>` TO me->exp_transformation.
+    APPEND `                        </tt:call-method>` TO me->exp_transformation.
+    APPEND `                        <tt:skip/>` TO me->exp_transformation.
+    APPEND `                      </_>` TO me->exp_transformation.
+    APPEND `                    </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                    <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `                      <__/>` TO me->exp_transformation.
+    APPEND `                    </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                  </tt:group>` TO me->exp_transformation.
+    APPEND `                </object>` TO me->exp_transformation.
+    APPEND `              </tt:cond>` TO me->exp_transformation.
+    APPEND `            </tt:group>` TO me->exp_transformation.
+    APPEND `          </tt:loop>` TO me->exp_transformation.
+    APPEND `        </array>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'MAPPED_TABLE;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
   METHOD structure_with_language.
     DATA test_type TYPE lif_test_types=>structure_with_language.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(LANGUAGE)" frq="?">`,
-`        <str name="LANGUAGE">`,
-`          <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">`,
-`            <tt:with-parameter name="language" ref="LANGUAGE"/>`,
-`          </tt:call-method>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(LANGUAGE2)" frq="?">`,
-`        <str name="LANGUAGE2">`,
-`          <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">`,
-`            <tt:with-parameter name="language" ref="LANGUAGE2"/>`,
-`          </tt:call-method>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'LANGUAGE;LANGUAGE2;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(LANGUAGE)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="LANGUAGE">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="language" ref="LANGUAGE"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(LANGUAGE2)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="LANGUAGE2">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="language" ref="LANGUAGE2"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'LANGUAGE;LANGUAGE2;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -774,31 +753,31 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD validate_valid_xslt.
     DATA transformation TYPE string_table.
     DATA(log) = NEW zcl_aff_log( ).
-    append_to transformation:
-      `<?sap.transform simple?>`,
-      `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">`,
-      `<tt:root name="root"/>`,
-      `<tt:template>`,
-      `<tt:ref name="root">`,
-      `<tt:cond>`,
-      `  <object>`,
-      `    <tt:group>`,
-      `      <tt:cond s-check="not-initial(LANGUAGE)">`,
-      `        <str name="LANGUAGE">`,
-      `          <tt:value ref="LANGUAGE" option="format(language)"/>`,
-      `        </str>`,
-      `      </tt:cond>`,
-      `      <tt:cond s-check="not-initial(LANGUAGE2)">`,
-      `        <str name="LANGUAGE2">`,
-      `          <tt:value ref="LANGUAGE2" option="format(language)"/>`,
-      `        </str>`,
-      `      </tt:cond>`,
-      `    </tt:group>`,
-      `  </object>`,
-      `</tt:cond>`,
-      `</tt:ref>`,
-      `</tt:template>`,
-      `</tt:transform>`.
+
+    APPEND `<?sap.transform simple?>` TO me->exp_transformation.
+    APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO me->exp_transformation.
+    APPEND `<tt:root name="root"/>` TO me->exp_transformation.
+    APPEND `<tt:template>` TO me->exp_transformation.
+    APPEND `<tt:ref name="root">` TO me->exp_transformation.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(LANGUAGE)">` TO me->exp_transformation.
+    APPEND `        <str name="LANGUAGE">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="LANGUAGE" option="format(language)"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(LANGUAGE2)">` TO me->exp_transformation.
+    APPEND `        <str name="LANGUAGE2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="LANGUAGE2" option="format(language)"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
+    APPEND `</tt:ref>` TO me->exp_transformation.
+    APPEND `</tt:template>` TO me->exp_transformation.
+    APPEND `</tt:transform>` TO me->exp_transformation.
 
     DATA(is_valid) = cut->zif_aff_writer~validate( source = transformation log = log ).
 
@@ -809,31 +788,31 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD validate_invalid_xslt.
     DATA transformation TYPE string_table.
     DATA(log) = NEW zcl_aff_log( ).
-    append_to transformation:
-      `<?sap.transform simple?>`,
-      `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">`,
-      `<tt:root name="root"/>`,
-      `<tt:template>`,
-      `<tt:ref name="root">`,
-      `<tt:cond>`,
-      `  <object>`,
-      `    <tt:group>`,
-      `      <tt:cond s-check="not-initial(LANGUAGE)">`,
-      `        <str name="LANGUAGE">`,
-      `          <tt:value ref="LANGUAGE" option="format(language)"`, "<-  missing closing tag />
-      `        </str>`,
-      `      </tt:cond>`,
-      `      <tt:cond s-check="not-initial(LANGUAGE2)">`,
-      `        <str name="LANGUAGE2">`,
-      `          <tt:value ref="LANGUAGE2" option="format(language)"/>`,
-      `        </str>`,
-      `      </tt:cond>`,
-      `    </tt:group>`,
-      `  </object>`,
-      `</tt:cond>`,
-      `</tt:ref>`,
-      `</tt:template>`,
-      `</tt:transform>`.
+
+    APPEND `<?sap.transform simple?>` TO me->exp_transformation.
+    APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO me->exp_transformation.
+    APPEND `<tt:root name="root"/>` TO me->exp_transformation.
+    APPEND `<tt:template>` TO me->exp_transformation.
+    APPEND `<tt:ref name="root">` TO me->exp_transformation.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(LANGUAGE)">` TO me->exp_transformation.
+    APPEND `        <str name="LANGUAGE">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="LANGUAGE" option="format(language)"` TO me->exp_transformation. "<-  missing closing tag /
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(LANGUAGE2)">` TO me->exp_transformation.
+    APPEND `        <str name="LANGUAGE2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="LANGUAGE2" option="format(language)"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
+    APPEND `</tt:ref>` TO me->exp_transformation.
+    APPEND `</tt:template>` TO me->exp_transformation.
+    APPEND `</tt:transform>` TO me->exp_transformation.
 
     DATA(is_valid) = cut->zif_aff_writer~validate( source = transformation log = log ).
 
@@ -1025,17 +1004,16 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    append_to exp_json:
-`[`,
-` {`,
-`  "ELEMENT_1":1,`,
-`  "ELEMENT_2":"first_element"`,
-` },`,
-` {`,
-`  "ELEMENT_1":2,`,
-`  "ELEMENT_2":"second_element"`,
-` }`,
-`]`.
+    APPEND `[` TO exp_json.
+    APPEND ` {` TO exp_json.
+    APPEND `  "ELEMENT_1":1,` TO exp_json.
+    APPEND `  "ELEMENT_2":"first_element"` TO exp_json.
+    APPEND ` },` TO exp_json.
+    APPEND ` {` TO exp_json.
+    APPEND `  "ELEMENT_1":2,` TO exp_json.
+    APPEND `  "ELEMENT_2":"second_element"` TO exp_json.
+    APPEND ` }` TO exp_json.
+    APPEND `]` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1071,22 +1049,21 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    append_to exp_json:
 
-`{`,
-` "TABLE":`,
-` [`,
-`  {`,
-`   "ELEMENT_1":1,`,
-`   "ELEMENT_2":"obj1_element_2_value"`,
-`  },`,
-`  {`,
-`   "ELEMENT_1":2,`,
-`   "ELEMENT_2":"obj2_element_2_value"`,
-`  }`,
-` ],`,
-` "INCLUDE_ELEMENT_1":1`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND ` "TABLE":` TO exp_json.
+    APPEND ` [` TO exp_json.
+    APPEND `  {` TO exp_json.
+    APPEND `   "ELEMENT_1":1,` TO exp_json.
+    APPEND `   "ELEMENT_2":"obj1_element_2_value"` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND `  {` TO exp_json.
+    APPEND `   "ELEMENT_1":2,` TO exp_json.
+    APPEND `   "ELEMENT_2":"obj2_element_2_value"` TO exp_json.
+    APPEND `  }` TO exp_json.
+    APPEND ` ],` TO exp_json.
+    APPEND ` "INCLUDE_ELEMENT_1":1` TO exp_json.
+    APPEND `}` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1117,12 +1094,12 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    append_to exp_json:
-`{`,
-` "INCLUDE_ELEMENT_1":"element1_value",`,
-` "INCLUDE_ELEMENT_2":2,`,
-` "ELEMENT":"element_value"`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND ` "INCLUDE_ELEMENT_1":"element1_value",` TO exp_json.
+    APPEND ` "INCLUDE_ELEMENT_2":2,` TO exp_json.
+    APPEND ` "ELEMENT":"element_value"` TO exp_json.
+    APPEND `}` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1154,13 +1131,13 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    append_to exp_json:
-`{`,
-` "INCLUDE_ELEMENT_1":"value of incl element1",`,
-` "INCLUDE_ELEMENT_2":1,`,
-` "ELEMENT_1":2,`,
-` "ELEMENT_2":"value of element2"`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND ` "INCLUDE_ELEMENT_1":"value of incl element1",` TO exp_json.
+    APPEND ` "INCLUDE_ELEMENT_2":1,` TO exp_json.
+    APPEND ` "ELEMENT_1":2,` TO exp_json.
+    APPEND ` "ELEMENT_2":"value of element2"` TO exp_json.
+    APPEND `}` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1196,26 +1173,26 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    append_to exp_json:
-`{`,
-` "FIRST_TABLE":`,
-` [`,
-`  {`,
-`   "SECOND_TABLE":`,
-`   [`,
-`    "table_1_line_1",`,
-`    "table_1_line_2"`,
-`   ]`,
-`  },`,
-`  {`,
-`   "SECOND_TABLE":`,
-`   [`,
-`    "table_2_line_1",`,
-`    "table_2_line_2"`,
-`   ]`,
-`  }`,
-` ]`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND ` "FIRST_TABLE":` TO exp_json.
+    APPEND ` [` TO exp_json.
+    APPEND `  {` TO exp_json.
+    APPEND `   "SECOND_TABLE":` TO exp_json.
+    APPEND `   [` TO exp_json.
+    APPEND `    "table_1_line_1",` TO exp_json.
+    APPEND `    "table_1_line_2"` TO exp_json.
+    APPEND `   ]` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND `  {` TO exp_json.
+    APPEND `   "SECOND_TABLE":` TO exp_json.
+    APPEND `   [` TO exp_json.
+    APPEND `    "table_2_line_1",` TO exp_json.
+    APPEND `    "table_2_line_2"` TO exp_json.
+    APPEND `   ]` TO exp_json.
+    APPEND `  }` TO exp_json.
+    APPEND ` ]` TO exp_json.
+    APPEND `}` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1247,17 +1224,17 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    append_to exp_json:
-`[`,
-` [`,
-`  "table_1_line_1",`,
-`  "table_1_line_2"`,
-` ],`,
-` [`,
-`  "table_2_line_1",`,
-`  "table_2_line_2"`,
-` ]`,
-`]`.
+
+    APPEND `[` TO exp_json.
+    APPEND ` [` TO exp_json.
+    APPEND `  "table_1_line_1",` TO exp_json.
+    APPEND `  "table_1_line_2"` TO exp_json.
+    APPEND ` ],` TO exp_json.
+    APPEND ` [` TO exp_json.
+    APPEND `  "table_2_line_1",` TO exp_json.
+    APPEND `  "table_2_line_2"` TO exp_json.
+    APPEND ` ]` TO exp_json.
+    APPEND `]` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1287,8 +1264,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    append_to exp_json:
- `"2020-04-24T16:30:00+00:00"`.
+    APPEND `"2020-04-24T16:30:00+00:00"` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1317,8 +1293,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    append_to exp_json:
-    `true`.
+    APPEND `true` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1347,8 +1322,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    append_to exp_json:
-    `5.3`.
+    APPEND `5.3` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1377,8 +1351,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    append_to exp_json:
-    `"0123abcdef"`.
+    APPEND `"0123abcdef"` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1414,9 +1387,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json           = DATA(json_xstring)
     ).
 
-
-    append_to exp_json:
-`"true"`.
+    APPEND `"true"` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1450,11 +1421,10 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json          = DATA(json_xstring)
     ).
 
-    append_to exp_json:
-`{`,
-` "MAPPED_ELEMENT1":1,`,
-` "ELEMENT_2":"element2_value"`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND ` "MAPPED_ELEMENT1":1,` TO exp_json.
+    APPEND ` "ELEMENT_2":"element2_value"` TO exp_json.
+    APPEND `}` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1491,20 +1461,19 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
 
-    append_to exp_json:
-    `{`,
-    ` "MAPPED_TABLE":`,
-    ` [`,
-    `  {`,
-    `   "MAPPED_ELEMENT1":1,`,
-    `   "ELEMENT_2":"obj1_element2"`,
-    `  },`,
-    `  {`,
-    `   "MAPPED_ELEMENT1":2,`,
-    `   "ELEMENT_2":"obj2_element2"`,
-    `  }`,
-    ` ]`,
-    `}`.
+    APPEND `{` TO exp_json.
+    APPEND ` "MAPPED_TABLE":` TO exp_json.
+    APPEND ` [` TO exp_json.
+    APPEND `  {` TO exp_json.
+    APPEND `   "MAPPED_ELEMENT1":1,` TO exp_json.
+    APPEND `   "ELEMENT_2":"obj1_element2"` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND `  {` TO exp_json.
+    APPEND `   "MAPPED_ELEMENT1":2,` TO exp_json.
+    APPEND `   "ELEMENT_2":"obj2_element2"` TO exp_json.
+    APPEND `  }` TO exp_json.
+    APPEND ` ]` TO exp_json.
+    APPEND `}` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1541,8 +1510,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json           = DATA(json_xstring)
     ).
 
-    append_to exp_json:
-`"first"`.
+    APPEND `"first"` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1578,8 +1546,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json           = DATA(json_xstring)
     ).
 
-    append_to exp_json:
-`"twoTest"`.
+    APPEND `"twoTest"` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1615,9 +1582,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json           = DATA(json_xstring)
     ).
 
-
-    append_to exp_json:
-`true`.
+    APPEND `true` TO exp_json.
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -1647,11 +1612,10 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    append_to exp_json:
-`{`,
-`"LANGUAGE":"en",`,
-`"LANGUAGE2":"de"`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND `"LANGUAGE":"en",` TO exp_json.
+    APPEND `"LANGUAGE2":"de"` TO exp_json.
+    APPEND `}` TO exp_json.
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
     DATA act_data LIKE test_type.
@@ -1738,12 +1702,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>integer.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <num>`,
-`        <tt:value option="format(alpha)"/>`,
-`    </num>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <num>` TO me->exp_transformation.
+    APPEND `        <tt:value option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `    </num>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -1751,12 +1714,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>mystring.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <str>`,
-`        <tt:value/>`,
-`    </str>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <str>` TO me->exp_transformation.
+    APPEND `        <tt:value/>` TO me->exp_transformation.
+    APPEND `    </str>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -1764,12 +1726,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_date.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <str>`,
-`    <tt:value option="format(dateTimeOffset)"/>`,
-`    </str>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <str>` TO me->exp_transformation.
+    APPEND `    <tt:value option="format(dateTimeOffset)"/>` TO me->exp_transformation.
+    APPEND `    </str>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -1777,34 +1738,33 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_structure.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-    `<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(MY_FIRST_ELEMENT)" frq="?">`,
-`        <str name="myFirstElement">`,
-`          <tt:value ref="MY_FIRST_ELEMENT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">`,
-`        <num name="mySecondElement">`,
-`          <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'myFirstElement;mySecondElement;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(MY_FIRST_ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="myFirstElement">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="MY_FIRST_ELEMENT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="mySecondElement">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;mySecondElement;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -1812,34 +1772,33 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_structure2.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond frq="?">`,
-`        <str name="myFirstElement">`,
-`          <tt:value ref="MY_FIRST_ELEMENT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">`,
-`        <num name="mySecondElement">`,
-`          <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'myFirstElement;mySecondElement;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="myFirstElement">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="MY_FIRST_ELEMENT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="mySecondElement">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;mySecondElement;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -1854,51 +1813,50 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_structure3.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(NESTED_STRUC)" frq="?">`,
-`        <object name="nestedStruc" tt:ref="NESTED_STRUC">`,
-`          <tt:group>`,
-`            <tt:cond s-check="not-initial(MY_ELEMENT)" frq="?">`,
-`              <str name="myElement">`,
-`                <tt:value ref="MY_ELEMENT"/>`,
-`              </str>`,
-`            </tt:cond>`,
-`            <tt:d-cond frq="*">`,
-`               <_ tt:lax="on">`,
-`                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                  <tt:with-parameter name="MEMBERS" val="'myElement;'"/>`,
-`                </tt:call-method>`,
-`                <tt:skip/>`,
-`              </_>`,
-`            </tt:d-cond>`,
-`            <tt:d-cond frq="?">`,
-`              <__/>`,
-`            </tt:d-cond>`,
-`          </tt:group>`,
-`        </object>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <str name="myElement">`,
-`          <tt:value ref="MY_ELEMENT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'nestedStruc;myElement;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(NESTED_STRUC)" frq="?">` TO me->exp_transformation.
+    APPEND `        <object name="nestedStruc" tt:ref="NESTED_STRUC">` TO me->exp_transformation.
+    APPEND `          <tt:group>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(MY_ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `              <str name="myElement">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="MY_ELEMENT"/>` TO me->exp_transformation.
+    APPEND `              </str>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `               <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="MEMBERS" val="'myElement;'"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `                <tt:skip/>` TO me->exp_transformation.
+    APPEND `              </_>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `              <__/>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `          </tt:group>` TO me->exp_transformation.
+    APPEND `        </object>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="myElement">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="MY_ELEMENT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'nestedStruc;myElement;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act_output ).
   ENDMETHOD.
@@ -1907,20 +1865,19 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_standard_table.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`    <array>`,
-`        <tt:loop>`,
-`            <tt:group>`,
-`                <tt:cond>`,
-`                    <str>`,
-`                        <tt:value/>`,
-`                    </str>`,
-`                </tt:cond>`,
-`            </tt:group>`,
-`        </tt:loop>`,
-`    </array>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `    <array>` TO me->exp_transformation.
+    APPEND `        <tt:loop>` TO me->exp_transformation.
+    APPEND `            <tt:group>` TO me->exp_transformation.
+    APPEND `                <tt:cond>` TO me->exp_transformation.
+    APPEND `                    <str>` TO me->exp_transformation.
+    APPEND `                        <tt:value/>` TO me->exp_transformation.
+    APPEND `                    </str>` TO me->exp_transformation.
+    APPEND `                </tt:cond>` TO me->exp_transformation.
+    APPEND `            </tt:group>` TO me->exp_transformation.
+    APPEND `        </tt:loop>` TO me->exp_transformation.
+    APPEND `    </array>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -1928,15 +1885,14 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>category.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-    `<tt:cond>`,
-    `      <str>`,
-    `        <tt:value map="`,
-    `          val(N('00'))=xml('general'),`,
-    `          val(N('01'))=xml('classicBadi')`,
-    `        "/>`,
-    `      </str>`,
-    `    </tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `      <str>` TO me->exp_transformation.
+    APPEND `        <tt:value map="` TO me->exp_transformation.
+    APPEND `          val(N('00'))=xml('general'),` TO me->exp_transformation.
+    APPEND `          val(N('01'))=xml('classicBadi')` TO me->exp_transformation.
+    APPEND `        "/>` TO me->exp_transformation.
+    APPEND `      </str>` TO me->exp_transformation.
+    APPEND `    </tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -1957,34 +1913,33 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_wrong_link.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(ELEMENT_ONE)" frq="?">`,
-`        <str name="elementOne">`,
-`          <tt:value ref="ELEMENT_ONE"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(ELEMENT_TWO)" frq="?">`,
-`        <str name="elementTwo">`,
-`          <tt:value ref="ELEMENT_TWO"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'elementOne;elementTwo;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(ELEMENT_ONE)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="elementOne">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ELEMENT_ONE"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(ELEMENT_TWO)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="elementTwo">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ELEMENT_TWO"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'elementOne;elementTwo;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -1998,69 +1953,69 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_with_enum_values.
     DATA test_type TYPE zcl_aff_test_types=>ty_class_properties.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(HEADER)" frq="?">`,
-`        <object name="header" tt:ref="HEADER">`,
-`          <tt:group>`,
-`            <tt:cond s-check="not-initial(DESCRIPTION)" frq="?">`,
-`              <str name="description">`,
-`                <tt:value ref="DESCRIPTION"/>`,
-`              </str>`,
-`            </tt:cond>`,
-`            <tt:cond s-check="not-initial(ORIGINAL_LANGUAGE)" frq="?">`,
-`              <str name="originalLanguage">`,
-`                <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer"> `,
-`                  <tt:with-parameter name="language" ref="ORIGINAL_LANGUAGE"/>`,
-`                </tt:call-method>`,
-`              </str>`,
-`            </tt:cond>`,
-`            <tt:cond s-check="not-initial(ABAP_LANGUAGE_VERSION)" frq="?">`,
-`              <str name="abapLanguageVersion">`,
-`                <tt:value ref="ABAP_LANGUAGE_VERSION" map="`,
-`                  val('')=xml('standard'),`,
-`                  val('5')=xml('cloudDevelopment')`,
-`                "/>`,
-`              </str>`,
-`            </tt:cond>`,
-`            <tt:d-cond frq="*">`,
-`               <_ tt:lax="on">`,
-`                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                  <tt:with-parameter name="MEMBERS" val="'description;originalLanguage;abapLanguageVersion;'"/>`,
-`                </tt:call-method>`,
-`                <tt:skip/>`,
-`              </_>`,
-`            </tt:d-cond>`,
-`            <tt:d-cond frq="?">`,
-`              <__/>`,
-`            </tt:d-cond>`,
-`          </tt:group>`,
-`        </object>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(CLASS_CATEGORY)" frq="?">`,
-`        <str name="classCategory">`,
-`          <tt:value ref="CLASS_CATEGORY" map="`,
-`            val(N('00'))=xml('general'),`,
-`            val(N('01'))=xml('exitClass')`,
-`          "/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'header;classCategory;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(HEADER)" frq="?">` TO me->exp_transformation.
+    APPEND `        <object name="header" tt:ref="HEADER">` TO me->exp_transformation.
+    APPEND `          <tt:group>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(DESCRIPTION)" frq="?">` TO me->exp_transformation.
+    APPEND `              <str name="description">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="DESCRIPTION"/>` TO me->exp_transformation.
+    APPEND `              </str>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(ORIGINAL_LANGUAGE)" frq="?">` TO me->exp_transformation.
+    APPEND `              <str name="originalLanguage">` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer"> ` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="language" ref="ORIGINAL_LANGUAGE"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `              </str>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(ABAP_LANGUAGE_VERSION)" frq="?">` TO me->exp_transformation.
+    APPEND `              <str name="abapLanguageVersion">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="ABAP_LANGUAGE_VERSION" map="` TO me->exp_transformation.
+    APPEND `                  val('')=xml('standard'),` TO me->exp_transformation.
+    APPEND `                  val('5')=xml('cloudDevelopment')` TO me->exp_transformation.
+    APPEND `                "/>` TO me->exp_transformation.
+    APPEND `              </str>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `               <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="MEMBERS" val="'description;originalLanguage;abapLanguageVersion;'"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `                <tt:skip/>` TO me->exp_transformation.
+    APPEND `              </_>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `              <__/>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `          </tt:group>` TO me->exp_transformation.
+    APPEND `        </object>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(CLASS_CATEGORY)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="classCategory">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="CLASS_CATEGORY" map="` TO me->exp_transformation.
+    APPEND `            val(N('00'))=xml('general'),` TO me->exp_transformation.
+    APPEND `            val(N('01'))=xml('exitClass')` TO me->exp_transformation.
+    APPEND `          "/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'header;classCategory;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act = act_output ).
   ENDMETHOD.
 
@@ -2068,83 +2023,82 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>list.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond frq="?">`,
-`        <num name="field1">`,
-`          <tt:value ref="FIELD1" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <str name="field2">`,
-`          <tt:value ref="FIELD2"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <object name="list1" tt:ref="LIST1">`,
-`          <tt:group>`,
-`            <tt:cond frq="?">`,
-`              <num name="elementOfList1">`,
-`                <tt:value ref="ELEMENT_OF_LIST1" option="format(alpha)"/>`,
-`              </num>`,
-`            </tt:cond>`,
-`            <tt:cond s-check="not-initial(LIST2)" frq="?">`,
-`              <object name="list2" tt:ref="LIST2">`,
-`                <tt:group>`,
-`                  <tt:cond frq="?">`,
-`                    <str name="elementOfList2">`,
-`                      <tt:value ref="ELEMENT_OF_LIST2"/>`,
-`                    </str>`,
-`                  </tt:cond>`,
-`                  <tt:d-cond frq="*">`,
-`                     <_ tt:lax="on">`,
-`                      <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                        <tt:with-parameter name="MEMBERS" val="'elementOfList2;'"/>`,
-`                      </tt:call-method>`,
-`                      <tt:skip/>`,
-`                    </_>`,
-`                  </tt:d-cond>`,
-`                  <tt:d-cond frq="?">`,
-`                    <__/>`,
-`                  </tt:d-cond>`,
-`                </tt:group>`,
-`              </object>`,
-`            </tt:cond>`,
-`            <tt:d-cond frq="*">`,
-`               <_ tt:lax="on">`,
-`                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                  <tt:with-parameter name="MEMBERS" val="'elementOfList1;list2;'"/>`,
-`                </tt:call-method>`,
-`                <tt:skip/>`,
-`              </_>`,
-`            </tt:d-cond>`,
-`            <tt:d-cond frq="?">`,
-`              <__/>`,
-`            </tt:d-cond>`,
-`          </tt:group>`,
-`        </object>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <str name="field3">`,
-`          <tt:value ref="FIELD3"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'field1;field2;list1;field3;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="field1">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FIELD1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="field2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FIELD2"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <object name="list1" tt:ref="LIST1">` TO me->exp_transformation.
+    APPEND `          <tt:group>` TO me->exp_transformation.
+    APPEND `            <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `              <num name="elementOfList1">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="ELEMENT_OF_LIST1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `              </num>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(LIST2)" frq="?">` TO me->exp_transformation.
+    APPEND `              <object name="list2" tt:ref="LIST2">` TO me->exp_transformation.
+    APPEND `                <tt:group>` TO me->exp_transformation.
+    APPEND `                  <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `                    <str name="elementOfList2">` TO me->exp_transformation.
+    APPEND `                      <tt:value ref="ELEMENT_OF_LIST2"/>` TO me->exp_transformation.
+    APPEND `                    </str>` TO me->exp_transformation.
+    APPEND `                  </tt:cond>` TO me->exp_transformation.
+    APPEND `                  <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `                     <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                      <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                        <tt:with-parameter name="MEMBERS" val="'elementOfList2;'"/>` TO me->exp_transformation.
+    APPEND `                      </tt:call-method>` TO me->exp_transformation.
+    APPEND `                      <tt:skip/>` TO me->exp_transformation.
+    APPEND `                    </_>` TO me->exp_transformation.
+    APPEND `                  </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                  <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `                    <__/>` TO me->exp_transformation.
+    APPEND `                  </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                </tt:group>` TO me->exp_transformation.
+    APPEND `              </object>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `               <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="MEMBERS" val="'elementOfList1;list2;'"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `                <tt:skip/>` TO me->exp_transformation.
+    APPEND `              </_>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `              <__/>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `          </tt:group>` TO me->exp_transformation.
+    APPEND `        </object>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="field3">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FIELD3"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'field1;field2;list1;field3;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -2152,69 +2106,68 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>outer_struc.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(FIELD1)" frq="?">`,
-`        <num name="field1">`,
-`          <tt:value ref="FIELD1" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(INNER_STRUC)" frq="?">`,
-`        <object name="innerStruc" tt:ref="INNER_STRUC">`,
-`          <tt:group>`,
-`            <tt:cond frq="?">`,
-`              <num name="elementOfInnerStruc">`,
-`                <tt:value ref="ELEMENT_OF_INNER_STRUC" option="format(alpha)"/>`,
-`              </num>`,
-`            </tt:cond>`,
-`            <tt:cond frq="?">`,
-`              <array name="innerTableVar">`,
-`                <tt:loop ref="INNER_TABLE_VAR">`,
-`                  <tt:group>`,
-`                    <tt:cond>`,
-`                      <str>`,
-`                        <tt:value/>`,
-`                      </str>`,
-`                    </tt:cond>`,
-`                  </tt:group>`,
-`                </tt:loop>`,
-`              </array>`,
-`            </tt:cond>`,
-`            <tt:d-cond frq="*">`,
-`               <_ tt:lax="on">`,
-`                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                  <tt:with-parameter name="MEMBERS" val="'elementOfInnerStruc;innerTableVar;'"/>`,
-`                </tt:call-method>`,
-`                <tt:skip/>`,
-`              </_>`,
-`            </tt:d-cond>`,
-`            <tt:d-cond frq="?">`,
-`              <__/>`,
-`            </tt:d-cond>`,
-`          </tt:group>`,
-`        </object>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <str name="field2">`,
-`          <tt:value ref="FIELD2"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'field1;innerStruc;field2;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(FIELD1)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="field1">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FIELD1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(INNER_STRUC)" frq="?">` TO me->exp_transformation.
+    APPEND `        <object name="innerStruc" tt:ref="INNER_STRUC">` TO me->exp_transformation.
+    APPEND `          <tt:group>` TO me->exp_transformation.
+    APPEND `            <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `              <num name="elementOfInnerStruc">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="ELEMENT_OF_INNER_STRUC" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `              </num>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `              <array name="innerTableVar">` TO me->exp_transformation.
+    APPEND `                <tt:loop ref="INNER_TABLE_VAR">` TO me->exp_transformation.
+    APPEND `                  <tt:group>` TO me->exp_transformation.
+    APPEND `                    <tt:cond>` TO me->exp_transformation.
+    APPEND `                      <str>` TO me->exp_transformation.
+    APPEND `                        <tt:value/>` TO me->exp_transformation.
+    APPEND `                      </str>` TO me->exp_transformation.
+    APPEND `                    </tt:cond>` TO me->exp_transformation.
+    APPEND `                  </tt:group>` TO me->exp_transformation.
+    APPEND `                </tt:loop>` TO me->exp_transformation.
+    APPEND `              </array>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `               <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="MEMBERS" val="'elementOfInnerStruc;innerTableVar;'"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `                <tt:skip/>` TO me->exp_transformation.
+    APPEND `              </_>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `              <__/>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `          </tt:group>` TO me->exp_transformation.
+    APPEND `        </object>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="field2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FIELD2"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'field1;innerStruc;field2;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -2222,77 +2175,76 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>aff_test_type.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(FIELD1)" frq="?">`,
-`        <num name="field1">`,
-`          <tt:value ref="FIELD1" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <object name="innerStruc" tt:ref="INNER_STRUC">`,
-`          <tt:group>`,
-`            <tt:cond frq="?">`,
-`              <num name="innerElement">`,
-`                <tt:value ref="INNER_ELEMENT" option="format(alpha)"/>`,
-`              </num>`,
-`            </tt:cond>`,
-`            <tt:cond s-check="not-initial(INNER_TABLE)" frq="?">`,
-`              <array name="innerTable">`,
-`                <tt:loop ref="INNER_TABLE">`,
-`                  <tt:group>`,
-`                    <tt:cond>`,
-`                      <str>`,
-`                        <tt:value/>`,
-`                      </str>`,
-`                    </tt:cond>`,
-`                  </tt:group>`,
-`                </tt:loop>`,
-`              </array>`,
-`            </tt:cond>`,
-`            <tt:d-cond frq="*">`,
-`               <_ tt:lax="on">`,
-`                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                  <tt:with-parameter name="MEMBERS" val="'innerElement;innerTable;'"/>`,
-`                </tt:call-method>`,
-`                <tt:skip/>`,
-`              </_>`,
-`            </tt:d-cond>`,
-`            <tt:d-cond frq="?">`,
-`              <__/>`,
-`            </tt:d-cond>`,
-`          </tt:group>`,
-`        </object>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <str name="field2">`,
-`          <tt:value ref="FIELD2"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(FIELD_WITH_VALUES)" frq="?">`,
-`        <str name="fieldWithValues">`,
-`          <tt:value ref="FIELD_WITH_VALUES" map="`,
-`            val(N('00'))=xml('general'),`,
-`            val(N('01'))=xml('exitClass')`,
-`          "/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'field1;innerStruc;field2;fieldWithValues;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(FIELD1)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="field1">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FIELD1" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <object name="innerStruc" tt:ref="INNER_STRUC">` TO me->exp_transformation.
+    APPEND `          <tt:group>` TO me->exp_transformation.
+    APPEND `            <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `              <num name="innerElement">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="INNER_ELEMENT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `              </num>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(INNER_TABLE)" frq="?">` TO me->exp_transformation.
+    APPEND `              <array name="innerTable">` TO me->exp_transformation.
+    APPEND `                <tt:loop ref="INNER_TABLE">` TO me->exp_transformation.
+    APPEND `                  <tt:group>` TO me->exp_transformation.
+    APPEND `                    <tt:cond>` TO me->exp_transformation.
+    APPEND `                      <str>` TO me->exp_transformation.
+    APPEND `                        <tt:value/>` TO me->exp_transformation.
+    APPEND `                      </str>` TO me->exp_transformation.
+    APPEND `                    </tt:cond>` TO me->exp_transformation.
+    APPEND `                  </tt:group>` TO me->exp_transformation.
+    APPEND `                </tt:loop>` TO me->exp_transformation.
+    APPEND `              </array>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `               <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="MEMBERS" val="'innerElement;innerTable;'"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `                <tt:skip/>` TO me->exp_transformation.
+    APPEND `              </_>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `              <__/>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `          </tt:group>` TO me->exp_transformation.
+    APPEND `        </object>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="field2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FIELD2"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(FIELD_WITH_VALUES)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="fieldWithValues">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FIELD_WITH_VALUES" map="` TO me->exp_transformation.
+    APPEND `            val(N('00'))=xml('general'),` TO me->exp_transformation.
+    APPEND `            val(N('01'))=xml('exitClass')` TO me->exp_transformation.
+    APPEND `          "/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'field1;innerStruc;field2;fieldWithValues;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -2300,128 +2252,128 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_different_default.
     DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:assign to-ref="FOUR_BYTE_INT" val="I(5)"/>`,
-`    <tt:assign to-ref="EIGHT_BYTE_INT" val="INT8(55)"/>`,
-`    <tt:assign to-ref="BIN_FLOAT" val="F('4.3')"/>`,
-`    <tt:assign to-ref="BYTE_LIKE" val="X('FFFF')"/>`,
-`    <tt:assign to-ref="BYTE_LIKE2" val="X('FF00FF')"/>`,
-`    <tt:assign to-ref="DECIMAL_FLOAT_16" val="DECFLOAT16('25.26')"/>`,
-`    <tt:assign to-ref="DECIMAL_FLOAT_34" val="DECFLOAT34('123.05')"/>`,
-`    <tt:assign to-ref="PACKED_NUMBER" val="P(123.45)"/>`,
-`    <tt:assign to-ref="NUMERIC_TEXT" val="N('1067')"/>`,
-`    <tt:assign to-ref="CHARACTER_TEXT" val="C('abcde')"/>`,
-`    <tt:assign to-ref="STRING_TEXT" val="C('Default text')"/>`,
-`    <tt:assign to-ref="DATE_FIELD" val="D('19720401')"/>`,
-`    <tt:assign to-ref="TIME_FIELD" val="T('201500')"/>`,
-`    <tt:assign to-ref="BOOL_TRUE" val="C('X')"/>`,
-`    <tt:assign to-ref="BOOL_FALSE" val="C('')"/>`,
-`    <tt:assign to-ref="ENUM_TYPE" val="N('01')"/>`,
-`    <tt:group>`,
-`      <tt:cond s-check="FOUR_BYTE_INT!=I(5)" frq="?">`,
-`        <num name="fourByteInt">`,
-`          <tt:value ref="FOUR_BYTE_INT" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="EIGHT_BYTE_INT!=INT8(55)" frq="?">`,
-`        <num name="eightByteInt">`,
-`          <tt:value ref="EIGHT_BYTE_INT" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="BIN_FLOAT!=F('4.3')" frq="?">`,
-`        <num name="binFloat">`,
-`          <tt:value ref="BIN_FLOAT" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="BYTE_LIKE!=X('FFFF')" frq="?">`,
-`        <str name="byteLike">`,
-`          <tt:value ref="BYTE_LIKE"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="BYTE_LIKE2!=X('FF00FF')" frq="?">`,
-`        <str name="byteLike2">`,
-`          <tt:value ref="BYTE_LIKE2"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="DECIMAL_FLOAT_16!=DECFLOAT16('25.26')" frq="?">`,
-`        <num name="decimalFloat16">`,
-`          <tt:value ref="DECIMAL_FLOAT_16" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="DECIMAL_FLOAT_34!=DECFLOAT34('123.05')" frq="?">`,
-`        <num name="decimalFloat34">`,
-`          <tt:value ref="DECIMAL_FLOAT_34" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="PACKED_NUMBER!=P(123.45)" frq="?">`,
-`        <num name="packedNumber">`,
-`          <tt:value ref="PACKED_NUMBER" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="NUMERIC_TEXT!=N('1067')" frq="?">`,
-`        <str name="numericText">`,
-`          <tt:value ref="NUMERIC_TEXT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="CHARACTER_TEXT!=C('abcde')" frq="?">`,
-`        <str name="characterText">`,
-`          <tt:value ref="CHARACTER_TEXT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="STRING_TEXT!=C('Default text')" frq="?">`,
-`        <str name="stringText">`,
-`          <tt:value ref="STRING_TEXT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="DATE_FIELD!=D('19720401')" frq="?">`,
-`        <str name="dateField">`,
-`          <tt:value ref="DATE_FIELD" option="format(dateTimeOffset)"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="TIME_FIELD!=T('201500')" frq="?">`,
-`        <str name="timeField">`,
-`          <tt:value ref="TIME_FIELD" option="format(dateTimeOffset)"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(DATE_TIME_FIELD)" frq="?">`,
-`        <str name="dateTimeField">`,
-`          <tt:value ref="DATE_TIME_FIELD" option="format(dateTimeOffset)"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="BOOL_TRUE!=C('X')" frq="?">`,
-`        <bool name="boolTrue">`,
-`          <tt:value ref="BOOL_TRUE" option="format(boolean)"/>`,
-`        </bool>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="BOOL_FALSE!=C('')" frq="?">`,
-`        <bool name="boolFalse">`,
-`          <tt:value ref="BOOL_FALSE" option="format(boolean)"/>`,
-`        </bool>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="ENUM_TYPE!=N('01')" frq="?">`,
-`        <str name="enumType">`,
-`          <tt:value ref="ENUM_TYPE" map="`,
-`            val(N('00'))=xml('general'),`,
-`            val(N('01'))=xml('exitClass')`,
-`          "/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER"> `,
-`            <tt:with-parameter name="MEMBERS" val="'fourByteInt;eightByteInt;binFloat;byteLike;byteLike2;decimalFloat16;decimalFloat34;packedNumber;numericText;characterText;stringText;dateField;timeField;dateTimeField;boolTrue;boolFalse;enumType;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="FOUR_BYTE_INT" val="I(5)"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="EIGHT_BYTE_INT" val="INT8(55)"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="BIN_FLOAT" val="F('4.3')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="BYTE_LIKE" val="X('FFFF')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="BYTE_LIKE2" val="X('FF00FF')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="DECIMAL_FLOAT_16" val="DECFLOAT16('25.26')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="DECIMAL_FLOAT_34" val="DECFLOAT34('123.05')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="PACKED_NUMBER" val="P(123.45)"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="NUMERIC_TEXT" val="N('1067')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="CHARACTER_TEXT" val="C('abcde')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="STRING_TEXT" val="C('Default text')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="DATE_FIELD" val="D('19720401')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="TIME_FIELD" val="T('201500')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="BOOL_TRUE" val="C('X')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="BOOL_FALSE" val="C('')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="ENUM_TYPE" val="N('01')"/>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="FOUR_BYTE_INT!=I(5)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="fourByteInt">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="FOUR_BYTE_INT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="EIGHT_BYTE_INT!=INT8(55)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="eightByteInt">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="EIGHT_BYTE_INT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="BIN_FLOAT!=F('4.3')" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="binFloat">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="BIN_FLOAT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="BYTE_LIKE!=X('FFFF')" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="byteLike">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="BYTE_LIKE"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="BYTE_LIKE2!=X('FF00FF')" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="byteLike2">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="BYTE_LIKE2"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="DECIMAL_FLOAT_16!=DECFLOAT16('25.26')" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="decimalFloat16">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="DECIMAL_FLOAT_16" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="DECIMAL_FLOAT_34!=DECFLOAT34('123.05')" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="decimalFloat34">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="DECIMAL_FLOAT_34" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="PACKED_NUMBER!=P(123.45)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="packedNumber">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="PACKED_NUMBER" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="NUMERIC_TEXT!=N('1067')" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="numericText">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="NUMERIC_TEXT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="CHARACTER_TEXT!=C('abcde')" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="characterText">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="CHARACTER_TEXT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="STRING_TEXT!=C('Default text')" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="stringText">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="STRING_TEXT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="DATE_FIELD!=D('19720401')" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="dateField">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="DATE_FIELD" option="format(dateTimeOffset)"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="TIME_FIELD!=T('201500')" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="timeField">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="TIME_FIELD" option="format(dateTimeOffset)"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(DATE_TIME_FIELD)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="dateTimeField">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="DATE_TIME_FIELD" option="format(dateTimeOffset)"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="BOOL_TRUE!=C('X')" frq="?">` TO me->exp_transformation.
+    APPEND `        <bool name="boolTrue">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="BOOL_TRUE" option="format(boolean)"/>` TO me->exp_transformation.
+    APPEND `        </bool>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="BOOL_FALSE!=C('')" frq="?">` TO me->exp_transformation.
+    APPEND `        <bool name="boolFalse">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="BOOL_FALSE" option="format(boolean)"/>` TO me->exp_transformation.
+    APPEND `        </bool>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="ENUM_TYPE!=N('01')" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="enumType">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ENUM_TYPE" map="` TO me->exp_transformation.
+    APPEND `            val(N('00'))=xml('general'),` TO me->exp_transformation.
+    APPEND `            val(N('01'))=xml('exitClass')` TO me->exp_transformation.
+    APPEND `          "/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER"> ` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'fourByteInt;eightByteInt;binFloat;byteLike;byteLike2;decimalFloat16;decimalFloat34;packedNumber;numericText;characterText;stringText;dateField;timeField;dateTimeField;boolTrue;boolFalse;enumType;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -2435,52 +2387,52 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_with_default_problem.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:assign to-ref="STRING_ELEMENT" val="C('DefaultString')"/>`,
-`    <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('01')"/>`,
-`    <tt:group>`,
-`      <tt:cond frq="?">`,
-`        <num name="integer">`,
-`          <tt:value ref="INTEGER" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <str name="stringElement">`,
-`          <tt:value ref="STRING_ELEMENT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <str name="enumRequired">`,
-`          <tt:value ref="ENUM_REQUIRED" map="`,
-`            val(N('00'))=xml('general'),`,
-`            val(N('01'))=xml('exitClass')`,
-`          "/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond frq="?">`,
-`        <str name="enumShowAlways">`,
-`          <tt:value ref="ENUM_SHOW_ALWAYS" map="`,
-`            val(N('00'))=xml('general'),`,
-`            val(N('01'))=xml('exitClass')`,
-`          "/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'integer;stringElement;enumRequired;enumShowAlways;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="STRING_ELEMENT" val="C('DefaultString')"/>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('01')"/>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="integer">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="INTEGER" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="stringElement">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="STRING_ELEMENT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="enumRequired">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ENUM_REQUIRED" map="` TO me->exp_transformation.
+    APPEND `            val(N('00'))=xml('general'),` TO me->exp_transformation.
+    APPEND `            val(N('01'))=xml('exitClass')` TO me->exp_transformation.
+    APPEND `          "/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="enumShowAlways">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ENUM_SHOW_ALWAYS" map="` TO me->exp_transformation.
+    APPEND `            val(N('00'))=xml('general'),` TO me->exp_transformation.
+    APPEND `            val(N('01'))=xml('exitClass')` TO me->exp_transformation.
+    APPEND `          "/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'integer;stringElement;enumRequired;enumShowAlways;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -2499,76 +2451,76 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD nested_struc_with_default.
     DATA test_type TYPE zcl_aff_test_types=>nested_struc_with_default.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-   `<tt:cond>`,
-`  <object>`,
-`    <tt:assign to-ref="OUTER_COMPONENT" val="I(10)"/>`,
-`    <tt:group>`,
-`      <tt:cond s-check="OUTER_COMPONENT!=I(10)" frq="?">`,
-`        <num name="outerComponent">`,
-`          <tt:value ref="OUTER_COMPONENT" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(MIDDLE_STRUC)" frq="?">`,
-`        <object name="middleStruc" tt:ref="MIDDLE_STRUC">`,
-`          <tt:assign to-ref="MIDDLE_COMPONENT" val="C('abcd')"/>`,
-`          <tt:group>`,
-`            <tt:cond s-check="MIDDLE_COMPONENT!=C('abcd')" frq="?">`,
-`              <str name="middleComponent">`,
-`                <tt:value ref="MIDDLE_COMPONENT"/>`,
-`              </str>`,
-`            </tt:cond>`,
-`            <tt:cond s-check="not-initial(INNER_STRUC)" frq="?">`,
-`              <object name="innerStruc" tt:ref="INNER_STRUC">`,
-`                <tt:assign to-ref="INNER_COMPONENT" val="C('Default Value')"/>`,
-`                <tt:group>`,
-`                  <tt:cond s-check="INNER_COMPONENT!=C('Default Value')" frq="?">`,
-`                    <str name="innerComponent">`,
-`                      <tt:value ref="INNER_COMPONENT"/>`,
-`                    </str>`,
-`                  </tt:cond>`,
-`                  <tt:d-cond frq="*">`,
-`                     <_ tt:lax="on">`,
-`                      <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                        <tt:with-parameter name="MEMBERS" val="'innerComponent;'"/>`,
-`                      </tt:call-method>`,
-`                      <tt:skip/>`,
-`                    </_>`,
-`                  </tt:d-cond>`,
-`                  <tt:d-cond frq="?">`,
-`                    <__/>`,
-`                  </tt:d-cond>`,
-`                </tt:group>`,
-`              </object>`,
-`            </tt:cond>`,
-`            <tt:d-cond frq="*">`,
-`               <_ tt:lax="on">`,
-`                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`                  <tt:with-parameter name="MEMBERS" val="'middleComponent;innerStruc;'"/>`,
-`                </tt:call-method>`,
-`                <tt:skip/>`,
-`              </_>`,
-`            </tt:d-cond>`,
-`            <tt:d-cond frq="?">`,
-`              <__/>`,
-`            </tt:d-cond>`,
-`          </tt:group>`,
-`        </object>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'outerComponent;middleStruc;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:assign to-ref="OUTER_COMPONENT" val="I(10)"/>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="OUTER_COMPONENT!=I(10)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="outerComponent">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="OUTER_COMPONENT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(MIDDLE_STRUC)" frq="?">` TO me->exp_transformation.
+    APPEND `        <object name="middleStruc" tt:ref="MIDDLE_STRUC">` TO me->exp_transformation.
+    APPEND `          <tt:assign to-ref="MIDDLE_COMPONENT" val="C('abcd')"/>` TO me->exp_transformation.
+    APPEND `          <tt:group>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="MIDDLE_COMPONENT!=C('abcd')" frq="?">` TO me->exp_transformation.
+    APPEND `              <str name="middleComponent">` TO me->exp_transformation.
+    APPEND `                <tt:value ref="MIDDLE_COMPONENT"/>` TO me->exp_transformation.
+    APPEND `              </str>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(INNER_STRUC)" frq="?">` TO me->exp_transformation.
+    APPEND `              <object name="innerStruc" tt:ref="INNER_STRUC">` TO me->exp_transformation.
+    APPEND `                <tt:assign to-ref="INNER_COMPONENT" val="C('Default Value')"/>` TO me->exp_transformation.
+    APPEND `                <tt:group>` TO me->exp_transformation.
+    APPEND `                  <tt:cond s-check="INNER_COMPONENT!=C('Default Value')" frq="?">` TO me->exp_transformation.
+    APPEND `                    <str name="innerComponent">` TO me->exp_transformation.
+    APPEND `                      <tt:value ref="INNER_COMPONENT"/>` TO me->exp_transformation.
+    APPEND `                    </str>` TO me->exp_transformation.
+    APPEND `                  </tt:cond>` TO me->exp_transformation.
+    APPEND `                  <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `                     <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                      <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                        <tt:with-parameter name="MEMBERS" val="'innerComponent;'"/>` TO me->exp_transformation.
+    APPEND `                      </tt:call-method>` TO me->exp_transformation.
+    APPEND `                      <tt:skip/>` TO me->exp_transformation.
+    APPEND `                    </_>` TO me->exp_transformation.
+    APPEND `                  </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                  <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `                    <__/>` TO me->exp_transformation.
+    APPEND `                  </tt:d-cond>` TO me->exp_transformation.
+    APPEND `                </tt:group>` TO me->exp_transformation.
+    APPEND `              </object>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `               <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="MEMBERS" val="'middleComponent;innerStruc;'"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `                <tt:skip/>` TO me->exp_transformation.
+    APPEND `              </_>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `            <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `              <__/>` TO me->exp_transformation.
+    APPEND `            </tt:d-cond>` TO me->exp_transformation.
+    APPEND `          </tt:group>` TO me->exp_transformation.
+    APPEND `        </object>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'outerComponent;middleStruc;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -2589,29 +2541,29 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD wrong_default_type_link.
     DATA test_type TYPE zcl_aff_test_types=>struc_link_wrong_type.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(DEFAULT_LINK)" frq="?">`,
-`        <num name="defaultLink">`,
-`          <tt:value ref="DEFAULT_LINK" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'defaultLink;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(DEFAULT_LINK)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="defaultLink">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="DEFAULT_LINK" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'defaultLink;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
 
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
@@ -2627,40 +2579,40 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_with_wrong_default.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_wrong_default.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond s-check="not-initial(ELEMENT_ONE)" frq="?">`,
-`        <str name="elementOne">`,
-`          <tt:value ref="ELEMENT_ONE" map="`,
-`            val(N('00'))=xml('general'),`,
-`            val(N('01'))=xml('classicBadi')`,
-`          "/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(ELEMENT_TWO)" frq="?">`,
-`        <str name="elementTwo">`,
-`          <tt:value ref="ELEMENT_TWO" map="`,
-`            val(N('00'))=xml('general'),`,
-`            val(N('01'))=xml('classicBadi')`,
-`          "/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'elementOne;elementTwo;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(ELEMENT_ONE)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="elementOne">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ELEMENT_ONE" map="` TO me->exp_transformation.
+    APPEND `            val(N('00'))=xml('general'),` TO me->exp_transformation.
+    APPEND `            val(N('01'))=xml('classicBadi')` TO me->exp_transformation.
+    APPEND `          "/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(ELEMENT_TWO)" frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="elementTwo">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="ELEMENT_TWO" map="` TO me->exp_transformation.
+    APPEND `            val(N('00'))=xml('general'),` TO me->exp_transformation.
+    APPEND `            val(N('01'))=xml('classicBadi')` TO me->exp_transformation.
+    APPEND `          "/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'elementOne;elementTwo;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -2746,134 +2698,133 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD table_of_struc_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`   <tt:cond>`,
-`     <array>`,
-`       <tt:loop>`,
-`         <tt:group>`,
-`           <tt:cond>`,
-`             <object>`,
-`              <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">`,
-`                 <tt:with-parameter name="structure_with_callback" ref="$ref"/>`,
-`               </tt:call-method>`,
-`             </object>`,
-`           </tt:cond>`,
-`           </tt:group>`,
-`         </tt:loop>`,
-`       </array>`,
-`     </tt:cond>`.
+
+    APPEND `   <tt:cond>` TO me->exp_transformation.
+    APPEND `     <array>` TO me->exp_transformation.
+    APPEND `       <tt:loop>` TO me->exp_transformation.
+    APPEND `         <tt:group>` TO me->exp_transformation.
+    APPEND `           <tt:cond>` TO me->exp_transformation.
+    APPEND `             <object>` TO me->exp_transformation.
+    APPEND `              <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` TO me->exp_transformation.
+    APPEND `                 <tt:with-parameter name="structure_with_callback" ref="$ref"/>` TO me->exp_transformation.
+    APPEND `               </tt:call-method>` TO me->exp_transformation.
+    APPEND `             </object>` TO me->exp_transformation.
+    APPEND `           </tt:cond>` TO me->exp_transformation.
+    APPEND `           </tt:group>` TO me->exp_transformation.
+    APPEND `         </tt:loop>` TO me->exp_transformation.
+    APPEND `       </array>` TO me->exp_transformation.
+    APPEND `     </tt:cond>` TO me->exp_transformation.
     validate_output( act = act_output ).
   ENDMETHOD.
 
   METHOD struc_of_table_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-`      <tt:cond>`,
-`        <object>`,
-`          <tt:group>`,
-`            <tt:cond>`,
-`              <array>`,
-`                <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">`,
-`                  <tt:with-parameter name="my_table_with_callback" ref="MY_TABLE_WITH_CALLBACK"/>`,
-`                </tt:call-method>`,
-`              </array>`,
-`            </tt:cond>`,
-`            <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">`,
-`             <num name="mySecondElement">`,
-`              <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>`,
-`             </num>`,
-`            </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'myTableWithCallback;mySecondElement;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`          </tt:group>`,
-`        </object>`,
-`      </tt:cond>`.
+
+    APPEND `      <tt:cond>` TO me->exp_transformation.
+    APPEND `        <object>` TO me->exp_transformation.
+    APPEND `          <tt:group>` TO me->exp_transformation.
+    APPEND `            <tt:cond>` TO me->exp_transformation.
+    APPEND `              <array>` TO me->exp_transformation.
+    APPEND `                <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` TO me->exp_transformation.
+    APPEND `                  <tt:with-parameter name="my_table_with_callback" ref="MY_TABLE_WITH_CALLBACK"/>` TO me->exp_transformation.
+    APPEND `                </tt:call-method>` TO me->exp_transformation.
+    APPEND `              </array>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `            <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `             <num name="mySecondElement">` TO me->exp_transformation.
+    APPEND `              <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `             </num>` TO me->exp_transformation.
+    APPEND `            </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'myTableWithCallback;mySecondElement;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `          </tt:group>` TO me->exp_transformation.
+    APPEND `        </object>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
   METHOD struc_in_struc_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
-    `<tt:cond>`,
-    `  <object>`,
-    `    <tt:group>`,
-    `      <tt:cond s-check="not-initial(MY_FIRST_ELEMENT)" frq="?">`,
-    `            <str name="myFirstElement">`,
-    `              <tt:value ref="MY_FIRST_ELEMENT"/>`,
-    `            </str>`,
-    `        </tt:cond>`,
-    `        <tt:cond>`,
-    `          <object>`,
-    `            <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">`,
-    `              <tt:with-parameter name="my_struc_with_callback" ref="MY_STRUC_WITH_CALLBACK"/>`,
-    `            </tt:call-method>`,
-    `          </object>`,
-    `        </tt:cond>`,
-    `        <tt:cond s-check="not-initial(MY_THIRD_ELEMENT)" frq="?">`,
-    `          <num name="myThirdElement">`,
-    `            <tt:value ref="MY_THIRD_ELEMENT" option="format(alpha)"/>`,
-    `          </num>`,
-    `        </tt:cond>`,
-    `      <tt:d-cond frq="*">`,
-    `         <_ tt:lax="on">`,
-    `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-    `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;myStrucWithCallback;myThirdElement;'"/>`,
-    `         </tt:call-method>`,
-    `         <tt:skip/>`,
-    `      </_>`,
-    `   </tt:d-cond>`,
-    `   <tt:d-cond frq="?">`,
-    `       <__/>`,
-    `   </tt:d-cond>`,
-    `    </tt:group>`,
-    `  </object>`,
-    `</tt:cond>`.
+
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(MY_FIRST_ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `            <str name="myFirstElement">` TO me->exp_transformation.
+    APPEND `              <tt:value ref="MY_FIRST_ELEMENT"/>` TO me->exp_transformation.
+    APPEND `            </str>` TO me->exp_transformation.
+    APPEND `        </tt:cond>` TO me->exp_transformation.
+    APPEND `        <tt:cond>` TO me->exp_transformation.
+    APPEND `          <object>` TO me->exp_transformation.
+    APPEND `            <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` TO me->exp_transformation.
+    APPEND `              <tt:with-parameter name="my_struc_with_callback" ref="MY_STRUC_WITH_CALLBACK"/>` TO me->exp_transformation.
+    APPEND `            </tt:call-method>` TO me->exp_transformation.
+    APPEND `          </object>` TO me->exp_transformation.
+    APPEND `        </tt:cond>` TO me->exp_transformation.
+    APPEND `        <tt:cond s-check="not-initial(MY_THIRD_ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `          <num name="myThirdElement">` TO me->exp_transformation.
+    APPEND `            <tt:value ref="MY_THIRD_ELEMENT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `          </num>` TO me->exp_transformation.
+    APPEND `        </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;myStrucWithCallback;myThirdElement;'"/>` TO me->exp_transformation.
+    APPEND `         </tt:call-method>` TO me->exp_transformation.
+    APPEND `         <tt:skip/>` TO me->exp_transformation.
+    APPEND `      </_>` TO me->exp_transformation.
+    APPEND `   </tt:d-cond>` TO me->exp_transformation.
+    APPEND `   <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `       <__/>` TO me->exp_transformation.
+    APPEND `   </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
 
   METHOD structure_with_wrong_callback.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_wrong_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    append_to me->exp_transformation:
 
-`<tt:cond>`,
-`  <object>`,
-`    <tt:group>`,
-`      <tt:cond frq="?">`,
-`        <str name="myFirstElement">`,
-`          <tt:value ref="MY_FIRST_ELEMENT"/>`,
-`        </str>`,
-`      </tt:cond>`,
-`      <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">`,
-`        <num name="mySecondElement">`,
-`          <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>`,
-`        </num>`,
-`      </tt:cond>`,
-`      <tt:d-cond frq="*">`,
-`         <_ tt:lax="on">`,
-`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`,
-`            <tt:with-parameter name="MEMBERS" val="'myFirstElement;mySecondElement;'"/>`,
-`          </tt:call-method>`,
-`          <tt:skip/>`,
-`        </_>`,
-`      </tt:d-cond>`,
-`      <tt:d-cond frq="?">`,
-`        <__/>`,
-`      </tt:d-cond>`,
-`    </tt:group>`,
-`  </object>`,
-`</tt:cond>`.
+    APPEND `<tt:cond>` TO me->exp_transformation.
+    APPEND `  <object>` TO me->exp_transformation.
+    APPEND `    <tt:group>` TO me->exp_transformation.
+    APPEND `      <tt:cond frq="?">` TO me->exp_transformation.
+    APPEND `        <str name="myFirstElement">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="MY_FIRST_ELEMENT"/>` TO me->exp_transformation.
+    APPEND `        </str>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">` TO me->exp_transformation.
+    APPEND `        <num name="mySecondElement">` TO me->exp_transformation.
+    APPEND `          <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>` TO me->exp_transformation.
+    APPEND `        </num>` TO me->exp_transformation.
+    APPEND `      </tt:cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="*">` TO me->exp_transformation.
+    APPEND `         <_ tt:lax="on">` TO me->exp_transformation.
+    APPEND `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` TO me->exp_transformation.
+    APPEND `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;mySecondElement;'"/>` TO me->exp_transformation.
+    APPEND `          </tt:call-method>` TO me->exp_transformation.
+    APPEND `          <tt:skip/>` TO me->exp_transformation.
+    APPEND `        </_>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `      <tt:d-cond frq="?">` TO me->exp_transformation.
+    APPEND `        <__/>` TO me->exp_transformation.
+    APPEND `      </tt:d-cond>` TO me->exp_transformation.
+    APPEND `    </tt:group>` TO me->exp_transformation.
+    APPEND `  </object>` TO me->exp_transformation.
+    APPEND `</tt:cond>` TO me->exp_transformation.
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -3028,10 +2979,9 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type-my_second_element = 5.
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-    `{`,
-` "mySecondElement":5`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND ` "mySecondElement":5` TO exp_json.
+    APPEND `}` TO exp_json.
 
     manually_changed_json =
 `{` &&
@@ -3055,11 +3005,10 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type-my_second_element = 5.
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-`{`,
-` "myFirstElement":"",`,
-` "mySecondElement":5`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND ` "myFirstElement":"",` TO exp_json.
+    APPEND ` "mySecondElement":5` TO exp_json.
+    APPEND `}` TO exp_json.
 
     do_integration_test(
       EXPORTING
@@ -3076,13 +3025,13 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       my_element = 'Not nested Element'
     ).
     DATA act_data LIKE test_type.
-    append_to exp_json:
-`{`,
-`  "nestedStruc": {`,
-`    "myElement":"Nested Element"`,
-`  },`,
-` "myElement": "Not nested Element"`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `  "nestedStruc": {` TO exp_json.
+    APPEND `    "myElement":"Nested Element"` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND ` "myElement": "Not nested Element"` TO exp_json.
+    APPEND `}` TO exp_json.
 
     do_integration_test(
       EXPORTING
@@ -3097,11 +3046,10 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( ( `line_1` ) ( `line_2` ) ).
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-`[`,
-`  "line_1",`,
-`  "line_2"`,
-`]`.
+    APPEND `[` TO exp_json.
+    APPEND `  "line_1",` TO exp_json.
+    APPEND `  "line_2"` TO exp_json.
+    APPEND `]` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3114,9 +3062,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>category.
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-
-`  "general"`.
+    APPEND `  "general"` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3134,15 +3080,14 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-`{`,
-`  "header": {`,
-`    "description":"description of the class",`,
-`    "originalLanguage":"en",`,
-`    "abapLanguageVersion":"cloudDevelopment"`,
-`  },`,
-` "classCategory": "exitClass"`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND `  "header": {` TO exp_json.
+    APPEND `    "description":"description of the class",` TO exp_json.
+    APPEND `    "originalLanguage":"en",` TO exp_json.
+    APPEND `    "abapLanguageVersion":"cloudDevelopment"` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND ` "classCategory": "exitClass"` TO exp_json.
+    APPEND `}` TO exp_json.
 
     do_integration_test(
       EXPORTING
@@ -3168,18 +3113,17 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       ).
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-`{`,
-`  "field1":0,`,
-`  "field2":"AA",`,
-`  "list1":{`,
-`    "elementOfList1":50,`,
-`    "list2":{`,
-`      "elementOfList2": "Deep Nested"`,
-`    }`,
-`  },`,
-` "field3": "ZZ"`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND `  "field1":0,` TO exp_json.
+    APPEND `  "field2":"AA",` TO exp_json.
+    APPEND `  "list1":{` TO exp_json.
+    APPEND `    "elementOfList1":50,` TO exp_json.
+    APPEND `    "list2":{` TO exp_json.
+    APPEND `      "elementOfList2": "Deep Nested"` TO exp_json.
+    APPEND `    }` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND ` "field3": "ZZ"` TO exp_json.
+    APPEND `}` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3199,17 +3143,16 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         ).
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-`{`,
-`  "innerStruc": {`,
-`    "elementOfInnerStruc":50,`,
-`    "innerTableVar":[`,
-`      "line_1",`,
-`      "line_2"`,
-`    ]`,
-`  },`,
-` "field2": "ZZ"`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND `  "innerStruc": {` TO exp_json.
+    APPEND `    "elementOfInnerStruc":50,` TO exp_json.
+    APPEND `    "innerTableVar":[` TO exp_json.
+    APPEND `      "line_1",` TO exp_json.
+    APPEND `      "line_2"` TO exp_json.
+    APPEND `    ]` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND ` "field2": "ZZ"` TO exp_json.
+    APPEND `}` TO exp_json.
 
     do_integration_test(
       EXPORTING
@@ -3231,15 +3174,14 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         ).
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-`{`,
-`  "field1":25,`,
-`  "innerStruc": {`,
-`    "innerElement":50`,
-`  },`,
-` "field2": "ZZ",`,
-` "fieldWithValues":"exitClass"`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND `  "field1":25,` TO exp_json.
+    APPEND `  "innerStruc": {` TO exp_json.
+    APPEND `    "innerElement":50` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND ` "field2": "ZZ",` TO exp_json.
+    APPEND ` "fieldWithValues":"exitClass"` TO exp_json.
+    APPEND `}` TO exp_json.
 
     do_integration_test(
       EXPORTING
@@ -3257,19 +3199,16 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 
     DATA act_data LIKE test_type.
 
-    append_to exp_json:
-`[`,
-` [`,
-`  "table_1_line_1",`,
-`  "table_1_line_2"`,
-
-` ],`,
-` [`,
-`  "table_2_line_1",`,
-`  "table_2_line_2"`,
-
-` ]`,
-`]`.
+    APPEND `[` TO exp_json.
+    APPEND ` [` TO exp_json.
+    APPEND `  "table_1_line_1",` TO exp_json.
+    APPEND `  "table_1_line_2"` TO exp_json.
+    APPEND ` ],` TO exp_json.
+    APPEND ` [` TO exp_json.
+    APPEND `  "table_2_line_1",` TO exp_json.
+    APPEND `  "table_2_line_2"` TO exp_json.
+    APPEND ` ]` TO exp_json.
+    APPEND `]` TO exp_json.
 
     do_integration_test(
       EXPORTING
@@ -3286,16 +3225,16 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( outer_component = 12
                          middle_struc = VALUE #( middle_component = 'wxyz'
                                                  inner_struc = VALUE #( inner_component = 'Inner Component' ) ) ).
-    append_to exp_json:
-`{`,
-`  "outerComponent":12,`,
-`  "middleStruc": {`,
-`    "middleComponent":"wxyz",`,
-`    "innerStruc": {`,
-`      "innerComponent":"Inner Component"`,
-`    }`,
-`  }`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `  "outerComponent":12,` TO exp_json.
+    APPEND `  "middleStruc": {` TO exp_json.
+    APPEND `    "middleComponent":"wxyz",` TO exp_json.
+    APPEND `    "innerStruc": {` TO exp_json.
+    APPEND `      "innerComponent":"Inner Component"` TO exp_json.
+    APPEND `    }` TO exp_json.
+    APPEND `  }` TO exp_json.
+    APPEND `}` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3310,12 +3249,13 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( outer_component = 10
                          middle_struc = VALUE #( middle_component = 'abcd'
                                                  inner_struc = VALUE #( inner_component = 'Default Value' ) ) ).
-    append_to exp_json:
-`{`,
-`  "middleStruc": {`,
-`    "innerStruc": { }`,
-`  }`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `  "middleStruc": {` TO exp_json.
+    APPEND `    "innerStruc": { }` TO exp_json.
+    APPEND `  }` TO exp_json.
+    APPEND `}` TO exp_json.
+
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3344,10 +3284,10 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
                           bool_true = abap_true
                           bool_false = abap_false
                           enum_type = '01' ) ##LITERAL.
-    append_to exp_json:
-`{`,
-`"dateTimeField": "9999-12-31T23:59:59.9999999+00:00"`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `"dateTimeField": "9999-12-31T23:59:59.9999999+00:00"` TO exp_json.
+    APPEND `}` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3363,13 +3303,13 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
                           string_element = 'DefaultString'
                           enum_required = '01'
                           enum_show_always = '01' ) ##LITERAL.
-    append_to exp_json:
-`{`,
-`"integer" : 5,`,
-`"stringElement" : "DefaultString",`,
-`"enumRequired" : "exitClass",`,
-`"enumShowAlways" : "exitClass"`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `"integer" : 5,` TO exp_json.
+    APPEND `"stringElement" : "DefaultString",` TO exp_json.
+    APPEND `"enumRequired" : "exitClass",` TO exp_json.
+    APPEND `"enumShowAlways" : "exitClass"` TO exp_json.
+    APPEND `}` TO exp_json.
 
     manually_changed_json =
   `{` &&
@@ -3392,8 +3332,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>string_callback.
     test_type = 'String Element'.
     zcl_aff_test_types=>set_expected( test_type ).
-    append_to exp_json:
-`"callbackClass was called"`.
+    APPEND `"callbackClass was called"` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3407,10 +3346,10 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>table_with_callback.
     test_type = VALUE #( ( `First` ) ( `Second` ) ).
     zcl_aff_test_types=>set_expected( test_type ).
-    append_to exp_json:
-`[`,
-`"callbackClass was called"`,
-`]`.
+
+    APPEND `[` TO exp_json.
+    APPEND `"callbackClass was called"` TO exp_json.
+    APPEND `]` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3424,10 +3363,10 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>table_call_of_struc.
     test_type = VALUE #( ( VALUE #( my_first_element = `First` my_second_element = 5 ) ) ).
     zcl_aff_test_types=>set_expected( test_type ).
-    append_to exp_json:
-`[`,
-`"callbackClass was called"`,
-`]`.
+
+    APPEND `[` TO exp_json.
+    APPEND `"callbackClass was called"` TO exp_json.
+    APPEND `]` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3441,10 +3380,10 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_callback.
     test_type = VALUE #( my_element = 5 ).
     zcl_aff_test_types=>set_expected( test_type ).
-    append_to exp_json:
-`{`,
-`"elementName": "callbackClass was called"`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `"elementName": "callbackClass was called"` TO exp_json.
+    APPEND `}` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3461,13 +3400,13 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     table_with_callback = VALUE #(  ( `first` ) ( `second` ) ).
     zcl_aff_test_types=>set_expected( table_with_callback ).
     test_type = VALUE #( my_table_with_callback = table_with_callback my_second_element = 5 ).
-    append_to exp_json:
-`{`,
-`"elementName": [`,
-`  "callbackClass was called"`,
-` ],`,
-`"mySecondElement": 5`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `"elementName": [` TO exp_json.
+    APPEND `  "callbackClass was called"` TO exp_json.
+    APPEND ` ],` TO exp_json.
+    APPEND `"mySecondElement": 5` TO exp_json.
+    APPEND `}` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3485,14 +3424,14 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( my_first_element = 'firstElement'
                          my_struc_with_callback = struc_with_callback
                          my_third_element = 6 ).
-    append_to exp_json:
-`{`,
-`  "myFirstElement": "firstElement",`,
-`  "elementName": {`,
-`     "component":"callbackClass was called"`,
-`  },`,
-`  "myThirdElement": 6`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `  "myFirstElement": "firstElement",` TO exp_json.
+    APPEND `  "elementName": {` TO exp_json.
+    APPEND `     "component":"callbackClass was called"` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND `  "myThirdElement": 6` TO exp_json.
+    APPEND `}` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3507,11 +3446,11 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( my_first_element = 'firstElement'
                          my_second_element = 4 ).
     zcl_aff_test_types=>set_expected( 'firstElement' ).
-    append_to exp_json:
-`{`,
-`"elementName": "callbackClass was called",`,
-`"mySecondElement": 4`,
-`}`.
+
+    APPEND `{` TO exp_json.
+    APPEND `"elementName": "callbackClass was called",` TO exp_json.
+    APPEND `"mySecondElement": 4` TO exp_json.
+    APPEND `}` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3525,15 +3464,16 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
     test_type = VALUE #( ( my_element = 5 ) ( my_element = 10 ) ).
     zcl_aff_test_types=>set_expected( VALUE zcl_aff_test_types=>structure_with_callback( my_element = 5 ) ).
-    append_to exp_json:
-`[`,
-`  {`,
-`    "elementName": "callbackClass was called"`,
-`  },`,
-`  {`,
-`    "elementName": "callbackClass was called"`,
-`  }`,
-`]`.
+
+    APPEND `[` TO exp_json.
+    APPEND `  {` TO exp_json.
+    APPEND `    "elementName": "callbackClass was called"` TO exp_json.
+    APPEND `  },` TO exp_json.
+    APPEND `  {` TO exp_json.
+    APPEND `    "elementName": "callbackClass was called"` TO exp_json.
+    APPEND `  }` TO exp_json.
+    APPEND `]` TO exp_json.
+
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3547,13 +3487,11 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>struc_with_num_text.
     test_type = VALUE #( numerical_text1 = '4' numerical_text2 = '1234' ).
 
-    append_to exp_json:
-
-`{`,
-`    "numericalText1": "0004",`,
-`    "numericalText2": "1234",`,
-`    "numericalText3": "0000"`,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND `    "numericalText1": "0004",` TO exp_json.
+    APPEND `    "numericalText2": "1234",` TO exp_json.
+    APPEND `    "numericalText3": "0000"` TO exp_json.
+    APPEND `}` TO exp_json.
     do_integration_test(
       EXPORTING
         test_type = test_type
@@ -3568,16 +3506,16 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
                          second_element = VALUE #( my_first_element  = 'inner first'
                                                    my_second_element = 9 )
                          third_element  = 10 ).
-    append_to exp_json:
 
-`{`,
-`    "firstElement": "first",`,
-`    "secondElement": { `,
-`      "myFirstElement": "inner first", `,
-`      "mySecondElement": 9 `,
-`    },`,
-`    "otherElement": 0` ,
-`}`.
+    APPEND `{` TO exp_json.
+    APPEND `    "firstElement": "first",` TO exp_json.
+    APPEND `    "secondElement": { ` TO exp_json.
+    APPEND `      "myFirstElement": "inner first", ` TO exp_json.
+    APPEND `      "mySecondElement": 9 ` TO exp_json.
+    APPEND `    },` TO exp_json.
+    APPEND `    "otherElement": 0`  TO exp_json.
+    APPEND `}` TO exp_json.
+
     do_integration_test(
       EXPORTING
         test_type = test_type
