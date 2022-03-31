@@ -574,7 +574,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD get_infos_of_values_link.
     DATA(link) = values_link.
-    REPLACE ALL OCCURRENCES OF PCRE `[\s]` IN link WITH ``.
+    REPLACE ALL OCCURRENCES OF regex `[\s]` IN link WITH `` ##REGEX_POSIX.
     REPLACE ALL OCCURRENCES OF `data:` IN link WITH ``.
     SPLIT link AT '.' INTO TABLE DATA(split_at_point).
     IF lines( split_at_point ) = 2.
@@ -629,8 +629,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD get_default_from_link.
     DATA(link_to_work_on) = link.
-    REPLACE ALL OCCURRENCES OF PCRE `(@link|data:)` IN link_to_work_on WITH ``.
-    REPLACE ALL OCCURRENCES OF PCRE `[\s]` IN link_to_work_on WITH ``.
+    REPLACE ALL OCCURRENCES OF regex `(@link|data:)` IN link_to_work_on WITH `` ##REGEX_POSIX.
+    REPLACE ALL OCCURRENCES OF regex `[\s]` IN link_to_work_on WITH `` ##REGEX_POSIX.
     SPLIT link_to_work_on AT '.' INTO TABLE DATA(splitted).
     IF validate_default_link( splitted_link = splitted fullname_of_type = fullname_of_type element_type = element_type ) = abap_true.
       DATA(default_abap) = splitted[ lines( splitted ) ].
@@ -717,7 +717,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             default = default && repeat( val = '0' occ = 6 - strlen( default ) ).
           ENDIF.
           IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
-            REPLACE PCRE `T|t` IN default WITH ` `.
+            REPLACE regex `T|t` IN default WITH ` ` ##REGEX_POSIX.
           ENDIF.
           remove_leading_trailing_spaces( CHANGING string_to_work_on = string ).
           remove_leading_trailing_spaces( CHANGING string_to_work_on = default ).
