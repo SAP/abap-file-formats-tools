@@ -31,7 +31,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-TYPES END OF include_in_include.
+  TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
