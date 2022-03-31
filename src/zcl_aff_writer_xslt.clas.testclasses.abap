@@ -27,7 +27,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-  TYPES END OF include_in_include.
+TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -161,7 +161,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
   METHOD date_time_element.
     DATA(act_output) = test_generator->generate_type( VALUE d( ) ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <str>` )
         ( `        <tt:value option="format(dateTimeOffset)"/>` )
@@ -174,7 +174,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>structure_with_include.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -220,7 +220,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>structure_include_in_include.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -261,7 +261,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>include_table.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -327,7 +327,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>struc_tab_struc_tab.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -391,7 +391,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>table_in_table.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <array>` )
         ( `        <tt:loop>` )
@@ -421,7 +421,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA test_type TYPE lif_test_types=>table_structure.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <array>` )
         ( `        <tt:loop>` )
@@ -464,7 +464,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD type_timestamp.
     DATA(act_output) = test_generator->generate_type( VALUE timestamp( ) ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <str>` )
         ( `        <tt:value option="format(dateTimeOffset)"/>` )
@@ -477,7 +477,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD type_boolean.
     DATA(act_output) = test_generator->generate_type( VALUE abap_bool( ) ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <bool>` )
         ( `        <tt:value option="format(boolean)"/>` )
@@ -490,7 +490,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD type_numeric.
     DATA(act_output) = test_generator->generate_type( VALUE float( ) ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <num>` )
         ( `        <tt:value option="format(alpha)"/>` )
@@ -504,7 +504,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA char_10 TYPE c LENGTH 10.
     DATA(act_output) = test_generator->generate_type( char_10 ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <str>` )
         ( `        <tt:value/>` )
@@ -524,7 +524,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <str>` )
         ( `        <tt:value map="` )
@@ -547,7 +547,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <str>` )
         ( `        <tt:value map="` )
@@ -570,7 +570,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <str>` )
         ( `        <tt:value map="` )
@@ -593,7 +593,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <bool>` )
         ( `        <tt:value option="format(boolean)" map="` )
@@ -612,7 +612,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -672,7 +672,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -731,7 +731,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD structure_with_language.
     DATA test_type TYPE lif_test_types=>structure_with_language.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -770,7 +770,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD validate_valid_xslt.
     DATA transformation TYPE string_table.
     DATA(log) = NEW zcl_aff_log( ).
-    transformation = value #(
+    transformation = VALUE #(
               ( `<?sap.transform simple?>` )
               ( `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` )
               ( `<tt:root name="root"/>` )
@@ -805,7 +805,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD validate_invalid_xslt.
     DATA transformation TYPE string_table.
     DATA(log) = NEW zcl_aff_log( ).
-    transformation = value #(
+    transformation = VALUE #(
               ( `<?sap.transform simple?>` )
               ( `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` )
               ( `<tt:root name="root"/>` )
@@ -1021,7 +1021,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `[` )
         ( ` {` )
         ( `  "ELEMENT_1":1,` )
@@ -1067,7 +1067,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( ` "TABLE":` )
         ( ` [` )
@@ -1112,7 +1112,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( ` "INCLUDE_ELEMENT_1":"element1_value",` )
         ( ` "INCLUDE_ELEMENT_2":2,` )
@@ -1149,7 +1149,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( ` "INCLUDE_ELEMENT_1":"value of incl element1",` )
         ( ` "INCLUDE_ELEMENT_2":1,` )
@@ -1191,7 +1191,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( ` "FIRST_TABLE":` )
         ( ` [` )
@@ -1242,7 +1242,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         result    = DATA(act_json)
         json      = DATA(json_xstring)
     ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `[` )
         ( ` [` )
         ( `  "table_1_line_1",` )
@@ -1282,7 +1282,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
          ( `"2020-04-24T16:30:00+00:00"` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -1312,7 +1312,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
             ( `true` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -1342,7 +1342,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
             ( `5.3` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -1372,7 +1372,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
             ( `"0123abcdef"` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -1410,7 +1410,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `"true"` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -1445,7 +1445,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json          = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( ` "MAPPED_ELEMENT1":1,` )
         ( ` "ELEMENT_2":"element2_value"` )
@@ -1486,7 +1486,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
 
-    exp_json = value #(
+    exp_json = VALUE #(
             ( `{` )
             ( ` "MAPPED_TABLE":` )
             ( ` [` )
@@ -1536,7 +1536,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json           = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `"first"` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -1573,7 +1573,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json           = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `"twoTest"` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -1611,7 +1611,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     ).
 
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `true` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -1642,7 +1642,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring)
     ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `"LANGUAGE":"en",` )
         ( `"LANGUAGE2":"de"` )
@@ -1733,7 +1733,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>integer.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <num>` )
         ( `        <tt:value option="format(alpha)"/>` )
@@ -1746,7 +1746,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>mystring.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <str>` )
         ( `        <tt:value/>` )
@@ -1759,7 +1759,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_date.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <str>` )
         ( `    <tt:value option="format(dateTimeOffset)"/>` )
@@ -1772,7 +1772,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_structure.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
             ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -1807,7 +1807,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_structure2.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -1849,7 +1849,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_structure3.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -1902,7 +1902,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_standard_table.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `    <array>` )
         ( `        <tt:loop>` )
@@ -1923,7 +1923,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>category.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
             ( `<tt:cond>` )
             ( `      <str>` )
             ( `        <tt:value map="` )
@@ -1952,7 +1952,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_wrong_link.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -1993,7 +1993,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_with_enum_values.
     DATA test_type TYPE zcl_aff_test_types=>ty_class_properties.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -2063,7 +2063,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>list.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -2147,7 +2147,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>outer_struc.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -2217,7 +2217,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>aff_test_type.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -2295,7 +2295,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_different_default.
     DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:assign to-ref="FOUR_BYTE_INT" val="I(5)"/>` )
@@ -2431,7 +2431,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_with_default_problem.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:assign to-ref="STRING_ELEMENT" val="C('DefaultString')"/>` )
@@ -2495,7 +2495,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD nested_struc_with_default.
     DATA test_type TYPE zcl_aff_test_types=>nested_struc_with_default.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
            ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:assign to-ref="OUTER_COMPONENT" val="I(10)"/>` )
@@ -2585,7 +2585,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD wrong_default_type_link.
     DATA test_type TYPE zcl_aff_test_types=>struc_link_wrong_type.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -2623,7 +2623,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_with_wrong_default.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_wrong_default.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
@@ -2742,7 +2742,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD table_of_struc_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `   <tt:cond>` )
         ( `     <array>` )
         ( `       <tt:loop>` )
@@ -2764,7 +2764,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD struc_of_table_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
         ( `      <tt:cond>` )
         ( `        <object>` )
         ( `          <tt:group>` )
@@ -2800,7 +2800,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD struc_in_struc_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
             ( `<tt:cond>` )
             ( `  <object>` )
             ( `    <tt:group>` )
@@ -2841,7 +2841,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD structure_with_wrong_callback.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_wrong_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
 
         ( `<tt:cond>` )
         ( `  <object>` )
@@ -3024,7 +3024,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type-my_second_element = 5.
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
             ( `{` )
         ( ` "mySecondElement":5` )
         ( `}` ) ).
@@ -3051,7 +3051,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type-my_second_element = 5.
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( ` "myFirstElement":"",` )
         ( ` "mySecondElement":5` )
@@ -3072,7 +3072,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       my_element = 'Not nested Element'
     ).
     DATA act_data LIKE test_type.
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `  "nestedStruc": {` )
         ( `    "myElement":"Nested Element"` )
@@ -3093,7 +3093,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( ( `line_1` ) ( `line_2` ) ).
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `[` )
         ( `  "line_1",` )
         ( `  "line_2"` )
@@ -3110,7 +3110,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>category.
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
 
         ( `  "general"` ) ).
     do_integration_test(
@@ -3130,7 +3130,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `  "header": {` )
         ( `    "description":"description of the class",` )
@@ -3164,7 +3164,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       ).
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `  "field1":0,` )
         ( `  "field2":"AA",` )
@@ -3195,7 +3195,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         ).
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `  "innerStruc": {` )
         ( `    "elementOfInnerStruc":50,` )
@@ -3227,7 +3227,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         ).
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `  "field1":25,` )
         ( `  "innerStruc": {` )
@@ -3253,7 +3253,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 
     DATA act_data LIKE test_type.
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `[` )
         ( ` [` )
         ( `  "table_1_line_1",` )
@@ -3282,7 +3282,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( outer_component = 12
                          middle_struc = VALUE #( middle_component = 'wxyz'
                                                  inner_struc = VALUE #( inner_component = 'Inner Component' ) ) ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `  "outerComponent":12,` )
         ( `  "middleStruc": {` )
@@ -3306,7 +3306,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( outer_component = 10
                          middle_struc = VALUE #( middle_component = 'abcd'
                                                  inner_struc = VALUE #( inner_component = 'Default Value' ) ) ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `  "middleStruc": {` )
         ( `    "innerStruc": { }` )
@@ -3340,7 +3340,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
                           bool_true = abap_true
                           bool_false = abap_false
                           enum_type = '01' ) ##LITERAL.
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `"dateTimeField": "9999-12-31T23:59:59.9999999+00:00"` )
         ( `}` ) ).
@@ -3359,7 +3359,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
                           string_element = 'DefaultString'
                           enum_required = '01'
                           enum_show_always = '01' ) ##LITERAL.
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `"integer" : 5,` )
         ( `"stringElement" : "DefaultString",` )
@@ -3388,7 +3388,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>string_callback.
     test_type = 'String Element'.
     zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `"callbackClass was called"` ) ).
     do_integration_test(
       EXPORTING
@@ -3403,7 +3403,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>table_with_callback.
     test_type = VALUE #( ( `First` ) ( `Second` ) ).
     zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `[` )
         ( `"callbackClass was called"` )
         ( `]` ) ).
@@ -3420,7 +3420,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>table_call_of_struc.
     test_type = VALUE #( ( VALUE #( my_first_element = `First` my_second_element = 5 ) ) ).
     zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `[` )
         ( `"callbackClass was called"` )
         ( `]` ) ).
@@ -3437,7 +3437,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_callback.
     test_type = VALUE #( my_element = 5 ).
     zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `"elementName": "callbackClass was called"` )
         ( `}` ) ).
@@ -3457,7 +3457,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     table_with_callback = VALUE #(  ( `first` ) ( `second` ) ).
     zcl_aff_test_types=>set_expected( table_with_callback ).
     test_type = VALUE #( my_table_with_callback = table_with_callback my_second_element = 5 ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `"elementName": [` )
         ( `  "callbackClass was called"` )
@@ -3481,7 +3481,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( my_first_element = 'firstElement'
                          my_struc_with_callback = struc_with_callback
                          my_third_element = 6 ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `  "myFirstElement": "firstElement",` )
         ( `  "elementName": {` )
@@ -3503,7 +3503,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( my_first_element = 'firstElement'
                          my_second_element = 4 ).
     zcl_aff_test_types=>set_expected( 'firstElement' ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `"elementName": "callbackClass was called",` )
         ( `"mySecondElement": 4` )
@@ -3521,7 +3521,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
     test_type = VALUE #( ( my_element = 5 ) ( my_element = 10 ) ).
     zcl_aff_test_types=>set_expected( VALUE zcl_aff_test_types=>structure_with_callback( my_element = 5 ) ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `[` )
         ( `  {` )
         ( `    "elementName": "callbackClass was called"` )
@@ -3543,7 +3543,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>struc_with_num_text.
     test_type = VALUE #( numerical_text1 = '4' numerical_text2 = '1234' ).
 
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `    "numericalText1": "0004",` )
         ( `    "numericalText2": "1234",` )
@@ -3563,7 +3563,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
                          second_element = VALUE #( my_first_element  = 'inner first'
                                                    my_second_element = 9 )
                          third_element  = 10 ).
-    exp_json = value #(
+    exp_json = VALUE #(
         ( `{` )
         ( `    "firstElement": "first",` )
         ( `    "secondElement": { ` )
