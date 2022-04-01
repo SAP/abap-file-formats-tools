@@ -14,8 +14,6 @@ CLASS zcl_aff_writer_xslt DEFINITION
 
   PROTECTED SECTION.
 
-    DATA: st_content TYPE string_table.
-
     METHODS:
       write_open_structure
         IMPORTING

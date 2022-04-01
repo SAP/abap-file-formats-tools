@@ -898,10 +898,6 @@ CLASS zcl_aff_test_types IMPLEMENTATION.
       writer->open_element( name   = 'str' ).
       writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
       writer->close_element(  ).
-    ELSE.
-*      CASE choose_code.
-*        WHEN choose_codes-outer_table.
-*      ENDCASE.
     ENDIF.
   ENDMETHOD.
 

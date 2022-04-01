@@ -27,7 +27,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-TYPES END OF include_in_include.
+  TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -69,33 +69,6 @@ TYPES END OF include_in_include.
     BEGIN OF struc_tab_struc_tab,
       first_table TYPE first_table_type,
     END OF struc_tab_struc_tab.
-
-  TYPES:
-    BEGIN OF ty_component,
-      name        TYPE seocmpname,
-      description TYPE seodescr,
-    END OF ty_component,
-    ty_components    TYPE SORTED TABLE OF ty_component WITH UNIQUE KEY name,
-    ty_subcomponents TYPE SORTED TABLE OF ty_component WITH UNIQUE KEY name,
-    BEGIN OF ty_method,
-      name        TYPE seocmpname,
-      description TYPE seodescr,
-      parameters  TYPE ty_subcomponents,
-      exceptions  TYPE ty_subcomponents,
-    END OF ty_method,
-    ty_methods TYPE SORTED TABLE OF ty_method WITH UNIQUE KEY name,
-    BEGIN OF ty_event,
-      name        TYPE seocmpname,
-      description TYPE seodescr,
-      parameters  TYPE ty_subcomponents,
-    END OF ty_event,
-    ty_events TYPE SORTED TABLE OF ty_event WITH UNIQUE KEY name,
-    BEGIN OF ty_clif_properties,
-      attributes TYPE ty_components,
-      methods    TYPE ty_methods,
-      events     TYPE ty_events,
-      types      TYPE ty_components,
-    END OF ty_clif_properties.
 
   TYPES: langu TYPE sy-langu.
   TYPES:
@@ -999,7 +972,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         ).
       CATCH zcx_aff_tools INTO DATA(exception).
         DELETE REPORT st_name.
-        cl_abap_unit_assert=>fail( ).
+        cl_abap_unit_assert=>fail( exception->get_text( ) ).
     ENDTRY.
     DELETE REPORT st_name.
 
