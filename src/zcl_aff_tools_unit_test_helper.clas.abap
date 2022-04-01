@@ -72,14 +72,14 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
     DATA types_to_report TYPE STANDARD TABLE OF symsgty.
 
     CASE message_severity_threshold.
-      WHEN if_aff_log=>c_message_type-info.
-        types_to_report = VALUE #( ( if_aff_log=>c_message_type-info ) ( if_aff_log=>c_message_type-warning ) ( if_aff_log=>c_message_type-error ) ).
-      WHEN if_aff_log=>c_message_type-warning.
-        types_to_report = VALUE #( ( if_aff_log=>c_message_type-warning ) ( if_aff_log=>c_message_type-error ) ).
-      WHEN if_aff_log=>c_message_type-error.
-        types_to_report = VALUE #( ( if_aff_log=>c_message_type-error ) ).
+      WHEN zif_aff_log=>c_message_type-info.
+        types_to_report = VALUE #( ( zif_aff_log=>c_message_type-info ) ( zif_aff_log=>c_message_type-warning ) ( zif_aff_log=>c_message_type-error ) ).
+      WHEN zif_aff_log=>c_message_type-warning.
+        types_to_report = VALUE #( ( zif_aff_log=>c_message_type-warning ) ( zif_aff_log=>c_message_type-error ) ).
+      WHEN zif_aff_log=>c_message_type-error.
+        types_to_report = VALUE #( ( zif_aff_log=>c_message_type-error ) ).
       WHEN OTHERS.
-        types_to_report = VALUE #( ( if_aff_log=>c_message_type-info ) ( if_aff_log=>c_message_type-warning ) ( if_aff_log=>c_message_type-error ) ).
+        types_to_report = VALUE #( ( zif_aff_log=>c_message_type-info ) ( zif_aff_log=>c_message_type-warning ) ( zif_aff_log=>c_message_type-error ) ).
     ENDCASE.
 
     DATA(max_severity) = log->get_max_severity( ).
