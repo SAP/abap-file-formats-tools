@@ -30,7 +30,12 @@ CLASS zcl_aff_writer_xslt DEFINITION
       open_table REDEFINITION,
       close_structure REDEFINITION,
       write_tag REDEFINITION,
-      close_table REDEFINITION.
+      close_table REDEFINITION,
+      write_callback
+        IMPORTING
+          name_of_callback_class TYPE string
+          parameter_name         TYPE string
+          ref_name               TYPE string.
 
   PRIVATE SECTION.
 
@@ -163,11 +168,6 @@ CLASS zcl_aff_writer_xslt DEFINITION
           zcx_aff_tools,
       reset_indent_level_tag,
       write_defaults,
-      write_callback
-        IMPORTING
-          name_of_callback_class TYPE string
-          parameter_name         TYPE string
-          ref_name               TYPE string,
       write_iso_language_callback
         IMPORTING
           element_name TYPE string,
@@ -671,9 +671,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDCASE.
 
     write_open_tag( line = |{ component_start } | ).
-    TEST-SEAM set_parameter_name.
-      write_callback( name_of_callback_class = abap_doc-callback_class parameter_name = element_name ref_name = ref_name ).
-    END-TEST-SEAM.
+    write_callback( name_of_callback_class = abap_doc-callback_class parameter_name = element_name ref_name = ref_name ).
     write_closing_tag( line = |  { component_end } | ).
     IF indent_level > 0.
       write_closing_tag( '</tt:cond>' ).
