@@ -15,7 +15,7 @@
     }
   ],
   "syntax": {
-    "version": "v755",
+    "version": "v754",
     "errorNamespace": "^(Z|Y|LCL_|TY_|LIF_)",
     "globalConstants": ["seoc_clstype_interface", "seoc_clstype_class", "srext_ext_xslt_source"]
   },

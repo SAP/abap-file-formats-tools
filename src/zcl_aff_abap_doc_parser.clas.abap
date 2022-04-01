@@ -56,6 +56,8 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
       END OF ty_mixed_table_entry,
       tt_mixed_table_entry TYPE SORTED TABLE OF ty_mixed_table_entry WITH UNIQUE KEY offset.
 
+    CONSTANTS co_shorttext_tag_open TYPE string VALUE `[\s]*<p\sclass="shorttext">` ##NO_TEXT.
+
     DATA abap_doc_string TYPE string.
     DATA parser_log TYPE REF TO zif_aff_log.
     DATA component_name TYPE string.
@@ -93,7 +95,9 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
         IMPORTING
           offset        TYPE i
           text_to_check TYPE string,
-      write_description_message.
+      write_description_message,
+      workaround_remove_titles,
+      check_title_positions.
 
 ENDCLASS.
 
@@ -116,33 +120,40 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_title.
-    REPLACE ALL OCCURRENCES OF PCRE `[\s]*(<p[\s]+class="shorttext([\s]+synchronized)?"([\s]+lang="[a-zA-Z]{2}")?[\s]*>)[\s]*`
-        IN abap_doc_string WITH `<p class="shorttext">` ##NO_TEXT.
-    FIND ALL OCCURRENCES OF PCRE `<p\sclass="shorttext">.*?</p>` IN abap_doc_string RESULTS DATA(result_table).
-    IF lines( result_table ) = 0.
-      RETURN.
-    ELSEIF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH `'Title'` INTO DATA(message) ##NEEDED.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+    REPLACE ALL OCCURRENCES OF REGEX `[\s]*(<p[\s]+class="shorttext([\s]+synchronized)?"([\s]+lang="[a-zA-Z]{2}")?[\s]*>)[\s]*`
+        IN abap_doc_string WITH `<p class="shorttext">` ##NO_TEXT ##REGEX_POSIX.
+    decoded_abap_doc-title = substring_after( val = abap_doc_string regex = co_shorttext_tag_open ) ##regex_posix.
+    IF ( decoded_abap_doc-title IS NOT INITIAL ).
+      decoded_abap_doc-title = substring_before( val = decoded_abap_doc-title sub = '</p>' ).
+      remove_leading_trailing_spaces( CHANGING string_to_work_on = decoded_abap_doc-title ).
     ENDIF.
-    DATA(offset) = result_table[ 1 ]-offset.
-    IF offset <> 0.
-      MESSAGE i113(zaff_tools) INTO message ##NEEDED.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
-    ENDIF.
-    DATA(length) = result_table[ 1 ]-length.
-    DATA(title) = abap_doc_string+offset(length).
-    REPLACE `</p>` IN title WITH ``.
-    REPLACE `<p class="shorttext">` IN title WITH ``.
-    remove_leading_trailing_spaces( CHANGING string_to_work_on = title ).
-    decoded_abap_doc-title = title.
-    REPLACE ALL OCCURRENCES OF PCRE `[\s]*<p\sclass="shorttext">.*?</p>[\s]*` IN abap_doc_string WITH ``.
+    check_title_positions( ).
+    workaround_remove_titles( ).
   ENDMETHOD.
 
 
+  METHOD check_title_positions.
+    IF ( count( val = abap_doc_string regex = co_shorttext_tag_open ) > 1 ) ##REGEX_POSIX.
+      MESSAGE i107(zaff_tools) WITH `'Title'` INTO DATA(message)  ##NEEDED.
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+    ENDIF.
+    IF ( find( val = abap_doc_string regex = co_shorttext_tag_open ) > 0 ) ##REGEX_POSIX.
+      MESSAGE i113(zaff_tools) INTO message ##NEEDED.
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD workaround_remove_titles.
+    WHILE ( matches( val = abap_doc_string regex = `.*[\s]*<p\sclass="shorttext">.*` ) ) ##regex_posix.
+      DATA(start_offset) = find( val = abap_doc_string regex = co_shorttext_tag_open occ = 1 ) ##regex_posix.
+      abap_doc_string = abap_doc_string(start_offset) && substring_after( val = abap_doc_string+start_offset sub = `</p>` ).
+    ENDWHILE.
+  ENDMETHOD.
+
   METHOD parse_description.
-    FIND FIRST OCCURRENCE OF PCRE `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength)`
-      IN abap_doc_string MATCH OFFSET DATA(offset).
+    FIND FIRST OCCURRENCE OF REGEX `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength)`
+      IN abap_doc_string MATCH OFFSET DATA(offset) ##REGEX_POSIX.
     IF sy-subrc = 0.
       DATA(description) = abap_doc_string+0(offset).
       remove_leading_trailing_spaces( CHANGING string_to_work_on = description ).
@@ -155,7 +166,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_annotations.
-    FIND ALL OCCURRENCES OF PCRE `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(result_table) ##NO_TEXT.
+    FIND ALL OCCURRENCES OF REGEX `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(result_table) ##REGEX_POSIX.
     DATA(modified_abap_doc_string) = abap_doc_string.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       DATA(offset) = <entry>-offset.
@@ -189,8 +200,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     DATA(string_to_parse) = abap_doc_string.
-    REPLACE ALL OCCURRENCES OF PCRE `\$callbackClass[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$callbackClass\{@link`.
-    FIND ALL OCCURRENCES OF PCRE `\$callbackClass\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table).
+    REPLACE ALL OCCURRENCES OF REGEX `\$callbackClass[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$callbackClass\{@link` ##REGEX_POSIX.
+    FIND ALL OCCURRENCES OF REGEX `\$callbackClass\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
       MESSAGE w109(zaff_tools) WITH abap_doc_annotation-callback_class INTO DATA(message) ##NEEDED.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
@@ -224,11 +235,11 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     DATA(string_to_parse) = abap_doc_string.
-    REPLACE ALL OCCURRENCES OF PCRE `\$default[\s]*(:[\s]*)?'` IN string_to_parse WITH `\$default'`.
-    REPLACE ALL OCCURRENCES OF PCRE `\$default[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$default\{@link`.
+    REPLACE ALL OCCURRENCES OF REGEX `\$default[\s]*(:[\s]*)?'` IN string_to_parse WITH `\$default'` ##REGEX_POSIX.
+    REPLACE ALL OCCURRENCES OF REGEX `\$default[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$default\{@link` ##REGEX_POSIX.
 
-    FIND ALL OCCURRENCES OF PCRE `\$default'[^']*'` IN string_to_parse RESULTS DATA(result_table_value).
-    FIND ALL OCCURRENCES OF PCRE `\$default\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table_link).
+    FIND ALL OCCURRENCES OF REGEX `\$default'[^']*'` IN string_to_parse RESULTS DATA(result_table_value) ##REGEX_POSIX.
+    FIND ALL OCCURRENCES OF REGEX `\$default\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table_link) ##REGEX_POSIX.
 
     DATA mixed_result_table TYPE tt_mixed_table_entry.
     LOOP AT result_table_value ASSIGNING FIELD-SYMBOL(<default_value>).
@@ -255,8 +266,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       ELSEIF <entry>-is_link = abap_true AND decoded_abap_doc-default IS INITIAL.
         DATA(link) = get_annotation_value( length =  <entry>-length - 1 offset = <entry>-offset to_decode = string_to_parse length_of_annotation = 9 remove_whitespaces = abap_true ).
         DATA(link_for_testing) = link.
-        REPLACE ALL OCCURRENCES OF PCRE `\s` IN link_for_testing WITH ``.
-        REPLACE ALL OCCURRENCES OF PCRE `(@link|data:)` IN link_for_testing WITH ``.
+        REPLACE ALL OCCURRENCES OF REGEX `\s` IN link_for_testing WITH `` ##REGEX_POSIX.
+        REPLACE ALL OCCURRENCES OF REGEX `(@link|data:)` IN link_for_testing WITH `` ##REGEX_POSIX.
         SPLIT link_for_testing AT '.' INTO TABLE DATA(splitted).
         IF lines( splitted ) = 3.
           decoded_abap_doc-default = link.
@@ -276,8 +287,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     DATA(string_to_parse) = abap_doc_string.
-    REPLACE ALL OCCURRENCES OF PCRE `\$values[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$values\{@link`.
-    FIND ALL OCCURRENCES OF PCRE `\$values\{@link([^\}]+)\}` IN string_to_parse RESULTS DATA(result_table).
+    REPLACE ALL OCCURRENCES OF REGEX `\$values[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$values\{@link` ##REGEX_POSIX.
+    FIND ALL OCCURRENCES OF REGEX `\$values\{@link([^\}]+)\}` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
       MESSAGE w109(zaff_tools) WITH abap_doc_annotation-values INTO DATA(message) ##NEEDED.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
@@ -294,8 +305,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       DATA(link) = get_annotation_value( length = length_found - 1  offset = offset_found to_decode = string_to_parse length_of_annotation = 13 remove_whitespaces = abap_true ).
       check_next_word( offset = offset_found + length_found text_to_check = string_to_parse ).
       DATA(link_for_testing) = link.
-      REPLACE ALL OCCURRENCES OF PCRE `\s` IN link_for_testing WITH ``.
-      REPLACE ALL OCCURRENCES OF PCRE `data:` IN link_for_testing WITH ``.
+      REPLACE ALL OCCURRENCES OF REGEX `\s` IN link_for_testing WITH `` ##REGEX_POSIX.
+      REPLACE ALL OCCURRENCES OF REGEX `data:` IN link_for_testing WITH `` ##REGEX_POSIX.
       SPLIT link_for_testing AT '.' INTO TABLE DATA(splitted).
       IF lines( splitted ) = 2 AND decoded_abap_doc-enumvalues_link IS INITIAL.
         decoded_abap_doc-enumvalues_link = link.
@@ -378,8 +389,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     DATA(abap_doc) = abap_doc_string.
     DATA(dummy_annotation) = `$dummyannotation`.
     REPLACE ALL OCCURRENCES OF annotation_name IN abap_doc WITH dummy_annotation.
-    REPLACE ALL OCCURRENCES OF PCRE `\$dummyannotation[\s]*(:[\s]*)?` IN abap_doc WITH `\$dummyannotation`.
-    FIND ALL OCCURRENCES OF PCRE `\$dummyannotation[^\s]+` IN abap_doc RESULTS DATA(result_table).
+    REPLACE ALL OCCURRENCES OF REGEX  `\$dummyannotation[\s]*(:[\s]*)?` IN abap_doc WITH `\$dummyannotation` ##REGEX_POSIX.
+    FIND ALL OCCURRENCES OF REGEX `\$dummyannotation[^\s]+` IN abap_doc RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
       MESSAGE w109(zaff_tools) WITH abap_doc_annotation-values INTO DATA(message) ##NEEDED.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
