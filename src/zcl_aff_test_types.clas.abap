@@ -909,20 +909,20 @@ CLASS zcl_aff_test_types IMPLEMENTATION.
     reader->next_node( ).
 
     ASSIGN expected_var->* TO <attr>.
-    IF ( simple_callback IS REQUESTED ).
+    IF ( simple_callback IS SUPPLIED ).
       simple_callback = <attr>.
-    ELSEIF ( structure_callback IS REQUESTED ).
+    ELSEIF ( structure_callback IS SUPPLIED ).
       structure_callback = <attr>.
       jump_to_end( reader ).
-    ELSEIF ( table_callback IS REQUESTED ).
+    ELSEIF ( table_callback IS SUPPLIED ).
       table_callback = <attr>.
       jump_to_end( reader ).
-    ELSEIF ( element_callback IS REQUESTED ).
+    ELSEIF ( element_callback IS SUPPLIED ).
       element_callback = <attr>.
-    ELSEIF ( element_structure_callback IS REQUESTED ).
+    ELSEIF ( element_structure_callback IS SUPPLIED ).
       element_structure_callback = <attr>.
       jump_to_end( reader ).
-    ELSEIF ( element_table_callback IS REQUESTED ).
+    ELSEIF ( element_table_callback IS SUPPLIED ).
       element_table_callback = <attr>.
       jump_to_end( reader ).
     ENDIF.
