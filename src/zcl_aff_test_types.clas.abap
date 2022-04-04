@@ -269,10 +269,10 @@ CLASS zcl_aff_test_types DEFINITION
       BEGIN OF header,
         "! <p class="shorttext"> Description</p>
         "! Description of the ABAP object
-        description        TYPE string,
+        description           TYPE string,
         "! <p class="shorttext"> Original Language</p>
         "! Original language of the ABAP object
-        original_language  TYPE sy-langu,
+        original_language     TYPE sy-langu,
         "! <p class="shorttext"> ABAP Language Version</p>
         "! ABAP language version
         abap_language_version TYPE language_version,
@@ -664,7 +664,7 @@ CLASS zcl_aff_test_types DEFINITION
       "! This is a String with a CallbackClass
       "! $maxLength 3
       "! $callbackClass {     @link    zcl_aff_test_types    }
-    string_callback TYPE string.
+    simple_callback TYPE string.
 
 
 * table with callback, components are strings
@@ -673,15 +673,7 @@ CLASS zcl_aff_test_types DEFINITION
       "! A standard table of strings with CallbackClass
       "! $callbackClass {     @link    zcl_aff_test_types    }
       "! $required
-      table_with_callback TYPE STANDARD TABLE OF mystring WITH DEFAULT KEY.
-
-
-* table with callback, components are structures
-    TYPES:
-      "! <p class="shorttext">my_table</p>
-      "! A standard table of my_structure
-      "! $callbackClass {     @link    zcl_aff_test_types    }
-      table_call_of_struc TYPE STANDARD TABLE OF my_structure WITH DEFAULT KEY.
+      table_callback TYPE STANDARD TABLE OF mystring WITH DEFAULT KEY.
 
 
 * table with callback, components are tables
@@ -697,11 +689,11 @@ CLASS zcl_aff_test_types DEFINITION
       "! <p class="shorttext">Structure With Callback</p>
       "! Structure with callback
       "! $callbackClass {     @link    zcl_aff_test_types    }
-      BEGIN OF structure_with_callback,
+      BEGIN OF structure_callback,
         "! <p class="shorttext">First Element</p>
         "! This is the first element
-        my_element TYPE i,
-      END OF structure_with_callback.
+        element_name TYPE i,
+      END OF structure_callback.
 
 
 
@@ -709,7 +701,7 @@ CLASS zcl_aff_test_types DEFINITION
     TYPES:
       "! <p class="shorttext">my_table</p>
       "! A standard table of my_structure_with_callback
-      table_of_struc_with_callback TYPE STANDARD TABLE OF structure_with_callback WITH DEFAULT KEY.
+      table_of_struc_with_callback TYPE STANDARD TABLE OF structure_callback WITH DEFAULT KEY.
 
 
 * simple structure with component my_table_with_callback
@@ -720,7 +712,7 @@ CLASS zcl_aff_test_types DEFINITION
         "! <p class="shorttext synchronized" >First Element</p>
         "! This is the first element
         "! $required
-        my_table_with_callback TYPE table_with_callback,
+        element_table_callback TYPE table_callback,
         "! <p class="shorttext synchronized" >Second Element</p>
         "! This is the second element
         my_second_element      TYPE i,
@@ -733,14 +725,14 @@ CLASS zcl_aff_test_types DEFINITION
       BEGIN OF struc_in_struc_with_callback,
         "! <p class="shorttext synchronized" >First Element</p>
         "! This is the first element
-        my_first_element       TYPE string,
+        my_first_element           TYPE string,
         "! <p class="shorttext synchronized" >Second Element</p>
         "! This is the second element
         "! $required
-        my_struc_with_callback TYPE structure_with_callback,
+        element_structure_callback TYPE structure_callback,
         "! <p class="shorttext synchronized" >Third Element</p>
         "! This is the third element
-        my_third_element       TYPE i,
+        my_third_element           TYPE i,
       END OF struc_in_struc_with_callback.
 
 *  simple structure with component callback
@@ -753,7 +745,7 @@ CLASS zcl_aff_test_types DEFINITION
         "! $minLength 2
         "! $required
         "! $callbackClass {     @link    zcl_aff_test_types    }
-        my_first_element  TYPE mystring,
+        element_callback  TYPE mystring,
         "! <p class="shorttext synchronized" >Second Element</p>
         "! This is the second element
         my_second_element TYPE i,
@@ -827,18 +819,7 @@ CLASS zcl_aff_test_types DEFINITION
         other_structure TYPE my_structure,
       END OF structure_with_include.
 
-    CONSTANTS: BEGIN OF choose_codes,
-                 inner_element   TYPE string VALUE `inner_element`,
-                 outer_element   TYPE string VALUE `outer_element`,
-                 inner_structure TYPE string VALUE `inner_structure`,
-                 outer_structure TYPE string VALUE `outer_structure`,
-                 inner_table     TYPE string VALUE `inner_table`,
-                 outer_table     TYPE string VALUE `outer_table`,
-               END OF choose_codes.
-
     CLASS-DATA subschema TYPE string_table.
-
-    CLASS-DATA choose_code TYPE string.
 
     CLASS-DATA expected_var TYPE REF TO data.
 
@@ -847,14 +828,24 @@ CLASS zcl_aff_test_types DEFINITION
 
     CLASS-METHODS serialize
       IMPORTING
-        writer       TYPE REF TO if_sxml_writer
-        element_name TYPE any.
+        writer                     TYPE REF TO if_sxml_writer
+        simple_callback            TYPE simple_callback OPTIONAL
+        structure_callback         TYPE structure_callback OPTIONAL
+        table_callback             TYPE table_callback OPTIONAL
+        element_callback           TYPE string OPTIONAL
+        element_structure_callback TYPE structure_callback OPTIONAL
+        element_table_callback     TYPE table_callback OPTIONAL.
 
     CLASS-METHODS deserialize
       IMPORTING
-        reader       TYPE REF TO if_sxml_reader
+        reader                     TYPE REF TO if_sxml_reader
       EXPORTING
-        element_name TYPE any
+        simple_callback            TYPE simple_callback
+        structure_callback         TYPE structure_callback
+        table_callback             TYPE table_callback
+        element_callback           TYPE string
+        element_structure_callback TYPE structure_callback
+        element_table_callback     TYPE table_callback
       RAISING
         cx_sxml_error.
 
@@ -882,50 +873,66 @@ CLASS zcl_aff_test_types IMPLEMENTATION.
 
 
   METHOD serialize.
-    CASE choose_code.
-      WHEN choose_codes-inner_element.
-        writer->write_attribute( name = 'name' value = 'elementName' ) ##NO_TEXT.
-        writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-      WHEN choose_codes-outer_element.
-        writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-      WHEN choose_codes-inner_structure.
-        writer->write_attribute( name = 'name' value = 'elementName' ) ##NO_TEXT.
-        writer->open_element( name = 'str' ).
-        writer->write_attribute( name = 'name' value = 'component' ).
-        writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-        writer->close_element(  ).
-      WHEN choose_codes-outer_table.
-        writer->open_element( name   = 'str' ).
-        writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-        writer->close_element(  ).
-      WHEN choose_codes-inner_table.
-        writer->write_attribute( name = 'name' value = 'elementName' ) ##NO_TEXT.
-        writer->open_element( name   = 'str' ).
-        writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-        writer->close_element(  ).
-      WHEN choose_codes-outer_structure.
-        writer->open_element( name   = 'str' ).
-        writer->write_attribute( name = 'name' value = 'elementName' ) ##NO_TEXT.
-        writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-        writer->close_element(  ).
-    ENDCASE.
+    IF ( simple_callback IS SUPPLIED ).
+      writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
+    ELSEIF ( structure_callback IS SUPPLIED ).
+      writer->open_element( name   = 'str' ).
+      writer->write_attribute( name = 'name' value = 'elementName' ) ##NO_TEXT.
+      writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
+      writer->close_element(  ).
+    ELSEIF ( table_callback IS SUPPLIED ).
+      writer->open_element( name   = 'str' ).
+      writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
+      writer->close_element(  ).
+    ELSEIF ( element_callback IS SUPPLIED ).
+      writer->write_attribute( name = 'name' value = 'elementCallback' ) ##NO_TEXT.
+      writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
+    ELSEIF ( element_structure_callback IS SUPPLIED ).
+      writer->write_attribute( name = 'name' value = 'elementStructureCallback' ) ##NO_TEXT.
+      writer->open_element( name = 'str' ).
+      writer->write_attribute( name = 'name' value = 'elementName' ).
+      writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
+      writer->close_element(  ).
+    ELSEIF ( element_table_callback IS SUPPLIED ).
+      writer->write_attribute( name = 'name' value = 'elementTableCallback' ) ##NO_TEXT.
+      writer->open_element( name   = 'str' ).
+      writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
+      writer->close_element(  ).
+    ENDIF.
   ENDMETHOD.
 
 
   METHOD deserialize.
     FIELD-SYMBOLS:
         <attr>    TYPE data.
+
+    reader->next_node( ).
+
     ASSIGN expected_var->* TO <attr>.
-    element_name = <attr>.
-    jump_to_end( reader ).
+    IF ( simple_callback IS SUPPLIED ).
+      simple_callback = <attr>.
+    ELSEIF ( structure_callback IS SUPPLIED ).
+      structure_callback = <attr>.
+      jump_to_end( reader ).
+    ELSEIF ( table_callback IS SUPPLIED ).
+      table_callback = <attr>.
+      jump_to_end( reader ).
+    ELSEIF ( element_callback IS SUPPLIED ).
+      element_callback = <attr>.
+    ELSEIF ( element_structure_callback IS SUPPLIED ).
+      element_structure_callback = <attr>.
+      jump_to_end( reader ).
+    ELSEIF ( element_table_callback IS SUPPLIED ).
+      element_table_callback = <attr>.
+      jump_to_end( reader ).
+    ENDIF.
   ENDMETHOD.
 
 
   METHOD jump_to_end.
-    reader->next_node( ).
     DATA(type_start) = reader->name.
-    DATA exit TYPE abap_boolean.
-    IF reader->node_type = if_sxml_node=>co_nt_element_close OR choose_code = choose_codes-inner_element OR choose_code = choose_codes-outer_element.
+    DATA exit TYPE abap_boolean VALUE abap_false.
+    IF reader->node_type = if_sxml_node=>co_nt_element_close.
       exit = abap_true.
     ENDIF.
     WHILE exit = abap_false.
