@@ -948,10 +948,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     string = string && cl_abap_char_utilities=>newline.
     SPLIT string AT cl_abap_char_utilities=>newline INTO TABLE result.
 
-    cl_aff_content_handler_factory=>get_handler_for_plain_text( )->deserialize(
-      EXPORTING content = json_writer->get_output( )
-      IMPORTING data = result  ).
-
     json = json_writer->get_output( ).
 
     st_execution_counter += 1.
