@@ -542,7 +542,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         ENDIF.
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        MESSAGE w127(zaff_tools) INTO DATA(message) ##NEEDED ##NO_TEXT.
+        MESSAGE w127(zaff_tools) INTO DATA(message) ##NEEDED.
         log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
