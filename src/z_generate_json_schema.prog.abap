@@ -12,16 +12,16 @@ CLASS lcl_generator_helper DEFINITION
     CLASS-METHODS: generate
       IMPORTING
                 generate_schema TYPE abap_bool
-                object_type     TYPE trobjtype
-                interface_name  TYPE sobj_name
-                type_name       TYPE sobj_name
+                object_type     TYPE tadir-object
+                interface_name  TYPE tadir-obj_name
+                type_name       TYPE tadir-obj_name
       RETURNING VALUE(result)   TYPE string_table
       RAISING
                 zcx_aff_tools.
   PRIVATE SECTION.
     CLASS-METHODS get_format_version
       IMPORTING
-        interface_name        TYPE sobj_name
+        interface_name        TYPE tadir-obj_name
       RETURNING
         VALUE(format_version) TYPE string.
 
@@ -97,9 +97,9 @@ START-OF-SELECTION.
   PARAMETERS:
     p_schema TYPE c RADIOBUTTON GROUP sel USER-COMMAND upd DEFAULT 'X',
     p_xslt   TYPE c RADIOBUTTON GROUP sel ##NEEDED,
-    p_objtyp TYPE trobjtype,
-    p_intf   TYPE sobj_name,
-    p_type   TYPE sobj_name.
+    p_objtyp TYPE tadir-object,
+    p_intf   TYPE tadir-obj_name,
+    p_type   TYPE tadir-obj_name.
 
 
   p_objtyp  = to_upper( p_objtyp ).
