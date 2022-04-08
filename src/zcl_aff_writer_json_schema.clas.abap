@@ -984,7 +984,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   METHOD zif_aff_writer~validate.
     TRY.
-        DATA(json_as_xstring) = cl_aff_content_handler_factory=>get_handler_for_plain_text( )->serialize( source ).
+        DATA(string) = concat_lines_of( table = source sep = cl_abap_char_utilities=>newline ).
+        DATA(json_as_xstring) = cl_abap_codepage=>convert_to( string ).
         DATA(json_reader) = cl_sxml_string_reader=>create( json_as_xstring ).
         json_reader->next_node( ).
         json_reader->skip_node( ).
