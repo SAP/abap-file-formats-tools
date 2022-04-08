@@ -743,7 +743,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       write_tag( |<tt:with-parameter name="MEMBERS"| ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
         APPEND |val="'{ str_comp }'"/>| TO content.
-      endif.
+      ENDIF.
     else.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
     endif.
