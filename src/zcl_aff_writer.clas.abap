@@ -466,7 +466,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD get_all_path_information.
     DATA previous_absolute_name TYPE abap_abstypename.
-    DATA splitted_prev_name TYPE  string_table.
+    DATA splitted_prev_name TYPE string_table.
     DATA(index) = 0.
     WHILE lines( splitted_prev_name ) <= 2.
       IF index >= lines( stack_of_structure ).
@@ -517,7 +517,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_constant_as_struc.
-    DATA clstype TYPE  seoclstype.
+    DATA clstype TYPE seoclstype.
     CALL FUNCTION 'SEO_CLIF_EXISTENCE_CHECK'
       EXPORTING
         cifkey        = CONV seoclskey( name_of_source )

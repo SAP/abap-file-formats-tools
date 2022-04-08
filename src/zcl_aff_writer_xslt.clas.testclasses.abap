@@ -925,7 +925,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
   METHOD from_abap_to_json.
     DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
 
-    cut->zif_aff_writer~set_formatting_option( formatting  ).
+    cut->zif_aff_writer~set_formatting_option( formatting ).
     cut->zif_aff_writer~set_name_mappings( name_mappings ).
     cut->zif_aff_writer~set_abap_value_mappings( value_mappings ).
 
@@ -1146,8 +1146,8 @@ CLASS ltcl_integration_test IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD struc_tab_struc_tab.
-    DATA(second_table_1)  = VALUE lif_test_types=>table_build_in_type( ( `table_1_line_1` ) ( `table_1_line_2` ) ).
-    DATA(second_table_2)  = VALUE lif_test_types=>table_build_in_type( ( `table_2_line_1` ) ( `table_2_line_2` ) ).
+    DATA(second_table_1) = VALUE lif_test_types=>table_build_in_type( ( `table_1_line_1` ) ( `table_1_line_2` ) ).
+    DATA(second_table_2) = VALUE lif_test_types=>table_build_in_type( ( `table_2_line_1` ) ( `table_2_line_2` ) ).
     DATA(first_table) = VALUE lif_test_types=>first_table_type(
       ( second_table = second_table_1 )
       ( second_table = second_table_2 )
@@ -3270,7 +3270,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   METHOD structure_different_default.
     DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
     DATA act_data LIKE test_type.
-    test_type = VALUE #(  four_byte_int = 5
+    test_type = VALUE #( four_byte_int = 5
                           eight_byte_int = 55
                           bin_float = '4.3'
                           byte_like = 'FFFF'
@@ -3302,7 +3302,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   METHOD structure_with_default_problem.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
     DATA act_data LIKE test_type.
-    test_type = VALUE #(  integer =  5
+    test_type = VALUE #( integer =  5
                           string_element = 'DefaultString'
                           enum_required = '01'
                           enum_show_always = '01' ) ##LITERAL.
@@ -3380,7 +3380,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   METHOD struc_of_table_with_callback.
     DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
     DATA table_with_callback LIKE test_type-element_table_callback.
-    table_with_callback = VALUE #(  ( `first` ) ( `second` ) ).
+    table_with_callback = VALUE #( ( `first` ) ( `second` ) ).
     zcl_aff_test_types=>set_expected( table_with_callback ).
     test_type = VALUE #( element_table_callback = table_with_callback my_second_element = 5 ).
     exp_json = VALUE #(

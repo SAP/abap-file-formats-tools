@@ -202,18 +202,18 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     me->st_root_name = st_root_name.
     next_tag_without_name_and_ref = abap_true.
     me->formatting_option = zif_aff_writer=>formatting_option-camel_case.
-    zif_aff_writer~set_name_mappings(  VALUE #( ( abap = 'schema' json = '$schema' ) ) ).
+    zif_aff_writer~set_name_mappings( VALUE #( ( abap = 'schema' json = '$schema' ) ) ).
   ENDMETHOD.
 
 
   METHOD open_structure.
-    write_open_structure(   structure_name = structure_name structure_description = structure_description ).
+    write_open_structure( structure_name = structure_name structure_description = structure_description ).
     INSERT VALUE #( name = structure_name absolute_name = structure_description->absolute_name ) INTO me->stack_of_structure INDEX 1.
   ENDMETHOD.
 
 
   METHOD write_open_structure.
-    clear_type_specifics(  ).
+    clear_type_specifics( ).
     set_abapdoc_fullname_tab_struc( type_description = structure_description type_name = structure_name ).
 
     IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
@@ -227,7 +227,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD open_table.
-    clear_type_specifics(  ).
+    clear_type_specifics( ).
     set_abapdoc_fullname_tab_struc( type_description = table_description type_name = table_name ).
 
     IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
@@ -245,7 +245,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   METHOD close_structure.
     delete_first_of_struc_stack( ).
     write_defaults( ).
-    enable_extension( CAST  #( structure_description ) ).
+    enable_extension( CAST #( structure_description ) ).
     write_closing_tag( `</tt:group>` ).
     write_closing_tag( `</object>` ).
     write_closing_tag( `</tt:cond>` ).
@@ -283,7 +283,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   METHOD write_element.
     CHECK ignore_next_elements = abap_false.
 
-    clear_type_specifics(  ).
+    clear_type_specifics( ).
     set_abapdoc_fullname_element( element_description = element_description element_name = element_name ).
 
     IF abap_doc-enumvalues_link IS NOT INITIAL.
@@ -415,7 +415,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD write_value_mappings.
-    DATA(value_mappings) =  value_mapping-value_mappings.
+    DATA(value_mappings) = value_mapping-value_mappings.
     IF lines( value_mappings ) = 0.
       RETURN.
     ENDIF.
@@ -424,7 +424,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     DATA(index) = 1.
     LOOP AT value_mappings ASSIGNING FIELD-SYMBOL(<value_mapping>).
       DATA(abap_value) = get_abap_value( abap_value = <value_mapping>-abap element_description = element_description ).
-      IF index < lines( value_mappings  ).
+      IF index < lines( value_mappings ).
         write_tag( |  val({ abap_value })=xml('{ <value_mapping>-json }'),| ) ##NO_TEXT.
       ELSE.
         write_tag( |  val({ abap_value })=xml('{ <value_mapping>-json }')| ) ##NO_TEXT.
@@ -536,7 +536,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         ENDIF.
         DATA(json_name) = map_and_format_name( CONV #( <component>-name ) ).
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
-        INSERT VALUE #( abap = <fs_data>  json =  json_name  ) INTO TABLE value_mappings-value_mappings.
+        INSERT VALUE #( abap = <fs_data>  json = json_name ) INTO TABLE value_mappings-value_mappings.
         IF <fs_data> IS INITIAL.
           has_initial_component = abap_true.
         ENDIF.
@@ -738,7 +738,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ENDIF.
       str_comp = |{ str_comp }{ formatted_name };|.
     ENDLOOP.
-    write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>|  ).
+    write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
     write_closing_tag( `</tt:call-method>` ).
     write_tag( |<tt:skip/>| ).
     write_closing_tag( |</_>| ).
