@@ -740,7 +740,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDLOOP.
     data(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| }|.
     if strlen( tag ) > 255 .
-      write_tag( |<tt:with-parameter name="MEMBERS"|  ).
+      write_tag( |<tt:with-parameter name="MEMBERS"| ).
       if ignore_til_indent_level is initial or ignore_til_indent_level - 1 > indent_level.
         append |val="'{ str_comp }'"/>| to content.
       endif.
