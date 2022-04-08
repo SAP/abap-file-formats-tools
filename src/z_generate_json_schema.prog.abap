@@ -65,7 +65,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
     ENDIF.
 
     DATA(generator) = NEW zcl_aff_generator( writer ).
-    result = generator->generate_type(  <field> ).
+    result = generator->generate_type( <field> ).
 
   ENDMETHOD.
 

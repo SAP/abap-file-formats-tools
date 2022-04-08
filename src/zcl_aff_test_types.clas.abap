@@ -879,11 +879,11 @@ CLASS zcl_aff_test_types IMPLEMENTATION.
       writer->open_element( name   = 'str' ).
       writer->write_attribute( name = 'name' value = 'elementName' ) ##NO_TEXT.
       writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-      writer->close_element(  ).
+      writer->close_element( ).
     ELSEIF ( table_callback IS SUPPLIED ).
       writer->open_element( name   = 'str' ).
       writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-      writer->close_element(  ).
+      writer->close_element( ).
     ELSEIF ( element_callback IS SUPPLIED ).
       writer->write_attribute( name = 'name' value = 'elementCallback' ) ##NO_TEXT.
       writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
@@ -892,12 +892,12 @@ CLASS zcl_aff_test_types IMPLEMENTATION.
       writer->open_element( name = 'str' ).
       writer->write_attribute( name = 'name' value = 'elementName' ).
       writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-      writer->close_element(  ).
+      writer->close_element( ).
     ELSEIF ( element_table_callback IS SUPPLIED ).
       writer->write_attribute( name = 'name' value = 'elementTableCallback' ) ##NO_TEXT.
       writer->open_element( name   = 'str' ).
       writer->write_value( 'callbackClass was called' ) ##NO_TEXT.
-      writer->close_element(  ).
+      writer->close_element( ).
     ENDIF.
   ENDMETHOD.
 

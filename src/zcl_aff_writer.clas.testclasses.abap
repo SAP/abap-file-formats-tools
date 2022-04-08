@@ -261,33 +261,33 @@ CLASS ltcl_type_writer IMPLEMENTATION.
   METHOD call_reader_and_decode.
     DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
     DATA(element_name) = `CATEGORY`.
-    DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source =  name_of_source element_name   = element_name ).
+    DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name   = element_name ).
     DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
     abap_doc_exp = VALUE #( description = `This is an enum` title = `myCategory` enumvalues_link = `zcl_aff_test_types.data:enum_values` ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
 
     element_name = `AFF_TEST_TYPE-INNER_STRUC`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source =  name_of_source element_name   = element_name ).
+    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name   = element_name ).
     abap_doc_exp = VALUE #( title = 'Title of inner_struc' description = 'Description of inner_struc' showalways = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
 
     element_name = `AFF_TEST_TYPE-INNER_STRUC-INNER_ELEMENT`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source =  name_of_source element_name   = element_name ).
+    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name   = element_name ).
     abap_doc_exp = VALUE #( required = abap_true title = `Title of inner_element` description = `Description of inner_element` ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
 
     element_name = `STRUCTURE_WITH_NUMBERS-PACKED_WITH_MULTIPLE`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source =  name_of_source element_name   = element_name ).
+    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name   = element_name ).
     abap_doc_exp = VALUE #( title = 'Packed Number With Given Multiple' description = `Packed number with given multiple` exclusive_minimum = `0` maximum = `99999.90` multiple_of = `0.1` ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
 
     element_name = `STRUCTURE_DIFFERENT_DEFAULT-FOUR_BYTE_INT`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source =  name_of_source element_name   = element_name ).
+    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name   = element_name ).
     abap_doc_exp = VALUE #( title = 'Four Byte Integer' description = 'Four byte integer'  default = '"5"' ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
 
     element_name = `STRUCTURE_DIFFERENT_DEFAULT-ENUM_TYPE`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source =  name_of_source element_name   = element_name ).
+    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name   = element_name ).
     abap_doc_exp = VALUE #( title = 'Enum Type' description = 'Enum type' enumvalues_link = 'zcl_aff_test_types.data:co_class_category' default = '@link zcl_aff_test_types.data:co_class_category.exit_class' ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
 

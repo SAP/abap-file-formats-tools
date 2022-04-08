@@ -198,7 +198,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     me->formatting_option = zif_aff_writer=>formatting_option-camel_case.
     me->schema_id = schema_id.
     me->format_version = format_version.
-    zif_aff_writer~set_name_mappings(  VALUE #( ( abap = 'schema' json = '$schema' ) ) ) ##NO_TEXT.
+    zif_aff_writer~set_name_mappings( VALUE #( ( abap = 'schema' json = '$schema' ) ) ) ##NO_TEXT.
   ENDMETHOD.
 
 
@@ -225,7 +225,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
 
-    DATA(callback_class) =  to_upper( abap_doc-callback_class ).
+    DATA(callback_class) = to_upper( abap_doc-callback_class ).
     IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class component_name = fullname_of_type ).
       IF last_operation( ) = zif_aff_writer=>operation-initial.
         open_json_schema_for_element( ).
@@ -310,7 +310,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_tag( |"title": "{ title }",| ).
     ENDIF.
     IF description IS NOT INITIAL.
-      write_tag( |"description": "{  description }",|  ).
+      write_tag( |"description": "{ description }",| ).
     ENDIF.
   ENDMETHOD.
 
@@ -424,7 +424,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ENDIF.
       default = |"{ default }"|.
     ELSEIF is_default_value_valid( element_description = element_description default_value = default fullname_of_type = fullname_of_type ).
-      IF json_type =  zif_aff_writer=>type_info-numeric OR json_type = zif_aff_writer=>type_info-boolean.
+      IF json_type = zif_aff_writer=>type_info-numeric OR json_type = zif_aff_writer=>type_info-boolean.
         REPLACE ALL OCCURRENCES OF `"` IN default WITH ``.
       ELSEIF json_type = zif_aff_writer=>type_info-date_time.
         default = `"` && date_time_from_abap_to_json( date_time_abap = default element_description = element_description ) && `"`.
@@ -452,7 +452,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 *  add a new empty required_table to the stack
     IF last_operation( ) = zif_aff_writer=>operation-initial.
       INSERT VALUE #( name = structure_name absolute_name = structure_description->absolute_name ) INTO me->stack_of_structure INDEX 1.
-      add_required_table_to_stack(  ).
+      add_required_table_to_stack( ).
       open_json_schema_for_structure( structure_name = structure_name structure_description = structure_description ).
       INSERT VALUE #( name = structure_name number_brackets = 2 ) INTO me->structure_buffer INDEX 1.
       RETURN.
@@ -464,7 +464,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     set_abapdoc_fullname_struc_tab( type_description = structure_description type_name  = structure_name ).
 
-    DATA(callback_class) =  to_upper( abap_doc-callback_class ).
+    DATA(callback_class) = to_upper( abap_doc-callback_class ).
     IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class component_name = fullname_of_type ).
       write_subschema( callback_class = callback_class ).
     ENDIF.
@@ -487,7 +487,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
     write_tag( `"type": "object",` ).
     write_open_tag( `"properties": {` ).
-    add_required_table_to_stack(  ).
+    add_required_table_to_stack( ).
   ENDMETHOD.
 
 
@@ -570,7 +570,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       DATA(splitted_absolute_name) = get_splitted_absolute_name( absolute_name ).
       DATA(source_type) = splitted_absolute_name[ 1 ].
       DATA(source) = splitted_absolute_name[ 2 ].
-      fullname_of_type =     type_name.
+      fullname_of_type = type_name.
       DATA(already_found) = abap_true.
     ELSE.
       get_all_path_information(
@@ -601,7 +601,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   METHOD set_abapdoc_fullname_element.
 * Simple Component of a structure, defined in the structure definition
-    IF  lines( stack_of_structure ) > 0.
+    IF lines( stack_of_structure ) > 0.
       get_all_path_information(
         EXPORTING
           name             = element_name
@@ -614,8 +614,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 * Element which is in no structure
     ELSEIF lines( stack_of_structure ) = 0.
       fullname_of_type = element_name.
-      source_type =     splitted_prev_name[ 1 ].
-      source =     splitted_prev_name[ 2 ].
+      source_type = splitted_prev_name[ 1 ].
+      source = splitted_prev_name[ 2 ].
       DATA(already_searched) = abap_true.
     ENDIF.
 
@@ -973,7 +973,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
       IF abap_doc_to_check-description IS INITIAL.
         MESSAGE i119(zaff_tools) WITH 'Description' INTO message ##NO_TEXT.
-        log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type  ).
+        log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type ).
       ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
         MESSAGE w125(zaff_tools) WITH c_max_length_of_description INTO message.
         log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type ).

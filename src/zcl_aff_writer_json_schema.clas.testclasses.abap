@@ -271,7 +271,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
         description  TYPE c LENGTH 60,
         numeric_text TYPE n LENGTH 10,
       END OF component_description.
-    DATA(act_schema) = test_generator->generate_type( VALUE component_description(  ) ).
+    DATA(act_schema) = test_generator->generate_type( VALUE component_description( ) ).
 
     DATA(exp_schema) = VALUE string_table(
 ( `{` )
@@ -311,7 +311,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
         packed     TYPE p LENGTH 14 DECIMALS 2, "length multiplied by 2 minus 1 digits and can have a maximum of 14 decimal places
         integer2   TYPE int2,
       END OF component_description.
-    DATA(act_schema) = test_generator->generate_type( VALUE component_description(  ) ).
+    DATA(act_schema) = test_generator->generate_type( VALUE component_description( ) ).
 
 
     DATA(exp_schema) = VALUE string_table(
@@ -1019,40 +1019,40 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `       },` )
 ( `       "originalLanguage": {` )
 ( `         "title": "Original Language",` )
-( `         "description": "Original language of the ABAP object",`  )
-( `         "type": "string",`  )
-( `         "minLength": 2,`  )
-( `         "maxLength": 2,`  )
-( `         "pattern": "^[a-z]+$"`  )
-( `         },`  )
+( `         "description": "Original language of the ABAP object",` )
+( `         "type": "string",` )
+( `         "minLength": 2,` )
+( `         "maxLength": 2,` )
+( `         "pattern": "^[a-z]+$"` )
+( `         },` )
 ( `         "abapLanguageVersion": {` )
-( `           "title": "ABAP Language Version",`  )
-( `           "description": "ABAP language version",`  )
+( `           "title": "ABAP Language Version",` )
+( `           "description": "ABAP language version",` )
 ( `           "type": "string",` )
 ( `           "enum": [` )
 ( `             "standard",` )
 ( `             "cloudDevelopment"` )
-( `           ],`  )
+( `           ],` )
 ( `           "enumTitles": [` )
 ( `             "Standard",` )
 ( `             "ABAP Cloud Development"` )
-( `           ],`  )
+( `           ],` )
 ( `           "enumDescriptions": [` )
 ( `             "Standard",` )
 ( `             "ABAP cloud development"` )
-( `           ]`  )
-( `        }`  )
-( `       },`  )
+( `           ]` )
+( `        }` )
+( `       },` )
 ( `       "additionalProperties": false` )
-( `     },`  )
-( `     "classCategory": {`  )
-( `       "title": "Class Category",`  )
+( `     },` )
+( `     "classCategory": {` )
+( `       "title": "Class Category",` )
 ( `       "description": "Class category",` )
-( `       "type": "string",`  )
+( `       "type": "string",` )
 ( `       "enum": [` )
 ( `         "general",` )
 ( `         "exitClass"` )
-( `       ],`  )
+( `       ],` )
 ( `       "enumTitles": [ ` )
 ( `         "General",` )
 ( `         "Exit Class"` )
@@ -1061,7 +1061,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `         "General",` )
 ( `         "Exit class"` )
 ( `       ]` )
-( `     }`  )
+( `     }` )
 ( `   },` )
 ( `    "additionalProperties": false` )
 ( `}` )
