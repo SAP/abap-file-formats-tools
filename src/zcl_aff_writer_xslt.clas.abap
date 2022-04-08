@@ -746,7 +746,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ENDIF.
     ELSE.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
-    endif.
+    ENDIF.
     write_closing_tag( `</tt:call-method>` ).
     write_tag( |<tt:skip/>| ).
     write_closing_tag( |</_>| ).
