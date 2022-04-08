@@ -745,7 +745,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         append |val="'{ str_comp }'"/>| to content.
       endif.
     else.
-      write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>|  ).
+      write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
     endif.
     write_closing_tag( `</tt:call-method>` ).
     write_tag( |<tt:skip/>| ).
