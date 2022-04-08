@@ -943,8 +943,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     CALL TRANSFORMATION (st_name) SOURCE root = test_type RESULT XML json_writer.
 
     DATA(string) = cl_abap_codepage=>convert_from( json_writer->get_output( ) ).
-    string = replace( val = string sub = cl_abap_char_utilities=>cr_lf    with = cl_abap_char_utilities=>newline occ = 0 ).
-    string = replace( val = string sub = cl_abap_char_utilities=>cr_lf(1) with = cl_abap_char_utilities=>newline occ = 0 ).
     string = string && cl_abap_char_utilities=>newline.
     SPLIT string AT cl_abap_char_utilities=>newline INTO TABLE result.
 
@@ -3548,10 +3546,9 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_indent value = '2' ).
     CALL TRANSFORMATION (st_name) SOURCE root = test_type RESULT XML json_writer.
 
-
-    cl_aff_content_handler_factory=>get_handler_for_plain_text( )->deserialize(
-      EXPORTING content = json_writer->get_output( )
-      IMPORTING data = result  ).
+    DATA(string) = cl_abap_codepage=>convert_from( json_writer->get_output( ) ).
+    string = string && cl_abap_char_utilities=>newline.
+    SPLIT string AT cl_abap_char_utilities=>newline INTO TABLE result.
 
     json = json_writer->get_output( ).
 
