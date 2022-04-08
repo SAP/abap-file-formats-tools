@@ -122,7 +122,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   METHOD parse_title.
     REPLACE ALL OCCURRENCES OF REGEX `[\s]*(<p[\s]+class="shorttext([\s]+synchronized)?"([\s]+lang="[a-zA-Z]{2}")?[\s]*>)[\s]*`
         IN abap_doc_string WITH `<p class="shorttext">` ##NO_TEXT ##REGEX_POSIX.
-    decoded_abap_doc-title = substring_after( val = abap_doc_string regex = co_shorttext_tag_open ) ##regex_posix.
+    decoded_abap_doc-title = substring_after( val = abap_doc_string regex = co_shorttext_tag_open ) ##REGEX_POSIX.
     IF ( decoded_abap_doc-title IS NOT INITIAL ).
       decoded_abap_doc-title = substring_before( val = decoded_abap_doc-title sub = '</p>' ).
       remove_leading_trailing_spaces( CHANGING string_to_work_on = decoded_abap_doc-title ).
@@ -138,15 +138,15 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     IF ( find( val = abap_doc_string regex = co_shorttext_tag_open ) > 0 ) ##REGEX_POSIX.
-      MESSAGE i113(zaff_tools) INTO message ##NEEDED.
+      MESSAGE i113(zaff_tools) INTO message.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
 
   METHOD workaround_remove_titles.
-    WHILE ( matches( val = abap_doc_string regex = `.*[\s]*<p\sclass="shorttext">.*` ) ) ##regex_posix.
-      DATA(start_offset) = find( val = abap_doc_string regex = co_shorttext_tag_open occ = 1 ) ##regex_posix.
+    WHILE ( matches( val = abap_doc_string regex = `.*[\s]*<p\sclass="shorttext">.*` ) ) ##REGEX_POSIX.
+      DATA(start_offset) = find( val = abap_doc_string regex = co_shorttext_tag_open occ = 1 ) ##REGEX_POSIX.
       abap_doc_string = abap_doc_string(start_offset) && substring_after( val = abap_doc_string+start_offset sub = `</p>` ).
     ENDWHILE.
   ENDMETHOD.
@@ -208,7 +208,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-callback_class INTO message ##NEEDED.
+      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-callback_class INTO message.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(offset_found) = result_table[ 1 ]-offset.
@@ -255,7 +255,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     IF lines( mixed_result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-default INTO message ##NEEDED.
+      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-default INTO message.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(warning_set) = abap_false.
@@ -272,7 +272,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         IF lines( splitted ) = 3.
           decoded_abap_doc-default = link.
         ELSEIF warning_set = abap_false.
-          MESSAGE w111(zaff_tools) WITH abap_doc_annotation-default INTO message ##NEEDED.
+          MESSAGE w111(zaff_tools) WITH abap_doc_annotation-default INTO message.
           parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
           warning_set = abap_true.
         ENDIF.
@@ -295,7 +295,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-values INTO message ##NEEDED.
+      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-values INTO message.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(warning_written) = abap_false.
@@ -311,7 +311,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       IF lines( splitted ) = 2 AND decoded_abap_doc-enumvalues_link IS INITIAL.
         decoded_abap_doc-enumvalues_link = link.
       ELSEIF lines( splitted ) <> 2 AND warning_written = abap_false.
-        MESSAGE w111(zaff_tools) WITH abap_doc_annotation-values INTO message ##NEEDED.
+        MESSAGE w111(zaff_tools) WITH abap_doc_annotation-values INTO message .
         parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
         warning_written = abap_true.
       ENDIF.
@@ -397,7 +397,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH annotation_name INTO message ##NEEDED.
+      MESSAGE i107(zaff_tools) WITH annotation_name INTO message.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     DATA(annotation_length) = strlen( dummy_annotation ).
@@ -417,7 +417,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       IF match = abap_true AND number IS INITIAL.
         number = number_candidate.
       ELSEIF match = abap_false AND warning_written = abap_false.
-        MESSAGE w110(zaff_tools) WITH annotation_name INTO message ##NEEDED.
+        MESSAGE w110(zaff_tools) WITH annotation_name INTO message.
         parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
         warning_written = abap_true.
       ENDIF.
@@ -468,7 +468,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       MESSAGE w115(zaff_tools) INTO DATA(message) ##NEEDED.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ELSEIF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS NOT INITIAL.
-      MESSAGE i116(zaff_tools) INTO message ##NEEDED.
+      MESSAGE i116(zaff_tools) INTO message.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
   ENDMETHOD.
