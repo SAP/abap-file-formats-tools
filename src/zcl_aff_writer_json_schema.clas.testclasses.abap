@@ -24,11 +24,7 @@ CLASS ltcl_json_writer DEFINITION FINAL FOR TESTING
       date_time_from_abap_to_json FOR TESTING RAISING cx_static_check,
       validate_invalid_json_schema FOR TESTING RAISING cx_static_check,
       validate_valid_json_schema FOR TESTING RAISING cx_static_check,
-      setup,
-
-      get_expected_description
-        IMPORTING typename           TYPE ddobjname
-        RETURNING VALUE(description) TYPE string.
+      setup.
 
 ENDCLASS.
 
@@ -357,7 +353,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( `            "multipleOf": 0.01` )
 ( `        },` )
 ( `        "integer2": {` )
-( |            "description": "{ get_expected_description( 'INT2' ) }",| )
+( `            "description": "2ByteSignedInteger",` )
 ( `            "type": "integer",` )
 ( `            "minimum": -32768,` )
 ( `            "maximum": 32767` )
@@ -472,18 +468,6 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_true( is_valid ).
     cl_abap_unit_assert=>assert_false( log->has_messages( ) ).
-  ENDMETHOD.
-
-  METHOD get_expected_description.
-    DATA dfies TYPE dfies.
-    CALL FUNCTION 'DDIF_FIELDINFO_GET'
-      EXPORTING
-        tabname   = typename
-        langu     = 'E'
-        all_types = 'X'
-      IMPORTING
-        dfies_wa  = dfies.
-    description = dfies-fieldtext.
   ENDMETHOD.
 
 ENDCLASS.
