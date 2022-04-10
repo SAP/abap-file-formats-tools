@@ -310,7 +310,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       WHEN cl_abap_typedescr=>typekind_string OR cl_abap_typedescr=>typekind_csequence OR
            cl_abap_typedescr=>typekind_clike OR cl_abap_typedescr=>typekind_char OR
            cl_abap_typedescr=>typekind_w OR cl_abap_typedescr=>typekind_xstring OR
-           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum .
+           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum.
         result = COND #( WHEN is_type_boolean( element_description ) THEN zif_aff_writer=>type_info-boolean
                          ELSE zif_aff_writer=>type_info-string ).
       WHEN cl_abap_typedescr=>typekind_float OR cl_abap_typedescr=>typekind_int OR
