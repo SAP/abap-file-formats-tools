@@ -565,7 +565,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     default = abap_doc-default.
     REPLACE ALL OCCURRENCES OF `"` IN default WITH ``.
-    IF default CS '@link' .
+    IF default CS '@link'.
       DATA(default_json) = get_default_from_link( link = default fullname_of_type = fullname_of_type element_type = element_description->type_kind ).
       IF default_json IS INITIAL.
         CLEAR default.
@@ -739,7 +739,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       str_comp = |{ str_comp }{ formatted_name };|.
     ENDLOOP.
     DATA(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>|.
-    IF strlen( tag ) > 255 .
+    IF strlen( tag ) > 255.
       write_tag( |<tt:with-parameter name="MEMBERS"| ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
         APPEND |val="'{ str_comp }'"/>| TO content.

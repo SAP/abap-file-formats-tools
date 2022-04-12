@@ -457,7 +457,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD description_at_false_position.
-    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> $minimum 12 This is the description at wrong position $default '20'`  .
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> $minimum 12 This is the description at wrong position $default '20'`.
     DATA(act_abap_doc) = parser->parse(
       EXPORTING
         component_name = `Component Name`
@@ -475,7 +475,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD text_between_annotations.
-    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> Here is text between annotation $default {@link cl_aff_test_types_for_writer.data:enum_values.classic_badi} Some unused text $required`  .
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> Here is text between annotation $default {@link cl_aff_test_types_for_writer.data:enum_values.classic_badi} Some unused text $required`.
     DATA(act_abap_doc) = parser->parse(
       EXPORTING
         component_name = `Component Name`
@@ -493,7 +493,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD title_at_wrong_position.
-    DATA(abap_doc_to_parse) = `Description first <p class="shorttext">This is the title at wrong position</p> $values{@link cl_aff_test_types_for_writer.data:enum_values} Unused Text`  .
+    DATA(abap_doc_to_parse) = `Description first <p class="shorttext">This is the title at wrong position</p> $values{@link cl_aff_test_types_for_writer.data:enum_values} Unused Text`.
     DATA(act_abap_doc) = parser->parse(
       EXPORTING
         component_name = `Component Name`

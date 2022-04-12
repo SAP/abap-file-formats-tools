@@ -221,7 +221,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     IF abap_doc-required = abap_true AND lines( stack_of_required_tabs ) >= 1.
       FIELD-SYMBOLS <table1> TYPE string_table.
-      ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
+      ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
 
@@ -316,16 +316,16 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD handle_enums.
-    write_tag( `"enum": [` ) .
+    write_tag( `"enum": [` ).
     write_enum_properties( enums ).
 
     IF enum_titles IS NOT INITIAL.
-      write_tag( `"enumTitles": [` ) .
+      write_tag( `"enumTitles": [` ).
       write_enum_properties( enum_titles ).
     ENDIF.
 
     DATA(enum_descr) = get_enum_descriptions( element_name = element_name element_description = element_description ).
-    write_tag( `"enumDescriptions": [` ) .
+    write_tag( `"enumDescriptions": [` ).
     write_enum_properties( enum_descr ).
   ENDMETHOD.
 
@@ -334,9 +334,9 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     indent_level = indent_level + 1.
     LOOP AT property_table ASSIGNING FIELD-SYMBOL(<value>).
       IF sy-tabix < lines( property_table ).
-        write_tag( |"{ <value> }",| ) .
+        write_tag( |"{ <value> }",| ).
       ELSE.
-        write_tag( |"{ <value> }"| ) .
+        write_tag( |"{ <value> }"| ).
       ENDIF.
     ENDLOOP.
     indent_level = indent_level - 1.
@@ -482,7 +482,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     IF abap_doc-required = abap_true.
       FIELD-SYMBOLS <table1> TYPE string_table.
-      ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
+      ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
     write_tag( `"type": "object",` ).
@@ -521,7 +521,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     IF abap_doc-required = abap_true AND lines( stack_of_required_tabs ) >= 1.
       FIELD-SYMBOLS <table1> TYPE string_table.
-      ASSIGN stack_of_required_tabs[ 1 ] TO <table1> .
+      ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
       APPEND mapped_and_formatted_name TO <table1>.
     ENDIF.
 
