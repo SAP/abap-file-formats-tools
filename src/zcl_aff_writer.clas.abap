@@ -517,16 +517,16 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_constant_as_struc.
-    DATA clstype TYPE seoclstype.
-    CALL FUNCTION 'SEO_CLIF_EXISTENCE_CHECK'
+    DATA clstype TYPE seocategry.
+    CALL FUNCTION 'CL_OO_CLASSNAME_SERVICE=>GET_CLASS_CATEGORY'
       EXPORTING
-        cifkey        = CONV seoclskey( name_of_source )
+        clsname            = CONV seoclsname( name_of_source )
       IMPORTING
-        clstype       = clstype
+        result             = clstype
       EXCEPTIONS
-        not_specified = 1
-        not_existing  = 2
-        OTHERS        = 3.
+        class_not_existing = 1
+        OTHERS             = 2.
+
     IF sy-subrc <> 0.
 *    class or interface doesn't exist
       MESSAGE w103(zaff_tools) WITH name_of_source INTO DATA(message) ##NEEDED.
