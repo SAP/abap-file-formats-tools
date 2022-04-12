@@ -311,7 +311,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       IF lines( splitted ) = 2 AND decoded_abap_doc-enumvalues_link IS INITIAL.
         decoded_abap_doc-enumvalues_link = link.
       ELSEIF lines( splitted ) <> 2 AND warning_written = abap_false.
-        MESSAGE w111(zaff_tools) WITH abap_doc_annotation-values INTO message .
+        MESSAGE w111(zaff_tools) WITH abap_doc_annotation-values INTO message.
         parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
         warning_written = abap_true.
       ENDIF.

@@ -665,7 +665,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `     },` )
 ( `     "additionalProperties": false` )
 ( `   }` )
-( ) ) .
+( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
