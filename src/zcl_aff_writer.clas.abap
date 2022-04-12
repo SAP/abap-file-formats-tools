@@ -521,7 +521,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       EXPORTING
         clsname            = CONV seoclsname( name_of_source )
       RECEIVING
-        result             = data(clstype)
+        result             = DATA(clstype)
       EXCEPTIONS
         class_not_existing = 1
         OTHERS             = 2 ).
