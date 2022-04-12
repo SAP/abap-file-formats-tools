@@ -518,10 +518,10 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD get_constant_as_struc.
     DATA clstype TYPE seocategry.
-    CALL FUNCTION 'CL_OO_CLASSNAME_SERVICE=>GET_CLASS_CATEGORY'
+    CALL METHOD cl_oo_classname_service=>get_class_category
       EXPORTING
         clsname            = CONV seoclsname( name_of_source )
-      IMPORTING
+      RECEIVING
         result             = clstype
       EXCEPTIONS
         class_not_existing = 1
