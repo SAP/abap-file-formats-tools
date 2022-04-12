@@ -32,4 +32,3 @@ jobs:
         uses: actions/checkout@v2
       - name: Check for editorconfig violations
         uses: editorconfig-checker/action-editorconfig-checker@main
-        run: editorconfig-checker
