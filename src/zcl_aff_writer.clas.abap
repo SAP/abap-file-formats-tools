@@ -518,14 +518,14 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD get_constant_as_struc.
     DATA clstype TYPE seocategry.
-    CALL METHOD cl_oo_classname_service=>get_class_category
+    cl_oo_classname_service=>get_class_category(
       EXPORTING
         clsname            = CONV seoclsname( name_of_source )
       RECEIVING
         result             = clstype
       EXCEPTIONS
         class_not_existing = 1
-        OTHERS             = 2.
+        OTHERS             = 2 ).
 
     IF sy-subrc <> 0.
 *    class or interface doesn't exist
