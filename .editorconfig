@@ -11,5 +11,5 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 # ensure the LF line endings
-[*.{abap}]
+[*.abap]
 insert_final_newline = true
