@@ -517,30 +517,27 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_constant_as_struc.
-    DATA clstype TYPE seoclstype.
-    CALL FUNCTION 'SEO_CLIF_EXISTENCE_CHECK'
-      EXPORTING
-        cifkey        = CONV seoclskey( name_of_source )
-      IMPORTING
-        clstype       = clstype
-      EXCEPTIONS
-        not_specified = 1
-        not_existing  = 2
-        OTHERS        = 3.
+    DATA constant TYPE REF TO cl_abap_datadescr.
+
+    cl_abap_typedescr=>describe_by_name(
+      EXPORTING p_name          = name_of_source
+      RECEIVING p_descr_ref     = DATA(constant_descr)
+      EXCEPTIONS type_not_found = 1
+                 OTHERS         = 2
+      ).
+
     IF sy-subrc <> 0.
 *    class or interface doesn't exist
       MESSAGE w103(zaff_tools) WITH name_of_source INTO DATA(message) ##NEEDED.
       log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
     ELSE.
-      DATA(constant_descr) = cl_abap_typedescr=>describe_by_name( name_of_source ).
-
-      IF clstype = seoc_clstype_interface.
+      IF constant_descr->kind = cl_abap_typedescr=>kind_intf.
         DATA(constant_descr_intf) = CAST cl_abap_intfdescr( constant_descr ).
         constant_descr_intf->get_attribute_type(
           EXPORTING
             p_name              = name_of_constant
           RECEIVING
-            p_descr_ref         = DATA(constant)
+            p_descr_ref         = constant
           EXCEPTIONS
             attribute_not_found = 1
             OTHERS              = 2
@@ -550,7 +547,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
           MESSAGE w104(zaff_tools) WITH name_of_source && '=>' && name_of_constant INTO message.
           log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
         ENDIF.
-      ELSEIF clstype = seoc_clstype_class.
+      ELSEIF constant_descr->kind = cl_abap_typedescr=>kind_class.
         DATA(constant_descr_clas) = CAST cl_abap_classdescr( constant_descr ).
         constant_descr_clas->get_attribute_type(
           EXPORTING

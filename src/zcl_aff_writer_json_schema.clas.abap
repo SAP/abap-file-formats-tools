@@ -53,9 +53,9 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       structure_buffer       TYPE tt_buffer,
       table_buffer           TYPE tt_buffer,
       ignore_next_elements   TYPE abap_boolean,
-      enum_values            TYPE rswsourcet,
-      enum_titles            TYPE rswsourcet,
-      enum_descriptions      TYPE rswsourcet,
+      enum_values            TYPE string_table,
+      enum_titles            TYPE string_table,
+      enum_descriptions      TYPE string_table,
       stack_of_required_tabs TYPE STANDARD TABLE OF string_table,
       format_version         TYPE i.
 
@@ -87,14 +87,14 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       get_enum_values
         IMPORTING element_name        TYPE string
                   element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING VALUE(result)       TYPE rswsourcet
+        RETURNING VALUE(result)       TYPE string_table
         RAISING
                   zcx_aff_tools,
 
       get_enum_descriptions
         IMPORTING element_name        TYPE string
                   element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING VALUE(result)       TYPE rswsourcet,
+        RETURNING VALUE(result)       TYPE string_table,
 
       type_is_integer
         IMPORTING
@@ -149,7 +149,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           element_name        TYPE string
-          enums               TYPE rswsourcet,
+          enums               TYPE string_table,
 
       write_subschema
         IMPORTING
@@ -159,7 +159,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
 
       write_enum_properties
         IMPORTING
-          property_table TYPE rswsourcet,
+          property_table TYPE string_table,
 
       check_title_and_description
         IMPORTING abap_doc_to_check        TYPE zcl_aff_abap_doc_parser=>abap_doc
@@ -174,7 +174,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           element_name        TYPE string
-          splitted_prev_name  TYPE rswsourcet,
+          splitted_prev_name  TYPE string_table,
       set_abapdoc_fullname_struc_tab
         IMPORTING
           type_description TYPE REF TO cl_abap_typedescr
@@ -714,7 +714,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   METHOD write_subschema.
     TRY.
-        DATA subschema TYPE rswsourcet.
+        DATA subschema TYPE string_table.
         CALL METHOD (callback_class)=>get_subschema
           RECEIVING
             subschema = subschema.
