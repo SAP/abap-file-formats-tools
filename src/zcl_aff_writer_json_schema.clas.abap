@@ -989,7 +989,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         DATA(json_reader) = cl_sxml_string_reader=>create( json_as_xstring ).
         json_reader->next_node( ).
         json_reader->skip_node( ).
-      CATCH cx_aff_root cx_sxml_parse_error INTO DATA(exception).
+      CATCH cx_sxml_parse_error INTO DATA(exception).
         log->add_exception( exception = exception component_name = `` ).
         RETURN.
     ENDTRY.
