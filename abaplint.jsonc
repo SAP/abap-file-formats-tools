@@ -60,7 +60,7 @@
     "constructor_visibility_public": true,
     "contains_tab": true,
     "cyclomatic_complexity": true,
-    "dangerous_statement": false,
+    "dangerous_statement": true,
     "db_operation_in_loop": true,
     "definitions_top": false,
     "description_empty": false,
