@@ -188,7 +188,7 @@ CLASS ltcl_type_generator DEFINITION FINAL FOR TESTING
   PRIVATE SECTION.
     DATA:
       cut        TYPE REF TO zcl_aff_generator,
-      exp_result TYPE rswsourcet.
+      exp_result TYPE string_table.
 
     METHODS:
       element FOR TESTING RAISING cx_static_check,
@@ -211,8 +211,8 @@ CLASS ltcl_type_generator DEFINITION FINAL FOR TESTING
       setup,
       assert_output_equals
         IMPORTING
-          act TYPE rswsourcet
-          exp TYPE rswsourcet.
+          act TYPE string_table
+          exp TYPE string_table.
 ENDCLASS.
 
 CLASS zcl_aff_generator DEFINITION LOCAL FRIENDS ltcl_type_generator.

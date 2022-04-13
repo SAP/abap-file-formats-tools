@@ -53,9 +53,9 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       structure_buffer       TYPE tt_buffer,
       table_buffer           TYPE tt_buffer,
       ignore_next_elements   TYPE abap_boolean,
-      enum_values            TYPE rswsourcet,
-      enum_titles            TYPE rswsourcet,
-      enum_descriptions      TYPE rswsourcet,
+      enum_values            TYPE string_table,
+      enum_titles            TYPE string_table,
+      enum_descriptions      TYPE string_table,
       stack_of_required_tabs TYPE STANDARD TABLE OF string_table,
       format_version         TYPE i.
 
