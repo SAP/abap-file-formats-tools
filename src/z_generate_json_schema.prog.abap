@@ -12,7 +12,6 @@ CLASS lcl_generator_helper DEFINITION
     CLASS-METHODS: generate
       IMPORTING
                 generate_schema TYPE abap_bool
-                object_type     TYPE tadir-object
                 interface_name  TYPE tadir-obj_name
                 type_name       TYPE tadir-obj_name
       RETURNING VALUE(result)   TYPE string_table
@@ -24,6 +23,11 @@ CLASS lcl_generator_helper DEFINITION
         interface_name        TYPE tadir-obj_name
       RETURNING
         VALUE(format_version) TYPE string.
+    CLASS-METHODS get_object_type_path
+      IMPORTING
+        interface_name TYPE tadir-obj_name
+      RETURNING
+        VALUE(path)    TYPE string.
 
 ENDCLASS.
 
@@ -49,11 +53,8 @@ CLASS lcl_generator_helper IMPLEMENTATION.
     ASSIGN my_type->* TO <field>.
 
     DATA(format_version) = get_format_version( interface_name ).
-    DATA(mainobjtype) = object_type.
-    IF object_type = 'REPS' OR object_type = 'FUNC'.
-      mainobjtype = 'FUGR'.
-    ENDIF.
-    DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( object_type ) }-v{ format_version }.json| ##NO_TEXT.
+    DATA(object_type_path) = get_object_type_path( interface_name ).
+    DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
 
 
     DATA writer TYPE REF TO zcl_aff_writer.
@@ -90,6 +91,16 @@ CLASS lcl_generator_helper IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
+  METHOD get_object_type_path.
+    SPLIT interface_name  AT '_' INTO TABLE DATA(splitted_intfname).
+    DATA(object_type) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
+    data(main_object_type) = object_type.
+    IF object_type = 'REPS' OR object_type = 'FUNC'.
+      main_object_type = 'FUGR'.
+    ENDIF.
+    path = |{ to_lower( main_object_type ) }/{ to_lower( object_type ) }|.
+  ENDMETHOD.
+
 ENDCLASS.
 
 START-OF-SELECTION.
@@ -97,18 +108,16 @@ START-OF-SELECTION.
   PARAMETERS:
     p_schema TYPE c RADIOBUTTON GROUP sel USER-COMMAND upd DEFAULT 'X',
     p_xslt   TYPE c RADIOBUTTON GROUP sel ##NEEDED,
-    p_objtyp TYPE tadir-object,
     p_intf   TYPE tadir-obj_name,
     p_type   TYPE tadir-obj_name DEFAULT 'ty_main'.
 
 
-  p_objtyp  = to_upper( p_objtyp ).
   p_intf   = to_upper( p_intf ).
   p_type   = to_upper( p_type ).
 
 
   TRY.
-      DATA(xslt_content) = lcl_generator_helper=>generate( generate_schema = p_schema interface_name = p_intf object_type = p_objtyp type_name = p_type ).
+      DATA(xslt_content) = lcl_generator_helper=>generate( generate_schema = p_schema interface_name = p_intf type_name = p_type ).
       cl_demo_output=>write( xslt_content ).
     CATCH zcx_aff_tools INTO DATA(exception).
       cl_demo_output=>write( exception->get_text( ) ).
