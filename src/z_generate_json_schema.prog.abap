@@ -35,14 +35,13 @@ CLASS lcl_generator_helper IMPLEMENTATION.
 
   METHOD generate.
     DATA(absolute_name) = |\\INTERFACE={ interface_name }\\TYPE={ type_name }|.
-    DATA type_descrition TYPE REF TO cl_abap_typedescr.
-    DATA element_description TYPE REF TO cl_abap_structdescr.
 
-    cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_name RECEIVING p_descr_ref = type_descrition EXCEPTIONS type_not_found = 1 ).
+    cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_name RECEIVING p_descr_ref = data(type_description) EXCEPTIONS type_not_found = 1 ).
     IF sy-subrc = 1.
       RAISE EXCEPTION NEW zcx_aff_tools( ).
     ENDIF.
-    element_description ?= type_descrition.
+    DATA element_description TYPE REF TO cl_abap_structdescr.
+    element_description ?= type_description.
     DATA field TYPE REF TO data.
     FIELD-SYMBOLS <field> TYPE any.
     CREATE DATA field TYPE HANDLE element_description.
