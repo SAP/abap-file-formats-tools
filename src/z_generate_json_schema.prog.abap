@@ -10,24 +10,18 @@ CLASS lcl_generator_helper DEFINITION
   PUBLIC SECTION.
 
     CLASS-METHODS: generate
-      IMPORTING
-                generate_schema TYPE abap_bool
+      IMPORTING generate_schema TYPE abap_bool
                 interface_name  TYPE tadir-obj_name
                 type_name       TYPE tadir-obj_name
       RETURNING VALUE(result)   TYPE string
-      RAISING
-                zcx_aff_tools.
+      RAISING   zcx_aff_tools.
   PRIVATE SECTION.
     CLASS-METHODS get_format_version
-      IMPORTING
-        interface_name        TYPE tadir-obj_name
-      RETURNING
-        VALUE(result) TYPE i.
+      IMPORTING interface_name TYPE tadir-obj_name
+      RETURNING VALUE(result)  TYPE i.
     CLASS-METHODS get_object_type_path
-      IMPORTING
-        interface_name TYPE tadir-obj_name
-      RETURNING
-        VALUE(path)    TYPE string.
+      IMPORTING interface_name TYPE tadir-obj_name
+      RETURNING VALUE(path)    TYPE string.
 
 ENDCLASS.
 
@@ -71,7 +65,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_format_version.
-    data format_version type string.
+    DATA format_version TYPE string.
     SPLIT interface_name  AT '_' INTO TABLE DATA(splitted_intfname).
     DATA(last) = splitted_intfname[ lines( splitted_intfname ) ].
     REPLACE ALL OCCURRENCES OF 'V' IN last WITH ''.
@@ -90,7 +84,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
         format_version = default_format_version.
     ENDTRY.
 
-    result = conv #( format_version ).
+    result = CONV #( format_version ).
   ENDMETHOD.
 
   METHOD get_object_type_path.
