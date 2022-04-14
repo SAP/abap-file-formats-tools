@@ -14,7 +14,7 @@ CLASS lcl_generator_helper DEFINITION
                 generate_schema TYPE abap_bool
                 interface_name  TYPE tadir-obj_name
                 type_name       TYPE tadir-obj_name
-      RETURNING VALUE(result)   TYPE string_table
+      RETURNING VALUE(result)   TYPE string
       RAISING
                 zcx_aff_tools.
   PRIVATE SECTION.
@@ -66,7 +66,8 @@ CLASS lcl_generator_helper IMPLEMENTATION.
     ENDIF.
 
     DATA(generator) = NEW zcl_aff_generator( writer ).
-    result = generator->generate_type( <field> ).
+    DATA(result_table) = generator->generate_type( <field> ).
+    CONCATENATE LINES OF result_table INTO result SEPARATED BY cl_abap_char_utilities=>newline.
 
   ENDMETHOD.
 
@@ -118,8 +119,7 @@ START-OF-SELECTION.
 
   TRY.
       DATA(xslt_content) = lcl_generator_helper=>generate( generate_schema = p_schema interface_name = p_intf type_name = p_type ).
-      cl_demo_output=>write( xslt_content ).
+      cl_demo_output=>display( xslt_content ).
     CATCH zcx_aff_tools INTO DATA(exception).
-      cl_demo_output=>write( exception->get_text( ) ).
+      cl_demo_output=>display( exception->get_text( ) ).
   ENDTRY.
-  cl_demo_output=>display( ).
