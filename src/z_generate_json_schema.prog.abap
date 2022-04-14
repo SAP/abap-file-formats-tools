@@ -99,7 +99,7 @@ START-OF-SELECTION.
     p_xslt   TYPE c RADIOBUTTON GROUP sel ##NEEDED,
     p_objtyp TYPE tadir-object,
     p_intf   TYPE tadir-obj_name,
-    p_type   TYPE tadir-obj_name.
+    p_type   TYPE tadir-obj_name DEFAULT 'ty_main'.
 
 
   p_objtyp  = to_upper( p_objtyp ).
