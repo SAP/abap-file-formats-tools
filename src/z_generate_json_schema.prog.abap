@@ -94,7 +94,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
   METHOD get_object_type_path.
     SPLIT interface_name  AT '_' INTO TABLE DATA(splitted_intfname).
     DATA(object_type) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
-    data(main_object_type) = object_type.
+    DATA(main_object_type) = object_type.
     IF object_type = 'REPS' OR object_type = 'FUNC'.
       main_object_type = 'FUGR'.
     ENDIF.
