@@ -74,7 +74,6 @@ CLASS lcl_generator_helper IMPLEMENTATION.
   METHOD get_format_version.
     SPLIT interface_name  AT '_' INTO TABLE DATA(splitted_intfname).
     DATA(last) = splitted_intfname[ lines( splitted_intfname ) ].
-    REPLACE ALL OCCURRENCES OF 'v' IN last WITH ''.
     REPLACE ALL OCCURRENCES OF 'V' IN last WITH ''.
     TRY.
         DATA(regx) = '[[:alpha:]]+'.
@@ -113,12 +112,8 @@ START-OF-SELECTION.
     p_type   TYPE tadir-obj_name DEFAULT 'ty_main'.
 
 
-  p_intf   = to_upper( p_intf ).
-  p_type   = to_upper( p_type ).
-
-
   TRY.
-      DATA(xslt_content) = lcl_generator_helper=>generate( generate_schema = p_schema interface_name = p_intf type_name = p_type ).
+      DATA(xslt_content) = lcl_generator_helper=>generate( generate_schema = p_schema interface_name = to_upper( p_intf ) type_name = to_upper( p_type ) ).
       cl_demo_output=>display( xslt_content ).
     CATCH zcx_aff_tools INTO DATA(exception).
       cl_demo_output=>display( exception->get_text( ) ).
