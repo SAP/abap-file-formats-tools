@@ -36,7 +36,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
   METHOD generate.
     DATA(absolute_name) = |\\INTERFACE={ interface_name }\\TYPE={ type_name }|.
 
-    cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_name RECEIVING p_descr_ref = data(type_description) EXCEPTIONS type_not_found = 1 ).
+    cl_abap_typedescr=>describe_by_name( EXPORTING p_name = absolute_name RECEIVING p_descr_ref = DATA(type_description) EXCEPTIONS type_not_found = 1 ).
     IF sy-subrc = 1.
       RAISE EXCEPTION NEW zcx_aff_tools( ).
     ENDIF.
@@ -53,13 +53,13 @@ CLASS lcl_generator_helper IMPLEMENTATION.
 
     DATA(format_version) = get_format_version( interface_name ).
     DATA(object_type_path) = get_object_type_path( interface_name ).
-    DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
+    DATA(schema_id) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
 
 
     DATA writer TYPE REF TO zcl_aff_writer.
     " set up the writer
     IF generate_schema = abap_true.
-      writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = CONV #( format_version ) ).
+      writer = NEW zcl_aff_writer_json_schema( schema_id = schema_id format_version = CONV #( format_version ) ).
     ELSE.
       writer = NEW zcl_aff_writer_xslt( ).
     ENDIF.
