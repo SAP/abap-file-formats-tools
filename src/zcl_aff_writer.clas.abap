@@ -653,7 +653,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         class_not_existing = 1
     ).
     IF sy-subrc = 0.
-      DATA(has_method_get_subschema) = xsdbool( line_exists( result[ cpdkey = VALUE #( clsname =  name_of_callback_class cpdname = 'GET_SUBSCHEMA' ) ] ) ).
+      DATA(has_method_get_subschema) = xsdbool( line_exists( result[ cpdkey = VALUE #( clsname = name_of_callback_class cpdname = 'GET_SUBSCHEMA' ) ] ) ).
       DATA(has_method_serialize) =  xsdbool( line_exists( result[ cpdkey = VALUE #( clsname =  name_of_callback_class cpdname = 'SERIALIZE' ) ] ) ).
       DATA(has_method_deserialize) =  xsdbool( line_exists( result[ cpdkey = VALUE #( clsname =  name_of_callback_class cpdname = 'DESERIALIZE' ) ] ) ).
       is_valid = xsdbool( has_method_get_subschema = abap_true AND has_method_serialize = abap_true AND has_method_deserialize = abap_true ).
