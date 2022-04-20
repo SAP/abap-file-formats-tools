@@ -103,9 +103,9 @@ INTERFACE lif_test_types.
     BEGIN OF ty_class_properties,
       format_version TYPE string,
       header         TYPE ty_header,
-      category       TYPE vseoclass-category,
-      fixpt          TYPE vseoclass-fixpt,
-      msg_id         TYPE vseoclass-msg_id.
+      category       TYPE n LENGTH 2,
+      fixpt          TYPE c LENGTH 1,
+      msg_id         TYPE c LENGTH 20.
       INCLUDE TYPE ty_clif_properties.
   TYPES END OF ty_class_properties.
 
