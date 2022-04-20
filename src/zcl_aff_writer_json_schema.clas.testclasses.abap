@@ -1782,7 +1782,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
                                                              exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                            msgno = 111
-                                                                                           attr1 = cl_aff_abap_doc_parser=>abap_doc_annotation-default )
+                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default )
                                                              exp_component_name = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_TWO`
                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -2215,7 +2215,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
                                                              exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                            msgno = 109
-                                                                                           attr1 = cl_aff_abap_doc_parser=>abap_doc_annotation-callback_class )
+                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class )
                                                              exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT`
                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.

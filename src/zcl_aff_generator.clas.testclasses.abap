@@ -69,21 +69,21 @@ INTERFACE lif_test_types.
 
   TYPES:
     BEGIN OF ty_component,
-      name        TYPE seocmpname,
-      description TYPE seodescr,
+      name        TYPE c LENGTH 30,
+      description TYPE c LENGTH 60,
     END OF ty_component,
     ty_components    TYPE SORTED TABLE OF ty_component WITH UNIQUE KEY name,
     ty_subcomponents TYPE SORTED TABLE OF ty_component WITH UNIQUE KEY name,
     BEGIN OF ty_method,
-      name        TYPE seocmpname,
-      description TYPE seodescr,
+      name        TYPE c LENGTH 30,
+      description TYPE c LENGTH 60,
       parameters  TYPE ty_subcomponents,
       exceptions  TYPE ty_subcomponents,
     END OF ty_method,
     ty_methods TYPE SORTED TABLE OF ty_method WITH UNIQUE KEY name,
     BEGIN OF ty_event,
-      name        TYPE seocmpname,
-      description TYPE seodescr,
+      name        TYPE c LENGTH 30,
+      description TYPE c LENGTH 60,
       parameters  TYPE ty_subcomponents,
     END OF ty_event,
     ty_events TYPE SORTED TABLE OF ty_event WITH UNIQUE KEY name,
@@ -103,9 +103,9 @@ INTERFACE lif_test_types.
     BEGIN OF ty_class_properties,
       format_version TYPE string,
       header         TYPE ty_header,
-      category       TYPE vseoclass-category,
-      fixpt          TYPE vseoclass-fixpt,
-      msg_id         TYPE vseoclass-msg_id.
+      category       TYPE n LENGTH 2,
+      fixpt          TYPE c LENGTH 1,
+      msg_id         TYPE c LENGTH 20.
       INCLUDE TYPE ty_clif_properties.
   TYPES END OF ty_class_properties.
 
