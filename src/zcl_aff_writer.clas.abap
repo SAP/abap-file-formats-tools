@@ -520,11 +520,14 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     DATA constant TYPE REF TO cl_abap_datadescr.
 
     cl_abap_typedescr=>describe_by_name(
-      EXPORTING p_name          = name_of_source
-      RECEIVING p_descr_ref     = DATA(constant_descr)
-      EXCEPTIONS type_not_found = 1
-                 OTHERS         = 2
-      ).
+      EXPORTING
+        p_name         = name_of_source
+      RECEIVING
+        p_descr_ref    = DATA(constant_descr)
+      EXCEPTIONS
+        type_not_found = 1
+        OTHERS         = 2
+    ).
 
     IF sy-subrc <> 0.
 *    class or interface doesn't exist
@@ -641,12 +644,19 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD is_callback_class_valid.
     DATA(name_of_callback_class) = to_upper( class_name ).
-    SELECT SINGLE @abap_true FROM seoclass WHERE clsname = @name_of_callback_class INTO @DATA(callback_class_exists).
-    IF callback_class_exists = abap_true.
-      SELECT SINGLE @abap_true FROM seocompo WHERE clsname = @name_of_callback_class AND cmpname = 'GET_SUBSCHEMA' AND cmptype = 1 INTO @DATA(get_subschema_exists).
-      SELECT SINGLE @abap_true FROM seocompo WHERE clsname = @name_of_callback_class AND cmpname = 'SERIALIZE' AND cmptype = 1 INTO @DATA(serialize_exists).
-      SELECT SINGLE @abap_true FROM seocompo WHERE clsname = @name_of_callback_class AND cmpname = 'DESERIALIZE' AND cmptype = 1 INTO @DATA(deserialize_exists).
-      is_valid = xsdbool( get_subschema_exists = abap_true AND serialize_exists = abap_true AND deserialize_exists = abap_true ).
+    cl_oo_classname_service=>get_all_method_includes(
+      EXPORTING
+        clsname            = CONV #( name_of_callback_class )
+      RECEIVING
+        result             = DATA(result)
+      EXCEPTIONS
+        class_not_existing = 1
+    ).
+    IF sy-subrc = 0.
+      DATA(has_method_get_subschema) = xsdbool( line_exists( result[ cpdkey = VALUE #( clsname = name_of_callback_class cpdname = 'GET_SUBSCHEMA' ) ] ) ).
+      DATA(has_method_serialize) = xsdbool( line_exists( result[ cpdkey = VALUE #( clsname = name_of_callback_class cpdname = 'SERIALIZE' ) ] ) ).
+      DATA(has_method_deserialize) = xsdbool( line_exists( result[ cpdkey = VALUE #( clsname = name_of_callback_class cpdname = 'DESERIALIZE' ) ] ) ).
+      is_valid = xsdbool( has_method_get_subschema = abap_true AND has_method_serialize = abap_true AND has_method_deserialize = abap_true ).
     ENDIF.
     IF is_valid = abap_false.
       MESSAGE w106(zaff_tools) INTO DATA(message) ##NEEDED.
