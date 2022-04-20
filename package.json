@@ -1,0 +1,19 @@
+{
+  "name": "abap-file-formats-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "test",
+  "scripts": {
+    "lint": "abaplint",
+    "unit": "rm -rf output && abap_transpile && echo RUNNING && node output/index.mjs",
+    "test": "npm run lint && npm run downport && npm run unit",
+    "downport": "rm -rf downport && cp -r src downport && cp deps/* downport && abaplint --fix abaplint-downport.jsonc"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@abaplint/cli": "^2.89.0",
+    "@abaplint/runtime": "^2.0.10",
+    "@abaplint/database-sqlite": "^2.0.11",
+    "@abaplint/transpiler-cli": "^2.0.10"
+  }
+}
