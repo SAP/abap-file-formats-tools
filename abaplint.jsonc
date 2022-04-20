@@ -10,8 +10,12 @@
   "dependencies": [
     {
       "url": "https://github.com/open-abap/open-abap",
-      "folder": "/deps",
+      "folder": "/open-abap",
       "files": "/src/**/*.*"
+    },
+    {
+      "folder": "/deps",
+      "files": "/**/*.*"
     }
   ],
   "syntax": {
