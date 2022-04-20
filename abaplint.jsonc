@@ -100,7 +100,7 @@
     "line_length": false,
     "line_only_punc": false,
     "local_class_naming": true,
-    "local_testclass_location": true,
+    "local_testclass_consistency": true,
     "local_variable_names": false,
     "main_file_contents": true,
     "cyclic_oo": true,
