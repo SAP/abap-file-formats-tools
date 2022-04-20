@@ -890,9 +890,8 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
         EXPORTING
           result TYPE data
         RAISING
-          zcx_aff_tools
-          cx_sxml_illegal_argument_error
-          cx_aff_root,
+          cx_static_check
+          cx_sxml_illegal_argument_error,
 
       from_abap_to_json
         IMPORTING
@@ -904,8 +903,7 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
           VALUE(result)  TYPE string_table
           VALUE(json)    TYPE xstring
         RAISING
-          zcx_aff_tools
-          cx_aff_root
+          cx_static_check
           cx_sxml_illegal_argument_error,
       teardown,
       assert_json_equals
@@ -2931,9 +2929,8 @@ RISK LEVEL DANGEROUS.
           VALUE(result) TYPE string_table
           VALUE(json)   TYPE xstring
         RAISING
-          zcx_aff_tools
-          cx_sxml_illegal_argument_error
-          cx_aff_root,
+          cx_static_check
+          cx_sxml_illegal_argument_error,
       from_json_to_abap
         IMPORTING
           json   TYPE xstring
@@ -2953,9 +2950,8 @@ RISK LEVEL DANGEROUS.
         CHANGING
           act_data  TYPE any
         RAISING
-          zcx_aff_tools
-          cx_sxml_illegal_argument_error
-          cx_aff_root.
+          cx_static_check
+          cx_sxml_illegal_argument_error.
 ENDCLASS.
 
 CLASS ltcl_integration_test_ad IMPLEMENTATION.
@@ -3574,7 +3570,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
           IMPORTING
             data    = result
         ).
-      CATCH cx_aff_root INTO DATA(exception).
+      CATCH cx_static_check INTO DATA(exception).
         DELETE REPORT st_name.
         cl_abap_unit_assert=>fail( exception->get_text( ) ).
     ENDTRY.
