@@ -7,7 +7,7 @@
     "lint": "abaplint",
     "unit": "rm -rf output && abap_transpile && echo RUNNING && node output/index.mjs",
     "test": "npm run lint && npm run downport && npm run unit",
-    "downport": "rm -rf downport && cp -r src downport && cp deps/* downport && abaplint --fix abaplint-downport.jsonc"
+    "downport": "rm -rf downport && cp -r src downport && cp deps/* downport && rm downport/zcl_aff_writer_xslt.clas.testclasses.abap && abaplint --fix abaplint-downport.jsonc"
   },
   "license": "MIT",
   "dependencies": {
