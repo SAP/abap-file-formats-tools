@@ -532,7 +532,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   Method too_many_enum_values.
-      DATA(abap_doc_to_parse) = `<p class="shorttext">Field With Overwritten Enum Value</p> Field with overwritten enum value $enumValue 'ownValue' blablabl $enumValue 'ownValue2'`.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Field With Overwritten Enum Value</p> Field with overwritten enum value $enumValue 'ownValue' blablabl $enumValue 'ownValue2'`.
     DATA(act_abap_doc) = parser->parse(
       EXPORTING
         component_name = `Component Name`
