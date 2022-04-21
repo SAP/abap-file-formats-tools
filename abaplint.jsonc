@@ -1,6 +1,7 @@
 {
   "global": {
     "files": "/src/**/*.*",
+    "exclude": ["zcl_aff_writer_xslt.clas.testclasses.abap"],
     "skipGeneratedGatewayClasses": true,
     "skipGeneratedPersistentClasses": true,
     "skipGeneratedFunctionGroups": true,
@@ -10,13 +11,17 @@
   "dependencies": [
     {
       "url": "https://github.com/open-abap/open-abap",
-      "folder": "/deps",
+      "folder": "/open-abap",
       "files": "/src/**/*.*"
+    },
+    {
+      "folder": "/deps",
+      "files": "/**/*.*"
     }
   ],
   "syntax": {
     "version": "v754",
-    "errorNamespace": "^(Z|Y|LCL_|TY_|LIF_)",
+    "errorNamespace": ".",
     "globalConstants": ["srext_ext_xslt_source"]
   },
   "rules": {
@@ -96,7 +101,7 @@
     "line_length": false,
     "line_only_punc": false,
     "local_class_naming": true,
-    "local_testclass_location": true,
+    "local_testclass_consistency": true,
     "local_variable_names": false,
     "main_file_contents": true,
     "cyclic_oo": true,
