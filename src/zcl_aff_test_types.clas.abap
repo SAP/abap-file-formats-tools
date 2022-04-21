@@ -819,6 +819,29 @@ CLASS zcl_aff_test_types DEFINITION
         other_structure TYPE my_structure,
       END OF structure_with_include.
 
+    CONSTANTS:
+      BEGIN OF co_overwritten_values,
+        "! <p class="shorttext">Option 1</p>
+        "! Option 1
+        "! $enumValue 'AAAA'
+        first_value  TYPE c LENGTH 2 VALUE 'AA',
+        "! <p class="shorttext">Option 2</p>
+        "! Option 2
+        "! $enumValue 'BBBB'
+        second_value TYPE c LENGTH 2 VALUE 'BB',
+      END OF co_overwritten_values.
+
+    TYPES:
+      "! <p class="shorttext">Structure With Overwritten Enum Values</p>
+      "! Structure with overwritten enum values
+      BEGIN OF struc_with_own_enum_values,
+        "! <p class="shorttext">Enum Component</p>
+        "! Enum component
+        "! $required
+        "! $values  {@link zcl_aff_test_types.data:co_overwritten_values }
+        enum_component TYPE c LENGTH 2,
+      END OF struc_with_own_enum_values.
+
     CLASS-DATA subschema TYPE string_table.
 
     CLASS-DATA expected_var TYPE REF TO data.
