@@ -526,7 +526,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
       CHANGING
         log            = log
     ).
-    exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `"ownValue"` ).
+    exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `ownValue` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
@@ -540,7 +540,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
       CHANGING
         log            = log
     ).
-    exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `"ownValue"` ).
+    exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `ownValue` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
                                                              exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
