@@ -531,10 +531,16 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       DATA(has_initial_component) = abap_false.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
+        DATA(fullname_of_component) = name_of_constant && '-' && <component>-name.
+        DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name   = fullname_of_component ).
         IF <component>-type_kind <> enum_type.
           RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(zaff_tools) WITH name_of_constant fullname_of_type.
         ENDIF.
-        DATA(json_name) = map_and_format_name( CONV #( <component>-name ) ).
+        IF abap_doc_of_component-enum_value IS INITIAL.
+          DATA(json_name) = map_and_format_name( CONV #( <component>-name ) ).
+        ELSE.
+          json_name = abap_doc_of_component-enum_value.
+        ENDIF.
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
         INSERT VALUE #( abap = <fs_data>  json = json_name ) INTO TABLE value_mappings-value_mappings.
         IF <fs_data> IS INITIAL.
