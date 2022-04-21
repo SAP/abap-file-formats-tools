@@ -17,6 +17,7 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
                  max_length        TYPE string VALUE `$maxLength`,
                  min_length        TYPE string VALUE `$minLength`,
                  multiple_of       TYPE string VALUE `$multipleOf`,
+                 enum_value        TYPE string VALUE `$enumValue`,
                END OF abap_doc_annotation.
 
     TYPES:
@@ -35,6 +36,7 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
         min_length        TYPE string,
         max_length        TYPE string,
         callback_class    TYPE string,
+        enum_value        TYPE string,
       END OF abap_doc.
 
     METHODS: parse
@@ -97,7 +99,12 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
           text_to_check TYPE string,
       write_description_message,
       workaround_remove_titles,
-      check_title_positions.
+      check_title_positions,
+      parse_enum_value,
+      write_log_for_multiple_entries
+        IMPORTING
+          result_table TYPE match_result_tab
+          annotaion    TYPE string.
 
 ENDCLASS.
 
@@ -152,7 +159,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD parse_description.
-    FIND FIRST OCCURRENCE OF REGEX `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength)`
+    FIND FIRST OCCURRENCE OF REGEX `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$enumValue)`
       IN abap_doc_string MATCH OFFSET DATA(offset) ##REGEX_POSIX.
     IF sy-subrc = 0.
       DATA(description) = abap_doc_string+0(offset).
@@ -186,6 +193,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         WHEN abap_doc_annotation-minimum OR abap_doc_annotation-maximum OR abap_doc_annotation-exclusive_minimum OR abap_doc_annotation-exclusive_maximum
              OR abap_doc_annotation-max_length OR abap_doc_annotation-multiple_of OR abap_doc_annotation-min_length.
           parse_number_annotations( key_word = key_word ).
+        WHEN abap_doc_annotation-enum_value.
+          parse_enum_value( ).
         WHEN OTHERS.
           REPLACE key_word IN modified_abap_doc_string WITH ''.
           MESSAGE w108(zaff_tools) WITH key_word INTO DATA(message) ##NEEDED.
@@ -207,10 +216,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       RETURN.
     ENDIF.
-    IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-callback_class INTO message.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
-    ENDIF.
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-callback_class ).
     DATA(offset_found) = result_table[ 1 ]-offset.
     DATA(length_found) = result_table[ 1 ]-length.
     decoded_abap_doc-callback_class = get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 20 remove_whitespaces = abap_true ).
@@ -294,10 +300,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       RETURN.
     ENDIF.
-    IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-values INTO message.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
-    ENDIF.
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-values ).
     DATA(warning_written) = abap_false.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       DATA(offset_found) = <entry>-offset.
@@ -324,10 +327,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     FIND ALL OCCURRENCES OF abap_doc_annotation-required IN abap_doc_string RESULTS DATA(result_table).
-    IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-required INTO DATA(message) ##NEEDED.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
-    ENDIF.
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-required ).
     decoded_abap_doc-required = abap_true.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       check_next_word( offset = <entry>-offset + <entry>-length text_to_check = abap_doc_string ).
@@ -340,10 +340,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     FIND ALL OCCURRENCES OF abap_doc_annotation-show_always IN abap_doc_string RESULTS DATA(result_table).
-    IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-show_always INTO DATA(message) ##NEEDED.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
-    ENDIF.
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-show_always ).
     decoded_abap_doc-showalways = abap_true.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       check_next_word( offset = <entry>-offset + <entry>-length text_to_check = abap_doc_string ).
@@ -396,10 +393,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       RETURN.
     ENDIF.
-    IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH annotation_name INTO message.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
-    ENDIF.
+    write_log_for_multiple_entries( result_table = result_table annotaion = annotation_name ).
     DATA(annotation_length) = strlen( dummy_annotation ).
     DATA(regex_of_number_expressions) = cl_abap_regex=>create_pcre( pattern     = `(\+|-)?[0-9]+(.[0-9]+)?(e(\+|-)?[0-9]+)?`
                                                                     ignore_case = abap_true ).
@@ -424,6 +418,26 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+  METHOD parse_enum_value.
+    IF decoded_abap_doc-enum_value IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    DATA(string_to_parse) = abap_doc_string.
+    REPLACE ALL OCCURRENCES OF REGEX `\$enumValue[\s]*(:[\s]*)?'` IN string_to_parse WITH `\$enumValue'` ##REGEX_POSIX.
+    FIND ALL OCCURRENCES OF REGEX `\$enumValue'[^']*'` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
+    IF lines( result_table ) = 0.
+      MESSAGE w109(zaff_tools) WITH abap_doc_annotation-enum_value INTO DATA(message) ##NEEDED.
+      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      RETURN.
+    ENDIF.
+    write_log_for_multiple_entries( result_table = result_table annotaion =  abap_doc_annotation-enum_value ).
+    DATA(offset_found) = result_table[ 1 ]-offset.
+    DATA(length_found) = result_table[ 1 ]-length.
+    decoded_abap_doc-enum_value = `"` && get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 11 remove_whitespaces = abap_true ) && `"`.
+    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
+      check_next_word( offset = <entry>-offset + <entry>-length text_to_check = string_to_parse ).
+    ENDLOOP.
+  ENDMETHOD.
 
   METHOD remove_leading_trailing_spaces.
     SHIFT string_to_work_on RIGHT DELETING TRAILING space.
@@ -469,6 +483,13 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ELSEIF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS NOT INITIAL.
       MESSAGE i116(zaff_tools) INTO message.
+      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD write_log_for_multiple_entries.
+    IF lines( result_table ) > 1.
+      MESSAGE i107(zaff_tools) WITH annotaion INTO DATA(message) ##NEEDED.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
   ENDMETHOD.
