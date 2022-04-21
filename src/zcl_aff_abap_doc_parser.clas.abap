@@ -433,7 +433,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-enum_value ).
     DATA(offset_found) = result_table[ 1 ]-offset.
     DATA(length_found) = result_table[ 1 ]-length.
-    decoded_abap_doc-enum_value = `"` && get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 11 remove_whitespaces = abap_true ) && `"`.
+    decoded_abap_doc-enum_value = get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 11 remove_whitespaces = abap_true ).
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       check_next_word( offset = <entry>-offset + <entry>-length text_to_check = string_to_parse ).
     ENDLOOP.
