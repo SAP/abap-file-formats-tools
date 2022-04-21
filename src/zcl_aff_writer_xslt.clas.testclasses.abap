@@ -3537,7 +3537,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 
   METHOD struc_with_own_enum_values.
     DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
-    test_type = VALUE #( enum_component =  'AA' ).
+    test_type = VALUE #( enum_component = 'AA' ).
     exp_json = VALUE #(
         ( `{` )
         ( `    "enumComponent": "AAAA"` )
