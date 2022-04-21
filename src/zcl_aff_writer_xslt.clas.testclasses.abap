@@ -890,9 +890,8 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
         EXPORTING
           result TYPE data
         RAISING
-          zcx_aff_tools
-          cx_sxml_illegal_argument_error
-          cx_aff_root,
+          cx_static_check
+          cx_sxml_illegal_argument_error,
 
       from_abap_to_json
         IMPORTING
@@ -904,8 +903,7 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
           VALUE(result)  TYPE string_table
           VALUE(json)    TYPE xstring
         RAISING
-          zcx_aff_tools
-          cx_aff_root
+          cx_static_check
           cx_sxml_illegal_argument_error,
       teardown,
       assert_json_equals
@@ -957,19 +955,20 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     DATA(st_name) = CONV progname( c_xslt_prefix && counter ).
     st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
 
-    DATA(handler) = NEW cl_aff_content_handler_json(
-      simple_transformation = st_name
-      st_root_name          = 'ROOT'
-    ).
+    DATA st_result TYPE abap_trans_resbind_tab.
+    FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
 
+    CLEAR result.
+    APPEND INITIAL LINE TO st_result ASSIGNING <st_result>.
+    <st_result>-name = 'ROOT'.
+    GET REFERENCE OF result  INTO <st_result>-value.
+
+    DATA(json_reader) = cl_sxml_string_reader=>create( json ).
     TRY.
-        handler->if_aff_content_handler~deserialize(
-          EXPORTING
-            content = json
-          IMPORTING
-            data    = result
-        ).
-      CATCH zcx_aff_tools INTO DATA(exception).
+        CALL TRANSFORMATION (st_name)
+          SOURCE XML json_reader
+          RESULT (st_result).
+      CATCH cx_root INTO DATA(exception).
         DELETE REPORT st_name.
         cl_abap_unit_assert=>fail( exception->get_text( ) ).
     ENDTRY.
@@ -2931,9 +2930,8 @@ RISK LEVEL DANGEROUS.
           VALUE(result) TYPE string_table
           VALUE(json)   TYPE xstring
         RAISING
-          zcx_aff_tools
-          cx_sxml_illegal_argument_error
-          cx_aff_root,
+          cx_static_check
+          cx_sxml_illegal_argument_error,
       from_json_to_abap
         IMPORTING
           json   TYPE xstring
@@ -2953,9 +2951,8 @@ RISK LEVEL DANGEROUS.
         CHANGING
           act_data  TYPE any
         RAISING
-          zcx_aff_tools
-          cx_sxml_illegal_argument_error
-          cx_aff_root.
+          cx_static_check
+          cx_sxml_illegal_argument_error.
 ENDCLASS.
 
 CLASS ltcl_integration_test_ad IMPLEMENTATION.
@@ -3562,19 +3559,20 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
 
 
-    DATA(handler) = NEW cl_aff_content_handler_json(
-      simple_transformation = st_name
-      st_root_name          = 'ROOT'
-    ).
+    DATA st_result TYPE abap_trans_resbind_tab.
+    FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
 
+    CLEAR result.
+    APPEND INITIAL LINE TO st_result ASSIGNING <st_result>.
+    <st_result>-name = 'ROOT'.
+    GET REFERENCE OF result  INTO <st_result>-value.
+
+    DATA(json_reader) = cl_sxml_string_reader=>create( json ).
     TRY.
-        handler->if_aff_content_handler~deserialize(
-          EXPORTING
-            content = json
-          IMPORTING
-            data    = result
-        ).
-      CATCH cx_aff_root INTO DATA(exception).
+        CALL TRANSFORMATION (st_name)
+          SOURCE XML json_reader
+          RESULT (st_result).
+      CATCH cx_root INTO DATA(exception).
         DELETE REPORT st_name.
         cl_abap_unit_assert=>fail( exception->get_text( ) ).
     ENDTRY.

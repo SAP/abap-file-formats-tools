@@ -31,6 +31,8 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS description_at_false_position FOR TESTING RAISING cx_static_check.
     METHODS text_between_annotations FOR TESTING RAISING cx_static_check.
     METHODS title_at_wrong_position FOR TESTING RAISING cx_static_check.
+    METHODS overwriting_enum_value FOR TESTING RAISING cx_static_check.
+    METHODS too_many_enum_values FOR TESTING RAISING cx_static_check.
 
 
 ENDCLASS.
@@ -511,6 +513,39 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
                                                              exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                            msgno = 113 )
+                                                             exp_component_name = `Component Name`
+                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD overwriting_enum_value.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Field With Overwritten Enum Value</p> Field with overwritten enum value $enumValue 'ownValue'`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
+    exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `ownValue` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD too_many_enum_values.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Field With Overwritten Enum Value</p> Field with overwritten enum value $enumValue 'ownValue' blablabl $enumValue 'ownValue2'`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log
+    ).
+    exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `ownValue` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
+                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
+                                                                                           msgno = 107
+                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-enum_value )
                                                              exp_component_name = `Component Name`
                                                              exp_type           = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.

@@ -296,10 +296,10 @@ CLASS zcl_aff_test_types DEFINITION
       BEGIN OF co_class_category,
         "! <p class="shorttext">General</p>
         "! General
-        general    TYPE vseoclass-category  VALUE '00',
+        general    TYPE n LENGTH 2 VALUE '00',
         "! <p class="shorttext">Exit Class</p>
         "! Exit class
-        exit_class TYPE vseoclass-category  VALUE '01',
+        exit_class TYPE n LENGTH 2 VALUE '01',
       END OF co_class_category.
 
 
