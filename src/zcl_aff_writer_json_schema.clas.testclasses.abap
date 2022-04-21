@@ -528,7 +528,7 @@ CLASS ltcl_json_writer_abap_doc DEFINITION FINAL FOR TESTING
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
       get_extrema FOR TESTING RAISING cx_static_check,
       calculate_max_length FOR TESTING RAISING cx_static_check,
-    struc_with_own_enum_values FOR TESTING RAISING cx_static_check.
+      struc_with_own_enum_values FOR TESTING RAISING cx_static_check.
 
 
 ENDCLASS.
