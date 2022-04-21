@@ -739,19 +739,21 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     IF abap_doc-description IS NOT INITIAL.
       result = abap_doc-description.
     ELSEIF type_description IS SUPPLIED.
-      IF type_description IS INSTANCE OF cl_abap_elemdescr.
-        DATA element_description TYPE REF TO cl_abap_elemdescr.
-        element_description = CAST cl_abap_elemdescr( type_description ).
-        element_description->get_ddic_field(
-          EXPORTING
-            p_langu    = 'E'
-          RECEIVING
-            p_flddescr = DATA(ddic_field)
-          EXCEPTIONS
-            OTHERS     = 1 ) ##SUBRC_OK.
-        IF ddic_field IS NOT INITIAL AND ddic_field-fieldtext IS NOT INITIAL.
-          result = ddic_field-fieldtext.
-        ENDIF.
+      DATA element_description TYPE REF TO cl_abap_elemdescr.
+      TRY.
+          element_description = CAST cl_abap_elemdescr( type_description ).
+        CATCH cx_sy_move_cast_error.
+          RETURN.
+      ENDTRY.
+      element_description->get_ddic_field(
+        EXPORTING
+          p_langu    = 'E'
+        RECEIVING
+          p_flddescr = DATA(ddic_field)
+        EXCEPTIONS
+          OTHERS     = 1 ) ##SUBRC_OK.
+      IF ddic_field IS NOT INITIAL AND ddic_field-fieldtext IS NOT INITIAL.
+        result = ddic_field-fieldtext.
       ENDIF.
     ENDIF.
   ENDMETHOD.
