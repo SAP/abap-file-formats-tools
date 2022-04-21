@@ -864,7 +864,11 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         ENDIF.
         DATA(fullname_of_value) = name_of_constant && '-' && <component>-name.
         DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name   = fullname_of_value ).
-        DATA(enum_value) = apply_formatting( CONV #( <component>-name ) ).
+        IF abap_doc_of_component-enum_value IS INITIAL.
+          DATA(enum_value) = apply_formatting( CONV #( <component>-name ) ).
+        ELSE.
+          enum_value = abap_doc_of_component-enum_value.
+        ENDIF.
 
         APPEND enum_value TO enum_values.
         APPEND abap_doc_of_component-description TO enum_descriptions.
