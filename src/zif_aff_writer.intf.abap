@@ -5,15 +5,17 @@ INTERFACE zif_aff_writer
     BEGIN OF ENUM enum_formatting_option STRUCTURE formatting_option,
       no_formatting VALUE IS INITIAL,
       camel_case    VALUE 1,
-    END OF ENUM enum_formatting_option STRUCTURE formatting_option,
+    END OF ENUM enum_formatting_option STRUCTURE formatting_option.
 
+  TYPES:
     BEGIN OF ENUM enum_type_info STRUCTURE type_info,
       string,
       numeric,
       boolean,
       date_time,
-    END OF ENUM enum_type_info STRUCTURE type_info,
+    END OF ENUM enum_type_info STRUCTURE type_info.
 
+  TYPES:
     BEGIN OF ENUM enum_operation STRUCTURE operation,
       initial,
       write_element,
