@@ -532,7 +532,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
         DATA(fullname_of_component) = name_of_constant && '-' && <component>-name.
-        DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name   = fullname_of_component ).
+        DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name = fullname_of_component ).
         IF <component>-type_kind <> enum_type.
           RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(zaff_tools) WITH name_of_constant fullname_of_type.
         ENDIF.
