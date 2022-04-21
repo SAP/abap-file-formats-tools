@@ -955,19 +955,20 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     DATA(st_name) = CONV progname( c_xslt_prefix && counter ).
     st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
 
-    DATA(handler) = NEW cl_aff_content_handler_json(
-      simple_transformation = st_name
-      st_root_name          = 'ROOT'
-    ).
+    DATA st_result TYPE abap_trans_resbind_tab.
+    FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
 
+    CLEAR result.
+    APPEND INITIAL LINE TO st_result ASSIGNING <st_result>.
+    <st_result>-name = 'ROOT'.
+    GET REFERENCE OF result  INTO <st_result>-value.
+
+    DATA(json_reader) = cl_sxml_string_reader=>create( json ).
     TRY.
-        handler->if_aff_content_handler~deserialize(
-          EXPORTING
-            content = json
-          IMPORTING
-            data    = result
-        ).
-      CATCH zcx_aff_tools INTO DATA(exception).
+        CALL TRANSFORMATION (st_name)
+          SOURCE XML json_reader
+          RESULT (st_result).
+      CATCH cx_root INTO DATA(exception).
         DELETE REPORT st_name.
         cl_abap_unit_assert=>fail( exception->get_text( ) ).
     ENDTRY.
@@ -3558,19 +3559,20 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
 
 
-    DATA(handler) = NEW cl_aff_content_handler_json(
-      simple_transformation = st_name
-      st_root_name          = 'ROOT'
-    ).
+    DATA st_result TYPE abap_trans_resbind_tab.
+    FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
 
+    CLEAR result.
+    APPEND INITIAL LINE TO st_result ASSIGNING <st_result>.
+    <st_result>-name = 'ROOT'.
+    GET REFERENCE OF result  INTO <st_result>-value.
+
+    DATA(json_reader) = cl_sxml_string_reader=>create( json ).
     TRY.
-        handler->if_aff_content_handler~deserialize(
-          EXPORTING
-            content = json
-          IMPORTING
-            data    = result
-        ).
-      CATCH cx_static_check INTO DATA(exception).
+        CALL TRANSFORMATION (st_name)
+          SOURCE XML json_reader
+          RESULT (st_result).
+      CATCH cx_root INTO DATA(exception).
         DELETE REPORT st_name.
         cl_abap_unit_assert=>fail( exception->get_text( ) ).
     ENDTRY.
