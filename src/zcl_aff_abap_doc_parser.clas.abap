@@ -430,7 +430,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
       RETURN.
     ENDIF.
-    write_log_for_multiple_entries( result_table = result_table annotaion =  abap_doc_annotation-enum_value ).
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-enum_value ).
     DATA(offset_found) = result_table[ 1 ]-offset.
     DATA(length_found) = result_table[ 1 ]-length.
     decoded_abap_doc-enum_value = `"` && get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 11 remove_whitespaces = abap_true ) && `"`.
