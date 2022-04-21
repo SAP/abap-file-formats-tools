@@ -548,6 +548,6 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
                                                                                            attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-enum_value )
                                                              exp_component_name = `Component Name`
                                                              exp_type           = zif_aff_log=>c_message_type-info ).
-  endmethod.
+  ENDMETHOD.
 
 ENDCLASS.
