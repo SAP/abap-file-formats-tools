@@ -1,7 +1,6 @@
 {
   "global": {
     "files": "/src/**/*.*",
-    "exclude": ["zcl_aff_writer_xslt.clas.testclasses.abap"],
     "skipGeneratedGatewayClasses": true,
     "skipGeneratedPersistentClasses": true,
     "skipGeneratedFunctionGroups": true,
