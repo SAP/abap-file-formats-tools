@@ -372,24 +372,21 @@ CLASS ltcl_json_writer IMPLEMENTATION.
     DATA(exp_json) = `2012-12-21`.
     DATA(act_json) = cut->date_time_from_abap_to_json(
       date_time_abap      = abap_date
-      element_description = element_description
-    ).
+      element_description = element_description ).
     cl_abap_unit_assert=>assert_equals( exp = exp_json act = act_json ).
 
     DATA(abap_date_year) = `"2012"`.
     exp_json = `2012`.
     act_json = cut->date_time_from_abap_to_json(
       date_time_abap      = abap_date_year
-      element_description = element_description
-    ).
+      element_description = element_description ).
     cl_abap_unit_assert=>assert_equals( exp = exp_json act = act_json ).
 
     DATA(abap_date_year_month) = `"201212"`.
     exp_json = `2012-12`.
     act_json = cut->date_time_from_abap_to_json(
       date_time_abap      = abap_date_year_month
-      element_description = element_description
-    ).
+      element_description = element_description ).
     cl_abap_unit_assert=>assert_equals( exp = exp_json act = act_json ).
 
     DATA(abap_time) = `"201500"`.
@@ -397,15 +394,13 @@ CLASS ltcl_json_writer IMPLEMENTATION.
     exp_json = `20:15:00`.
     act_json = cut->date_time_from_abap_to_json(
       date_time_abap      = abap_time
-      element_description = element_description
-    ).
+      element_description = element_description ).
     cl_abap_unit_assert=>assert_equals( exp = exp_json act = act_json ).
 
     DATA(abap_time_incomplete) = `"2015"`.
     act_json = cut->date_time_from_abap_to_json(
       date_time_abap      = abap_time_incomplete
-      element_description = element_description
-    ).
+      element_description = element_description ).
     cl_abap_unit_assert=>assert_equals( exp = exp_json act = act_json ).
 
     DATA(abap_utclong) = `"2012-12-21T23:59:59.9999999"`.
@@ -413,8 +408,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
     exp_json = `2012-12-21T23:59:59+00:00`.
     act_json = cut->date_time_from_abap_to_json(
       date_time_abap      = abap_utclong
-      element_description = element_description
-    ).
+      element_description = element_description ).
     cl_abap_unit_assert=>assert_equals( exp = exp_json act = act_json ).
   ENDMETHOD.
 
@@ -1769,8 +1763,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( `     }, ` )
     ( `     "additionalProperties": false ` )
     ( `   } ` )
-    ( )
-    ).
+    ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -1800,8 +1793,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   ( `"title": "myStringName",` )
   ( `"description": "This is a String",` )
   ( `"type": "string",` )
-  ( `"maxLength": 3` )
-   ).
+  ( `"maxLength": 3` ) ).
 
     DATA(act_schema) = test_generator->generate_type( VALUE zcl_aff_test_types=>simple_callback( ) ).
     DATA(exp_schema) = VALUE string_table(
@@ -1881,8 +1873,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   ( `    }` )
   ( `  },` )
   ( `  "additionalProperties": false` )
-  ( `}` )
-   ).
+  ( `}` ) ).
 
     DATA(act_schema) = test_generator->generate_type( VALUE zcl_aff_test_types=>table_callback( ) ).
     DATA(exp_schema) = VALUE string_table(
@@ -1936,8 +1927,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "description": "string", ` )
 ( `    "type": "string" ` )
 ( `    } ` )
-( `  } ` )
-).
+( `  } ` ) ).
     DATA(act_schema_co) = test_generator->generate_type( VALUE zcl_aff_test_types=>table_call_of_table( ) ).
     DATA(exp_schema) = VALUE string_table(
 ( ` { ` )
@@ -1976,8 +1966,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   ( `    "description": "myElement",` )
   ( `    "type": "string"` )
   ( `  }` )
-  ( `}` )
-  ).
+  ( `}` ) ).
 
     DATA(act_schema) = test_generator->generate_type( VALUE zcl_aff_test_types=>table_of_struc_with_callback( ) ).
     DATA(exp_schema) = VALUE string_table(
@@ -2494,8 +2483,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
           element_description = <description>
         IMPORTING
           max                 = DATA(max)
-          min                 = DATA(min)
-      ).
+          min                 = DATA(min) ).
       cl_abap_unit_assert=>assert_equals( exp = table_of_expected[ table_index ]-min act = min ).
       cl_abap_unit_assert=>assert_equals( exp = table_of_expected[ table_index ]-max act = max ).
     ENDLOOP.
@@ -2504,20 +2492,17 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   METHOD calculate_max_length.
     DATA c_length_30 TYPE c LENGTH 30.
     DATA(max_length) = cut->get_max_length(
-      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_30 ) )
-    ).
+      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_30 ) ) ).
     cl_abap_unit_assert=>assert_equals( exp = 30 act = max_length ).
 
     DATA c_length_60 TYPE c LENGTH 60.
     max_length = cut->get_max_length(
-      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_60 ) )
-    ).
+      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( c_length_60 ) ) ).
     cl_abap_unit_assert=>assert_equals( exp = 60 act = max_length ).
 
     DATA n_length_10 TYPE n LENGTH 10.
     max_length = cut->get_max_length(
-      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( n_length_10 ) )
-    ).
+      element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( n_length_10 ) ) ).
     cl_abap_unit_assert=>assert_equals( exp = 10 act = max_length ).
   ENDMETHOD.
 
