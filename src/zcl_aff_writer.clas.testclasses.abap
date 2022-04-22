@@ -83,8 +83,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
 
   METHOD set_name_mappings.
     DATA(name_mappings) = VALUE zif_aff_writer=>ty_name_mappings(
-      ( abap = 'ABAP_ELEMENT' json = 'JSON_ELEMENT' )
-    ).
+      ( abap = 'ABAP_ELEMENT' json = 'JSON_ELEMENT' ) ).
 
     cut->zif_aff_writer~set_name_mappings( name_mappings ).
 
@@ -93,8 +92,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
 
   METHOD set_abap_value_mappings.
     DATA(abap_value_mappings) = VALUE zif_aff_writer=>ty_abap_value_mappings(
-      ( abap_element = 'ABAP_ELEMENT' value_mappings = VALUE #( ( abap = '1' json = '2' ) ) )
-    ).
+      ( abap_element = 'ABAP_ELEMENT' value_mappings = VALUE #( ( abap = '1' json = '2' ) ) ) ).
 
     cut->zif_aff_writer~set_abap_value_mappings( abap_value_mappings ).
 
@@ -311,8 +309,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
       IMPORTING
         source_type      = DATA(source_type_act)
         source           = DATA(source_act)
-        fullname_of_type = DATA(full_name_of_type_act)
-    ).
+        fullname_of_type = DATA(full_name_of_type_act) ).
     DATA(source_type_exp) = `CLASS`.
     DATA(source_exp) = `ZCL_AFF_TEST_TYPES`.
     DATA(full_name_of_type_exp) = `LIST-LIST1-ELEMENT_OF_LIST1`.
@@ -341,8 +338,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
       EXPORTING
         abap_doc_additional = abap_doc_additional
       CHANGING
-        abap_doc_base       = abap_doc_base
-    ).
+        abap_doc_base       = abap_doc_base ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = abap_doc_base ).
 
     abap_doc_base = VALUE #( enumvalues_link = 'This is a link' ).
@@ -353,8 +349,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
       EXPORTING
         abap_doc_additional = abap_doc_additional
       CHANGING
-        abap_doc_base       = abap_doc_base
-    ).
+        abap_doc_base       = abap_doc_base ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = abap_doc_base ).
 
   ENDMETHOD.
@@ -368,8 +363,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
       IMPORTING
         structure_of_values = DATA(act_structure_of_values)
         name_of_source      = DATA(act_name_of_source)
-        name_of_constant    = DATA(act_name_of_constant)
-    ).
+        name_of_constant    = DATA(act_name_of_constant) ).
     DATA(exp_name_of_source) = `ZCL_AFF_TEST_TYPES`.
     DATA(exp_name_of_constant) = `ENUM_VALUES`.
     cl_abap_unit_assert=>assert_equals( exp = exp_name_of_constant act = act_name_of_constant ).

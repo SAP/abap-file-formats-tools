@@ -239,8 +239,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `OPEN_STRUCTURE STRUCTURE` )
       ( `    ELEMENT_1 : I` )
       ( `    ELEMENT_2 : g` )
-      ( `CLOSE_STRUCTURE STRUCTURE` )
-    ).
+      ( `CLOSE_STRUCTURE STRUCTURE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -254,8 +253,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `    INCLUDE_ELEMENT_2 : I` )
       ( `    ELEMENT_1 : I` )
       ( `    ELEMENT_2 : g` )
-      ( `CLOSE_STRUCTURE STRUCTURE_WITH_INCLUDE` )
-    ).
+      ( `CLOSE_STRUCTURE STRUCTURE_WITH_INCLUDE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -268,8 +266,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `    INCLUDE_ELEMENT_1 : g` )
       ( `    INCLUDE_ELEMENT_2 : I` )
       ( `    ELEMENT : g` )
-      ( `CLOSE_STRUCTURE STRUCTURE_INCLUDE_IN_INCLUDE` )
-    ).
+      ( `CLOSE_STRUCTURE STRUCTURE_INCLUDE_IN_INCLUDE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -284,8 +281,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `        ELEMENT_2 : g` )
       ( `    CLOSE_STRUCTURE STRUCTURE` )
       ( `    ELEMENT : g` )
-      ( `CLOSE_STRUCTURE STRUCTURE_IN_STRUCTURE` )
-    ).
+      ( `CLOSE_STRUCTURE STRUCTURE_IN_STRUCTURE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -297,8 +293,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     exp_result = VALUE #(
       ( `OPEN_TABLE TABLE_BUILD_IN_TYPE` )
       ( `    STRING : g` )
-      ( `CLOSE_TABLE TABLE_BUILD_IN_TYPE` )
-    ).
+      ( `CLOSE_TABLE TABLE_BUILD_IN_TYPE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -312,8 +307,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `        ELEMENT_1 : I` )
       ( `        ELEMENT_2 : g` )
       ( `    CLOSE_STRUCTURE STRUCTURE` )
-      ( `CLOSE_TABLE TABLE_STRUCTURE` )
-    ).
+      ( `CLOSE_TABLE TABLE_STRUCTURE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -329,8 +323,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `            ELEMENT_2 : g` )
       ( `        CLOSE_STRUCTURE STRUCTURE` )
       ( `    CLOSE_TABLE TABLE` )
-      ( `CLOSE_STRUCTURE STRUCTURE_WITH_TABLE` )
-    ).
+      ( `CLOSE_STRUCTURE STRUCTURE_WITH_TABLE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -347,8 +340,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `        CLOSE_STRUCTURE STRUCTURE` )
       ( `    CLOSE_TABLE TABLE` )
       ( `    INCLUDE_ELEMENT_1 : I` )
-      ( `CLOSE_STRUCTURE INCLUDE_TABLE` )
-    ).
+      ( `CLOSE_STRUCTURE INCLUDE_TABLE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -361,8 +353,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `    OPEN_TABLE TABLE_BUILD_IN_TYPE` )
       ( `        STRING : g` )
       ( `    CLOSE_TABLE TABLE_BUILD_IN_TYPE` )
-      ( `CLOSE_TABLE TABLE_IN_TABLE` )
-    ).
+      ( `CLOSE_TABLE TABLE_IN_TABLE` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -379,8 +370,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `            CLOSE_TABLE SECOND_TABLE` )
       ( `        CLOSE_STRUCTURE NESTED_TABLE` )
       ( `    CLOSE_TABLE FIRST_TABLE` )
-      ( `CLOSE_STRUCTURE STRUC_TAB_STRUC_TAB` )
-    ).
+      ( `CLOSE_STRUCTURE STRUC_TAB_STRUC_TAB` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
@@ -461,8 +451,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
       ( `        CLOSE_STRUCTURE TY_COMPONENT` )
       ( `    CLOSE_TABLE TYPES` )
 
-      ( `CLOSE_STRUCTURE TY_CLASS_PROPERTIES` )
-    ).
+      ( `CLOSE_STRUCTURE TY_CLASS_PROPERTIES` ) ).
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 

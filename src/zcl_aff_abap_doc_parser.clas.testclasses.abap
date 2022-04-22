@@ -51,8 +51,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
@@ -66,8 +65,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` minimum = `12` default = `"20"`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
@@ -81,8 +79,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` exclusive_minimum = `12` maximum = `20` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
@@ -96,8 +93,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` exclusive_maximum = `12` multiple_of = `2` showalways = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
@@ -111,8 +107,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` enumvalues_link = `cl_aff_test_types_for_writer.data:enum_values` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
@@ -126,8 +121,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` callback_class = `cl_aff_test_types_for_writer` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
@@ -141,8 +135,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
@@ -156,8 +149,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( title = `Title`  description = `This is the description` showalways = abap_true minimum = `2` default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -182,8 +174,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many number annotations`  minimum = '4' maximum = '9' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -207,8 +198,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `"10"` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -226,8 +216,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -245,8 +234,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `"10"` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -264,8 +252,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here are two many value links.` enumvalues_link = `cl_aff_test_types_for_writer.data:enum_values` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -283,8 +270,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many callbackclass links.` callback_class = `cl_aff_test_types_for_writer` minimum = '4').
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -302,8 +288,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many required annotations.` required = abap_true min_length = '5' max_length = '10').
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -321,8 +306,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here is a unknown annoataion.` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -340,8 +324,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Wrong usage of callbackClass annotation.` default = '"4"').
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -359,8 +342,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name1`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Wrong usage of default` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
 
@@ -370,8 +352,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name2`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Wrong usage of default` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
 
@@ -396,8 +377,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Wrong usage of values.` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -415,8 +395,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Wrong usage of minimum and maximum.` default = '"3"' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -440,8 +419,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Wrong links for default and values.` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -465,8 +443,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( title = `Title` minimum = `12` default = `"20"`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -483,8 +460,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Here is text between annotation` title = `Title` required = abap_true default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -501,8 +477,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Description first` title = `This is the title at wrong position` enumvalues_link = `cl_aff_test_types_for_writer.data:enum_values` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
@@ -524,8 +499,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `ownValue` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
@@ -538,8 +512,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         component_name = `Component Name`
         to_parse       = abap_doc_to_parse
       CHANGING
-        log            = log
-    ).
+        log            = log ).
     exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `ownValue` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
