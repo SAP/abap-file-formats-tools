@@ -461,7 +461,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD type_numeric.
-    DATA(act_output) = test_generator->generate_type( VALUE float( ) ).
+    DATA(act_output) = test_generator->generate_type( VALUE f( ) ).
 
     me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
@@ -2844,7 +2844,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD struc_with_own_enum_values.
-  DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
