@@ -369,8 +369,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
           element_description = element_description
         IMPORTING
           max                 = DATA(max_value)
-          min                 = DATA(min_value)
-      ).
+          min                 = DATA(min_value) ).
     ENDIF.
     DATA(multiple_of) = abap_doc-multiple_of.
 
@@ -579,8 +578,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         IMPORTING
           source_type      = source_type
           source           = source
-          fullname_of_type = fullname_of_type
-      ).
+          fullname_of_type = fullname_of_type ).
     ENDIF.
 
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
@@ -592,8 +590,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         EXPORTING
           abap_doc_additional = abap_doc_second
         CHANGING
-          abap_doc_base       = abap_doc
-      ).
+          abap_doc_base       = abap_doc ).
     ENDIF.
     check_redundant_annotations( ).
   ENDMETHOD.
@@ -608,8 +605,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         IMPORTING
           source_type      = DATA(source_type)
           source           = DATA(source)
-          fullname_of_type = fullname_of_type
-      ).
+          fullname_of_type = fullname_of_type ).
 
 * Element which is in no structure
     ELSEIF lines( stack_of_structure ) = 0.
@@ -629,8 +625,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         EXPORTING
           abap_doc_additional = abap_doc_second
         CHANGING
-          abap_doc_base       = abap_doc
-      ).
+          abap_doc_base       = abap_doc ).
     ENDIF.
     check_redundant_annotations( ).
   ENDMETHOD.
@@ -844,8 +839,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       IMPORTING
         structure_of_values = DATA(structure_of_values)
         name_of_source      = DATA(name_of_source)
-        name_of_constant    = DATA(name_of_constant)
-    ).
+        name_of_constant    = DATA(name_of_constant) ).
 
     IF structure_of_values IS NOT INITIAL.
       DATA(has_initial_component) = abap_false.
