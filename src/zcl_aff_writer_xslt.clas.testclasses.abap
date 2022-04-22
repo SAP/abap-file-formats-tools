@@ -461,7 +461,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD type_numeric.
-    DATA(act_output) = test_generator->generate_type( VALUE float( ) ).
+    DATA(act_output) = test_generator->generate_type( VALUE f( ) ).
 
     me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
@@ -989,8 +989,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
 
     exp_json = VALUE #(
         ( `[` )
@@ -1011,13 +1010,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
 
   ENDMETHOD.
 
@@ -1028,16 +1025,14 @@ CLASS ltcl_integration_test IMPLEMENTATION.
             ( element_1 = 1 element_2 = 'obj1_element_2_value' )
             ( element_1 = 2 element_2 = 'obj2_element_2_value' )
         )
-        include_element_1 = 1
-        ).
+        include_element_1 = 1 ).
 
     from_abap_to_json(
       EXPORTING
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `{` )
         ( ` "TABLE":` )
@@ -1061,13 +1056,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD structure_include_in_include.
@@ -1081,8 +1074,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `{` )
         ( ` "INCLUDE_ELEMENT_1":"element1_value",` )
@@ -1097,13 +1089,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD structure_with_incl.
@@ -1118,8 +1108,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `{` )
         ( ` "INCLUDE_ELEMENT_1":"value of incl element1",` )
@@ -1135,13 +1124,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD struc_tab_struc_tab.
@@ -1149,19 +1136,16 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     DATA(second_table_2) = VALUE lif_test_types=>table_build_in_type( ( `table_2_line_1` ) ( `table_2_line_2` ) ).
     DATA(first_table) = VALUE lif_test_types=>first_table_type(
       ( second_table = second_table_1 )
-      ( second_table = second_table_2 )
-    ).
+      ( second_table = second_table_2 ) ).
     DATA(test_type) = VALUE lif_test_types=>struc_tab_struc_tab(
-      first_table = first_table
-    ).
+      first_table = first_table ).
 
     from_abap_to_json(
       EXPORTING
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `{` )
         ( ` "FIRST_TABLE":` )
@@ -1190,13 +1174,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
 
@@ -1211,8 +1193,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `[` )
         ( ` [` )
@@ -1232,13 +1213,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD type_timestamp.
@@ -1250,8 +1229,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
 
     exp_json = VALUE #(
          ( `"2020-04-24T16:30:00+00:00"` ) ).
@@ -1263,13 +1241,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD type_boolean.
@@ -1280,8 +1256,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
 
     exp_json = VALUE #(
             ( `true` ) ).
@@ -1293,13 +1268,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD type_numeric.
@@ -1310,8 +1283,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
 
     exp_json = VALUE #(
             ( `5.3` ) ).
@@ -1323,13 +1295,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD type_string.
@@ -1340,8 +1310,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
 
     exp_json = VALUE #(
             ( `"0123abcdef"` ) ).
@@ -1353,13 +1322,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD value_mappings.
@@ -1377,8 +1344,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
                                     ( abap = '' json = 'false' ) ) ) )
       IMPORTING
         result         = DATA(act_json)
-        json           = DATA(json_xstring)
-    ).
+        json           = DATA(json_xstring) ).
 
 
     exp_json = VALUE #(
@@ -1391,13 +1357,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD name_mappings_structure.
@@ -1413,8 +1377,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
                                 ( abap = 'STRUCTURE' json = 'MAPPED_STRUCTURE' ) )
       IMPORTING
         result        = DATA(act_json)
-        json          = DATA(json_xstring)
-    ).
+        json          = DATA(json_xstring) ).
 
     exp_json = VALUE #(
         ( `{` )
@@ -1429,13 +1392,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD name_mappings_table.
@@ -1453,8 +1414,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
                                 ( abap = 'TABLE' json = 'MAPPED_TABLE' ) )
       IMPORTING
         result        = DATA(act_json)
-        json          = DATA(json_xstring)
-    ).
+        json          = DATA(json_xstring) ).
 
 
     exp_json = VALUE #(
@@ -1479,13 +1439,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD numc_to_string.
@@ -1504,8 +1462,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
                                     ( abap = '02' json = 'second' ) ) ) )
       IMPORTING
         result         = DATA(act_json)
-        json           = DATA(json_xstring)
-    ).
+        json           = DATA(json_xstring) ).
 
     exp_json = VALUE #(
         ( `"first"` ) ).
@@ -1517,13 +1474,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD char_to_string.
@@ -1541,8 +1496,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
                 ( abap = 'Bb' json = 'twoTest' ) ) ) )
       IMPORTING
         result         = DATA(act_json)
-        json           = DATA(json_xstring)
-    ).
+        json           = DATA(json_xstring) ).
 
     exp_json = VALUE #(
         ( `"twoTest"` ) ).
@@ -1554,13 +1508,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD int_to_bool.
@@ -1578,8 +1530,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
                 ( abap = '0' json = 'false' ) ) ) )
       IMPORTING
         result         = DATA(act_json)
-        json           = DATA(json_xstring)
-    ).
+        json           = DATA(json_xstring) ).
 
 
     exp_json = VALUE #(
@@ -1592,13 +1543,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD structure_with_language.
@@ -1610,8 +1559,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
 
     exp_json = VALUE #(
         ( `{` )
@@ -1625,13 +1573,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
 
@@ -2844,7 +2790,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD struc_with_own_enum_values.
-  DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
@@ -3021,8 +2967,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD simple_structure_with_required.
@@ -3040,16 +2985,14 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD structure_in_structure.
     DATA test_type TYPE zcl_aff_test_types=>my_structure3.
     test_type = VALUE #(
       nested_struc = VALUE #( my_element = 'Nested Element')
-      my_element = 'Not nested Element'
-    ).
+      my_element = 'Not nested Element' ).
     DATA act_data LIKE test_type.
     exp_json = VALUE #(
         ( `{` )
@@ -3063,8 +3006,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD simple_table.
@@ -3081,8 +3023,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD simple_type_with_enum_values.
@@ -3096,8 +3037,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD structure_with_enum_values.
@@ -3123,8 +3063,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD deep_nested_structure.
@@ -3139,8 +3078,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
                  element_of_list2 = 'Deep Nested'
                  )
                 )
-        field3 = 'ZZ'
-      ).
+        field3 = 'ZZ' ).
     DATA act_data LIKE test_type.
 
     exp_json = VALUE #(
@@ -3159,8 +3097,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD nested_structure_with_table.
@@ -3170,8 +3107,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
             inner_struc = VALUE #(
                 element_of_inner_struc = 50
                 inner_table_var = VALUE #( ( `line_1` ) ( `line_2` ) ) )
-            field2 = 'ZZ'
-        ).
+            field2 = 'ZZ' ).
     DATA act_data LIKE test_type.
 
     exp_json = VALUE #(
@@ -3190,8 +3126,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD structure_with_table_and_enum.
@@ -3202,8 +3137,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
             inner_struc = VALUE #(
                 inner_element = 50 )
             field2 = 'ZZ'
-           field_with_values = 01
-        ).
+           field_with_values = 01 ).
     DATA act_data LIKE test_type.
 
     exp_json = VALUE #(
@@ -3220,8 +3154,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD table_in_table.
@@ -3250,8 +3183,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
 
@@ -3275,8 +3207,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD nested_struc_with_default.
@@ -3295,8 +3226,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD structure_different_default.
@@ -3327,8 +3257,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
   ENDMETHOD.
 
   METHOD structure_with_default_problem.
@@ -3356,8 +3285,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = act_data
-    ).
+        act_data  = act_data ).
 
   ENDMETHOD.
 
@@ -3372,8 +3300,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD table_with_callback.
@@ -3388,8 +3315,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD structure_with_callback.
@@ -3404,8 +3330,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
 
@@ -3426,8 +3351,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD struc_in_struc_with_callback.
@@ -3450,8 +3374,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD structure_with_elem_callback.
@@ -3468,8 +3391,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD table_of_struc_with_callback.
@@ -3489,8 +3411,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
 
   ENDMETHOD.
 
@@ -3508,8 +3429,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD structure_with_include.
@@ -3531,8 +3451,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD struc_with_own_enum_values.
@@ -3546,8 +3465,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         test_type = test_type
       CHANGING
-        act_data  = test_type
-    ).
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD do_integration_test.
@@ -3556,8 +3474,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         test_type = test_type
       IMPORTING
         result    = DATA(act_json)
-        json      = DATA(json_xstring)
-    ).
+        json      = DATA(json_xstring) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 
@@ -3569,13 +3486,11 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       EXPORTING
         json   = json_xstring
       IMPORTING
-        result = act_data
-    ).
+        result = act_data ).
 
     cl_abap_unit_assert=>assert_equals(
       act = act_data
-      exp = test_type
-    ).
+      exp = test_type ).
   ENDMETHOD.
 
   METHOD from_abap_to_json.

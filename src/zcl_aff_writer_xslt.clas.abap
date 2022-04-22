@@ -333,8 +333,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         IMPORTING
           source_type      = source_type
           source           = source
-          fullname_of_type = fullname_of_type
-      ).
+          fullname_of_type = fullname_of_type ).
     ENDIF.
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
       abap_doc = call_reader_and_decode( name_of_source = source element_name   = fullname_of_type ).
@@ -345,8 +344,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         EXPORTING
           abap_doc_additional = abap_doc_second
         CHANGING
-          abap_doc_base       = abap_doc
-      ).
+          abap_doc_base       = abap_doc ).
     ENDIF.
     check_redundant_annotations( ).
   ENDMETHOD.
@@ -360,8 +358,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         IMPORTING
           source_type      = DATA(source_type)
           source           = DATA(source)
-          fullname_of_type = fullname_of_type
-      ).
+          fullname_of_type = fullname_of_type ).
       IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
         abap_doc = call_reader_and_decode( name_of_source = source element_name = fullname_of_type ).
       ENDIF.
@@ -370,8 +367,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         EXPORTING
           abap_doc_additional = abap_doc_second
         CHANGING
-          abap_doc_base       = abap_doc
-      ).
+          abap_doc_base       = abap_doc ).
     ELSE.
       abap_doc = get_abap_doc_for_absolute_name( absolute_name = type_description->absolute_name ).
       fullname_of_type = type_name.
@@ -503,8 +499,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     default = get_default_value_from_default(
       value_mappings      = value_mappings
       element_description = element_description
-      type                = type
-    ).
+      type                = type ).
     IF default IS NOT INITIAL.
       DATA(table) = stack_default_comp_of_struc[ 1 ]-table_of_defaults.
       APPEND VALUE #( var_name = structure_name default_value = default ) TO table.
@@ -521,8 +516,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       IMPORTING
         structure_of_values = DATA(structure_of_values)
         name_of_source      = DATA(name_of_source)
-        name_of_constant    = DATA(name_of_constant)
-    ).
+        name_of_constant    = DATA(name_of_constant) ).
 
     IF structure_of_values IS NOT INITIAL.
       FIELD-SYMBOLS:
@@ -580,8 +574,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       LOOP AT value_mappings ASSIGNING FIELD-SYMBOL(<found>) WHERE json = default_json.
         default = get_prefixed_default(
           value               = <found>-abap
-          element_description = element_description
-        ).
+          element_description = element_description ).
       ENDLOOP.
     ELSE.
       IF NOT is_default_value_valid( element_description = element_description default_value = default fullname_of_type = fullname_of_type ).
@@ -592,8 +585,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       IF type <> zif_aff_writer=>type_info-boolean.
         default = get_prefixed_default(
           value               = default
-          element_description = element_description
-        ).
+          element_description = element_description ).
       ELSEIF default = `abap_true` OR default = `X`.
         default = `C('X')`.
       ELSE.
