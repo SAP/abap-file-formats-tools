@@ -430,12 +430,10 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD call_reader_and_decode.
     DATA(reader) = NEW cl_oo_abap_doc_reader( ).
     TRY.
-        reader->get_abap_doc_for_element(
-          EXPORTING
-            clif_name    = CONV #( name_of_source )
-            element_name = element_name
-          RECEIVING
-            result       = DATA(result) ).
+        DATA(result) = reader->get_abap_doc_for_element(
+          clif_name    = CONV #( name_of_source )
+          element_name = element_name ).
+
         read_abap_doc = abap_doc_parser->parse(
           EXPORTING
             component_name = element_name
