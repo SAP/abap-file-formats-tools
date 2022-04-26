@@ -763,12 +763,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ELSEIF abap_doc-enumvalues_link IS NOT INITIAL.
       set_enum_properties( element_description->type_kind ).
       result = enum_values.
-    ELSEIF element_description IS INSTANCE OF cl_abap_enumdescr.
-      DATA(enum_description) = CAST cl_abap_enumdescr( element_description ).
-      LOOP AT enum_description->members ASSIGNING FIELD-SYMBOL(<member>).
-        DATA(formatted_name) = apply_formatting( CONV #( <member>-name ) ).
-        APPEND formatted_name TO result.
-      ENDLOOP.
     ELSE.
       IF get_json_type_from_description( element_description ) = zif_aff_writer=>type_info-boolean.
         RETURN.
@@ -799,12 +793,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ENDLOOP.
     ELSEIF abap_doc-enumvalues_link IS NOT INITIAL.
       result = enum_descriptions.
-    ELSEIF element_description IS INSTANCE OF cl_abap_enumdescr.
-      DATA(enum_description) = CAST cl_abap_enumdescr( element_description ).
-      LOOP AT enum_description->members ASSIGNING FIELD-SYMBOL(<member>).
-        DATA(description) = map_and_format_name( CONV #( <member>-name ) ).
-        APPEND description TO result.
-      ENDLOOP.
     ELSE.
       element_description->get_ddic_fixed_values(
         RECEIVING

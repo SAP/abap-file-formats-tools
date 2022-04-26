@@ -39,6 +39,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 
   METHOD enum_element.
 *  base type / base structure/ ohne (integer)
+*  ABAP enums are not supported and hence treated as string with maxLength 30
     TYPES:
       BEGIN OF ENUM category,
         general ##NEEDED,
@@ -53,14 +54,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( |    "$schema": "{ zcl_aff_writer_json_schema=>c_schema_specification }",| )
 ( |    "$id": "{ schema_id }",| )
 ( `    "type": "string",` )
-( `    "enum": [` )
-( `      "general",` )
-( `      "classicBadi"` )
-( `    ],` )
-( `    "enumDescriptions": [` )
-( `      "general",` )
-( `      "classicBadi"` )
-( `    ]` )
+( `    "maxLength": 30` )
 ( `}` )
 ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
