@@ -15,7 +15,7 @@ CLASS ltcl_aff_root IMPLEMENTATION.
     DATA(exception) = NEW zcx_aff_tools( ).
 
     cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
-    cl_abap_unit_assert=>assert_equals( exp = 001 act = exception->if_t100_message~t100key-msgno ).
+    cl_abap_unit_assert=>assert_equals( exp = '001' act = exception->if_t100_message~t100key-msgno ).
   ENDMETHOD.
 
   METHOD exception_with_message.
@@ -38,7 +38,7 @@ CLASS ltcl_aff_root IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = sy-msgv3 act = exception->if_t100_dyn_msg~msgv3 ).
     cl_abap_unit_assert=>assert_equals( exp = sy-msgv4 act = exception->if_t100_dyn_msg~msgv4 ).
     cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
-    cl_abap_unit_assert=>assert_equals( exp = 000 act = exception->if_t100_message~t100key-msgno ).
+    cl_abap_unit_assert=>assert_equals( exp = '000' act = exception->if_t100_message~t100key-msgno ).
     cl_abap_unit_assert=>assert_equals( exp = 'IF_T100_DYN_MSG~MSGV1' act = exception->if_t100_message~t100key-attr1 ).
     cl_abap_unit_assert=>assert_equals( exp = 'IF_T100_DYN_MSG~MSGV2' act = exception->if_t100_message~t100key-attr2 ).
     cl_abap_unit_assert=>assert_equals( exp = 'IF_T100_DYN_MSG~MSGV3' act = exception->if_t100_message~t100key-attr3 ).
