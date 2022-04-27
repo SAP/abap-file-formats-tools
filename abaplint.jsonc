@@ -32,7 +32,7 @@
     "unnecessary_pragma": true,
     "no_chained_assignment": true,
     "nrob_consistency": true,
-    "omit_preceding_zeros": false,
+    "omit_preceding_zeros": true,
     "prefer_corresponding": true,
     "slow_parameter_passing": true,
     "static_call_via_instance": true,

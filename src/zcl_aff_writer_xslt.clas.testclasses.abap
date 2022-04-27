@@ -3137,7 +3137,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
             inner_struc = VALUE #(
                 inner_element = 50 )
             field2 = 'ZZ'
-           field_with_values = 01 ).
+           field_with_values = '01' ).
     DATA act_data LIKE test_type.
 
     exp_json = VALUE #(
