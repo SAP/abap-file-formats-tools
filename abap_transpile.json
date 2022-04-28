@@ -1,6 +1,10 @@
 {
   "input_folder": "downport",
   "input_filter": [
+    "zif",
+    "zaff",
+    "zcl_aff_log",
+    "zcx"
   ],
   "output_folder": "output",
   "libs": [
@@ -15,6 +19,18 @@
     "addFilenames": true,
     "addCommonJS": true,
     "unknownTypes": "runtimeError",
-    "skip": []
+    "skip": [
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_catched_exception"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_classic_exception"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_error"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_exception_as_info"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_info"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_t100_exception"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_warning"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "get_max_severity"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "get_sy_message"},
+      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "joins_log"},
+      {"object": "ZCX_AFF_TOOLS", "class": "ltcl_aff_root", "method": "message_is_supplied"}
+    ]
   }
 }
