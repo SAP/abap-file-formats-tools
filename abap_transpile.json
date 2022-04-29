@@ -66,7 +66,6 @@
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_invalid"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_valid"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "camel_case", "note": "https://github.com/abaplint/transpiler/issues/715"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "compare_abap_doc"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_abap_doc_for_absolute_name"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_all_path_information"},
