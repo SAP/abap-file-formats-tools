@@ -65,7 +65,6 @@
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "compare_abap_doc"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_abap_doc_for_absolute_name"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_struc_of_enum_values_cl"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_boolean", "note": "todo in cl_abap_elemdescr.get_relative_name"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_date_time", "note": "abap.types.typeTodoUTCLongType is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_numeric", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_string_like"},
