@@ -55,7 +55,6 @@
       {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_exception_as_info"},
       {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_t100_exception"},
       {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "get_max_severity"},
-      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "joins_log"},
       {"object": "ZCL_AFF_TOOLS_UNIT_TEST_HELPER", "class": "ltcl_unit_test_helper", "method": "log_contains_msg_with_comp"},
       {"object": "ZCL_AFF_TOOLS_UNIT_TEST_HELPER", "class": "ltcl_unit_test_helper", "method": "log_contains_msg_with_env"},
       {"object": "ZCL_AFF_TOOLS_UNIT_TEST_HELPER", "class": "ltcl_unit_test_helper", "method": "log_contains_msg_without_env"},
