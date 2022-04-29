@@ -5,6 +5,7 @@
     "zaff",
     "zcl_aff_log",
     "zcl_aff_writer.clas",
+    "zcl_aff_test_types",
     "zcl_aff_tools_unit_test_helper",
     "zcl_aff_abap_doc_parser",
     "zcx"
