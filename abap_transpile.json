@@ -80,7 +80,6 @@
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_default", "note": "abap.types.typeTodoUTCLongType is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_source"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "value_mapping_found"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "value_mapping_not_found"},
       {"object": "ZCX_AFF_TOOLS", "class": "ltcl_aff_root", "method": "message_is_supplied"}
     ]
   }
