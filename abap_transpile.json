@@ -62,7 +62,6 @@
       {"object": "ZCL_AFF_TOOLS_UNIT_TEST_HELPER", "class": "ltcl_unit_test_helper", "method": "log_contains_msg_with_comp"},
       {"object": "ZCL_AFF_TOOLS_UNIT_TEST_HELPER", "class": "ltcl_unit_test_helper", "method": "log_contains_msg_with_env"},
       {"object": "ZCL_AFF_TOOLS_UNIT_TEST_HELPER", "class": "ltcl_unit_test_helper", "method": "log_contains_msg_without_env"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "append_to_previous_line"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_invalid"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_valid"},
