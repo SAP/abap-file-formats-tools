@@ -76,7 +76,6 @@
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "handle_include"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "name_mapping_and_camel_case"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "name_mapping_found"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "set_name_mappings"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "stack_stores_operations"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_default", "note": "abap.types.typeTodoUTCLongType is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_source"},
