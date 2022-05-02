@@ -68,7 +68,7 @@ CLASS lcl_section_source_comments DEFINITION
         limit          TYPE i
         limit_col      TYPE int2 OPTIONAL
       RETURNING
-        VALUE(result)         TYPE abap_bool .
+        VALUE(result)  TYPE abap_bool .
     METHODS is_within_types_begin_end_of
       IMPORTING
         tab_statements TYPE ty_sstmnt
@@ -76,7 +76,7 @@ CLASS lcl_section_source_comments DEFINITION
         limit          TYPE i
         limit_col      TYPE int2 OPTIONAL
       RETURNING
-        VALUE(result)         TYPE abap_bool .
+        VALUE(result)  TYPE abap_bool .
 
     METHODS build_hierarchy_nodes
       IMPORTING
@@ -335,10 +335,8 @@ CLASS lcl_section_source_comments IMPLEMENTATION.
               ELSEIF (  relevant_token1-str = 'TYPES' AND relevant_token3-str = 'ENUM' AND <fs_stmnt_next>-to - <fs_stmnt_next>-from > 5 ).
                 READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 1.
               ENDIF.
-              EXIT.
-            ELSE.
-              EXIT.
             ENDIF.
+            EXIT.
           ENDIF.
           IF relevant_token1 IS INITIAL.
             relevant_token1 = <fs_tok>.
