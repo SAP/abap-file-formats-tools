@@ -4,13 +4,11 @@ CLASS zcl_aff_abap_doc_reader DEFINITION
   CREATE PRIVATE .
 
   PUBLIC SECTION.
-    TYPES:
-      ty_source    TYPE STANDARD TABLE OF string WITH EMPTY KEY.
 
     CLASS-METHODS:
       create_instance
         IMPORTING
-          source        TYPE ty_source
+          source        TYPE string_table
         RETURNING
           VALUE(result) TYPE REF TO zcl_aff_abap_doc_reader.
     METHODS get_abap_doc_for_element
@@ -23,7 +21,7 @@ CLASS zcl_aff_abap_doc_reader DEFINITION
         cx_static_check.
   PROTECTED SECTION.
     DATA
-      source TYPE ty_source.
+      source TYPE string_table.
 ENDCLASS.
 
 
@@ -40,7 +38,7 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
 
     DATA: l_element_name      TYPE string,
           l_scanned_elem_name TYPE string.
-    DATA section_source       TYPE seo_section_source.
+    DATA section_source       TYPE string_table.
     DATA scan_abap_doc_blocks TYPE STANDARD TABLE OF lcl_section_source_comments=>ty_comment_block.
     DATA element_was_found    TYPE abap_bool.
 
@@ -99,5 +97,4 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
-
 ENDCLASS.

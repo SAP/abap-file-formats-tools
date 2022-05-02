@@ -16,7 +16,7 @@ ENDCLASS.
 
 CLASS ltcl_abap_doc_reader IMPLEMENTATION.
   METHOD setup.
-    DATA lt_clif_source TYPE zcl_aff_abap_doc_reader=>ty_source.
+    DATA lt_clif_source TYPE string_table.
 
     lt_clif_source = VALUE #(
     ( |class CL_EC_WITH_COMMENTED_TYPES definition| )

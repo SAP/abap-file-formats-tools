@@ -10,7 +10,7 @@ CLASS lcl_section_source_comments DEFINITION
       ty_sstmnt TYPE TABLE OF sstmnt .
     TYPES:
       BEGIN OF ty_comment_block,
-        tab_comments                 TYPE seo_section_source,
+        tab_comments                 TYPE string_table,
         column_first_comment         TYPE i,
         hook_relevant_tok_type       TYPE stokesx,
         hook_relevant_tok_name       TYPE stokesx,
@@ -23,7 +23,7 @@ CLASS lcl_section_source_comments DEFINITION
     TYPES:
       BEGIN OF ty_comment_for_cmpname,
         cmpname      TYPE c LENGTH 30,
-        tab_comments TYPE seo_section_source,
+        tab_comments TYPE string_table,
       END OF ty_comment_for_cmpname .
     TYPES:
       ty_comments_for_cmpnames TYPE TABLE OF ty_comment_for_cmpname .
@@ -31,7 +31,7 @@ CLASS lcl_section_source_comments DEFINITION
 
     METHODS scan_code
       IMPORTING
-        !source_to_be_scanned TYPE seo_section_source
+        !source_to_be_scanned TYPE string_table
       EXPORTING
         !tab_statements       TYPE ty_sstmnt
         !tab_tokens           TYPE ty_stokesx .
@@ -39,7 +39,7 @@ CLASS lcl_section_source_comments DEFINITION
       IMPORTING
         !tab_statements TYPE ty_sstmnt
         !tab_tokens     TYPE ty_stokesx
-        !tab_source     TYPE seo_section_source
+        !tab_source     TYPE string_table
       EXPORTING
         !tab_abap_doc   TYPE ty_comment_blocks .
   PROTECTED SECTION.
@@ -208,9 +208,9 @@ CLASS lcl_section_source_comments IMPLEMENTATION.
     DATA l_name_node          TYPE string.
     DATA l_name_concatenated  TYPE string.
     DATA l_parent             TYPE string.
-    DATA l_line_code          TYPE seo_section_source_line.
+    DATA l_line_code          LIKE LINE OF tab_source.
     DATA line_comment_block   TYPE ty_comment_block.
-    DATA tab_comments_to_save TYPE seo_section_source.
+    DATA tab_comments_to_save TYPE string_table.
 
     DATA current_statement TYPE i.
     DATA relevant_token1   TYPE stokesx.
