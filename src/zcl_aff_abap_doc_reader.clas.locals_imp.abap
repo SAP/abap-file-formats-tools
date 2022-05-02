@@ -63,18 +63,18 @@ CLASS lcl_section_source_comments DEFINITION
 
     METHODS is_within_data_begin_end_of
       IMPORTING
-        VALUE(tab_statements) TYPE ty_sstmnt
-        VALUE(tab_tokens)     TYPE ty_stokesx
-        VALUE(limit)          TYPE i
-        VALUE(limit_col)      TYPE int2 OPTIONAL
+        tab_statements TYPE ty_sstmnt
+        tab_tokens     TYPE ty_stokesx
+        limit          TYPE i
+        limit_col      TYPE int2 OPTIONAL
       RETURNING
         VALUE(result)         TYPE abap_bool .
     METHODS is_within_types_begin_end_of
       IMPORTING
-        VALUE(tab_statements) TYPE ty_sstmnt
-        VALUE(tab_tokens)     TYPE ty_stokesx
-        VALUE(limit)          TYPE i
-        VALUE(limit_col)      TYPE int2 OPTIONAL
+        tab_statements TYPE ty_sstmnt
+        tab_tokens     TYPE ty_stokesx
+        limit          TYPE i
+        limit_col      TYPE int2 OPTIONAL
       RETURNING
         VALUE(result)         TYPE abap_bool .
 
