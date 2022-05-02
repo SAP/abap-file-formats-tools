@@ -114,7 +114,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
         IF ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
-                <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+                <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str = 'OF' ).
           counter_begin_of = counter_begin_of + 1.
           me->depth = me->depth + 1.
 
@@ -131,7 +131,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
         IF ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
-                <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+                <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str = 'OF' ).
           counter_begin_of = counter_begin_of + 1.
           me->depth = me->depth + 1.
 
@@ -166,7 +166,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
-        IF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+        IF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str = 'OF' ).
           counter_begin_of = counter_begin_of + 1.
           me->depth = me->depth + 1.
 
@@ -180,7 +180,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
-        IF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+        IF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str = 'OF' ).
           counter_begin_of = counter_begin_of + 1.
           me->depth = me->depth + 1.
 
