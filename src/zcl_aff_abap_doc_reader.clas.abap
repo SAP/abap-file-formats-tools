@@ -41,11 +41,10 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
 
   METHOD get_abap_doc_for_element.
 
-    DATA: scan_util           TYPE REF TO lcl_SECTION_SOURCE_COMMENTS,
-          l_element_name      TYPE string,
+    DATA: l_element_name      TYPE string,
           l_scanned_elem_name TYPE string.
     DATA section_source       TYPE seo_section_source.
-    DATA scan_abap_doc_blocks TYPE STANDARD TABLE OF lcl_SECTION_SOURCE_COMMENTS=>ty_comment_block.
+    DATA scan_abap_doc_blocks TYPE STANDARD TABLE OF lcl_section_source_comments=>ty_comment_block.
     DATA element_was_found    TYPE abap_bool.
 
     CLEAR: result, element_was_found.
@@ -56,7 +55,7 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
     CONDENSE l_element_name.
 
 
-    CREATE OBJECT scan_util.
+    DATA(scan_util) = NEW lcl_section_source_comments( ).
 
     section_source[] = me->source[].
 

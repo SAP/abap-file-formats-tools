@@ -1,4 +1,4 @@
-CLASS lcl_SECTION_SOURCE_COMMENTS DEFINITION
+CLASS lcl_section_source_comments DEFINITION
   FINAL
   CREATE PUBLIC .
 
@@ -35,13 +35,13 @@ CLASS lcl_SECTION_SOURCE_COMMENTS DEFINITION
       EXPORTING
         !tab_statements       TYPE ty_sstmnt
         !tab_tokens           TYPE ty_stokesx .
-    METHODS IDENTIFY_abap_doc_BLOCKS_ALL
+    METHODS identify_abap_doc_blocks_all
       IMPORTING
         !tab_statements TYPE ty_sstmnt
         !tab_tokens     TYPE ty_stokesx
         !tab_source     TYPE seo_section_source
       EXPORTING
-        !TAB_abap_doc   TYPE ty_comment_blocks .
+        !tab_abap_doc   TYPE ty_comment_blocks .
   PROTECTED SECTION.
   PRIVATE SECTION.
     DATA: clif_name TYPE seoclskey.
@@ -70,7 +70,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS DEFINITION
         VALUE(tab_statements) TYPE cl_oo_section_source_comments=>ty_sstmnt
         VALUE(tab_tokens)     TYPE cl_oo_section_source_comments=>ty_stokesx
         VALUE(limit)          TYPE i
-        VALUE(LIMIT_col)      TYPE Int2 OPTIONAL
+        VALUE(limit_col)      TYPE int2 OPTIONAL
       RETURNING
         VALUE(result)         TYPE abap_bool .
     METHODS is_within_types_begin_end_of
@@ -78,7 +78,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS DEFINITION
         VALUE(tab_statements) TYPE cl_oo_section_source_comments=>ty_sstmnt
         VALUE(tab_tokens)     TYPE cl_oo_section_source_comments=>ty_stokesx
         VALUE(limit)          TYPE i
-        VALUE(LIMIT_col)      TYPE Int2 OPTIONAL
+        VALUE(limit_col)      TYPE int2 OPTIONAL
       RETURNING
         VALUE(result)         TYPE abap_bool .
 
@@ -113,13 +113,13 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
-        IF  ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
+        IF ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
                 <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
           counter_begin_of = counter_begin_of + 1.
           me->depth = me->depth + 1.
 
         ELSEIF ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
-                   <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str =  'OF' ).
+                   <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str = 'OF' ).
           counter_end_of = counter_end_of + 1.
           me->depth = me->depth - 1.
         ENDIF.
@@ -130,20 +130,20 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
-        IF  ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
+        IF ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
                 <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
           counter_begin_of = counter_begin_of + 1.
           me->depth = me->depth + 1.
 
         ELSEIF ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
-                   <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str =  'OF' ).
+                   <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str = 'OF' ).
           counter_end_of = counter_end_of + 1.
           me->depth = me->depth - 1.
         ENDIF.
       ENDLOOP.
     ENDIF.
 
-    IF  counter_begin_of > counter_end_of.
+    IF counter_begin_of > counter_end_of.
       result = abap_true.
     ENDIF.
   ENDMETHOD.
@@ -166,11 +166,11 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
-        IF  ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+        IF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
           counter_begin_of = counter_begin_of + 1.
           me->depth = me->depth + 1.
 
-        ELSEIF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str =  'OF' ).
+        ELSEIF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str = 'OF' ).
           counter_end_of = counter_end_of + 1.
           me->depth = me->depth - 1.
         ENDIF.
@@ -180,24 +180,24 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
         READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
-        IF  ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+        IF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
           counter_begin_of = counter_begin_of + 1.
           me->depth = me->depth + 1.
 
-        ELSEIF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str =  'OF' ).
+        ELSEIF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str = 'OF' ).
           counter_end_of = counter_end_of + 1.
           me->depth = me->depth - 1.
         ENDIF.
       ENDLOOP.
     ENDIF.
 
-    IF  counter_begin_of > counter_end_of.
+    IF counter_begin_of > counter_end_of.
       result = abap_true.
     ENDIF.
   ENDMETHOD.
 
   METHOD scan_code.
-    SCAN ABAP-SOURCE source_to_be_scanned TOKENS    INTO tab_tokens
+    SCAN ABAP-SOURCE source_to_be_scanned TOKENS INTO tab_tokens
                                           STATEMENTS INTO tab_statements
                                           WITH ANALYSIS
                                           WITH COMMENTS
@@ -258,7 +258,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         IF <fs_tok>-col > 0.
           l_length = <fs_tok>-col - 1.
           IF l_length > 0.
-            CHECK  ( l_line_code(l_length) CO space ) .
+            CHECK ( l_line_code(l_length) CO space ).
           ENDIF.
         ENDIF.
 
@@ -289,7 +289,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
           EXIT.  " get ABAP Docs only in definition part
         ENDIF.
 
-        IF  <fs_tok_prev>-str = 'TYPES' OR ( <fs_tok_prev>-str = 'INCLUDE' AND
+        IF <fs_tok_prev>-str = 'TYPES' OR ( <fs_tok_prev>-str = 'INCLUDE' AND
                                              <fs_tok_prev_plus_1> IS ASSIGNED AND <fs_tok_prev_plus_1>-str = 'TYPE' ).
           IF me->is_within_types_begin_end_of(
            tab_statements = tab_statements
@@ -299,7 +299,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
           ENDIF.
         ENDIF.
 
-        IF ( <fs_tok_prev>-str = 'DATA' OR  <fs_tok_prev>-str = 'CLASS-DATA' OR <fs_tok_prev>-str = 'CONSTANTS' ).
+        IF ( <fs_tok_prev>-str = 'DATA' OR <fs_tok_prev>-str = 'CLASS-DATA' OR <fs_tok_prev>-str = 'CONSTANTS' ).
           IF me->is_within_data_begin_end_of(
              tab_statements = tab_statements
              tab_tokens     = tab_tokens
@@ -334,7 +334,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
 *             we need the third token in this special case ...
               READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 2.
 *             Check whether this is a TYPES BEGIN OF MESH my_mesh statement.
-              IF (  relevant_token1-str = 'TYPES' AND relevant_token3-str = 'MESH' AND <fs_stmnt_next>-to - <fs_stmnt_next>-from = 4  ).
+              IF (  relevant_token1-str = 'TYPES' AND relevant_token3-str = 'MESH' AND <fs_stmnt_next>-to - <fs_stmnt_next>-from = 4 ).
                 READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 1.
               ELSEIF (  relevant_token1-str = 'TYPES' AND relevant_token3-str = 'ENUM' AND <fs_stmnt_next>-to - <fs_stmnt_next>-from > 5 ).
                 READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 1.
@@ -356,7 +356,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         ENDIF.
 
 
-        IF relevant_token1-str = 'TYPES' OR relevant_token1-str = 'DATA' OR relevant_token1-str = 'CLASS-DATA' OR relevant_token1-str = 'CONSTANTS' .
+        IF relevant_token1-str = 'TYPES' OR relevant_token1-str = 'DATA' OR relevant_token1-str = 'CLASS-DATA' OR relevant_token1-str = 'CONSTANTS'.
           APPEND l_name_node TO nodes.
           CLEAR: l_count, l_from, l_to.
 
@@ -367,7 +367,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
           ENDLOOP.
 
           IF l_from > 0.
-            LOOP AT me->hierarchy_nodes FROM l_from + 1 INTO l_hier WHERE depth = 0 .
+            LOOP AT me->hierarchy_nodes FROM l_from + 1 INTO l_hier WHERE depth = 0.
               l_to = sy-tabix.
               EXIT.
             ENDLOOP.
@@ -377,7 +377,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
               l_to = l_to - 1.
             ENDIF.
             " operate only within relavent node_interval
-            LOOP AT  me->hierarchy_nodes FROM l_from TO l_to INTO l_node WHERE node_name = l_name_node AND depth = me->depth.
+            LOOP AT me->hierarchy_nodes FROM l_from TO l_to INTO l_node WHERE node_name = l_name_node AND depth = me->depth.
               l_depth = l_node-depth.
               l_parent = l_node-parent_node.
               WHILE l_depth <> 0.
@@ -415,7 +415,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         ENDIF.
       ENDIF.
 
-      line_comment_block-tab_comments               = tab_comments_to_save .
+      line_comment_block-tab_comments               = tab_comments_to_save.
       line_comment_block-hook_relevant_tok_type     = relevant_token1.
       line_comment_block-hook_relevant_tok_name     = relevant_token2.
       line_comment_block-hook_relevant_tok_name_add = relevant_token3.
@@ -466,19 +466,19 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
         CHECK ( <fs_tok>-str = 'TYPES' OR <fs_tok>-str = 'DATA' OR
                 <fs_tok>-str = 'CLASS-DATA' OR <fs_tok>-str = 'CONSTANTS' ).
 
-        READ TABLE tab_tokens ASSIGNING <fs_tok_next1>  INDEX  <fs_stmnt>-from  + 1.
-        READ TABLE tab_tokens ASSIGNING <fs_tok_next2>  INDEX  <fs_stmnt>-from  + 2.
-        READ TABLE tab_tokens ASSIGNING <fs_tok_next3>  INDEX  <fs_stmnt>-from  + 3.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_next1>  INDEX <fs_stmnt>-from  + 1.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_next2>  INDEX <fs_stmnt>-from  + 2.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_next3>  INDEX <fs_stmnt>-from  + 3.
 
         IF <fs_tok_next1> IS ASSIGNED AND <fs_tok_next2> IS ASSIGNED AND <fs_tok_next3> IS ASSIGNED.
-          IF ( <fs_tok_next1>-str = 'BEGIN' AND <fs_tok_next2>-str = 'OF' ) .
+          IF ( <fs_tok_next1>-str = 'BEGIN' AND <fs_tok_next2>-str = 'OF' ).
 
             l_node-node_name      = <fs_tok_next3>-str.
             l_node-stmnt_from_idx = <fs_stmnt>-from.
             l_node-stmnt_to_idx   = <fs_stmnt>-to.
 
-            IF  <fs_tok>-str = 'TYPES' AND ( l_node-node_name = 'MESH' OR l_node-node_name = 'ENUM' ).
-              READ TABLE tab_tokens ASSIGNING <fs_tok_next4>  INDEX  <fs_stmnt>-from  + 4.
+            IF <fs_tok>-str = 'TYPES' AND ( l_node-node_name = 'MESH' OR l_node-node_name = 'ENUM' ).
+              READ TABLE tab_tokens ASSIGNING <fs_tok_next4>  INDEX <fs_stmnt>-from  + 4.
               l_node-node_name = <fs_tok_next4>-str.
             ENDIF.
 
@@ -497,7 +497,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
 
             l_depth       = l_depth + 1.
             l_count_begin = l_count_begin + 1.
-          ELSEIF ( <fs_tok_next1>-str = 'END' AND <fs_tok_next2>-str = 'OF' ) .
+          ELSEIF ( <fs_tok_next1>-str = 'END' AND <fs_tok_next2>-str = 'OF' ).
             l_depth = l_depth - 1.
             l_count_end = l_count_end + 1.
 
