@@ -37,8 +37,7 @@ CLASS lcl_section_source_comments DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
     DATA clsname TYPE string.
-    TYPES:
-      ty_tab_subcotext TYPE STANDARD TABLE OF seosubcotx WITH DEFAULT KEY .
+
     TYPES: BEGIN OF ty_node,
              depth          TYPE i,
              node_name      TYPE string,
