@@ -44,7 +44,7 @@ CLASS lcl_section_source_comments DEFINITION
         !tab_abap_doc   TYPE ty_comment_blocks .
   PROTECTED SECTION.
   PRIVATE SECTION.
-    DATA: clif_name TYPE c LENGTH 30.
+    DATA: clif_name TYPE seoclskey.
     TYPES:
       ty_tab_subcotext TYPE STANDARD TABLE OF seosubcotx WITH DEFAULT KEY .
     TYPES: BEGIN OF ty_node,
