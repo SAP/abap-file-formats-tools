@@ -36,6 +36,7 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
 
   METHOD get_abap_doc_for_element.
 
+
     DATA: l_element_name      TYPE string,
           l_scanned_elem_name TYPE string.
     DATA section_source       TYPE string_table.
@@ -58,13 +59,10 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
                           IMPORTING tab_statements       = DATA(scan_statements)
                                     tab_tokens           = DATA(scan_tokens) ).
 
-    scan_util->identify_abap_doc_blocks_all(
-      EXPORTING
-        tab_statements = scan_statements
-        tab_tokens     = scan_tokens
-        tab_source     = section_source
-      IMPORTING
-        tab_abap_doc   = scan_abap_doc_blocks ).
+    scan_abap_doc_blocks = scan_util->identify_abap_doc_blocks_all(
+      tab_statements = scan_statements
+      tab_tokens     = scan_tokens
+      tab_source     = section_source ).
 
     LOOP AT scan_abap_doc_blocks ASSIGNING FIELD-SYMBOL(<fs_abap_doc_block>).
 
@@ -95,6 +93,6 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
     IF element_was_found = abap_false.
       RAISE EXCEPTION NEW zcx_aff_tools( message = l_element_name ).
     ENDIF.
-
+    
   ENDMETHOD.
 ENDCLASS.

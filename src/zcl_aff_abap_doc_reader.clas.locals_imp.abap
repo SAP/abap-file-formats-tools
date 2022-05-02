@@ -19,7 +19,7 @@ CLASS lcl_section_source_comments DEFINITION
         hook_relevant_tok_name_stmnt TYPE stokesx,
       END OF ty_comment_block .
     TYPES:
-      ty_comment_blocks TYPE TABLE OF ty_comment_block .
+      ty_comment_blocks TYPE STANDARD TABLE OF ty_comment_block WITH EMPTY KEY.
     TYPES:
       BEGIN OF ty_comment_for_cmpname,
         cmpname      TYPE c LENGTH 30,
@@ -37,11 +37,11 @@ CLASS lcl_section_source_comments DEFINITION
         !tab_tokens           TYPE ty_stokesx .
     METHODS identify_abap_doc_blocks_all
       IMPORTING
-        !tab_statements TYPE ty_sstmnt
-        !tab_tokens     TYPE ty_stokesx
-        !tab_source     TYPE string_table
-      EXPORTING
-        !tab_abap_doc   TYPE ty_comment_blocks .
+        !tab_statements     TYPE ty_sstmnt
+        !tab_tokens         TYPE ty_stokesx
+        !tab_source         TYPE string_table
+      RETURNING
+        VALUE(tab_abap_doc) TYPE ty_comment_blocks .
   PROTECTED SECTION.
   PRIVATE SECTION.
     DATA: clif_name TYPE seoclskey.
