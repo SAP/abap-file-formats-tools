@@ -25,9 +25,6 @@ CLASS lcl_section_source_comments DEFINITION
         cmpname      TYPE c LENGTH 30,
         tab_comments TYPE string_table,
       END OF ty_comment_for_cmpname .
-    TYPES:
-      ty_comments_for_cmpnames TYPE TABLE OF ty_comment_for_cmpname .
-
 
     METHODS scan_code
       IMPORTING
