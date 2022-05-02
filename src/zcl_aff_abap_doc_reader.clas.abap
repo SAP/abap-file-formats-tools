@@ -1,109 +1,109 @@
-class zcl_aff_abap_doc_reader definition
-  public
-  final
-  create private .
+CLASS zcl_aff_abap_doc_reader DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PRIVATE .
 
-  public section.
-    types:
-      ty_source    type standard table of string with empty key.
+  PUBLIC SECTION.
+    TYPES:
+      ty_source    TYPE STANDARD TABLE OF string WITH EMPTY KEY.
 
-    class-methods:
+    CLASS-METHODS:
       create_instance
-        importing
-          source        type ty_source
-        returning
-          value(result) type ref to zcl_aff_abap_doc_reader.
-    methods get_abap_doc_for_element
-      importing
-        version       type r3state default 'A'
-        element_name  type string
-      returning
-        value(result) type string
-      raising
+        IMPORTING
+          source        TYPE ty_source
+        RETURNING
+          VALUE(result) TYPE REF TO zcl_aff_abap_doc_reader.
+    METHODS get_abap_doc_for_element
+      IMPORTING
+        version       TYPE r3state DEFAULT 'A'
+        element_name  TYPE string
+      RETURNING
+        VALUE(result) TYPE string
+      RAISING
         cx_oo_clif_not_exists
         cx_oo_access_permission
         cx_oo_clif_scan_error
         cx_oo_abap_doc_reader.
-  protected section.
-    data
-      source type ty_source.
-endclass.
+  PROTECTED SECTION.
+    DATA
+      source TYPE ty_source.
+ENDCLASS.
 
 
 
-class zcl_aff_abap_doc_reader implementation.
+CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
 
 
-  method create_instance.
-    result = new #( ).
-  endmethod.
+  METHOD create_instance.
+    result = NEW #( ).
+  ENDMETHOD.
 
 
-  method get_abap_doc_for_element.
+  METHOD get_abap_doc_for_element.
 
-    data: scan_util           type ref to lcl_SECTION_SOURCE_COMMENTS,
-          l_element_name      type string,
-          l_scanned_elem_name type string.
-    data section_source       type seo_section_source.
-    data scan_abap_doc_blocks type standard table of lcl_SECTION_SOURCE_COMMENTS=>ty_comment_block.
-    data element_was_found    type abap_bool.
+    DATA: scan_util           TYPE REF TO lcl_SECTION_SOURCE_COMMENTS,
+          l_element_name      TYPE string,
+          l_scanned_elem_name TYPE string.
+    DATA section_source       TYPE seo_section_source.
+    DATA scan_abap_doc_blocks TYPE STANDARD TABLE OF lcl_SECTION_SOURCE_COMMENTS=>ty_comment_block.
+    DATA element_was_found    TYPE abap_bool.
 
-    clear: result, element_was_found.
+    CLEAR: result, element_was_found.
 
     l_element_name  = element_name.
 
-    translate l_element_name  to upper case.
-    condense l_element_name.
+    TRANSLATE l_element_name  TO UPPER CASE.
+    CONDENSE l_element_name.
 
 
-    create object scan_util.
+    CREATE OBJECT scan_util.
 
     section_source[] = me->source[].
 
-    scan_util->scan_code( exporting source_to_be_scanned = section_source
-                          importing tab_statements       = data(scan_statements)
-                                    tab_tokens           = data(scan_tokens) ).
+    scan_util->scan_code( EXPORTING source_to_be_scanned = section_source
+                          IMPORTING tab_statements       = DATA(scan_statements)
+                                    tab_tokens           = DATA(scan_tokens) ).
 
     scan_util->identify_abap_doc_blocks_all(
-      exporting
+      EXPORTING
         tab_statements = scan_statements
         tab_tokens     = scan_tokens
         tab_source     = section_source
-      importing
+      IMPORTING
         tab_abap_doc   = scan_abap_doc_blocks ).
 
-    loop at scan_abap_doc_blocks assigning field-symbol(<fs_abap_doc_block>).
+    LOOP AT scan_abap_doc_blocks ASSIGNING FIELD-SYMBOL(<fs_abap_doc_block>).
 
-      if <fs_abap_doc_block>-hook_relevant_tok_name-str = 'BEGIN'.
+      IF <fs_abap_doc_block>-hook_relevant_tok_name-str = 'BEGIN'.
         l_scanned_elem_name = <fs_abap_doc_block>-hook_relevant_tok_name_add-str.
-      else.
+      ELSE.
         l_scanned_elem_name = <fs_abap_doc_block>-hook_relevant_tok_name-str.
-      endif.
+      ENDIF.
 
-      if l_scanned_elem_name = l_element_name.
+      IF l_scanned_elem_name = l_element_name.
 
         " prepare the result for required element
-        loop at <fs_abap_doc_block>-tab_comments assigning field-symbol(<adoc_line>).
-          condense <adoc_line>.         " remove leading spaces
+        LOOP AT <fs_abap_doc_block>-tab_comments ASSIGNING FIELD-SYMBOL(<adoc_line>).
+          CONDENSE <adoc_line>.         " remove leading spaces
           <adoc_line> = <adoc_line>+2.  " remove "!
-          condense <adoc_line>.         " remove again leading spaces
-          if sy-tabix = 1.
+          CONDENSE <adoc_line>.         " remove again leading spaces
+          IF sy-tabix = 1.
             result = <adoc_line>.
-          else.
-            concatenate result <adoc_line> into result separated by space.
-          endif.
-        endloop.
+          ELSE.
+            CONCATENATE result <adoc_line> INTO result SEPARATED BY space.
+          ENDIF.
+        ENDLOOP.
         element_was_found = abap_true.
-        exit.
-      endif.
-    endloop.
+        EXIT.
+      ENDIF.
+    ENDLOOP.
 
-    if element_was_found = abap_false.
-      raise exception type cx_oo_abap_doc_reader
-        exporting
-          element_name            = l_element_name.
-    endif.
+    IF element_was_found = abap_false.
+      RAISE EXCEPTION TYPE cx_oo_abap_doc_reader
+        EXPORTING
+          element_name = l_element_name.
+    ENDIF.
 
-  endmethod.
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.

@@ -1,528 +1,528 @@
-class lcl_SECTION_SOURCE_COMMENTS definition
-  final
-  create public .
+CLASS lcl_SECTION_SOURCE_COMMENTS DEFINITION
+  FINAL
+  CREATE PUBLIC .
 
-  public section.
+  PUBLIC SECTION.
 
-    types:
-      TY_STOKESX type standard table of STOKESX .
-    types:
-      TY_SSTMNT type table of SSTMNT .
-    types:
-      begin of TY_COMMENT_BLOCK,
-        TAB_COMMENTS                 type SEO_SECTION_SOURCE,
-        COLUMN_FIRST_COMMENT         type I,
-        HOOK_RELEVANT_TOK_TYPE       type STOKESX,
-        HOOK_RELEVANT_TOK_NAME       type STOKESX,
-        HOOK_RELEVANT_TOK_NAME_ADD   type STOKESX,
-        HOOK_RELEVANT_TOK_TYPE_STMNT type STOKESX,
-        HOOK_RELEVANT_TOK_NAME_STMNT type STOKESX,
-      end of TY_COMMENT_BLOCK .
-    types:
-      TY_COMMENT_BLOCKS type table of TY_COMMENT_BLOCK .
-    types:
-      begin of TY_COMMENT_FOR_CMPNAME,
-        CMPNAME      type SEOCMPNAME,
-        TAB_COMMENTS type SEO_SECTION_SOURCE,
-      end of TY_COMMENT_FOR_CMPNAME .
-    types:
-      TY_COMMENTS_FOR_CMPNAMES type table of TY_COMMENT_FOR_CMPNAME .
-
-
-    methods SCAN_CODE
-      importing
-        !SOURCE_TO_BE_SCANNED type SEO_SECTION_SOURCE
-      exporting
-        !TAB_STATEMENTS       type TY_SSTMNT
-        !TAB_TOKENS           type TY_STOKESX .
-    methods IDENTIFY_abap_doc_BLOCKS_ALL
-      importing
-        !TAB_STATEMENTS type TY_SSTMNT
-        !TAB_TOKENS     type TY_STOKESX
-        !TAB_SOURCE     type SEO_SECTION_SOURCE
-      exporting
-        !TAB_abap_doc   type TY_COMMENT_BLOCKS .
-  protected section.
-  private section.
-    data: CLIF_NAME type SEOCLSKEY.
-    types:
-      TY_TAB_SUBCOTEXT type standard table of SEOSUBCOTX with default key .
-    types: begin of TY_NODE,
-             DEPTH          type I,
-             NODE_NAME      type STRING,
-             PARENT_NODE    type STRING,
-             STMNT_FROM_IDX type I,
-             STMNT_TO_IDX   type I,
-           end of TY_NODE.
-    types TY_NODES type standard table of TY_NODE.
-
-    data:
-      TAB_TOKENS_OLD           type table of STOKESX .
-    data:
-      TAB_STATEMENTS_OLD       type table of SSTMNT .
-    data DEPTH type I.
-    data HIERARCHY_NODES type TY_NODES.
-    class-data CO_REGEX_FOR_TAG_END_PARAGR type STRING value '</p>\s*' ##NO_TEXT.
-    class-data CO_REGEX_FOR_SHORTTXT type STRING value `<p[\s\n]+class="shorttext synchronized"[\s\n]+lang="(\w\w)"[\s\n]*>` ##NO_TEXT.
-
-    methods IS_WITHIN_DATA_BEGIN_END_OF
-      importing
-        value(TAB_STATEMENTS) type CL_OO_SECTION_SOURCE_COMMENTS=>TY_SSTMNT
-        value(TAB_TOKENS)     type CL_OO_SECTION_SOURCE_COMMENTS=>TY_STOKESX
-        value(LIMIT)          type I
-        value(LIMIT_col)      type Int2 optional
-      returning
-        value(RESULT)         type ABAP_BOOL .
-    methods IS_WITHIN_TYPES_BEGIN_END_OF
-      importing
-        value(TAB_STATEMENTS) type CL_OO_SECTION_SOURCE_COMMENTS=>TY_SSTMNT
-        value(TAB_TOKENS)     type CL_OO_SECTION_SOURCE_COMMENTS=>TY_STOKESX
-        value(LIMIT)          type I
-        value(LIMIT_col)      type Int2 optional
-      returning
-        value(RESULT)         type ABAP_BOOL .
-
-    methods BUILD_HIERARCHY_NODES
-      importing
-        value(TAB_STATEMENTS) type CL_OO_SECTION_SOURCE_COMMENTS=>TY_SSTMNT
-        value(TAB_TOKENS)     type CL_OO_SECTION_SOURCE_COMMENTS=>TY_STOKESX
-      changing
-        NODES                 type TY_NODES.
-endclass.
+    TYPES:
+      ty_stokesx TYPE STANDARD TABLE OF stokesx .
+    TYPES:
+      ty_sstmnt TYPE TABLE OF sstmnt .
+    TYPES:
+      BEGIN OF ty_comment_block,
+        tab_comments                 TYPE seo_section_source,
+        column_first_comment         TYPE i,
+        hook_relevant_tok_type       TYPE stokesx,
+        hook_relevant_tok_name       TYPE stokesx,
+        hook_relevant_tok_name_add   TYPE stokesx,
+        hook_relevant_tok_type_stmnt TYPE stokesx,
+        hook_relevant_tok_name_stmnt TYPE stokesx,
+      END OF ty_comment_block .
+    TYPES:
+      ty_comment_blocks TYPE TABLE OF ty_comment_block .
+    TYPES:
+      BEGIN OF ty_comment_for_cmpname,
+        cmpname      TYPE seocmpname,
+        tab_comments TYPE seo_section_source,
+      END OF ty_comment_for_cmpname .
+    TYPES:
+      ty_comments_for_cmpnames TYPE TABLE OF ty_comment_for_cmpname .
 
 
+    METHODS scan_code
+      IMPORTING
+        !source_to_be_scanned TYPE seo_section_source
+      EXPORTING
+        !tab_statements       TYPE ty_sstmnt
+        !tab_tokens           TYPE ty_stokesx .
+    METHODS IDENTIFY_abap_doc_BLOCKS_ALL
+      IMPORTING
+        !tab_statements TYPE ty_sstmnt
+        !tab_tokens     TYPE ty_stokesx
+        !tab_source     TYPE seo_section_source
+      EXPORTING
+        !TAB_abap_doc   TYPE ty_comment_blocks .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA: clif_name TYPE seoclskey.
+    TYPES:
+      ty_tab_subcotext TYPE STANDARD TABLE OF seosubcotx WITH DEFAULT KEY .
+    TYPES: BEGIN OF ty_node,
+             depth          TYPE i,
+             node_name      TYPE string,
+             parent_node    TYPE string,
+             stmnt_from_idx TYPE i,
+             stmnt_to_idx   TYPE i,
+           END OF ty_node.
+    TYPES ty_nodes TYPE STANDARD TABLE OF ty_node.
 
-class lcl_SECTION_SOURCE_COMMENTS implementation.
+    DATA:
+      tab_tokens_old           TYPE TABLE OF stokesx .
+    DATA:
+      tab_statements_old       TYPE TABLE OF sstmnt .
+    DATA depth TYPE i.
+    DATA hierarchy_nodes TYPE ty_nodes.
+    CLASS-DATA co_regex_for_tag_end_paragr TYPE string VALUE '</p>\s*' ##NO_TEXT.
+    CLASS-DATA co_regex_for_shorttxt TYPE string VALUE `<p[\s\n]+class="shorttext synchronized"[\s\n]+lang="(\w\w)"[\s\n]*>` ##NO_TEXT.
+
+    METHODS is_within_data_begin_end_of
+      IMPORTING
+        VALUE(tab_statements) TYPE cl_oo_section_source_comments=>ty_sstmnt
+        VALUE(tab_tokens)     TYPE cl_oo_section_source_comments=>ty_stokesx
+        VALUE(limit)          TYPE i
+        VALUE(LIMIT_col)      TYPE Int2 OPTIONAL
+      RETURNING
+        VALUE(result)         TYPE abap_bool .
+    METHODS is_within_types_begin_end_of
+      IMPORTING
+        VALUE(tab_statements) TYPE cl_oo_section_source_comments=>ty_sstmnt
+        VALUE(tab_tokens)     TYPE cl_oo_section_source_comments=>ty_stokesx
+        VALUE(limit)          TYPE i
+        VALUE(LIMIT_col)      TYPE Int2 OPTIONAL
+      RETURNING
+        VALUE(result)         TYPE abap_bool .
+
+    METHODS build_hierarchy_nodes
+      IMPORTING
+        VALUE(tab_statements) TYPE cl_oo_section_source_comments=>ty_sstmnt
+        VALUE(tab_tokens)     TYPE cl_oo_section_source_comments=>ty_stokesx
+      CHANGING
+        nodes                 TYPE ty_nodes.
+ENDCLASS.
 
 
 
-  method IS_WITHIN_DATA_BEGIN_END_OF.
-    field-symbols: <FS_TOK_PREV_PREV>  type STOKESX.
-    field-symbols: <FS_TOK_PREV_PREV2> type STOKESX.
-    field-symbols: <FS_TOK_PREV_PREV1> type STOKESX.
-    field-symbols: <FS_STMNT_TMP>      type SSTMNT.
-
-    data COUNTER_BEGIN_OF type I.
-    data COUNTER_END_OF type I.
-
-    RESULT = ABAP_FALSE.
-    clear ME->DEPTH.
-
-    if LIMIT_COL > 0.
-      loop at TAB_STATEMENTS assigning <FS_STMNT_TMP> where ( TYPE <> 'P' and TYPE <> 'S' and TYPE <> 'G' ) and FROM <= LIMIT.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV>   index <FS_STMNT_TMP>-FROM.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV1>  index <FS_STMNT_TMP>-FROM + 1.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV2>  index <FS_STMNT_TMP>-FROM + 2.
-        if  ( ( <FS_TOK_PREV_PREV>-STR = 'DATA' or <FS_TOK_PREV_PREV>-STR = 'CLASS-DATA' or
-                <FS_TOK_PREV_PREV>-STR = 'CONSTANTS' ) and <FS_TOK_PREV_PREV1>-STR = 'BEGIN' and <FS_TOK_PREV_PREV2>-STR =  'OF' ).
-          COUNTER_BEGIN_OF = COUNTER_BEGIN_OF + 1.
-          ME->DEPTH = ME->DEPTH + 1.
-
-        elseif ( ( <FS_TOK_PREV_PREV>-STR = 'DATA' or <FS_TOK_PREV_PREV>-STR = 'CLASS-DATA' or
-                   <FS_TOK_PREV_PREV>-STR = 'CONSTANTS' ) and <FS_TOK_PREV_PREV1>-STR = 'END' and <FS_TOK_PREV_PREV2>-STR =  'OF' ).
-          COUNTER_END_OF = COUNTER_END_OF + 1.
-          ME->DEPTH = ME->DEPTH - 1.
-        endif.
-
-      endloop.
-    else.
-      loop at TAB_STATEMENTS assigning <FS_STMNT_TMP> where ( TYPE <> 'P' and TYPE <> 'S' and TYPE <> 'G' ) and FROM < LIMIT.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV>   index <FS_STMNT_TMP>-FROM.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV1>  index <FS_STMNT_TMP>-FROM + 1.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV2>  index <FS_STMNT_TMP>-FROM + 2.
-        if  ( ( <FS_TOK_PREV_PREV>-STR = 'DATA' or <FS_TOK_PREV_PREV>-STR = 'CLASS-DATA' or
-                <FS_TOK_PREV_PREV>-STR = 'CONSTANTS' ) and <FS_TOK_PREV_PREV1>-STR = 'BEGIN' and <FS_TOK_PREV_PREV2>-STR =  'OF' ).
-          COUNTER_BEGIN_OF = COUNTER_BEGIN_OF + 1.
-          ME->DEPTH = ME->DEPTH + 1.
-
-        elseif ( ( <FS_TOK_PREV_PREV>-STR = 'DATA' or <FS_TOK_PREV_PREV>-STR = 'CLASS-DATA' or
-                   <FS_TOK_PREV_PREV>-STR = 'CONSTANTS' ) and <FS_TOK_PREV_PREV1>-STR = 'END' and <FS_TOK_PREV_PREV2>-STR =  'OF' ).
-          COUNTER_END_OF = COUNTER_END_OF + 1.
-          ME->DEPTH = ME->DEPTH - 1.
-        endif.
-      endloop.
-    endif.
-
-    if  COUNTER_BEGIN_OF > COUNTER_END_OF.
-      RESULT = ABAP_TRUE.
-    endif.
-  endmethod.
-
-
-  method IS_WITHIN_TYPES_BEGIN_END_OF.
-    field-symbols: <FS_TOK_PREV_PREV>  type STOKESX.
-    field-symbols: <FS_TOK_PREV_PREV2> type STOKESX.
-    field-symbols: <FS_TOK_PREV_PREV1> type STOKESX.
-    field-symbols: <FS_STMNT_TMP>      type SSTMNT.
-
-    data COUNTER_BEGIN_OF type I.
-    data COUNTER_END_OF type I.
-
-    RESULT = ABAP_FALSE.
-    clear ME->DEPTH.
-
-    if LIMIT_COL > 0.  " end row comment
-      loop at TAB_STATEMENTS assigning <FS_STMNT_TMP> where ( TYPE <> 'P' and TYPE <> 'S' and TYPE <> 'G' ) and FROM <= LIMIT.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV>   index <FS_STMNT_TMP>-FROM.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV1>  index <FS_STMNT_TMP>-FROM + 1.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV2>  index <FS_STMNT_TMP>-FROM + 2.
-        if  ( <FS_TOK_PREV_PREV>-STR = 'TYPES' and <FS_TOK_PREV_PREV1>-STR = 'BEGIN' and <FS_TOK_PREV_PREV2>-STR =  'OF' ).
-          COUNTER_BEGIN_OF = COUNTER_BEGIN_OF + 1.
-          ME->DEPTH = ME->DEPTH + 1.
-
-        elseif ( <FS_TOK_PREV_PREV>-STR = 'TYPES' and <FS_TOK_PREV_PREV1>-STR = 'END' and <FS_TOK_PREV_PREV2>-STR =  'OF' ).
-          COUNTER_END_OF = COUNTER_END_OF + 1.
-          ME->DEPTH = ME->DEPTH - 1.
-        endif.
-      endloop.
-    else.
-      loop at TAB_STATEMENTS assigning <FS_STMNT_TMP> where ( TYPE <> 'P' and TYPE <> 'S' and TYPE <> 'G' ) and FROM < LIMIT.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV>   index <FS_STMNT_TMP>-FROM.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV1>  index <FS_STMNT_TMP>-FROM + 1.
-        read table TAB_TOKENS assigning <FS_TOK_PREV_PREV2>  index <FS_STMNT_TMP>-FROM + 2.
-        if  ( <FS_TOK_PREV_PREV>-STR = 'TYPES' and <FS_TOK_PREV_PREV1>-STR = 'BEGIN' and <FS_TOK_PREV_PREV2>-STR =  'OF' ).
-          COUNTER_BEGIN_OF = COUNTER_BEGIN_OF + 1.
-          ME->DEPTH = ME->DEPTH + 1.
-
-        elseif ( <FS_TOK_PREV_PREV>-STR = 'TYPES' and <FS_TOK_PREV_PREV1>-STR = 'END' and <FS_TOK_PREV_PREV2>-STR =  'OF' ).
-          COUNTER_END_OF = COUNTER_END_OF + 1.
-          ME->DEPTH = ME->DEPTH - 1.
-        endif.
-      endloop.
-    endif.
-
-    if  COUNTER_BEGIN_OF > COUNTER_END_OF.
-      RESULT = ABAP_TRUE.
-    endif.
-  endmethod.
-
-  method SCAN_CODE.
-    scan abap-source SOURCE_TO_BE_SCANNED tokens    into TAB_TOKENS
-                                          statements into TAB_STATEMENTS
-                                          with analysis
-                                          with comments
-                                          with pragmas '*'.
-  endmethod.
+CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
 
 
 
-  method IDENTIFY_ABAP_DOC_BLOCKS_ALL.
-    data L_NODE               type TY_NODE.
-    data L_NODE_NEW           type TY_NODE.
-    data L_NAME_NODE          type STRING.
-    data L_NAME_CONCATENATED  type STRING.
-    data L_PARENT             type STRING.
-    data L_LINE_CODE          type SEO_SECTION_SOURCE_LINE.
-    data LINE_COMMENT_BLOCK   type TY_COMMENT_BLOCK.
-    data TAB_COMMENTS_TO_SAVE type SEO_SECTION_SOURCE.
+  METHOD is_within_data_begin_end_of.
+    FIELD-SYMBOLS: <fs_tok_prev_prev>  TYPE stokesx.
+    FIELD-SYMBOLS: <fs_tok_prev_prev2> TYPE stokesx.
+    FIELD-SYMBOLS: <fs_tok_prev_prev1> TYPE stokesx.
+    FIELD-SYMBOLS: <fs_stmnt_tmp>      TYPE sstmnt.
 
-    data CURRENT_STATEMENT type I.
-    data RELEVANT_TOKEN1   type STOKESX.
-    data RELEVANT_TOKEN2   type STOKESX.
-    data RELEVANT_TOKEN3   type STOKESX.
-    data L_DEPTH           type I.
-    data L_LENGTH          type I.
-    data L_COUNT           type I.
-    data L_FROM            type I.
-    data L_TO              type I.
+    DATA counter_begin_of TYPE i.
+    DATA counter_end_of TYPE i.
+
+    result = abap_false.
+    CLEAR me->depth.
+
+    IF limit_col > 0.
+      LOOP AT tab_statements ASSIGNING <fs_stmnt_tmp> WHERE ( type <> 'P' AND type <> 'S' AND type <> 'G' ) AND from <= limit.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
+        IF  ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
+                <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+          counter_begin_of = counter_begin_of + 1.
+          me->depth = me->depth + 1.
+
+        ELSEIF ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
+                   <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str =  'OF' ).
+          counter_end_of = counter_end_of + 1.
+          me->depth = me->depth - 1.
+        ENDIF.
+
+      ENDLOOP.
+    ELSE.
+      LOOP AT tab_statements ASSIGNING <fs_stmnt_tmp> WHERE ( type <> 'P' AND type <> 'S' AND type <> 'G' ) AND from < limit.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
+        IF  ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
+                <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+          counter_begin_of = counter_begin_of + 1.
+          me->depth = me->depth + 1.
+
+        ELSEIF ( ( <fs_tok_prev_prev>-str = 'DATA' OR <fs_tok_prev_prev>-str = 'CLASS-DATA' OR
+                   <fs_tok_prev_prev>-str = 'CONSTANTS' ) AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str =  'OF' ).
+          counter_end_of = counter_end_of + 1.
+          me->depth = me->depth - 1.
+        ENDIF.
+      ENDLOOP.
+    ENDIF.
+
+    IF  counter_begin_of > counter_end_of.
+      result = abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD is_within_types_begin_end_of.
+    FIELD-SYMBOLS: <fs_tok_prev_prev>  TYPE stokesx.
+    FIELD-SYMBOLS: <fs_tok_prev_prev2> TYPE stokesx.
+    FIELD-SYMBOLS: <fs_tok_prev_prev1> TYPE stokesx.
+    FIELD-SYMBOLS: <fs_stmnt_tmp>      TYPE sstmnt.
+
+    DATA counter_begin_of TYPE i.
+    DATA counter_end_of TYPE i.
+
+    result = abap_false.
+    CLEAR me->depth.
+
+    IF limit_col > 0.  " end row comment
+      LOOP AT tab_statements ASSIGNING <fs_stmnt_tmp> WHERE ( type <> 'P' AND type <> 'S' AND type <> 'G' ) AND from <= limit.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
+        IF  ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+          counter_begin_of = counter_begin_of + 1.
+          me->depth = me->depth + 1.
+
+        ELSEIF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str =  'OF' ).
+          counter_end_of = counter_end_of + 1.
+          me->depth = me->depth - 1.
+        ENDIF.
+      ENDLOOP.
+    ELSE.
+      LOOP AT tab_statements ASSIGNING <fs_stmnt_tmp> WHERE ( type <> 'P' AND type <> 'S' AND type <> 'G' ) AND from < limit.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev>   INDEX <fs_stmnt_tmp>-from.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev1>  INDEX <fs_stmnt_tmp>-from + 1.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev_prev2>  INDEX <fs_stmnt_tmp>-from + 2.
+        IF  ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'BEGIN' AND <fs_tok_prev_prev2>-str =  'OF' ).
+          counter_begin_of = counter_begin_of + 1.
+          me->depth = me->depth + 1.
+
+        ELSEIF ( <fs_tok_prev_prev>-str = 'TYPES' AND <fs_tok_prev_prev1>-str = 'END' AND <fs_tok_prev_prev2>-str =  'OF' ).
+          counter_end_of = counter_end_of + 1.
+          me->depth = me->depth - 1.
+        ENDIF.
+      ENDLOOP.
+    ENDIF.
+
+    IF  counter_begin_of > counter_end_of.
+      result = abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD scan_code.
+    SCAN ABAP-SOURCE source_to_be_scanned TOKENS    INTO tab_tokens
+                                          STATEMENTS INTO tab_statements
+                                          WITH ANALYSIS
+                                          WITH COMMENTS
+                                          WITH PRAGMAS '*'.
+  ENDMETHOD.
+
+
+
+  METHOD identify_abap_doc_blocks_all.
+    DATA l_node               TYPE ty_node.
+    DATA l_node_new           TYPE ty_node.
+    DATA l_name_node          TYPE string.
+    DATA l_name_concatenated  TYPE string.
+    DATA l_parent             TYPE string.
+    DATA l_line_code          TYPE seo_section_source_line.
+    DATA line_comment_block   TYPE ty_comment_block.
+    DATA tab_comments_to_save TYPE seo_section_source.
+
+    DATA current_statement TYPE i.
+    DATA relevant_token1   TYPE stokesx.
+    DATA relevant_token2   TYPE stokesx.
+    DATA relevant_token3   TYPE stokesx.
+    DATA l_depth           TYPE i.
+    DATA l_length          TYPE i.
+    DATA l_count           TYPE i.
+    DATA l_from            TYPE i.
+    DATA l_to              TYPE i.
 *
-    data EMBEDED_TYPES              type ABAP_BOOL value ABAP_FALSE.
-    data EMBEDED_DATA_CONST         type ABAP_BOOL value ABAP_FALSE.
-    data NODES                      type RSWSOURCET.
-    data HIERARCHY_NODES_DESCENDING type TY_NODES.
+    DATA embeded_types              TYPE abap_bool VALUE abap_false.
+    DATA embeded_data_const         TYPE abap_bool VALUE abap_false.
+    DATA nodes                      TYPE rswsourcet.
+    DATA hierarchy_nodes_descending TYPE ty_nodes.
 
-    field-symbols <FS_STMNT>           type SSTMNT.
-    field-symbols <FS_STMNT_PREV>      type SSTMNT.
-    field-symbols <FS_STMNT_NEXT>      type SSTMNT.
-    field-symbols <FS_TOK>             type STOKESX.
-    field-symbols <FS_TOK_PREV>        type STOKESX.
-    field-symbols <FS_TOK_PREV_PLUS_1> type STOKESX.
+    FIELD-SYMBOLS <fs_stmnt>           TYPE sstmnt.
+    FIELD-SYMBOLS <fs_stmnt_prev>      TYPE sstmnt.
+    FIELD-SYMBOLS <fs_stmnt_next>      TYPE sstmnt.
+    FIELD-SYMBOLS <fs_tok>             TYPE stokesx.
+    FIELD-SYMBOLS <fs_tok_prev>        TYPE stokesx.
+    FIELD-SYMBOLS <fs_tok_prev_plus_1> TYPE stokesx.
 
-    clear TAB_ABAP_DOC.
+    CLEAR tab_abap_doc.
 
-    ME->BUILD_HIERARCHY_NODES(
-      exporting
-        TAB_STATEMENTS = TAB_STATEMENTS
-        TAB_TOKENS     = TAB_TOKENS
-      changing
-        NODES          = ME->HIERARCHY_NODES ).
+    me->build_hierarchy_nodes(
+      EXPORTING
+        tab_statements = tab_statements
+        tab_tokens     = tab_tokens
+      CHANGING
+        nodes          = me->hierarchy_nodes ).
 
-    loop at TAB_STATEMENTS assigning <FS_STMNT> where TYPE = 'P' or TYPE = 'S'.
-      clear: TAB_COMMENTS_TO_SAVE, RELEVANT_TOKEN1, RELEVANT_TOKEN2, RELEVANT_TOKEN3, LINE_COMMENT_BLOCK, L_NAME_CONCATENATED.
+    LOOP AT tab_statements ASSIGNING <fs_stmnt> WHERE type = 'P' OR type = 'S'.
+      CLEAR: tab_comments_to_save, relevant_token1, relevant_token2, relevant_token3, line_comment_block, l_name_concatenated.
 
-      CURRENT_STATEMENT  = SY-TABIX.
+      current_statement  = sy-tabix.
 
 *     get the comment block in sections
-      loop at TAB_TOKENS assigning <FS_TOK> from <FS_STMNT>-FROM to <FS_STMNT>-TO.
-        read table TAB_SOURCE into L_LINE_CODE index <FS_TOK>-ROW.
-        if <FS_TOK>-COL > 0.
-          L_LENGTH = <FS_TOK>-COL - 1.
-          if L_LENGTH > 0.
-            check  ( L_LINE_CODE(L_LENGTH) co SPACE ) .
-          endif.
-        endif.
+      LOOP AT tab_tokens ASSIGNING <fs_tok> FROM <fs_stmnt>-from TO <fs_stmnt>-to.
+        READ TABLE tab_source INTO l_line_code INDEX <fs_tok>-row.
+        IF <fs_tok>-col > 0.
+          l_length = <fs_tok>-col - 1.
+          IF l_length > 0.
+            CHECK  ( l_line_code(l_length) CO space ) .
+          ENDIF.
+        ENDIF.
 
-        data(L_LINE_CODE_CONDENSED) = L_LINE_CODE.
-        condense L_LINE_CODE_CONDENSED.
-        if L_LINE_CODE_CONDENSED(2) = '"!'.           " filter only ABAP Doc comments
-          append L_LINE_CODE to TAB_COMMENTS_TO_SAVE.
-        endif.
-      endloop.
+        DATA(l_line_code_condensed) = l_line_code.
+        CONDENSE l_line_code_condensed.
+        IF l_line_code_condensed(2) = '"!'.           " filter only ABAP Doc comments
+          APPEND l_line_code TO tab_comments_to_save.
+        ENDIF.
+      ENDLOOP.
 
-      check TAB_COMMENTS_TO_SAVE is not initial.
+      CHECK tab_comments_to_save IS NOT INITIAL.
 
-      EMBEDED_TYPES      = ABAP_FALSE.
-      EMBEDED_DATA_CONST = ABAP_FALSE.
+      embeded_types      = abap_false.
+      embeded_data_const = abap_false.
 
 *     consider data and types typtype 4
-      loop at TAB_STATEMENTS assigning <FS_STMNT_PREV> to CURRENT_STATEMENT where ( TYPE <> 'P' and TYPE <> 'S' and TYPE <> 'G' ).
-      endloop.
+      LOOP AT tab_statements ASSIGNING <fs_stmnt_prev> TO current_statement WHERE ( type <> 'P' AND type <> 'S' AND type <> 'G' ).
+      ENDLOOP.
 
       " is_within_.._begin_of sets the required me->depth value
-      if <FS_STMNT_PREV> is assigned.
-        read table TAB_TOKENS assigning <FS_TOK_PREV>  index <FS_STMNT_PREV>-FROM.  " fist token in statement
-        if <FS_TOK_PREV>-STR = 'INCLUDE'.
-          read table TAB_TOKENS assigning <FS_TOK_PREV_PLUS_1> index <FS_STMNT_PREV>-FROM + 1.  " second token in statement
-        endif.
+      IF <fs_stmnt_prev> IS ASSIGNED.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_prev>  INDEX <fs_stmnt_prev>-from.  " fist token in statement
+        IF <fs_tok_prev>-str = 'INCLUDE'.
+          READ TABLE tab_tokens ASSIGNING <fs_tok_prev_plus_1> INDEX <fs_stmnt_prev>-from + 1.  " second token in statement
+        ENDIF.
 
-        if ( <FS_TOK_PREV>-STR = 'ENDCLASS' ).
-          exit.  " get ABAP Docs only in definition part
-        endif.
+        IF ( <fs_tok_prev>-str = 'ENDCLASS' ).
+          EXIT.  " get ABAP Docs only in definition part
+        ENDIF.
 
-        if  <FS_TOK_PREV>-STR = 'TYPES' or ( <FS_TOK_PREV>-STR = 'INCLUDE' and
-                                             <FS_TOK_PREV_PLUS_1> is assigned and <FS_TOK_PREV_PLUS_1>-STR = 'TYPE' ).
-          if ME->IS_WITHIN_TYPES_BEGIN_END_OF(
-           TAB_STATEMENTS = TAB_STATEMENTS
-           TAB_TOKENS     = TAB_TOKENS
-           LIMIT          = <FS_STMNT>-FROM )  = ABAP_TRUE.
-            EMBEDED_TYPES = ABAP_TRUE.
-          endif.
-        endif.
+        IF  <fs_tok_prev>-str = 'TYPES' OR ( <fs_tok_prev>-str = 'INCLUDE' AND
+                                             <fs_tok_prev_plus_1> IS ASSIGNED AND <fs_tok_prev_plus_1>-str = 'TYPE' ).
+          IF me->is_within_types_begin_end_of(
+           tab_statements = tab_statements
+           tab_tokens     = tab_tokens
+           limit          = <fs_stmnt>-from )  = abap_true.
+            embeded_types = abap_true.
+          ENDIF.
+        ENDIF.
 
-        if ( <FS_TOK_PREV>-STR = 'DATA' or  <FS_TOK_PREV>-STR = 'CLASS-DATA' or <FS_TOK_PREV>-STR = 'CONSTANTS' ).
-          if ME->IS_WITHIN_DATA_BEGIN_END_OF(
-             TAB_STATEMENTS = TAB_STATEMENTS
-             TAB_TOKENS     = TAB_TOKENS
-             LIMIT          = <FS_STMNT>-FROM )  = ABAP_TRUE.
-            EMBEDED_DATA_CONST = ABAP_TRUE.
-          endif.
-        endif.
-      endif.
+        IF ( <fs_tok_prev>-str = 'DATA' OR  <fs_tok_prev>-str = 'CLASS-DATA' OR <fs_tok_prev>-str = 'CONSTANTS' ).
+          IF me->is_within_data_begin_end_of(
+             tab_statements = tab_statements
+             tab_tokens     = tab_tokens
+             limit          = <fs_stmnt>-from )  = abap_true.
+            embeded_data_const = abap_true.
+          ENDIF.
+        ENDIF.
+      ENDIF.
 
 *     identify the next statement in section and consider the first 2 tokens as hook
 *     where the comment has to be attached in the new section
-      loop at TAB_STATEMENTS assigning <FS_STMNT_NEXT> from CURRENT_STATEMENT + 1  where ( TYPE <> 'P' and TYPE <> 'S' and TYPE <> 'G' ).
-        exit.
-      endloop.
+      LOOP AT tab_statements ASSIGNING <fs_stmnt_next> FROM current_statement + 1  WHERE ( type <> 'P' AND type <> 'S' AND type <> 'G' ).
+        EXIT.
+      ENDLOOP.
 
-      if <FS_STMNT_NEXT> is assigned.
-        loop at TAB_TOKENS assigning <FS_TOK> from <FS_STMNT_NEXT>-FROM where TYPE <> 'C'.
-          if RELEVANT_TOKEN2 is initial and RELEVANT_TOKEN1 is not initial.
-            RELEVANT_TOKEN2 = <FS_TOK>.
-            if RELEVANT_TOKEN1-STR = 'CLASS'.
-              read table TAB_TOKENS into RELEVANT_TOKEN3 index SY-TABIX + 1.
-              if RELEVANT_TOKEN3-STR = 'DEFINITION' and RELEVANT_TOKEN2-STR <> CLIF_NAME-CLSNAME.
-                RELEVANT_TOKEN2-STR = CLIF_NAME-CLSNAME. " it happens at COPY: you have old clsname there
-              endif.
-              clear RELEVANT_TOKEN3.
-            endif.
+      IF <fs_stmnt_next> IS ASSIGNED.
+        LOOP AT tab_tokens ASSIGNING <fs_tok> FROM <fs_stmnt_next>-from WHERE type <> 'C'.
+          IF relevant_token2 IS INITIAL AND relevant_token1 IS NOT INITIAL.
+            relevant_token2 = <fs_tok>.
+            IF relevant_token1-str = 'CLASS'.
+              READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 1.
+              IF relevant_token3-str = 'DEFINITION' AND relevant_token2-str <> clif_name-clsname.
+                relevant_token2-str = clif_name-clsname. " it happens at COPY: you have old clsname there
+              ENDIF.
+              CLEAR relevant_token3.
+            ENDIF.
 
-            if ( RELEVANT_TOKEN1-STR = 'TYPES' and RELEVANT_TOKEN2-STR = 'BEGIN' ) or
-               ( RELEVANT_TOKEN1-STR = 'DATA' and RELEVANT_TOKEN2-STR = 'BEGIN' ) or
-               ( RELEVANT_TOKEN1-STR = 'CLASS-DATA' and RELEVANT_TOKEN2-STR = 'BEGIN' ) or
-               ( RELEVANT_TOKEN1-STR = 'CONSTANTS' and RELEVANT_TOKEN2-STR = 'BEGIN' ).
+            IF ( relevant_token1-str = 'TYPES' AND relevant_token2-str = 'BEGIN' ) OR
+               ( relevant_token1-str = 'DATA' AND relevant_token2-str = 'BEGIN' ) OR
+               ( relevant_token1-str = 'CLASS-DATA' AND relevant_token2-str = 'BEGIN' ) OR
+               ( relevant_token1-str = 'CONSTANTS' AND relevant_token2-str = 'BEGIN' ).
 *             we need the third token in this special case ...
-              read table TAB_TOKENS into RELEVANT_TOKEN3 index SY-TABIX + 2.
+              READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 2.
 *             Check whether this is a TYPES BEGIN OF MESH my_mesh statement.
-              if (  RELEVANT_TOKEN1-STR = 'TYPES' and RELEVANT_TOKEN3-STR = 'MESH' and <FS_STMNT_NEXT>-TO - <FS_STMNT_NEXT>-FROM = 4  ).
-                read table TAB_TOKENS into RELEVANT_TOKEN3 index SY-TABIX + 1.
-              elseif (  RELEVANT_TOKEN1-STR = 'TYPES' and RELEVANT_TOKEN3-STR = 'ENUM' and <FS_STMNT_NEXT>-TO - <FS_STMNT_NEXT>-FROM > 5 ).
-                read table TAB_TOKENS into RELEVANT_TOKEN3 index SY-TABIX + 1.
-              endif.
-              exit.
-            else.
-              exit.
-            endif.
-          endif.
-          if RELEVANT_TOKEN1 is initial.
-            RELEVANT_TOKEN1 = <FS_TOK>.
-          endif.
-        endloop.
+              IF (  relevant_token1-str = 'TYPES' AND relevant_token3-str = 'MESH' AND <fs_stmnt_next>-to - <fs_stmnt_next>-from = 4  ).
+                READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 1.
+              ELSEIF (  relevant_token1-str = 'TYPES' AND relevant_token3-str = 'ENUM' AND <fs_stmnt_next>-to - <fs_stmnt_next>-from > 5 ).
+                READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 1.
+              ENDIF.
+              EXIT.
+            ELSE.
+              EXIT.
+            ENDIF.
+          ENDIF.
+          IF relevant_token1 IS INITIAL.
+            relevant_token1 = <fs_tok>.
+          ENDIF.
+        ENDLOOP.
 
-        if RELEVANT_TOKEN3-STR is not initial.
-          L_NAME_NODE = RELEVANT_TOKEN3-STR.
-        else.
-          L_NAME_NODE = RELEVANT_TOKEN2-STR.
-        endif.
+        IF relevant_token3-str IS NOT INITIAL.
+          l_name_node = relevant_token3-str.
+        ELSE.
+          l_name_node = relevant_token2-str.
+        ENDIF.
 
 
-        if RELEVANT_TOKEN1-STR = 'TYPES' or RELEVANT_TOKEN1-STR = 'DATA' or RELEVANT_TOKEN1-STR = 'CLASS-DATA' or RELEVANT_TOKEN1-STR = 'CONSTANTS' .
-          append L_NAME_NODE to NODES.
-          clear: L_COUNT, L_FROM, L_TO.
+        IF relevant_token1-str = 'TYPES' OR relevant_token1-str = 'DATA' OR relevant_token1-str = 'CLASS-DATA' OR relevant_token1-str = 'CONSTANTS' .
+          APPEND l_name_node TO nodes.
+          CLEAR: l_count, l_from, l_to.
 
           " get the relevant node-interval hierarchy interval
-          loop at ME->HIERARCHY_NODES into data(L_HIER).
-            check L_HIER-DEPTH = 0 and L_HIER-STMNT_FROM_IDX > 0 and L_HIER-STMNT_FROM_IDX <= <FS_STMNT_NEXT>-FROM.
-            L_FROM = SY-TABIX.
-          endloop.
+          LOOP AT me->hierarchy_nodes INTO DATA(l_hier).
+            CHECK l_hier-depth = 0 AND l_hier-stmnt_from_idx > 0 AND l_hier-stmnt_from_idx <= <fs_stmnt_next>-from.
+            l_from = sy-tabix.
+          ENDLOOP.
 
-          if L_FROM > 0.
-            loop at ME->HIERARCHY_NODES from L_FROM + 1 into L_HIER where DEPTH = 0 .
-              L_TO = SY-TABIX.
-              exit.
-            endloop.
-            if SY-SUBRC <> 0 or L_TO = 0.
-              L_TO = LINES( ME->HIERARCHY_NODES ).
-            elseif L_TO > L_FROM.
-              L_TO = L_TO - 1.
-            endif.
+          IF l_from > 0.
+            LOOP AT me->hierarchy_nodes FROM l_from + 1 INTO l_hier WHERE depth = 0 .
+              l_to = sy-tabix.
+              EXIT.
+            ENDLOOP.
+            IF sy-subrc <> 0 OR l_to = 0.
+              l_to = lines( me->hierarchy_nodes ).
+            ELSEIF l_to > l_from.
+              l_to = l_to - 1.
+            ENDIF.
             " operate only within relavent node_interval
-            loop at  ME->HIERARCHY_NODES from L_FROM to L_TO into L_NODE where NODE_NAME = L_NAME_NODE and DEPTH = ME->DEPTH.
-              L_DEPTH = L_NODE-DEPTH.
-              L_PARENT = L_NODE-PARENT_NODE.
-              while L_DEPTH <> 0.
+            LOOP AT  me->hierarchy_nodes FROM l_from TO l_to INTO l_node WHERE node_name = l_name_node AND depth = me->depth.
+              l_depth = l_node-depth.
+              l_parent = l_node-parent_node.
+              WHILE l_depth <> 0.
 
-                clear HIERARCHY_NODES_DESCENDING.
-                loop at ME->HIERARCHY_NODES into L_NODE_NEW from L_FROM to L_TO
-                                                            where NODE_NAME = L_PARENT and DEPTH < L_DEPTH.
-                  append L_NODE_NEW to HIERARCHY_NODES_DESCENDING.
-                endloop.
+                CLEAR hierarchy_nodes_descending.
+                LOOP AT me->hierarchy_nodes INTO l_node_new FROM l_from TO l_to
+                                                            WHERE node_name = l_parent AND depth < l_depth.
+                  APPEND l_node_new TO hierarchy_nodes_descending.
+                ENDLOOP.
                 " eed to insert nodes from bottom up
-                sort HIERARCHY_NODES_DESCENDING by DEPTH descending. "#EC CI_SORTLOOP
-                loop at HIERARCHY_NODES_DESCENDING into L_NODE_NEW where NODE_NAME = L_PARENT and DEPTH < L_DEPTH.
-                  insert L_NODE_NEW-NODE_NAME into NODES index 1.
-                endloop.
-                if SY-SUBRC <> 0.
-                  exit.  " while
-                endif.
-                L_DEPTH  = L_NODE_NEW-DEPTH.
-                L_PARENT = L_NODE_NEW-PARENT_NODE.
-              endwhile.
-            endloop.
-          endif.
-        endif.
+                SORT hierarchy_nodes_descending BY depth DESCENDING. "#EC CI_SORTLOOP
+                LOOP AT hierarchy_nodes_descending INTO l_node_new WHERE node_name = l_parent AND depth < l_depth.
+                  INSERT l_node_new-node_name INTO nodes INDEX 1.
+                ENDLOOP.
+                IF sy-subrc <> 0.
+                  EXIT.  " while
+                ENDIF.
+                l_depth  = l_node_new-depth.
+                l_parent = l_node_new-parent_node.
+              ENDWHILE.
+            ENDLOOP.
+          ENDIF.
+        ENDIF.
 
-        if LINES( NODES ) <= 1.
-          clear L_NAME_CONCATENATED.
-        else.
-          loop at NODES into L_NAME_NODE.
-            if L_NAME_CONCATENATED is initial.
-              L_NAME_CONCATENATED = L_NAME_NODE.
-            else.
-              L_NAME_CONCATENATED = L_NAME_CONCATENATED && '-' && L_NAME_NODE.
-            endif.
-          endloop.
-        endif.
-      endif.
+        IF lines( nodes ) <= 1.
+          CLEAR l_name_concatenated.
+        ELSE.
+          LOOP AT nodes INTO l_name_node.
+            IF l_name_concatenated IS INITIAL.
+              l_name_concatenated = l_name_node.
+            ELSE.
+              l_name_concatenated = l_name_concatenated && '-' && l_name_node.
+            ENDIF.
+          ENDLOOP.
+        ENDIF.
+      ENDIF.
 
-      LINE_COMMENT_BLOCK-TAB_COMMENTS               = TAB_COMMENTS_TO_SAVE .
-      LINE_COMMENT_BLOCK-HOOK_RELEVANT_TOK_TYPE     = RELEVANT_TOKEN1.
-      LINE_COMMENT_BLOCK-HOOK_RELEVANT_TOK_NAME     = RELEVANT_TOKEN2.
-      LINE_COMMENT_BLOCK-HOOK_RELEVANT_TOK_NAME_ADD = RELEVANT_TOKEN3.
+      line_comment_block-tab_comments               = tab_comments_to_save .
+      line_comment_block-hook_relevant_tok_type     = relevant_token1.
+      line_comment_block-hook_relevant_tok_name     = relevant_token2.
+      line_comment_block-hook_relevant_tok_name_add = relevant_token3.
 
-      if L_NAME_CONCATENATED cs '-' and ( EMBEDED_TYPES = ABAP_TRUE or EMBEDED_DATA_CONST = ABAP_TRUE ).
-        if LINE_COMMENT_BLOCK-HOOK_RELEVANT_TOK_NAME_ADD is not initial.
-          LINE_COMMENT_BLOCK-HOOK_RELEVANT_TOK_NAME_ADD-STR = L_NAME_CONCATENATED.
-        elseif LINE_COMMENT_BLOCK-HOOK_RELEVANT_TOK_NAME is not initial.
-          LINE_COMMENT_BLOCK-HOOK_RELEVANT_TOK_NAME-STR = L_NAME_CONCATENATED.
-        endif.
-      endif.
+      IF l_name_concatenated CS '-' AND ( embeded_types = abap_true OR embeded_data_const = abap_true ).
+        IF line_comment_block-hook_relevant_tok_name_add IS NOT INITIAL.
+          line_comment_block-hook_relevant_tok_name_add-str = l_name_concatenated.
+        ELSEIF line_comment_block-hook_relevant_tok_name IS NOT INITIAL.
+          line_comment_block-hook_relevant_tok_name-str = l_name_concatenated.
+        ENDIF.
+      ENDIF.
 
-      append LINE_COMMENT_BLOCK to TAB_ABAP_DOC.
-      clear: NODES, L_NAME_CONCATENATED.
+      APPEND line_comment_block TO tab_abap_doc.
+      CLEAR: nodes, l_name_concatenated.
 
-    endloop.
+    ENDLOOP.
 
-  endmethod.
+  ENDMETHOD.
 
 
-  method BUILD_HIERARCHY_NODES.
+  METHOD build_hierarchy_nodes.
 
-    data L_COUNT_BEGIN type I.
-    data L_COUNT_END   type I.
-    data L_NODE_ROOT   type STRING.
-    data L_NODE        type TY_NODE.
-    data L_DEPTH       type I.
-    data PARENTS       type RSWSOURCET.
+    DATA l_count_begin TYPE i.
+    DATA l_count_end   TYPE i.
+    DATA l_node_root   TYPE string.
+    DATA l_node        TYPE ty_node.
+    DATA l_depth       TYPE i.
+    DATA parents       TYPE rswsourcet.
 
-    field-symbols <FS_STMNT>     type SSTMNT.
-    field-symbols <FS_TOK>       type STOKESX.
-    field-symbols <FS_TOK_NEXT2> type STOKESX.
-    field-symbols <FS_TOK_NEXT1> type STOKESX.
-    field-symbols <FS_TOK_NEXT3> type STOKESX.
-    field-symbols <FS_TOK_NEXT4> type STOKESX.
+    FIELD-SYMBOLS <fs_stmnt>     TYPE sstmnt.
+    FIELD-SYMBOLS <fs_tok>       TYPE stokesx.
+    FIELD-SYMBOLS <fs_tok_next2> TYPE stokesx.
+    FIELD-SYMBOLS <fs_tok_next1> TYPE stokesx.
+    FIELD-SYMBOLS <fs_tok_next3> TYPE stokesx.
+    FIELD-SYMBOLS <fs_tok_next4> TYPE stokesx.
 
-    clear NODES.
+    CLEAR nodes.
 
-    loop at TAB_STATEMENTS assigning <FS_STMNT>  where ( TYPE <> 'P' and TYPE <> 'S' and TYPE <> 'G' ). " no comments
+    LOOP AT tab_statements ASSIGNING <fs_stmnt>  WHERE ( type <> 'P' AND type <> 'S' AND type <> 'G' ). " no comments
 
       " check first token in statement
-      if not ( TAB_TOKENS[ <FS_STMNT>-FROM ]-STR = 'TYPES' or TAB_TOKENS[ <FS_STMNT>-FROM ]-STR = 'DATA' or
-               TAB_TOKENS[ <FS_STMNT>-FROM ]-STR = 'CLASS-DATA' or TAB_TOKENS[ <FS_STMNT>-FROM ]-STR = 'CONSTANTS' ).
-        continue.
-      endif.
+      IF NOT ( tab_tokens[ <fs_stmnt>-from ]-str = 'TYPES' OR tab_tokens[ <fs_stmnt>-from ]-str = 'DATA' OR
+               tab_tokens[ <fs_stmnt>-from ]-str = 'CLASS-DATA' OR tab_tokens[ <fs_stmnt>-from ]-str = 'CONSTANTS' ).
+        CONTINUE.
+      ENDIF.
 
-      loop at TAB_TOKENS assigning <FS_TOK> from <FS_STMNT>-FROM to <FS_STMNT>-TO.
-        check ( <FS_TOK>-STR = 'TYPES' or <FS_TOK>-STR = 'DATA' or
-                <FS_TOK>-STR = 'CLASS-DATA' or <FS_TOK>-STR = 'CONSTANTS' ).
+      LOOP AT tab_tokens ASSIGNING <fs_tok> FROM <fs_stmnt>-from TO <fs_stmnt>-to.
+        CHECK ( <fs_tok>-str = 'TYPES' OR <fs_tok>-str = 'DATA' OR
+                <fs_tok>-str = 'CLASS-DATA' OR <fs_tok>-str = 'CONSTANTS' ).
 
-        read table TAB_TOKENS assigning <FS_TOK_NEXT1>  index  <FS_STMNT>-FROM  + 1.
-        read table TAB_TOKENS assigning <FS_TOK_NEXT2>  index  <FS_STMNT>-FROM  + 2.
-        read table TAB_TOKENS assigning <FS_TOK_NEXT3>  index  <FS_STMNT>-FROM  + 3.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_next1>  INDEX  <fs_stmnt>-from  + 1.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_next2>  INDEX  <fs_stmnt>-from  + 2.
+        READ TABLE tab_tokens ASSIGNING <fs_tok_next3>  INDEX  <fs_stmnt>-from  + 3.
 
-        if <FS_TOK_NEXT1> is assigned and <FS_TOK_NEXT2> is assigned and <FS_TOK_NEXT3> is assigned.
-          if ( <FS_TOK_NEXT1>-STR = 'BEGIN' and <FS_TOK_NEXT2>-STR = 'OF' ) .
+        IF <fs_tok_next1> IS ASSIGNED AND <fs_tok_next2> IS ASSIGNED AND <fs_tok_next3> IS ASSIGNED.
+          IF ( <fs_tok_next1>-str = 'BEGIN' AND <fs_tok_next2>-str = 'OF' ) .
 
-            L_NODE-NODE_NAME      = <FS_TOK_NEXT3>-STR.
-            L_NODE-STMNT_FROM_IDX = <FS_STMNT>-FROM.
-            L_NODE-STMNT_TO_IDX   = <FS_STMNT>-TO.
+            l_node-node_name      = <fs_tok_next3>-str.
+            l_node-stmnt_from_idx = <fs_stmnt>-from.
+            l_node-stmnt_to_idx   = <fs_stmnt>-to.
 
-            if  <FS_TOK>-STR = 'TYPES' and ( L_NODE-NODE_NAME = 'MESH' or L_NODE-NODE_NAME = 'ENUM' ).
-              read table TAB_TOKENS assigning <FS_TOK_NEXT4>  index  <FS_STMNT>-FROM  + 4.
-              L_NODE-NODE_NAME = <FS_TOK_NEXT4>-STR.
-            endif.
+            IF  <fs_tok>-str = 'TYPES' AND ( l_node-node_name = 'MESH' OR l_node-node_name = 'ENUM' ).
+              READ TABLE tab_tokens ASSIGNING <fs_tok_next4>  INDEX  <fs_stmnt>-from  + 4.
+              l_node-node_name = <fs_tok_next4>-str.
+            ENDIF.
 
-            if L_DEPTH = 0.
-              L_NODE_ROOT         = <FS_TOK_NEXT3>-STR.
-              L_NODE-DEPTH        = 0.
-              append L_NODE to NODES.
-              L_NODE-PARENT_NODE = L_NODE_ROOT.
-            else.
-              L_NODE-DEPTH = L_DEPTH.
-              append L_NODE to NODES.
-            endif.
+            IF l_depth = 0.
+              l_node_root         = <fs_tok_next3>-str.
+              l_node-depth        = 0.
+              APPEND l_node TO nodes.
+              l_node-parent_node = l_node_root.
+            ELSE.
+              l_node-depth = l_depth.
+              APPEND l_node TO nodes.
+            ENDIF.
 
-            append L_NODE-NODE_NAME to PARENTS.
-            L_NODE-PARENT_NODE = L_NODE-NODE_NAME.  " for the child nodes
+            APPEND l_node-node_name TO parents.
+            l_node-parent_node = l_node-node_name.  " for the child nodes
 
-            L_DEPTH       = L_DEPTH + 1.
-            L_COUNT_BEGIN = L_COUNT_BEGIN + 1.
-          elseif ( <FS_TOK_NEXT1>-STR = 'END' and <FS_TOK_NEXT2>-STR = 'OF' ) .
-            L_DEPTH = L_DEPTH - 1.
-            L_COUNT_END = L_COUNT_END + 1.
+            l_depth       = l_depth + 1.
+            l_count_begin = l_count_begin + 1.
+          ELSEIF ( <fs_tok_next1>-str = 'END' AND <fs_tok_next2>-str = 'OF' ) .
+            l_depth = l_depth - 1.
+            l_count_end = l_count_end + 1.
 
-            if L_DEPTH = 0.
-              clear: L_COUNT_BEGIN, L_COUNT_END, L_NODE, L_NODE_ROOT, PARENTS.
-              continue.
-            endif.
+            IF l_depth = 0.
+              CLEAR: l_count_begin, l_count_end, l_node, l_node_root, parents.
+              CONTINUE.
+            ENDIF.
 
-            data(L_LINES) = LINES( PARENTS ).
-            delete PARENTS index L_LINES.
-            L_NODE-PARENT_NODE = PARENTS[ L_DEPTH ].
+            DATA(l_lines) = lines( parents ).
+            DELETE parents INDEX l_lines.
+            l_node-parent_node = parents[ l_depth ].
 
-          else.  " TYPES /DATA/CLASS-DATA...     embeded in BEGIN or stand-alone
-            L_NODE-STMNT_FROM_IDX = <FS_STMNT>-FROM.
-            L_NODE-STMNT_TO_IDX   = <FS_STMNT>-TO.
-            L_NODE-NODE_NAME = <FS_TOK_NEXT1>-STR.
-            L_NODE-DEPTH     = L_DEPTH.
-            if not LINE_EXISTS( NODES[ TABLE_LINE = L_NODE ] ).
-              append L_NODE to NODES.
-            endif.
-          endif.
-        endif.
-      endloop.
+          ELSE.  " TYPES /DATA/CLASS-DATA...     embeded in BEGIN or stand-alone
+            l_node-stmnt_from_idx = <fs_stmnt>-from.
+            l_node-stmnt_to_idx   = <fs_stmnt>-to.
+            l_node-node_name = <fs_tok_next1>-str.
+            l_node-depth     = l_depth.
+            IF NOT line_exists( nodes[ table_line = l_node ] ).
+              APPEND l_node TO nodes.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+      ENDLOOP.
 
-    endloop.
+    ENDLOOP.
 
-  endmethod.
-endclass.
+  ENDMETHOD.
+ENDCLASS.
