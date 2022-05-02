@@ -20,10 +20,7 @@ CLASS zcl_aff_abap_doc_reader DEFINITION
       RETURNING
         VALUE(result) TYPE string
       RAISING
-        cx_oo_clif_not_exists
-        cx_oo_access_permission
-        cx_oo_clif_scan_error
-        cx_oo_abap_doc_reader.
+        cx_static_check.
   PROTECTED SECTION.
     DATA
       source TYPE ty_source.
