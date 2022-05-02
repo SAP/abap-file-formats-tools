@@ -106,8 +106,7 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
 
   METHOD get_abap_doc_4_wrong_elem_name.
     TRY.
-        test_obj->get_abap_doc_for_element(
-          element_name = 'ty_nicht_vorhanden'     " not existing ).
+        test_obj->get_abap_doc_for_element( element_name = 'ty_nicht_vorhanden' ).
 
         cl_abap_unit_assert=>fail( msg = 'Expected exception reporting wrong element name was not raised' ).
       CATCH cx_root INTO DATA(exc_ref) ##CATCH_ALL.
@@ -120,8 +119,7 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
 
   METHOD get_abap_doc_4_elem_wo_adoc.
     TRY.
-        test_obj->get_abap_doc_for_element(
-          element_name = 'SUBRC'     " DATA SUBRC hast not ABAP Doc ).
+        test_obj->get_abap_doc_for_element( element_name = 'SUBRC' ).
 
         cl_abap_unit_assert=>fail( msg = 'Expected exception reporting wrong element name was not raised' ).
       CATCH cx_root INTO DATA(exc_ref) ##CATCH_ALL.
