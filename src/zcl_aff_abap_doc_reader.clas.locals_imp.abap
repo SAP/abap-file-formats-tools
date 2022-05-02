@@ -22,7 +22,7 @@ CLASS lcl_section_source_comments DEFINITION
       ty_comment_blocks TYPE TABLE OF ty_comment_block .
     TYPES:
       BEGIN OF ty_comment_for_cmpname,
-        cmpname      TYPE seocmpname,
+        cmpname      TYPE c LENGTH 30,
         tab_comments TYPE seo_section_source,
       END OF ty_comment_for_cmpname .
     TYPES:
