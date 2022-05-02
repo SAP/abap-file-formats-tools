@@ -109,10 +109,10 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
         test_obj->get_abap_doc_for_element( element_name = 'ty_nicht_vorhanden' ).
 
         cl_abap_unit_assert=>fail( msg = 'Expected exception reporting wrong element name was not raised' ).
-      CATCH cx_root INTO DATA(exc_ref) ##CATCH_ALL.
-        IF NOT ( exc_ref IS INSTANCE OF cx_oo_abap_doc_reader ).
-          cl_abap_unit_assert=>fail( msg = 'Unexpected exception type was raised' ).
-        ENDIF.
+      CATCH zcx_aff_tools.
+        RETURN.
+      CATCH cx_root ##CATCH_ALL.
+        cl_abap_unit_assert=>fail( msg = 'Unexpected exception type was raised' ).
     ENDTRY.
 
   ENDMETHOD.
@@ -122,10 +122,10 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
         test_obj->get_abap_doc_for_element( element_name = 'SUBRC' ).
 
         cl_abap_unit_assert=>fail( msg = 'Expected exception reporting wrong element name was not raised' ).
-      CATCH cx_root INTO DATA(exc_ref) ##CATCH_ALL.
-        IF NOT ( exc_ref IS INSTANCE OF cx_oo_abap_doc_reader ).
-          cl_abap_unit_assert=>fail( msg = 'Unexpected exception type was raised' ).
-        ENDIF.
+      CATCH zcx_aff_tools.
+        RETURN.
+      CATCH cx_root ##CATCH_ALL.
+        cl_abap_unit_assert=>fail( msg = 'Unexpected exception type was raised' ).
     ENDTRY.
 
   ENDMETHOD.

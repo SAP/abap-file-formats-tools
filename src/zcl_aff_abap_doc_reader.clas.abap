@@ -95,7 +95,7 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
     ENDLOOP.
 
     IF element_was_found = abap_false.
-      RAISE EXCEPTION NEW cx_oo_abap_doc_reader( element_name = l_element_name ).
+      RAISE EXCEPTION NEW zcx_aff_tools( message = l_element_name ).
     ENDIF.
 
   ENDMETHOD.
