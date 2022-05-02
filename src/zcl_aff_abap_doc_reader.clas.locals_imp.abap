@@ -80,10 +80,10 @@ CLASS lcl_section_source_comments DEFINITION
 
     METHODS build_hierarchy_nodes
       IMPORTING
-        VALUE(tab_statements) TYPE ty_sstmnt
-        VALUE(tab_tokens)     TYPE ty_stokesx
+        tab_statements TYPE ty_sstmnt
+        tab_tokens     TYPE ty_stokesx
       CHANGING
-        nodes                 TYPE ty_nodes.
+        nodes          TYPE ty_nodes.
 ENDCLASS.
 
 
