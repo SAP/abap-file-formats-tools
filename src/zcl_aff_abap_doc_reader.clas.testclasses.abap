@@ -68,7 +68,7 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
           EXPORTING
             element_name = 'ty_pub_structure'     " TYPES
           RECEIVING
-            result       = DATA(result)     ).
+            result       = DATA(result) ).
 
         cl_abap_unit_assert=>assert_equals( exp = 'abap doc comment begin of ty_pub_structure'
                                             act = result ).
@@ -83,7 +83,7 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
           EXPORTING
             element_name = 'ABC'                  " DATA
           RECEIVING
-            result       = DATA(result)   ).
+            result       = DATA(result) ).
 
         cl_abap_unit_assert=>assert_equals( exp = 'Just simple data'
                                             act = result ).
@@ -97,7 +97,7 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
            EXPORTING
              element_name = 'ty_pub_structure-field_a'
            RECEIVING
-             result       = DATA(result)      ).
+             result       = DATA(result) ).
         cl_abap_unit_assert=>assert_equals( exp = 'ABAP Doc This is field A of the structure'
                                             act = result ).
       CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
@@ -107,18 +107,12 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
   METHOD get_abap_doc_4_wrong_elem_name.
     TRY.
         test_obj->get_abap_doc_for_element(
-          EXPORTING
-            element_name = 'ty_nicht_vorhanden'     " not existing
-         ).
+          element_name = 'ty_nicht_vorhanden'     " not existing ).
 
-        cl_abap_unit_assert=>fail(
-          EXPORTING
-            msg    = 'Expected exception reporting wrong element name was not raised'  ).
+        cl_abap_unit_assert=>fail( msg = 'Expected exception reporting wrong element name was not raised' ).
       CATCH cx_root INTO DATA(exc_ref) ##CATCH_ALL.
         IF NOT ( exc_ref IS INSTANCE OF cx_oo_abap_doc_reader ).
-          cl_abap_unit_assert=>fail(
-          EXPORTING
-            msg    = 'Unexpected exception type was raised'  ).
+          cl_abap_unit_assert=>fail( msg = 'Unexpected exception type was raised' ).
         ENDIF.
     ENDTRY.
 
@@ -127,18 +121,12 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
   METHOD get_abap_doc_4_elem_wo_adoc.
     TRY.
         test_obj->get_abap_doc_for_element(
-          EXPORTING
-            element_name = 'SUBRC'     " DATA SUBRC hast not ABAP Doc
-          ).
+          element_name = 'SUBRC'     " DATA SUBRC hast not ABAP Doc ).
 
-        cl_abap_unit_assert=>fail(
-          EXPORTING
-            msg    = 'Expected exception reporting wrong element name was not raised'  ).
+        cl_abap_unit_assert=>fail( msg = 'Expected exception reporting wrong element name was not raised' ).
       CATCH cx_root INTO DATA(exc_ref) ##CATCH_ALL.
         IF NOT ( exc_ref IS INSTANCE OF cx_oo_abap_doc_reader ).
-          cl_abap_unit_assert=>fail(
-          EXPORTING
-            msg    = 'Unexpected exception type was raised'  ).
+          cl_abap_unit_assert=>fail( msg = 'Unexpected exception type was raised' ).
         ENDIF.
     ENDTRY.
 
