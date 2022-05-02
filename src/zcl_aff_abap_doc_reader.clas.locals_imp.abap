@@ -443,7 +443,7 @@ CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
     DATA l_node_root   TYPE string.
     DATA l_node        TYPE ty_node.
     DATA l_depth       TYPE i.
-    DATA parents       TYPE rswsourcet.
+    DATA parents       TYPE string_table.
 
     FIELD-SYMBOLS <fs_stmnt>     TYPE sstmnt.
     FIELD-SYMBOLS <fs_tok>       TYPE stokesx.
