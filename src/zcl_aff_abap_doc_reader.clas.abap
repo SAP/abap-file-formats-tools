@@ -30,6 +30,7 @@ CLASS zcl_aff_abap_doc_reader IMPLEMENTATION.
 
   METHOD create_instance.
     result = NEW #( ).
+    result->source = source.
   ENDMETHOD.
 
 
