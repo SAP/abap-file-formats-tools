@@ -20,11 +20,6 @@ CLASS lcl_section_source_comments DEFINITION
       END OF ty_comment_block .
     TYPES:
       ty_comment_blocks TYPE STANDARD TABLE OF ty_comment_block WITH EMPTY KEY.
-    TYPES:
-      BEGIN OF ty_comment_for_cmpname,
-        cmpname      TYPE c LENGTH 30,
-        tab_comments TYPE string_table,
-      END OF ty_comment_for_cmpname .
 
     METHODS scan_code
       IMPORTING
