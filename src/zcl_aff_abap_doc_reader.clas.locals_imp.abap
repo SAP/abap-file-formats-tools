@@ -49,8 +49,6 @@ CLASS lcl_section_source_comments DEFINITION
 
     DATA depth TYPE i.
     DATA hierarchy_nodes TYPE ty_nodes.
-    CLASS-DATA co_regex_for_tag_end_paragr TYPE string VALUE '</p>\s*' ##NO_TEXT.
-    CLASS-DATA co_regex_for_shorttxt TYPE string VALUE `<p[\s\n]+class="shorttext synchronized"[\s\n]+lang="(\w\w)"[\s\n]*>` ##NO_TEXT.
 
     METHODS is_within_data_begin_end_of
       IMPORTING
