@@ -60,12 +60,7 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
 
   METHOD get_abap_doc_4_element_types.
     TRY.
-        test_obj->get_abap_doc_for_element(
-    EXPORTING
-    element_name = 'ty_pub_structure'     " TYPES
-    RECEIVING
-    result       = DATA(result) ).
-
+        DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ty_pub_structure' ).
         cl_abap_unit_assert=>assert_equals( exp = 'abap doc comment begin of ty_pub_structure'
     act = result ).
       CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
@@ -75,27 +70,20 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
 
   METHOD get_abap_doc_4_element_data.
     TRY.
-        test_obj->get_abap_doc_for_element(
-    EXPORTING
-    element_name = 'ABC'                  " DATA
-    RECEIVING
-    result       = DATA(result) ).
-
-        cl_abap_unit_assert=>assert_equals( exp = 'Just simple data'
-    act = result ).
+        DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ABC' ).
+        cl_abap_unit_assert=>assert_equals(
+          exp = 'Just simple data'
+          act = result ).
       CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
     ENDTRY.
   ENDMETHOD.
 
   METHOD get_abap_doc_4_sub_elem_types.
     TRY.
-        test_obj->get_abap_doc_for_element(
-    EXPORTING
-    element_name = 'ty_pub_structure-field_a'
-    RECEIVING
-    result       = DATA(result) ).
-        cl_abap_unit_assert=>assert_equals( exp = 'ABAP Doc This is field A of the structure'
-    act = result ).
+        DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ty_pub_structure-field_a' ).
+        cl_abap_unit_assert=>assert_equals(
+          exp = 'ABAP Doc This is field A of the structure'
+          act = result ).
       CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
     ENDTRY.
   ENDMETHOD.
