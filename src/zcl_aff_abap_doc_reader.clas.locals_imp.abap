@@ -44,7 +44,7 @@ CLASS lcl_section_source_comments DEFINITION
         VALUE(tab_abap_doc) TYPE ty_comment_blocks .
   PROTECTED SECTION.
   PRIVATE SECTION.
-    DATA: clif_name TYPE seoclskey.
+    DATA clsname TYPE string.
     TYPES:
       ty_tab_subcotext TYPE STANDARD TABLE OF seosubcotx WITH DEFAULT KEY .
     TYPES: BEGIN OF ty_node,
@@ -317,8 +317,8 @@ CLASS lcl_section_source_comments IMPLEMENTATION.
             relevant_token2 = <fs_tok>.
             IF relevant_token1-str = 'CLASS'.
               READ TABLE tab_tokens INTO relevant_token3 INDEX sy-tabix + 1.
-              IF relevant_token3-str = 'DEFINITION' AND relevant_token2-str <> clif_name-clsname.
-                relevant_token2-str = clif_name-clsname. " it happens at COPY: you have old clsname there
+              IF relevant_token3-str = 'DEFINITION' AND relevant_token2-str <> clsname.
+                relevant_token2-str = clsname. " it happens at COPY: you have old clsname there
               ENDIF.
               CLEAR relevant_token3.
             ENDIF.
