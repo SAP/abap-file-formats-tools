@@ -56,10 +56,6 @@ CLASS lcl_section_source_comments DEFINITION
            END OF ty_node.
     TYPES ty_nodes TYPE STANDARD TABLE OF ty_node.
 
-    DATA:
-      tab_tokens_old           TYPE TABLE OF stokesx .
-    DATA:
-      tab_statements_old       TYPE TABLE OF sstmnt .
     DATA depth TYPE i.
     DATA hierarchy_nodes TYPE ty_nodes.
     CLASS-DATA co_regex_for_tag_end_paragr TYPE string VALUE '</p>\s*' ##NO_TEXT.
@@ -92,7 +88,7 @@ ENDCLASS.
 
 
 
-CLASS lcl_SECTION_SOURCE_COMMENTS IMPLEMENTATION.
+CLASS lcl_section_source_comments IMPLEMENTATION.
 
 
 
