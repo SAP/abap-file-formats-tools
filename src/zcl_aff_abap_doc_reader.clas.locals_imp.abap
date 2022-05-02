@@ -224,7 +224,7 @@ CLASS lcl_section_source_comments IMPLEMENTATION.
 *
     DATA embeded_types              TYPE abap_bool VALUE abap_false.
     DATA embeded_data_const         TYPE abap_bool VALUE abap_false.
-    DATA nodes                      TYPE rswsourcet.
+    DATA nodes                      TYPE string_table.
     DATA hierarchy_nodes_descending TYPE ty_nodes.
 
     FIELD-SYMBOLS <fs_stmnt>           TYPE sstmnt.
