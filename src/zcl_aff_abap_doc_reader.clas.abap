@@ -13,7 +13,6 @@ CLASS zcl_aff_abap_doc_reader DEFINITION
           VALUE(result) TYPE REF TO zcl_aff_abap_doc_reader.
     METHODS get_abap_doc_for_element
       IMPORTING
-        version       TYPE r3state DEFAULT 'A'
         element_name  TYPE string
       RETURNING
         VALUE(result) TYPE string
