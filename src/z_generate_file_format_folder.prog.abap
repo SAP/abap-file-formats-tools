@@ -1012,7 +1012,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
     ELSEIF p_repo = abap_true.
       "serialize one repo folder
-      generate_repo_folder( VALUE #( ( object_type  = p_objtyp interface = p_intf example =  p_examp ) ) ).
+      generate_repo_folder( VALUE #( ( object_type  = p_objtyp interface = p_intf example = p_examp ) ) ).
     ELSEIF p_multre = abap_true.
       "    serialize multiple repo folders
       DATA objects TYPE aff_objects_table.
