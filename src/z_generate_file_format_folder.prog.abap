@@ -868,11 +868,13 @@ CLASS lcl_generator IMPLEMENTATION.
     SPLIT interface_name  AT '_' INTO TABLE DATA(splitted_intfname).
     DATA(object_type) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
     DATA(main_object_type) = object_type.
+
     IF object_type = 'REPS' OR object_type = 'FUNC'.
       main_object_type = 'FUGR'.
     ELSEIF object_type = 'INDX'.
       main_object_type = 'TABL'.
     ENDIF.
+
     path = |{ to_lower( main_object_type ) }/{ to_lower( object_type ) }|.
   ENDMETHOD.
 
@@ -894,9 +896,11 @@ CLASS lcl_generator IMPLEMENTATION.
         writer = NEW zcl_aff_writer_xslt( ).
       ENDIF.
     ENDIF.
+
     IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper."we are not in test scenario
       generator = NEW lcl_generator_helper( writer ).
     ENDIF.
+
     content = get_content( absolute_typename = |\\INTERFACE={ p_intf }\\TYPE={ p_type }| interfacename = CONV #( p_intf ) ).
   ENDMETHOD.
 
@@ -907,10 +911,9 @@ CLASS lcl_generator IMPLEMENTATION.
         CLEAR content.
         RETURN.
     ENDTRY.
-    "type was succesfully created (else an exception in create_the_variable_dynamicaly( ) would be raised)
+
     FIELD-SYMBOLS <field> TYPE any.
     ASSIGN type->* TO <field>.
-    " getting the XSLT/Schema of the type
     TRY.
         content = generator->generate_type( <field> ).
       CATCH cx_root.
@@ -918,10 +921,8 @@ CLASS lcl_generator IMPLEMENTATION.
         INSERT |The generator couldn't generate the schema/XSLT for type { absolute_typename }| INTO TABLE report_log ##NO_TEXT.
         RETURN.
     ENDTRY.
-    "content was succesfully created ( else an exception would be raised)
-    "check if the content is valid
-    DATA(is_valid) = writer->validate( source = content log = me->log ).
-    IF is_valid = abap_false.
+
+    IF NOT writer->validate( source = content log = me->log ).
       INSERT |ATTENTION: The created schema/xslt for type { absolute_typename } is not valid.| INTO TABLE report_log ##NO_TEXT.
     ENDIF.
 
@@ -940,9 +941,9 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD create_schema_xslt_zip.
     r_zip = NEW cl_abap_zip( ).
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
+    DATA(string) = concat_lines_of( table = content sep = cl_abap_char_utilities=>newline ).
     TRY.
-        DATA(content_as_xstring) = text_handler->if_aff_content_handler~serialize( content ).
+        DATA(content_as_xstring) = cl_abap_codepage=>convert_to( string ).
       CATCH cx_root.
         CLEAR r_zip.
         INSERT `Schema/Xslt could not be created. Error when serializing string to xstring` INTO TABLE report_log ##NO_TEXT.
