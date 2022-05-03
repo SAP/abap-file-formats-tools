@@ -235,9 +235,6 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
       write_to_zip
         IMPORTING zip_archive TYPE xstring
                   zipname     TYPE string,
-      create_schema_xslt_zip
-        IMPORTING content      TYPE string_table
-        RETURNING VALUE(r_zip) TYPE REF TO cl_abap_zip,
       print_logs.
 
   PRIVATE SECTION.
@@ -256,20 +253,13 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
       writer      TYPE REF TO zif_aff_writer.
     DATA replacing_table_string TYPE replacing_tab.
 
-    METHODS:
-      get_all_interfaces
+    METHODS: get_all_interfaces
         IMPORTING object        TYPE aff_object
         RETURNING VALUE(result) TYPE string_table,
-      replace_names_in_string
-        IMPORTING
-                  content_as_string      TYPE string
-                  replacing_table_string TYPE replacing_tab
-        RETURNING VALUE(content)         TYPE string,
       add_aff_files_to_zip
         IMPORTING
           files                  TYPE if_aff_object_file_handler=>ty_object_files
-          filename               TYPE string
-          replacing_table_string TYPE replacing_tab,
+          filename               TYPE string,
       generate_repo_folder
         IMPORTING object TYPE aff_object,
       create_the_variable_dynamicaly
@@ -419,39 +409,32 @@ CLASS lcl_generator IMPLEMENTATION.
 
     DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = NEW cl_aff_log( ) ).
 
-    DATA(interfaces) = get_all_interfaces( object ).
 
-    add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
+    add_aff_files_to_zip( files = example_files
+                          filename = |{ object_type_folder_name }/examples/| ).
+
 
     DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
-    CLEAR intf_objects.
+    DATA(interfaces) = get_all_interfaces( object ).
 
-    "generate type folder with all serialized interfaces (main and subobjects)
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
-      DATA(upper_intf) = to_upper( <interface> ).
-      SELECT SINGLE devclass FROM tadir WHERE obj_name = @upper_intf AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass).
+      SELECT SINGLE devclass FROM tadir WHERE obj_name = @<interface> AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass).
 
       IF intf_obj_devclass IS INITIAL.
-        INSERT |{ upper_intf } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
+        INSERT |{ <interface> } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
       ENDIF.
-      APPEND VALUE #( devclass  = intf_obj_devclass obj_type  = 'INTF' obj_name = upper_intf ) TO intf_objects.
+
+      APPEND VALUE #( devclass = intf_obj_devclass obj_type = 'INTF' obj_name = <interface> ) TO intf_objects.
     ENDLOOP.
 
     DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = NEW cl_aff_log( ) ).
 
-    add_aff_files_to_zip( files = intf_files filename = |{ object_type_folder_name }/type/| replacing_table_string = replacing_table_string ).
+    add_aff_files_to_zip( files = intf_files
+                          filename = |{ object_type_folder_name }/type/| ).
 
-    "generate the schema(s) of the mainobject and all of its subobjects
-    "add it to the zip folder
+
+
     LOOP AT interfaces ASSIGNING <interface>.
-      DATA(intfname) = <interface>.
-      SPLIT intfname AT `_` INTO TABLE DATA(splitted_intfname).
-
-      IF lines( splitted_intfname ) < 4.
-        INSERT |The schema for interface { <interface> } could not be created. Objecttype could not be derived from intfname.| INTO TABLE report_log ##NO_TEXT.
-        CONTINUE.
-      ENDIF.
-      DATA(objecttype) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
 
       DATA(found) = abap_false.
       SELECT SINGLE @abap_true FROM tadir WHERE obj_name = @<interface> INTO @found. "#EC CI_GENBUFF
@@ -461,8 +444,11 @@ CLASS lcl_generator IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
-      DATA(object_type_path) = get_object_type_path( CONV #( intfname ) ).
-      DATA(format_version) = get_format_version( CONV #( intfname ) ).
+      data(aff_object) = get_object_infos_by_intfname( <interface> ).
+      DATA(objecttype) = aff_object-object_type.
+      DATA(format_version) = aff_object-format_version.
+
+      DATA(object_type_path) = get_object_type_path( CONV #( <interface> ) ).
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
 
       IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
@@ -473,31 +459,30 @@ CLASS lcl_generator IMPLEMENTATION.
         generator = NEW lcl_generator_helper( writer ).
       ENDIF.
 
-      DATA(schema_content) = get_content( absolute_typename = |\\INTERFACE={ to_upper( intfname ) }\\TYPE=TY_MAIN| interfacename = CONV #( intfname ) ).
+      DATA(schema_content) = get_content( absolute_typename = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN| interfacename = <interface> ).
 
       IF schema_test_content IS NOT INITIAL."in test case sometimes a test schema content is injected
         schema_content = schema_test_content.
       ENDIF.
 
       IF schema_content IS INITIAL.
-        INSERT |The schema for interface { intfname } could not be created.| INTO TABLE report_log ##NO_TEXT.
+        INSERT |The schema for interface { <interface> } could not be created.| INTO TABLE report_log ##NO_TEXT.
       ELSE.
         add_file_to_zip( i_stringtab_content = schema_content
           i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json|
-          i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ).
+          i_error_text        = |The schema for interface { <interface> } could not be created. Error when transforming schema content from string to xstring| ).
       ENDIF.
     ENDLOOP.
 
 
-    DATA(interfacename) = replace_names_in_string( content_as_string  = to_lower( intfname ) replacing_table_string = replacing_table_string ).
-    DATA(examplename) = replace_names_in_string( content_as_string  = to_lower( object-example ) replacing_table_string = replacing_table_string ).
     DATA(readme) = VALUE string_table(
 ( |# { object-object_type } File Format| )
 ( `` )
 ( `File | Cardinality | Definition | Schema | Example`)
 ( `:--- | :---  | :--- | :--- | :---` )
-( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
-| \| [`{ examplename }.{ object_type_folder_name }.json`](./examples/{ examplename }.{ object_type_folder_name }.json)| )
+( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ object-interface }.intf.abap`](./type/{ object-interface }.intf.abap) \| | &&
+ | [`{ to_lower( object-object_type ) }-v{ object-format_version }.json`](./{ to_lower( object-object_type ) }-v{ object-format_version }.json)| &&
+| \| [`{ object-example }.{ object_type_folder_name }.json`](./examples/{ object-example }.{ object_type_folder_name }.json)| )
  ( `` )
  ).
     add_file_to_zip( i_stringtab_content  = readme
@@ -520,26 +505,10 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD add_aff_files_to_zip.
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
     LOOP AT files-files ASSIGNING FIELD-SYMBOL(<file>).
-*     replace the filenames of the files
-      DATA(file_name) = to_lower( <file>-file_name ).
-      file_name = replace_names_in_string( content_as_string = file_name replacing_table_string = replacing_table_string ).
-
-*     replace the content of the files
-      DATA(file_content_xstring) = <file>-content.
-      DATA content_as_string TYPE string.
-      TRY.
-          text_handler->if_aff_content_handler~deserialize( EXPORTING content = file_content_xstring IMPORTING data = content_as_string ).
-          content_as_string = replace_names_in_string( content_as_string = content_as_string replacing_table_string = replacing_table_string ).
-          file_content_xstring = text_handler->if_aff_content_handler~serialize( content_as_string ).
-        CATCH cx_root INTO DATA(exception).
-          INSERT |Object names in file { <file>-file_name } could not be changed to 'z...'. { exception->get_text( ) }| INTO TABLE report_log ##NO_TEXT.
-      ENDTRY.
-      zip->add( name    = |{ filename }{ file_name }|
-                content = file_content_xstring ).
+      zip->add( name    = |{ filename }{ to_lower( <file>-file_name ) }|
+                content = <file>-content ).
     ENDLOOP.
-
   ENDMETHOD.
 
   METHOD set_object_infos_in_ui.
@@ -633,32 +602,6 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
     ENDIF.
     object = VALUE #( object_type = objecttype interface = intfname example = examplename format_version = format_version ).
-  ENDMETHOD.
-
-  METHOD replace_names_in_string.
-    DATA(string_content) = content_as_string.
-    LOOP AT replacing_table_string ASSIGNING FIELD-SYMBOL(<replace_string>).
-      FIND ALL OCCURRENCES OF <replace_string>-to_be_replaced IN string_content IGNORING CASE RESULTS DATA(table).
-
-      DATA(counter_replaced) = 0.
-      LOOP AT table ASSIGNING FIELD-SYMBOL(<finding>).
-        IF <finding>-offset > 0.
-          DATA(offset) = <finding>-offset + counter_replaced.
-          DATA(before_offset) = offset - 1.
-          DATA(char_before_offset) = to_lower( string_content+before_offset(1) ).
-        ELSE.
-          char_before_offset = ' '.
-          offset = 0.
-        ENDIF.
-        IF NOT to_lower( char_before_offset ) = 'z'.
-*          string_content = insert( val = string_content sub = 'z' off = offset ).
-*         make the object names to lower
-          REPLACE SECTION OFFSET offset LENGTH <finding>-length OF string_content WITH <replace_string>-replace_with.
-          counter_replaced += 1.
-        ENDIF.
-      ENDLOOP.
-    ENDLOOP.
-    content = string_content.
   ENDMETHOD.
 
 
@@ -823,23 +766,7 @@ CLASS lcl_generator IMPLEMENTATION.
     me->log->join( generator_log ).
   ENDMETHOD.
 
-  METHOD create_schema_xslt_zip.
-    r_zip = NEW cl_abap_zip( ).
-    DATA(string) = concat_lines_of( table = content sep = cl_abap_char_utilities=>newline ).
-    TRY.
-        DATA(content_as_xstring) = cl_abap_codepage=>convert_to( string ).
-      CATCH cx_root.
-        CLEAR r_zip.
-        INSERT `Schema/Xslt could not be created. Error when serializing string to xstring` INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-    ENDTRY.
-    DATA(filename) = |{ to_lower( p_objtyp ) }_schema.txt| ##NO_TEXT.
-    IF p_xslt = abap_true.
-      filename = |{ to_lower( p_objtyp ) }_xslt.txt| ##NO_TEXT.
-    ENDIF.
-    r_zip->add( name    = |{ filename }|
-                content = content_as_xstring ).
-  ENDMETHOD.
+
 
   METHOD print_logs.
     IF lines( report_log ) > 0.
@@ -857,7 +784,7 @@ CLASS lcl_generator IMPLEMENTATION.
         ( <log_message>-message-msgno = '026' ) OR
         ( <log_message>-message-msgno = '027' ) ).
           DATA obj TYPE if_aff_object_file_handler=>ty_object.
-          MOVE-CORRESPONDING <log_message>-object TO obj.
+          MOVE-CORRESPONDING <log_message> TO obj.
           WRITE: / |{ object_as_string( obj ) } { <log_message>-type }|.
           SPLIT <log_message>-text AT space INTO TABLE DATA(splitted).
           LOOP AT splitted ASSIGNING FIELD-SYMBOL(<word>).
@@ -883,13 +810,13 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD start_of_selection.
 
-    data(object) = get_object_infos_by_intfname( p_intf ).
+    data(object) = get_object_infos_by_intfname( CONV #( p_intf ) ).
     object-example = p_examp.
 
     generate_repo_folder( object ).
 
     DATA(zip_archive) = zip->save( ).
-    DATA(zipname) = to_lower( p_objtyp ).
+    DATA(zipname) = to_lower( object-object_type ).
     write_to_zip( zip_archive = zip_archive zipname = zipname ).
 
   ENDMETHOD.
@@ -919,14 +846,14 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDIF.
 
     DATA(example1) = set_value_help_result_to_field( fieldname = `P_EXAMP` value_help_result_table = value_help_result_table ).
-    IF example1 IS NOT INITIAL.
-      DATA(object_infos) = get_object_infos_by_exmplname( example1 ).
-
-      set_object_infos_in_ui( object_infos ).
-      p_intf = object_infos-interface.
-      p_objtyp = object_infos-object_type.
-      p_examp = object_infos-example.
-    ENDIF.
+*    IF example1 IS NOT INITIAL.
+*      DATA(object_infos) = get_object_infos_by_exmplname( example1 ).
+*
+*      set_object_infos_in_ui( object_infos ).
+*      p_intf = object_infos-interface.
+*      p_objtyp = object_infos-object_type.
+*      p_examp = object_infos-example.
+*    ENDIF.
 
   ENDMETHOD.
 
@@ -935,29 +862,6 @@ CLASS lcl_generator IMPLEMENTATION.
            screen_names TYPE STANDARD TABLE OF screen_name.
     DATA hidden_elements TYPE screen_names.
     CLEAR hidden_elements.
-
-    IF p_schema = abap_true OR p_xslt = abap_true.
-      APPEND 'P_EXAMP' TO hidden_elements.
-      APPEND 'P_MULTOB' TO hidden_elements.
-      APPEND 'P_READM' TO hidden_elements.
-    ENDIF.
-    IF p_repo = abap_true.
-      APPEND 'P_TYPE' TO hidden_elements.
-      APPEND 'P_MULTOB' TO hidden_elements.
-      APPEND 'P_CONSOL' TO hidden_elements.
-      APPEND 'P_DISK' TO hidden_elements.
-    ENDIF.
-    IF p_multre = abap_true OR p_whole = abap_true.
-      APPEND 'P_OBJTYP' TO hidden_elements.
-      APPEND 'P_EXAMP' TO hidden_elements.
-      APPEND 'P_TYPE' TO hidden_elements.
-      APPEND 'P_INTF' TO hidden_elements.
-      APPEND 'P_CONSOL' TO hidden_elements.
-      APPEND 'P_DISK' TO hidden_elements.
-      IF p_whole = abap_true.
-        APPEND 'P_MULTOB' TO hidden_elements.
-      ENDIF.
-    ENDIF.
 
     LOOP AT SCREEN.
       DATA(element_name) = screen-name.
