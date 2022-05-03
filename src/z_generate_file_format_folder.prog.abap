@@ -256,10 +256,10 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
       writer      TYPE REF TO zif_aff_writer.
     DATA replacing_table_string TYPE replacing_tab.
 
-    METHODS: get_replacing_table_and_intfs
-      IMPORTING name_of_intf_of_mainobj TYPE string
-                example_files           TYPE if_aff_object_file_handler=>ty_object_files
-      EXPORTING interfaces              TYPE clsname_tab,
+    METHODS:
+      get_all_interfaces
+        IMPORTING object        TYPE aff_object
+        RETURNING VALUE(result) TYPE string_table,
       replace_names_in_string
         IMPORTING
                   content_as_string      TYPE string
@@ -377,63 +377,17 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
-  METHOD get_replacing_table_and_intfs.
-*       fill the table with the strings which need to be replaced (interface objects need to begin with z)
-    CLEAR interfaces.
-    APPEND name_of_intf_of_mainobj TO interfaces.
-    IF name_of_intf_of_mainobj CP `IF_AFF_FUGR*`.
-      APPEND `IF_AFF_FUNC_V1` TO interfaces.
-      APPEND `IF_AFF_REPS_V1` TO interfaces.
+  METHOD get_all_interfaces.
+
+    APPEND object-interface TO result.
+    IF object-interface CP `IF_AFF_FUGR*`.
+      APPEND `IF_AFF_FUNC_V1` TO result.
+      APPEND `IF_AFF_REPS_V1` TO result.
     ENDIF.
-    IF name_of_intf_of_mainobj CP `IF_AFF_TABL*`.
-      APPEND `IF_AFF_INDX_V1` TO interfaces.
+    IF object-interface CP `IF_AFF_TABL*`.
+      APPEND `IF_AFF_INDX_V1` TO result.
     ENDIF.
 
-    " the interface names which need to be replaced
-    LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>).
-      DATA(intf_name) = to_lower( <intf> ).
-      IF NOT intf_name CP `z*`.
-        INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
-        IF intf_name CP `*/*`.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH'('.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH')'.
-          INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
-        ENDIF.
-      ENDIF.
-    ENDLOOP.
-
-*  the example names which need to be replaced. (example objects need to begin with z)
-    LOOP AT example_files-object_to_file_name ASSIGNING FIELD-SYMBOL(<object>).
-      DATA(name_of_example_obj) = to_lower( <object>-object-obj_name ).
-      IF NOT name_of_example_obj CP `z*`.
-        INSERT VALUE #( to_be_replaced = name_of_example_obj replace_with = get_objname_wo_namspace_with_z( name_of_example_obj ) ) INTO TABLE replacing_table_string.
-        IF name_of_example_obj CP `*/*`.
-          REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_obj WITH'('.
-          REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_obj WITH')'.
-          INSERT VALUE #( to_be_replaced = name_of_example_obj replace_with = get_objname_wo_namspace_with_z( to_lower( <object>-object-obj_name ) ) ) INTO TABLE replacing_table_string.
-        ENDIF.
-      ENDIF.
-
-      IF <object>-object-sub_name IS NOT INITIAL.
-        DATA(name_of_example_subobj) = to_lower( <object>-object-sub_name ).
-        IF NOT name_of_example_subobj CP `z*`.
-          IF ( <object>-object-obj_type = 'FUGR' AND <object>-object-sub_type = 'FUNC' ) OR
-            ( <object>-object-obj_type = 'TABL' AND <object>-object-sub_type = 'INDX' ).
-            INSERT VALUE #( to_be_replaced = name_of_example_subobj replace_with = get_objname_wo_namspace_with_z( name_of_example_subobj ) ) INTO TABLE replacing_table_string.
-            IF <object>-object-sub_name CP `*/*`.
-              REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_subobj WITH'('.
-              REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_subobj WITH')'.
-              INSERT VALUE #( to_be_replaced = name_of_example_subobj replace_with = get_objname_wo_namspace_with_z( CONV #( <object>-object-sub_name ) ) ) INTO TABLE replacing_table_string.
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ENDIF.
-    ENDLOOP.
-    INSERT VALUE #( to_be_replaced = `if_aff_types_v1` replace_with = get_objname_wo_namspace_with_z( `zif_aff_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
-    INSERT VALUE #( to_be_replaced =  `if_aff_oo_types_v1` replace_with = get_objname_wo_namspace_with_z( `zif_aff_oo_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
-
-    SORT replacing_table_string ASCENDING BY to_be_replaced.
-    DELETE ADJACENT DUPLICATES FROM replacing_table_string.
   ENDMETHOD.
 
   METHOD get_objname_wo_namspace_with_z.
@@ -465,10 +419,8 @@ CLASS lcl_generator IMPLEMENTATION.
 
     DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = NEW cl_aff_log( ) ).
 
-    get_replacing_table_and_intfs(
-      EXPORTING name_of_intf_of_mainobj = CONV #( object-interface ) example_files = example_files
-      IMPORTING interfaces = DATA(interfaces) ).
-    "adding the example files
+    DATA(interfaces) = get_all_interfaces( object ).
+
     add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
 
     DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
@@ -654,15 +606,11 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD get_object_infos_by_intfname.
     SPLIT intfname AT '_' INTO TABLE DATA(splitted_intfname).
-    IF lines( splitted_intfname ) >= 3.
-      DATA(objecttype) = splitted_intfname[ 3 ].
-      DATA(format_version) = get_format_version( intfname ).
-      DATA(examplename) = |Z_AFF_EXAMPLE_{ objecttype }|.
-      IF objecttype = 'NROB'.
-        examplename = 'Z_AFF_NR'.
-      ENDIF.
-      object = VALUE #( object_type = objecttype interface = intfname example = examplename format_version = format_version ).
-    ENDIF.
+    DATA(objecttype) = splitted_intfname[ 3 ].
+    DATA(format_version) = get_format_version( to_upper( intfname ) ).
+    object = VALUE #( object_type =  to_upper( objecttype )
+                      interface = to_upper( intfname )
+                      format_version = format_version ).
   ENDMETHOD.
 
   METHOD get_object_infos_by_exmplname.
@@ -935,13 +883,10 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD start_of_selection.
 
-    p_intf   = to_upper( p_intf ).
-    p_examp  = to_upper( p_examp ).
+    data(object) = get_object_infos_by_intfname( p_intf ).
+    object-example = p_examp.
 
-    " todo: create object aff_object from data p_intf
-    DATA(objt) = `ABCD`.
-
-    generate_repo_folder( VALUE #( object_type = objt interface =  p_intf example =  p_examp ) ).
+    generate_repo_folder( object ).
 
     DATA(zip_archive) = zip->save( ).
     DATA(zipname) = to_lower( p_objtyp ).
