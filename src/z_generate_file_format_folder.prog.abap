@@ -240,7 +240,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
           i_gui_frontend TYPE REF TO lif_gui_frontend_service OPTIONAL
           aff_factory    TYPE REF TO if_aff_factory OPTIONAL
           generator      TYPE REF TO lif_generator OPTIONAL
-          writer         TYPE REF TO if_aff_type_writer OPTIONAL,
+          writer         TYPE REF TO zif_aff_writer OPTIONAL,
       start_of_selection,
       on_value_request_for_type,
       on_value_request_for_objtype,
@@ -271,7 +271,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
     DATA: "needed for testing
       aff_factory TYPE REF TO  if_aff_factory,
       generator   TYPE REF TO lif_generator,
-      writer      TYPE REF TO if_aff_type_writer.
+      writer      TYPE REF TO zif_aff_writer.
     DATA replacing_table_string TYPE replacing_tab.
 
     METHODS: get_replacing_table_and_intfs
@@ -540,7 +540,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
         DATA(format_version) = get_format_version_of_intfname( CONV #( intfname ) ).
         DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
-        IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type if_aff_type_writer
+        IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
           writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
         ENDIF.
         IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper. "in testcase we use ltc_generator
@@ -1330,7 +1330,7 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
   PRIVATE SECTION.
     DATA cut TYPE REF TO lcl_generator.
     DATA generator_double TYPE REF TO lif_generator.
-    DATA writer_double TYPE REF TO if_aff_type_writer.
+    DATA writer_double TYPE REF TO zif_aff_writer.
     DATA writer_log TYPE REF TO zcl_aff_log.
     DATA generator_log TYPE REF TO zcl_aff_log.
     DATA aff_factory_double TYPE REF TO if_aff_factory.
@@ -1425,7 +1425,7 @@ CLASS ltc_generator IMPLEMENTATION.
     function_test_environment->clear_doubles( ).
     environment->clear_doubles( ).
 
-    writer_double ?= cl_abap_testdouble=>create( 'IF_AFF_TYPE_WRITER' ).
+    writer_double ?= cl_abap_testdouble=>create( 'ZIF_AFF_WRITER' ).
     cl_abap_testdouble=>configure_call( writer_double )->returning( abap_true )->ignore_all_parameters( ).
     writer_double->validate( source = VALUE #( ) log = NEW zcl_aff_log( ) ).
 
@@ -2090,7 +2090,7 @@ CLASS ltc_generator IMPLEMENTATION.
 
   METHOD writer_validate_returns_false.
     "writer returns false when validate is called
-    writer_double ?= cl_abap_testdouble=>create( 'IF_AFF_TYPE_WRITER' ).
+    writer_double ?= cl_abap_testdouble=>create( 'ZIF_AFF_WRITER' ).
     cl_abap_testdouble=>configure_call( writer_double )->returning( abap_false )->ignore_all_parameters( ).
     writer_double->validate( source = VALUE #( ) log = NEW zcl_aff_log( ) ).
 
