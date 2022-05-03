@@ -144,7 +144,7 @@ INTERFACE lif_generator.
     RAISING   cx_root.
   METHODS get_log
     RETURNING
-      VALUE(log) TYPE REF TO if_aff_log.
+      VALUE(log) TYPE REF TO zif_aff_log.
 ENDINTERFACE.
 
 CLASS lcl_generator_helper DEFINITION
@@ -154,14 +154,14 @@ CLASS lcl_generator_helper DEFINITION
     INTERFACES lif_generator.
     METHODS constructor
       IMPORTING
-        writer TYPE REF TO if_aff_type_writer.
-    DATA generator TYPE REF TO cl_aff_type_generator.
+        writer TYPE REF TO zif_aff_writer.
+    DATA generator TYPE REF TO zcl_aff_generator.
 ENDCLASS.
 
 CLASS lcl_generator_helper IMPLEMENTATION.
 
   METHOD constructor.
-    me->generator = NEW cl_aff_type_generator( writer ).
+    me->generator = NEW zcl_aff_generator( writer ).
   ENDMETHOD.
 
   METHOD lif_generator~generate_type.
@@ -209,7 +209,7 @@ TYPES: BEGIN OF aff_object,
 CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
   PUBLIC SECTION.
-    DATA log TYPE REF TO if_aff_log.
+    DATA log TYPE REF TO zif_aff_log.
     DATA report_log TYPE stringtab.
     DATA xslt_schema_content TYPE string_table.
     DATA schema_test_content TYPE string_table.
@@ -540,8 +540,8 @@ CLASS lcl_generator IMPLEMENTATION.
 
         DATA(format_version) = get_format_version_of_intfname( CONV #( intfname ) ).
         DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
-        IF writer IS INITIAL OR writer IS INSTANCE OF cl_aff_type_writer_json_schema OR writer IS INSTANCE OF cl_aff_type_writer_xslt. "in testcase the writer is of type if_aff_type_writer
-          writer = NEW cl_aff_type_writer_json_schema( schema_id = schemid format_version = format_version ).
+        IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type if_aff_type_writer
+          writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
         ENDIF.
         IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper. "in testcase we use ltc_generator
           generator = NEW lcl_generator_helper( writer ).
@@ -885,11 +885,11 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(format_version) = get_format_version_of_intfname( CONV #( p_intf ) ).
     DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( p_objtyp ) }-v{ format_version }.json| ##NO_TEXT.
 
-    IF writer IS INITIAL OR writer IS INSTANCE OF cl_aff_type_writer_json_schema OR writer IS INSTANCE OF cl_aff_type_writer_xslt. "we are not in test scenario
+    IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "we are not in test scenario
       IF p_schema = abap_true.
-        writer = NEW cl_aff_type_writer_json_schema( schema_id  = schemid format_version = format_version ).
+        writer = NEW zcl_aff_writer_json_schema( schema_id  = schemid format_version = format_version ).
       ELSEIF p_xslt = abap_true.
-        writer = NEW cl_aff_type_writer_xslt( ).
+        writer = NEW zcl_aff_writer_xslt( ).
       ENDIF.
     ENDIF.
     IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper."we are not in test scenario
@@ -924,14 +924,14 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDIF.
 
     DATA(object) = NEW cl_aff_obj( package = ' '  name = CONV #( interfacename ) type = ' ' ).
-    DATA(generator_log) = NEW cl_aff_log( ).
+    DATA(generator_log) = NEW zcl_aff_log( ).
     LOOP AT generator->get_log( )->get_messages( ) ASSIGNING FIELD-SYMBOL(<msg>).
-      IF <msg>-type = if_aff_log=>c_message_type-info.
-        generator_log->if_aff_log~add_info( message = <msg>-message object = object ).
-      ELSEIF <msg>-type = if_aff_log=>c_message_type-warning.
-        generator_log->if_aff_log~add_warning( message = <msg>-message object = object ).
-      ELSEIF <msg>-type = if_aff_log=>c_message_type-error.
-        generator_log->if_aff_log~add_error( message = <msg>-message object = object ).
+      IF <msg>-type = zif_aff_log=>c_message_type-info.
+        generator_log->zif_aff_log~add_info( message = <msg>-message object = object ).
+      ELSEIF <msg>-type = zif_aff_log=>c_message_type-warning.
+        generator_log->zif_aff_log~add_warning( message = <msg>-message object = object ).
+      ELSEIF <msg>-type = zif_aff_log=>c_message_type-error.
+        generator_log->zif_aff_log~add_error( message = <msg>-message object = object ).
       ENDIF.
     ENDLOOP.
     me->log->join( generator_log ).
@@ -1246,7 +1246,7 @@ CLASS lcl_generator IMPLEMENTATION.
     IF aff_factory IS SUPPLIED.
       me->aff_factory = aff_factory.
     ENDIF.
-    log = NEW cl_aff_log( ).
+    log = NEW zcl_aff_log( ).
     IF i_gui_frontend IS SUPPLIED.
       gui_frontend_service = i_gui_frontend.
     ELSE.
@@ -1288,9 +1288,9 @@ CLASS ltc_generator_double DEFINITION FINAL FOR TESTING.
     INTERFACES lif_generator.
     METHODS constructor
       IMPORTING
-        log_to_return                TYPE REF TO if_aff_log
+        log_to_return                TYPE REF TO zif_aff_log
         generate_type_will_raise_err TYPE abap_bool OPTIONAL.
-    DATA log_to_return TYPE REF TO if_aff_log.
+    DATA log_to_return TYPE REF TO zif_aff_log.
     DATA generate_type_will_raise_err TYPE abap_bool.
 ENDCLASS.
 CLASS ltc_generator_double IMPLEMENTATION.
@@ -1331,11 +1331,11 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
     DATA cut TYPE REF TO lcl_generator.
     DATA generator_double TYPE REF TO lif_generator.
     DATA writer_double TYPE REF TO if_aff_type_writer.
-    DATA writer_log TYPE REF TO cl_aff_log.
-    DATA generator_log TYPE REF TO cl_aff_log.
+    DATA writer_log TYPE REF TO zcl_aff_log.
+    DATA generator_log TYPE REF TO zcl_aff_log.
     DATA aff_factory_double TYPE REF TO if_aff_factory.
     DATA file_handler_double TYPE REF TO if_aff_object_file_handler.
-    DATA expected_log_messages TYPE if_aff_log=>tt_log_out.
+    DATA expected_log_messages TYPE zif_aff_log=>tt_log_out.
     DATA expected_report_log TYPE stringtab.
     DATA gui_frontend TYPE REF TO ltc_gui_frontend.
 
@@ -1427,7 +1427,7 @@ CLASS ltc_generator IMPLEMENTATION.
 
     writer_double ?= cl_abap_testdouble=>create( 'IF_AFF_TYPE_WRITER' ).
     cl_abap_testdouble=>configure_call( writer_double )->returning( abap_true )->ignore_all_parameters( ).
-    writer_double->validate( source = VALUE #( ) log = NEW cl_aff_log( ) ).
+    writer_double->validate( source = VALUE #( ) log = NEW zcl_aff_log( ) ).
 
     file_handler_double ?= cl_abap_testdouble=>create( 'IF_AFF_OBJECT_FILE_HANDLER' ).
 
@@ -1477,14 +1477,14 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_testdouble=>configure_call( aff_factory_double )->returning( file_handler_double ).
     aff_factory_double->get_object_file_handler( ).
 
-    writer_log = NEW cl_aff_log( ).
-    writer_log->if_aff_log~add_info( message = VALUE #( msgty = 'I'  msgv1 = 'Writer Log' ) object = VALUE #( ) ).
+    writer_log = NEW zcl_aff_log( ).
+    writer_log->zif_aff_log~add_info( message = VALUE #( msgty = 'I'  msgv1 = 'Writer Log' ) object = VALUE #( ) ).
 
     cl_abap_testdouble=>configure_call( writer_double )->returning( writer_log ).
     writer_double->get_log( ).
 
-    generator_log = NEW cl_aff_log( ).
-    generator_log->if_aff_log~add_info( message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) object = VALUE #( ) ).
+    generator_log = NEW zcl_aff_log( ).
+    generator_log->zif_aff_log~add_info( message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) object = VALUE #( ) ).
     generator_double = NEW ltc_generator_double( generator_log ).
 
     gui_frontend = NEW ltc_gui_frontend( ).
@@ -1541,7 +1541,7 @@ CLASS ltc_generator IMPLEMENTATION.
          ( obj_type = <object>-obj_type obj_name = <object>-obj_name file_name = file_name content = file_content )
         ) ).
       cl_abap_testdouble=>configure_call( file_handler_double )->returning( files )->ignore_parameter( name = 'LOG' ).
-      file_handler_double->serialize_objects( objects = VALUE #( ( <object> ) ) log = NEW cl_aff_log( ) ).
+      file_handler_double->serialize_objects( objects = VALUE #( ( <object> ) ) log = NEW zcl_aff_log( ) ).
     ENDLOOP.
 
     file_name = `file_of_reps_func_fugr.json`.
@@ -1559,7 +1559,7 @@ CLASS ltc_generator IMPLEMENTATION.
                                             ( obj_name = 'IF_AFF_FUNC_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_REPS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             )
-                                            log     = NEW cl_aff_log( ) ).
+                                            log     = NEW zcl_aff_log( ) ).
     file_name = `file_of_indx_tabl.json`.
     file_content = text_handler->if_aff_content_handler~serialize( `File of INDX, TABL` ).
     files = VALUE #(
@@ -1574,7 +1574,7 @@ CLASS ltc_generator IMPLEMENTATION.
                                             ( obj_name = 'IF_AFF_TABL_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_INDX_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             )
-                                            log     = NEW cl_aff_log( ) ).
+                                            log     = NEW zcl_aff_log( ) ).
   ENDMETHOD.
 
   METHOD xslt_console_intf.
@@ -2092,7 +2092,7 @@ CLASS ltc_generator IMPLEMENTATION.
     "writer returns false when validate is called
     writer_double ?= cl_abap_testdouble=>create( 'IF_AFF_TYPE_WRITER' ).
     cl_abap_testdouble=>configure_call( writer_double )->returning( abap_false )->ignore_all_parameters( ).
-    writer_double->validate( source = VALUE #( ) log = NEW cl_aff_log( ) ).
+    writer_double->validate( source = VALUE #( ) log = NEW zcl_aff_log( ) ).
 
     cl_abap_testdouble=>configure_call( writer_double )->returning( writer_log ).
     writer_double->get_log( ).
