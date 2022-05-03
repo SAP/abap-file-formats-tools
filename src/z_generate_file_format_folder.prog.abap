@@ -236,7 +236,6 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
           generator      TYPE REF TO lif_generator OPTIONAL
           writer         TYPE REF TO zif_aff_writer OPTIONAL,
       start_of_selection,
-      on_value_request_for_type,
       on_value_request_for_intfname,
       on_value_request_for_example,
       modify_screen,
@@ -978,27 +977,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD on_value_request_for_type.
-    DATA(typename_value) = get_dynpro_value( fieldname  = 'P_TYPE' ).
-    typename_value = to_upper( typename_value ).
 
-    DATA(intfname_value) = get_dynpro_value( fieldname  = 'P_INTF' ).
-    intfname_value = to_upper( intfname_value ).
-
-    IF typename_value IS INITIAL AND intfname_value IS INITIAL.
-      RETURN.
-    ELSEIF typename_value IS INITIAL AND intfname_value IS NOT INITIAL.
-      SELECT cmpname FROM seocompo  WHERE clsname = @intfname_value AND cmptype = 3 INTO TABLE @DATA(value_help_result)
-      UP TO 30 ROWS  BYPASSING BUFFER ##NUMBER_OK.      "#EC CI_NOORDER
-    ELSE. "both are filled
-      DATA(typename_with_percent) = |%{ to_upper( typename_value ) }%|.
-      REPLACE ALL OCCURRENCES OF '*' IN typename_with_percent WITH `%`.
-      SELECT cmpname FROM seocompo  WHERE clsname = @intfname_value AND cmptype = 3 AND cmpname LIKE @typename_with_percent
-        INTO TABLE @value_help_result UP TO 30 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
-    ENDIF.
-
-    set_value_help_result_to_field( fieldname = 'P_TYPE' value_help_result_table = value_help_result ).
-  ENDMETHOD.
 
   METHOD on_value_request_for_example.
     DATA(example_value) = get_dynpro_value( fieldname  = `P_EXAMP` ).
