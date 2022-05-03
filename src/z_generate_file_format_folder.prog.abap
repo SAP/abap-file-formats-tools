@@ -551,22 +551,22 @@ CLASS lcl_generator IMPLEMENTATION.
           INSERT |The schema for interface { intfname } could not be created.| INTO TABLE report_log ##NO_TEXT.
         ELSE.
           add_file_to_zip( i_stringtab_content = schema_content
-            i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
-            i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ##NO_TEXT ).
+            i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json|
+            i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ).
         ENDIF.
       ENDLOOP.
       IF p_readm = abap_true.
         DATA(interfacename) = replace_names_in_string( content_as_string  = to_lower( intfname ) replacing_table_string = replacing_table_string ).
         DATA(examplename) = replace_names_in_string( content_as_string  = to_lower( <object>-example ) replacing_table_string = replacing_table_string ).
         DATA(readme) = VALUE string_table(
-  ( |# { <object>-object_type } File Format| ) ##NO_TEXT
+  ( |# { <object>-object_type } File Format| )
   ( `` )
-  ( `File | Cardinality | Definition | Schema | Example`) ##NO_TEXT
-  ( `:--- | :---  | :--- | :--- | :---` ) ##NO_TEXT
+  ( `File | Cardinality | Definition | Schema | Example`)
+  ( `:--- | :---  | :--- | :--- | :---` )
   ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
   | \| [`{ examplename }.{ object_type_folder_name }.json`](./examples/{ examplename }.{ object_type_folder_name }.json)| )
-   ( `` ) ##NO_TEXT
-   ) ##NO_TEXT.
+   ( `` )
+   ).
         add_file_to_zip( i_stringtab_content = readme
                         i_file_name  = |{ object_type_folder_name }/README.md|
  i_error_text = |The readme for object { <object>-object_type } could not be created. Error when transforming readme content from string to xstring| ) ##NO_TEXT.
@@ -581,8 +581,8 @@ CLASS lcl_generator IMPLEMENTATION.
 
       DATA replacing_names TYPE replacing_tab.
       replacing_names = VALUE #(
-       ( to_be_replaced = `if_aff_types_v1` replace_with = `zif_aff_types_v1` ) ##NO_TEXT
-       ( to_be_replaced = `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` ) ##NO_TEXT
+       ( to_be_replaced = `if_aff_types_v1` replace_with = `zif_aff_types_v1` )
+       ( to_be_replaced = `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` )
       ).
 
       LOOP AT two_interfaces ASSIGNING FIELD-SYMBOL(<interf>).
