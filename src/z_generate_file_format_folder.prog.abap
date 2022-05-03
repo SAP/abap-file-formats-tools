@@ -923,15 +923,14 @@ CLASS lcl_generator IMPLEMENTATION.
       INSERT |ATTENTION: The created schema/xslt for type { absolute_typename } is not valid.| INTO TABLE report_log ##NO_TEXT.
     ENDIF.
 
-    DATA(object) = NEW cl_aff_obj( package = ' '  name = CONV #( interfacename ) type = ' ' ).
     DATA(generator_log) = NEW zcl_aff_log( ).
     LOOP AT generator->get_log( )->get_messages( ) ASSIGNING FIELD-SYMBOL(<msg>).
       IF <msg>-type = zif_aff_log=>c_message_type-info.
-        generator_log->zif_aff_log~add_info( message = <msg>-message object = object ).
+        generator_log->zif_aff_log~add_info( message = <msg>-message component_name = interfacename ).
       ELSEIF <msg>-type = zif_aff_log=>c_message_type-warning.
-        generator_log->zif_aff_log~add_warning( message = <msg>-message object = object ).
+        generator_log->zif_aff_log~add_warning( message = <msg>-message component_name = interfacename ).
       ELSEIF <msg>-type = zif_aff_log=>c_message_type-error.
-        generator_log->zif_aff_log~add_error( message = <msg>-message object = object ).
+        generator_log->zif_aff_log~add_error( message = <msg>-message component_name = interfacename ).
       ENDIF.
     ENDLOOP.
     me->log->join( generator_log ).
