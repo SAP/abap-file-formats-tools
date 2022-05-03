@@ -577,7 +577,7 @@ CLASS lcl_generator IMPLEMENTATION.
     SPLIT intfname AT '_' INTO TABLE DATA(splitted_intfname).
     DATA(objecttype) = splitted_intfname[ 3 ].
     DATA(format_version) = get_format_version( to_upper( intfname ) ).
-    object = VALUE #( object_type =  to_upper( objecttype )
+    object = VALUE #( object_type = to_upper( objecttype )
                       interface = to_upper( intfname )
                       format_version = format_version ).
   ENDMETHOD.
