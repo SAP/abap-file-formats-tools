@@ -176,7 +176,7 @@ ENDCLASS.
 
 
 SELECTION-SCREEN BEGIN OF BLOCK block_1 WITH FRAME TITLE TEXT-020.
-PARAMETERS:
+  PARAMETERS:
     p_intf  TYPE sobj_name,
     p_examp TYPE sobj_name.
 SELECTION-SCREEN END OF BLOCK block_1.
@@ -254,12 +254,12 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
     DATA replacing_table_string TYPE replacing_tab.
 
     METHODS: get_all_interfaces
-        IMPORTING object        TYPE aff_object
-        RETURNING VALUE(result) TYPE string_table,
+      IMPORTING object        TYPE aff_object
+      RETURNING VALUE(result) TYPE string_table,
       add_aff_files_to_zip
         IMPORTING
-          files                  TYPE if_aff_object_file_handler=>ty_object_files
-          filename               TYPE string,
+          files    TYPE if_aff_object_file_handler=>ty_object_files
+          filename TYPE string,
       generate_repo_folder
         IMPORTING object TYPE aff_object,
       create_the_variable_dynamicaly
@@ -810,7 +810,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD start_of_selection.
 
-    data(object) = get_object_infos_by_intfname( CONV #( p_intf ) ).
+    DATA(object) = get_object_infos_by_intfname( CONV #( p_intf ) ).
     object-example = p_examp.
 
     generate_repo_folder( object ).
