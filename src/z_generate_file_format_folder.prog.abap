@@ -318,9 +318,12 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
         IMPORTING objecttype     TYPE string
         EXPORTING intfname       TYPE string
                   format_version TYPE i,
-      get_format_version_of_intfname
-        IMPORTING intfname              TYPE string
+      get_format_version
+        IMPORTING intfname              TYPE sobj_name
         RETURNING VALUE(format_version) TYPE i,
+      get_object_type_path
+        IMPORTING interface_name TYPE tadir-obj_name
+        RETURNING VALUE(path)    TYPE string,
       get_schema_or_xslt_content
         RETURNING VALUE(content) TYPE string_table,
       get_content
@@ -531,15 +534,9 @@ CLASS lcl_generator IMPLEMENTATION.
           CONTINUE.
         ENDIF.
 
-        DATA(mainobjtype) = objecttype.
-        IF objecttype = `FUNC` OR objecttype = `REPS`.
-          mainobjtype = `FUGR`.
-        ELSEIF objecttype = `INDX`.
-          mainobjtype = `TABL`.
-        ENDIF.
-
-        DATA(format_version) = get_format_version_of_intfname( CONV #( intfname ) ).
-        DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
+        DATA(object_type_path) = get_object_type_path( interface_name ).
+        DATA(format_version) = get_format_version( intfname ).
+        DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
         IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
           writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
         ENDIF.
@@ -660,7 +657,7 @@ CLASS lcl_generator IMPLEMENTATION.
 * take the highest number
     DATA version_list TYPE STANDARD TABLE OF i.
     LOOP AT intfs ASSIGNING FIELD-SYMBOL(<intf>).
-      DATA(intf_format_version) = get_format_version_of_intfname( CONV #( <intf> ) ).
+      DATA(intf_format_version) = get_format_version( <intf> ).
       APPEND intf_format_version TO version_list.
     ENDLOOP.
     SORT version_list DESCENDING.
@@ -698,7 +695,7 @@ CLASS lcl_generator IMPLEMENTATION.
     SPLIT intfname AT '_' INTO TABLE DATA(splitted_intfname).
     IF lines( splitted_intfname ) >= 3.
       DATA(objecttype) = splitted_intfname[ 3 ].
-      DATA(format_version) = get_format_version_of_intfname( intfname ).
+      DATA(format_version) = get_format_version( intfname ).
       DATA(examplename) = |Z_AFF_EXAMPLE_{ objecttype }|.
       IF objecttype = 'NROB'.
         examplename = 'Z_AFF_NR'.
@@ -846,14 +843,13 @@ CLASS lcl_generator IMPLEMENTATION.
     APPEND 'DOMA' TO type_table.
   ENDMETHOD.
 
-  METHOD get_format_version_of_intfname.
+  METHOD get_format_version.
     SPLIT intfname  AT '_' INTO TABLE DATA(splitted_intfname).
     DATA(last) = splitted_intfname[ lines( splitted_intfname ) ].
-    REPLACE ALL OCCURRENCES OF 'v' IN last WITH ''.
     REPLACE ALL OCCURRENCES OF 'V' IN last WITH ''.
     TRY.
         DATA(regx) = '[[:alpha:]]+'.
-*      check if the token only contains digits
+        " check if the token only contains digits
         DATA(contains_chars) = xsdbool( count( val = last regex = regx ) > 0 ) ##REGEX_POSIX.
         IF contains_chars = abap_false.
           format_version = last.
@@ -862,10 +858,22 @@ CLASS lcl_generator IMPLEMENTATION.
           format_version = 1.
         ENDIF.
       CATCH cx_sy_conversion_no_number.
-        "if the intfname is not correct we use format_version 1
+        " if the intfname is not correct we use format_version 1
         INSERT |Formatversion couldnt be derived from interface { intfname }. Format version 1 was assumed.| INTO TABLE report_log ##NO_TEXT.
         format_version = 1.
     ENDTRY.
+  ENDMETHOD.
+
+  METHOD get_object_type_path.
+    SPLIT interface_name  AT '_' INTO TABLE DATA(splitted_intfname).
+    DATA(object_type) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
+    DATA(main_object_type) = object_type.
+    IF object_type = 'REPS' OR object_type = 'FUNC'.
+      main_object_type = 'FUGR'.
+   ELSEIF object_type = 'INDX'.
+      main_object_type = 'TABL'.
+    ENDIF.
+    path = |{ to_lower( main_object_type ) }/{ to_lower( object_type ) }|.
   ENDMETHOD.
 
   METHOD get_schema_or_xslt_content.
@@ -875,15 +883,9 @@ CLASS lcl_generator IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    DATA(mainobjtype) = p_objtyp.
-    IF p_objtyp = 'REPS' OR p_objtyp = 'FUNC'.
-      mainobjtype = 'FUGR'.
-    ELSEIF p_objtyp = 'INDX'.
-      mainobjtype = 'TABL'.
-    ENDIF.
-
-    DATA(format_version) = get_format_version_of_intfname( CONV #( p_intf ) ).
-    DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( p_objtyp ) }-v{ format_version }.json| ##NO_TEXT.
+    DATA(format_version) = get_format_version( p_intf ).
+    DATA(object_type_path) = get_object_type_path( interface_name ).
+    DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
 
     IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "we are not in test scenario
       IF p_schema = abap_true.
