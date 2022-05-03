@@ -444,7 +444,7 @@ CLASS lcl_generator IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
-      data(aff_object) = get_object_infos_by_intfname( <interface> ).
+      DATA(aff_object) = get_object_infos_by_intfname( <interface> ).
       DATA(objecttype) = aff_object-object_type.
       DATA(format_version) = aff_object-format_version.
 
