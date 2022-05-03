@@ -63,7 +63,10 @@
     "commented_code": true,
     "constructor_visibility_public": true,
     "contains_tab": true,
-    "cyclomatic_complexity": true,
+    "cyclomatic_complexity": {
+      "exclude": ["zcl_aff_abap_doc_reader"],
+      "max": 20
+    },
     "dangerous_statement": false,
     "db_operation_in_loop": true,
     "definitions_top": false,
@@ -117,7 +120,10 @@
     "modify_only_own_db_tables": true,
     "msag_consistency": true,
     "names_no_dash": true,
-    "nesting": true,
+    "nesting": {
+      "exclude": ["zcl_aff_abap_doc_reader"],
+      "depth": 5
+    },
     "newline_between_methods": false,
     "no_public_attributes": false,
     "no_yoda_conditions": false,
