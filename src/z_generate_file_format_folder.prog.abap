@@ -177,21 +177,15 @@ ENDCLASS.
 
 SELECTION-SCREEN BEGIN OF BLOCK block_1 WITH FRAME TITLE TEXT-020.
 PARAMETERS:
-    p_schema TYPE c RADIOBUTTON GROUP sel USER-COMMAND upd DEFAULT 'X',
-    p_xslt   TYPE c RADIOBUTTON GROUP sel,
-    p_repo   TYPE c RADIOBUTTON GROUP sel,
-    p_whole  TYPE c RADIOBUTTON GROUP sel,
-    p_multre TYPE c RADIOBUTTON GROUP sel.
+    p_repo   TYPE c RADIOBUTTON GROUP sel.
 SELECTION-SCREEN END OF BLOCK block_1.
 
 SELECTION-SCREEN BEGIN OF BLOCK block_2 WITH FRAME TITLE TEXT-021 ##TEXT_POOL.
 PARAMETERS:
-    p_objtyp TYPE trobjtype,
     p_intf   TYPE sobj_name,
     p_type   TYPE sobj_name DEFAULT 'TY_MAIN',
     p_examp  TYPE sobj_name,
     p_readm  TYPE abap_bool DEFAULT abap_true AS CHECKBOX,
-    p_consol TYPE c RADIOBUTTON GROUP two USER-COMMAND two DEFAULT 'X',
     p_disk   TYPE c RADIOBUTTON GROUP two.
 SELECT-OPTIONS:
  p_multob FOR obj_types NO INTERVALS.
@@ -243,7 +237,6 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
           writer         TYPE REF TO zif_aff_writer OPTIONAL,
       start_of_selection,
       on_value_request_for_type,
-      on_value_request_for_objtype,
       on_value_request_for_intfname,
       on_value_request_for_example,
       modify_screen,
@@ -319,13 +312,11 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
         EXPORTING intfname       TYPE string
                   format_version TYPE i,
       get_format_version
-        IMPORTING intfname              TYPE sobj_name
+        IMPORTING intfname              TYPE string
         RETURNING VALUE(format_version) TYPE i,
       get_object_type_path
-        IMPORTING interface_name TYPE tadir-obj_name
+        IMPORTING interface_name TYPE string
         RETURNING VALUE(path)    TYPE string,
-      get_schema_or_xslt_content
-        RETURNING VALUE(content) TYPE string_table,
       get_content
         IMPORTING absolute_typename TYPE string
                   interfacename     TYPE string
@@ -473,7 +464,7 @@ CLASS lcl_generator IMPLEMENTATION.
   METHOD generate_repo_folder.
     IF p_repo = abap_true.
       "serialize only one repo folder
-      IF p_objtyp IS INITIAL OR p_intf IS INITIAL OR p_examp IS INITIAL.
+      IF p_intf IS INITIAL OR p_examp IS INITIAL.
         INSERT `Please fill out all fields (objecttype, interfacename, examplename)` INTO TABLE report_log ##NO_TEXT.
         RETURN.
       ENDIF.
@@ -491,7 +482,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ELSE.
         file_handler = cl_aff_factory=>get_object_file_handler( ).
       ENDIF.
-      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = me->log ).
+      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = new cl_aff_log( ) ).
 
       get_replacing_table_and_intfs(
         EXPORTING name_of_intf_of_mainobj = CONV #( <object>-interface ) example_files = example_files
@@ -512,14 +503,14 @@ CLASS lcl_generator IMPLEMENTATION.
         APPEND VALUE #( devclass  = intf_obj_devclass obj_type  = 'INTF' obj_name = upper_intf ) TO intf_objects.
       ENDLOOP.
 
-      DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = me->log ).
+      DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = new cl_aff_log( ) ).
 
       add_aff_files_to_zip( files = intf_files filename = |{ object_type_folder_name }/type/| replacing_table_string = replacing_table_string ).
 
       "generate the schema(s) of the mainobject and all of its subobjects
       "add it to the zip folder
       LOOP AT interfaces ASSIGNING <interface>.
-        DATA(intfname) = <interface>.
+        data(intfname) = <interface>.
         SPLIT intfname AT `_` INTO TABLE DATA(splitted_intfname).
         IF lines( splitted_intfname ) < 4.
           INSERT |The schema for interface { <interface> } could not be created. Objecttype could not be derived from intfname.| INTO TABLE report_log ##NO_TEXT.
@@ -534,8 +525,8 @@ CLASS lcl_generator IMPLEMENTATION.
           CONTINUE.
         ENDIF.
 
-        DATA(object_type_path) = get_object_type_path( interface_name ).
-        DATA(format_version) = get_format_version( intfname ).
+        DATA(object_type_path) = get_object_type_path( conv #( intfname ) ).
+        DATA(format_version) = get_format_version( conv #( intfname ) ).
         DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
         IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
           writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
@@ -586,7 +577,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ).
 
       LOOP AT two_interfaces ASSIGNING FIELD-SYMBOL(<interf>).
-        DATA(intf_files2) = file_handler->serialize_objects( objects = VALUE #( ( <interf> ) ) log = me->log ).
+        DATA(intf_files2) = file_handler->serialize_objects( objects = VALUE #( ( <interf> ) ) log = new cl_aff_log( ) ).
         add_aff_files_to_zip( files = intf_files2 filename = `` replacing_table_string = replacing_names ).
       ENDLOOP.
     ENDIF.
@@ -657,7 +648,7 @@ CLASS lcl_generator IMPLEMENTATION.
 * take the highest number
     DATA version_list TYPE STANDARD TABLE OF i.
     LOOP AT intfs ASSIGNING FIELD-SYMBOL(<intf>).
-      DATA(intf_format_version) = get_format_version( <intf> ).
+      DATA(intf_format_version) = get_format_version( conv #( <intf> ) ).
       APPEND intf_format_version TO version_list.
     ENDLOOP.
     SORT version_list DESCENDING.
@@ -817,7 +808,7 @@ CLASS lcl_generator IMPLEMENTATION.
       cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = class_typename RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
       IF sy-subrc = 1.
         INSERT |Type { absolute_typename } was not found. Either interface or type doesnt exist.| INTO TABLE report_log ##NO_TEXT.
-        RAISE EXCEPTION NEW cx_root( ).
+        RAISE EXCEPTION NEW zcx_aff_tools( ).
       ENDIF.
     ENDIF.
     r_elemdescr ?= r_typedescr.
@@ -878,31 +869,6 @@ CLASS lcl_generator IMPLEMENTATION.
     path = |{ to_lower( main_object_type ) }/{ to_lower( object_type ) }|.
   ENDMETHOD.
 
-  METHOD get_schema_or_xslt_content.
-    IF p_intf IS INITIAL OR p_type IS INITIAL OR p_objtyp IS INITIAL.
-      INSERT `Please fill out all fields (interfacename, objecttype, abaptypename)` INTO TABLE report_log ##NO_TEXT.
-      CLEAR content.
-      RETURN.
-    ENDIF.
-
-    DATA(format_version) = get_format_version( p_intf ).
-    DATA(object_type_path) = get_object_type_path( interface_name ).
-    DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
-
-    IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "we are not in test scenario
-      IF p_schema = abap_true.
-        writer = NEW zcl_aff_writer_json_schema( schema_id  = schemid format_version = format_version ).
-      ELSEIF p_xslt = abap_true.
-        writer = NEW zcl_aff_writer_xslt( ).
-      ENDIF.
-    ENDIF.
-
-    IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper."we are not in test scenario
-      generator = NEW lcl_generator_helper( writer ).
-    ENDIF.
-
-    content = get_content( absolute_typename = |\\INTERFACE={ p_intf }\\TYPE={ p_type }| interfacename = CONV #( p_intf ) ).
-  ENDMETHOD.
 
   METHOD get_content.
     TRY.
@@ -1004,48 +970,11 @@ CLASS lcl_generator IMPLEMENTATION.
     p_type   = to_upper( p_type ).
     p_examp  = to_upper( p_examp ).
 
-    IF p_xslt = abap_true OR p_schema = abap_true.
-      "serialize ST or schema
-      xslt_schema_content  = get_schema_or_xslt_content( ).
-      IF p_disk = abap_true.
-        zip = create_schema_xslt_zip( xslt_schema_content ).
-        CLEAR xslt_schema_content.
-      ENDIF.
-    ELSEIF p_repo = abap_true.
-      "serialize one repo folder
-      generate_repo_folder( VALUE #( ( object_type  = p_objtyp interface = p_intf example = p_examp ) ) ).
-    ELSEIF p_multre = abap_true.
-      "    serialize multiple repo folders
-      DATA objects TYPE aff_objects_table.
-      LOOP AT p_multob ASSIGNING FIELD-SYMBOL(<object>).
-        DATA(object1) = get_object_infos_by_objtype( CONV #( <object>-low ) ).
-        APPEND object1 TO objects.
-      ENDLOOP.
+    generate_repo_folder( value #( ( object_type  = p_objtyp interface =  p_intf example =  p_examp ) ) ).
 
-      generate_repo_folder( objects ).
-    ELSEIF p_whole = abap_true.
-      "write complete file-formats folder
-      DATA(all_aff_objects) = get_table_with_all_githubtypes( ).
-      DATA aff_objects TYPE aff_objects_table.
-      LOOP AT all_aff_objects ASSIGNING FIELD-SYMBOL(<aff_object>).
-        DATA(aff_object) = get_object_infos_by_objtype( <aff_object> ).
-        APPEND aff_object TO aff_objects.
-      ENDLOOP.
-
-      generate_repo_folder( objects  = aff_objects whole_aff_folder = abap_true ).
-    ENDIF.
-
-    IF xslt_schema_content IS NOT INITIAL. "show it in the console
-      gui_frontend_service->write( xslt_schema_content ).
-      gui_frontend_service->display( ).
-    ELSEIF zip IS NOT INITIAL. "write it to disk
-      DATA(zip_archive) = zip->save( ).
-      DATA(zipname) = to_lower( p_objtyp ).
-      IF p_multre = abap_true OR p_whole = abap_true.
-        zipname = `file-formats` ##NO_TEXT.
-      ENDIF.
-      write_to_zip( zip_archive = zip_archive zipname = zipname ).
-    ENDIF.
+    DATA(zip_archive) = zip->save( ).
+    DATA(zipname) = to_lower( p_objtyp ).
+    write_to_zip( zip_archive = zip_archive zipname = zipname ).
 
   ENDMETHOD.
 
@@ -1154,35 +1083,6 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-  METHOD on_value_request_for_objtype.
-    DATA(objtype_value) = get_dynpro_value( fieldname  = `P_OBJTYP` ).
-    objtype_value = to_upper( objtype_value ).
-    IF objtype_value IS INITIAL.
-*  put all Types into the value help
-      SELECT DISTINCT object FROM e071 INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ORDER BY object ##NUMBER_OK. "#EC CI_NOWHERE
-      LOOP AT get_table_with_all_githubtypes( ) ASSIGNING FIELD-SYMBOL(<type>).
-        INSERT <type> INTO value_help_result_table INDEX 1.
-      ENDLOOP.
-    ELSE.
-* The user does not have to type "*" on beginning and ending of the obj type pattern, we add it automatically
-      DATA(objtype_with_percent) = |%{ to_upper( objtype_value ) }%|.
-      REPLACE ALL OCCURRENCES OF '*' IN objtype_with_percent WITH `%`.
-
-      " Retrieve object which match the search pattern entered in UI Element objtype
-      SELECT DISTINCT object FROM e071 INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER WHERE object LIKE @objtype_with_percent ##NUMBER_OK. "#EC CI_NOORDER "#EC CI_NOFIELD
-    ENDIF.
-
-    DATA(objtype) = set_value_help_result_to_field( fieldname = `P_OBJTYP` value_help_result_table = value_help_result_table ).
-
-    IF objtype IS NOT INITIAL.
-      DATA(object_infos) = get_object_infos_by_objtype( objtype ).
-
-      set_object_infos_in_ui( object_infos ).
-      p_intf = object_infos-interface.
-      p_objtyp = object_infos-object_type.
-      p_examp = object_infos-example.
-    ENDIF.
-  ENDMETHOD.
 
   METHOD on_value_request_for_intfname.
     DATA(intfname_value) = get_dynpro_value( fieldname  = `P_INTF` ).
