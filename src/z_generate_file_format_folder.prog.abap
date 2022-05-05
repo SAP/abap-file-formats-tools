@@ -179,7 +179,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
       generator   TYPE REF TO lif_generator,
       writer      TYPE REF TO zif_aff_writer,
       zip         TYPE REF TO cl_abap_zip,
-      aff_object TYPE aff_object.
+      aff_object  TYPE aff_object.
 
     METHODS: get_sub_type_interfaces
       IMPORTING object        TYPE aff_object
@@ -686,7 +686,7 @@ CLASS lcl_generator IMPLEMENTATION.
   METHOD constructor.
     me->zip = NEW cl_abap_zip( ).
     gui_frontend_service = NEW lcl_gui_frontend( ).
-    me->log = new zcL_aff_log( ).
+    me->log = NEW zcL_aff_log( ).
   ENDMETHOD.
 
   METHOD set_parameters.
