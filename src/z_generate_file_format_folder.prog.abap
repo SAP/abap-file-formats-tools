@@ -528,17 +528,15 @@ CLASS lcl_generator IMPLEMENTATION.
         RETURN.
     ENDTRY.
 
-    DATA(generator_log) = NEW zcl_aff_log( ).
     LOOP AT generator->get_log( )->get_messages( ) ASSIGNING FIELD-SYMBOL(<msg>).
       IF <msg>-type = zif_aff_log=>c_message_type-info.
-        generator_log->zif_aff_log~add_info( message = <msg>-message component_name = interfacename ).
+        log->add_info( message = <msg>-message component_name = interfacename ).
       ELSEIF <msg>-type = zif_aff_log=>c_message_type-warning.
-        generator_log->zif_aff_log~add_warning( message = <msg>-message component_name = interfacename ).
+        log->add_warning( message = <msg>-message component_name = interfacename ).
       ELSEIF <msg>-type = zif_aff_log=>c_message_type-error.
-        generator_log->zif_aff_log~add_error( message = <msg>-message component_name = interfacename ).
+        log->add_error( message = <msg>-message component_name = interfacename ).
       ENDIF.
     ENDLOOP.
-    me->log->join( generator_log ).
   ENDMETHOD.
 
 
@@ -688,6 +686,7 @@ CLASS lcl_generator IMPLEMENTATION.
   METHOD constructor.
     me->zip = NEW cl_abap_zip( ).
     gui_frontend_service = NEW lcl_gui_frontend( ).
+    me->log = new zcL_aff_log( ).
   ENDMETHOD.
 
   METHOD set_parameters.
