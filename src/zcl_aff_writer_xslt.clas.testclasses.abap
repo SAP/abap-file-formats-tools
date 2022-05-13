@@ -933,7 +933,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     DATA(st_content) = test_generator->generate_type( test_type ).
 
     DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
-    st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
+    st_name = |{ st_name WIDTH = 30 PAD = '=' }{ c_ext_xslt_source }|.
 
     INSERT REPORT st_name FROM st_content EXTENSION TYPE c_ext_xslt_source.
 
@@ -955,7 +955,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
     DATA(counter) = st_execution_counter - 1.
     DATA(st_name) = CONV progname( c_xslt_prefix && counter ).
-    st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
+    st_name = |{ st_name WIDTH = 30 PAD = '=' }{ c_ext_xslt_source }|.
 
     DATA st_result TYPE abap_trans_resbind_tab.
     FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
