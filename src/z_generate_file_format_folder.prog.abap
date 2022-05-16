@@ -45,10 +45,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
   PRIVATE SECTION.
 
-    DATA: "needed for testing
-      aff_factory TYPE REF TO  if_aff_factory,
-      generator   TYPE REF TO zcl_aff_generator,
-      writer      TYPE REF TO zif_aff_writer,
+    DATA:
       zip         TYPE REF TO cl_abap_zip,
       aff_object  TYPE aff_object.
 
@@ -85,6 +82,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
       get_content
         IMPORTING absolute_typename TYPE string
                   interfacename     TYPE string
+                  generator         TYPE REF TO zcl_aff_generator
         RETURNING VALUE(result)     TYPE string_table,
       object_as_string
         IMPORTING object        TYPE if_aff_object_file_handler=>ty_object
@@ -161,20 +159,15 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD generate_repo_folder.
+    DATA(file_handler) = cl_aff_factory=>get_object_file_handler( ).
 
     SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @aff_object-example AND object = @aff_object-object_type INTO @DATA(example_obj_devclass).
     DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass  = example_obj_devclass obj_type = aff_object-object_type obj_name = aff_object-example ).
 
-    IF aff_factory IS NOT INITIAL.
-      DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
-    ELSE.
-      file_handler = cl_aff_factory=>get_object_file_handler( ).
-    ENDIF.
-
     DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = NEW cl_aff_log( ) ).
 
-    add_aff_files_to_zip( files = example_files
-                          filename = |{ aff_object-object_type }/examples/| ).
+    add_aff_files_to_zip( files     = example_files
+                          filename  = |{ aff_object-object_type }/examples/| ).
 
 
     DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
@@ -192,8 +185,8 @@ CLASS lcl_generator IMPLEMENTATION.
 
     DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = NEW cl_aff_log( ) ).
 
-    add_aff_files_to_zip( files = intf_files
-                          filename = |{ aff_object-object_type }/type/| ).
+    add_aff_files_to_zip( files     = intf_files
+                          filename  = |{ aff_object-object_type }/type/| ).
 
     LOOP AT interfaces ASSIGNING <interface>.
 
@@ -207,10 +200,11 @@ CLASS lcl_generator IMPLEMENTATION.
 
       DATA(object_type_path) = get_object_type_path( <interface> ).
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ aff_object-format_version }.json| ##NO_TEXT.
-      writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = aff_object-format_version ).
-      generator = NEW zcl_aff_generator( writer ).
+      DATA(writer) = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = aff_object-format_version ).
 
-      DATA(str_table) = get_content( absolute_typename = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN| interfacename = <interface> ).
+      DATA(str_table) = get_content( absolute_typename  = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN|
+                                     interfacename      = <interface>
+                                     generator          = NEW zcl_aff_generator( writer ) ).
       me->zip->add( name    = |{ aff_object-object_type }/{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json|
                     content = cl_abap_codepage=>convert_to( concat_lines_of( table = str_table sep = cl_abap_char_utilities=>newline ) ) ).
     ENDLOOP.
