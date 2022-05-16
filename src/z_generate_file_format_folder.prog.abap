@@ -237,7 +237,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD add_aff_files_to_zip.
     LOOP AT files-files ASSIGNING FIELD-SYMBOL(<file>).
-      zip->add( name    = |{ filename }{ to_lower( <file>-file_name ) }|
+      zip->add( name    = |{ to_lower( filename ) }{ to_lower( <file>-file_name ) }|
                 content = <file>-content ).
     ENDLOOP.
   ENDMETHOD.
