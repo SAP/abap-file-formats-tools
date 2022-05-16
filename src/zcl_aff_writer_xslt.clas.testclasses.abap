@@ -861,7 +861,9 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
   RISK LEVEL DANGEROUS.
 
   PRIVATE SECTION.
-    CONSTANTS c_xslt_prefix TYPE string VALUE `ZAFF_TRANSFORMATION_GEN_` ##NO_TEXT.
+    CONSTANTS:
+      c_xslt_prefix     TYPE string VALUE `ZAFF_TRANSFORMATION_GEN_` ##NO_TEXT,
+      c_ext_xslt_source TYPE c LENGTH 2 VALUE 'XT'.
 
     CLASS-DATA st_execution_counter TYPE i.
 
@@ -931,9 +933,9 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     DATA(st_content) = test_generator->generate_type( test_type ).
 
     DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
-    st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
+    st_name = |{ st_name WIDTH = 30 PAD = '=' }{ c_ext_xslt_source }|.
 
-    INSERT REPORT st_name FROM st_content EXTENSION TYPE srext_ext_xslt_source.
+    INSERT REPORT st_name FROM st_content EXTENSION TYPE c_ext_xslt_source.
 
     DATA(json_writer) = cl_sxml_string_writer=>create( type = if_sxml=>co_xt_json ).
     json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_linebreaks ).
@@ -953,7 +955,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
     DATA(counter) = st_execution_counter - 1.
     DATA(st_name) = CONV progname( c_xslt_prefix && counter ).
-    st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
+    st_name = |{ st_name WIDTH = 30 PAD = '=' }{ c_ext_xslt_source }|.
 
     DATA st_result TYPE abap_trans_resbind_tab.
     FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
@@ -2849,7 +2851,9 @@ DURATION SHORT
 RISK LEVEL DANGEROUS.
 
   PRIVATE SECTION.
-    CONSTANTS c_xslt_prefix TYPE string VALUE `ZAFF_TRANSFORMATION_GEN_` ##NO_TEXT.
+    CONSTANTS:
+      c_xslt_prefix     TYPE string VALUE `ZAFF_TRANSFORMATION_GEN_` ##NO_TEXT,
+      c_ext_xslt_source TYPE c LENGTH 2 VALUE 'XT'.
 
     CLASS-DATA st_execution_counter TYPE i.
 
@@ -3501,7 +3505,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
     st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
 
-    INSERT REPORT st_name FROM st_content EXTENSION TYPE srext_ext_xslt_source.
+    INSERT REPORT st_name FROM st_content EXTENSION TYPE c_ext_xslt_source.
 
     DATA(json_writer) = cl_sxml_string_writer=>create( type = if_sxml=>co_xt_json ).
     json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_linebreaks ).
