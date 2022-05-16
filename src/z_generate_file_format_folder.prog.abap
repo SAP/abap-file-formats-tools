@@ -5,7 +5,131 @@
 *&---------------------------------------------------------------------*
 REPORT z_generate_file_format_folder.
 CLASS lcl_generator DEFINITION DEFERRED.
+DATA obj_types TYPE saff_repo_types.
 DATA helper TYPE REF TO lcl_generator ##NEEDED.
+
+INTERFACE lif_gui_frontend_service.
+  METHODS display.
+  METHODS clear.
+  METHODS write
+    IMPORTING message TYPE any.
+  METHODS write_to_console_and_screen
+    IMPORTING message TYPE string.
+  METHODS file_save_dialog
+    IMPORTING VALUE(window_title)      TYPE string OPTIONAL
+              VALUE(default_extension) TYPE string OPTIONAL
+              VALUE(default_file_name) TYPE string OPTIONAL
+    CHANGING  filename                 TYPE string
+              path                     TYPE string
+              fullpath                 TYPE string
+              user_action              TYPE i OPTIONAL
+    RAISING   cx_root.
+  METHODS gui_download
+    IMPORTING
+              !bin_filesize     TYPE i OPTIONAL
+              !filename         TYPE string
+              !filetype         TYPE char10 DEFAULT 'ASC'
+              !write_lf         TYPE char01 DEFAULT 'X'
+    EXPORTING
+              VALUE(filelength) TYPE i
+    CHANGING
+              !data_tab         TYPE STANDARD TABLE
+    RAISING   cx_root.
+
+ENDINTERFACE.
+
+CLASS lcl_gui_frontend DEFINITION
+  FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_gui_frontend_service.
+ENDCLASS.
+
+CLASS lcl_gui_frontend IMPLEMENTATION.
+
+
+  METHOD lif_gui_frontend_service~file_save_dialog.
+    cl_gui_frontend_services=>file_save_dialog(
+      EXPORTING
+        default_extension   = default_extension
+        default_file_name   = default_file_name
+      CHANGING
+        filename            = filename
+        path                = path
+        fullpath            = fullpath
+        user_action         = user_action
+                              ) ##SUBRC_OK.
+  ENDMETHOD.
+
+  METHOD lif_gui_frontend_service~gui_download.
+    CLEAR filelength.
+    cl_gui_frontend_services=>gui_download(
+      EXPORTING
+        filename                  = filename
+        bin_filesize              = bin_filesize
+        filetype                  = filetype
+        write_lf                  = write_lf
+      CHANGING
+        data_tab                  = data_tab ).
+  ENDMETHOD.
+
+  METHOD lif_gui_frontend_service~write_to_console_and_screen.
+    WRITE: / message.
+    cl_demo_output=>write( message ).
+  ENDMETHOD.
+
+  METHOD lif_gui_frontend_service~clear.
+    cl_demo_output=>clear( ).
+  ENDMETHOD.
+
+  METHOD lif_gui_frontend_service~display.
+    cl_demo_output=>display( ).
+  ENDMETHOD.
+
+  METHOD lif_gui_frontend_service~write.
+    cl_demo_output=>write( message ).
+  ENDMETHOD.
+
+ENDCLASS.
+
+
+
+
+INTERFACE lif_generator.
+  METHODS generate_type
+    IMPORTING data          TYPE data
+    RETURNING VALUE(result) TYPE string_table
+    RAISING   cx_root.
+  METHODS get_log
+    RETURNING
+      VALUE(log) TYPE REF TO zif_aff_log.
+ENDINTERFACE.
+
+CLASS lcl_generator_helper DEFINITION
+  FINAL
+  CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_generator.
+    METHODS constructor
+      IMPORTING
+        writer TYPE REF TO zif_aff_writer.
+    DATA generator TYPE REF TO zcl_aff_generator.
+ENDCLASS.
+
+CLASS lcl_generator_helper IMPLEMENTATION.
+
+  METHOD constructor.
+    me->generator = NEW zcl_aff_generator( writer ).
+  ENDMETHOD.
+
+  METHOD lif_generator~generate_type.
+    result = me->generator->generate_type( data ).
+  ENDMETHOD.
+
+  METHOD lif_generator~get_log.
+    log = me->generator->get_log( ).
+  ENDMETHOD.
+
+ENDCLASS.
 
 
 SELECTION-SCREEN BEGIN OF BLOCK block_1 WITH FRAME TITLE TEXT-020.
@@ -28,15 +152,20 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
   PUBLIC SECTION.
     DATA log TYPE REF TO zif_aff_log.
     DATA report_log TYPE stringtab.
-    DATA  zip TYPE REF TO cl_abap_zip.
-    DATA  aff_object  TYPE aff_object.
+    DATA xslt_schema_content TYPE string_table.
+
+    DATA gui_frontend_service TYPE REF TO lif_gui_frontend_service.
 
     METHODS: set_parameters
       IMPORTING
         i_intf  TYPE sobj_name OPTIONAL
         i_examp TYPE sobj_name OPTIONAL,
 
+      constructor,
       start_of_selection,
+      on_value_request_for_intfname,
+      on_value_request_for_example,
+      modify_screen,
       at_selection_screen,
       write_to_zip
         IMPORTING zip_archive TYPE xstring
@@ -47,15 +176,17 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
     DATA: "needed for testing
       aff_factory TYPE REF TO  if_aff_factory,
-      generator   TYPE REF TO zcl_aff_generator,
-      writer      TYPE REF TO zif_aff_writer.
+      generator   TYPE REF TO lif_generator,
+      writer      TYPE REF TO zif_aff_writer,
+      zip         TYPE REF TO cl_abap_zip,
+      aff_object  TYPE aff_object.
 
     METHODS: get_sub_type_interfaces
       IMPORTING object        TYPE aff_object
       RETURNING VALUE(result) TYPE string_table,
       add_aff_files_to_zip
         IMPORTING
-          files    TYPE any
+          files    TYPE if_aff_object_file_handler=>ty_object_files
           filename TYPE string,
       generate_repo_folder,
       create_the_variable_dynamicaly
@@ -98,7 +229,7 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA fullpath TYPE string.
     DATA user_action TYPE i.
     TRY.
-        cl_gui_frontend_services=>file_save_dialog(
+        gui_frontend_service->file_save_dialog(
           EXPORTING
             default_extension = `zip`
             default_file_name = zipname
@@ -131,7 +262,7 @@ CLASS lcl_generator IMPLEMENTATION.
       off = off + chunk_size.
     ENDWHILE.
     TRY.
-        cl_gui_frontend_services=>gui_download(
+        gui_frontend_service->gui_download(
           EXPORTING
             filename     = file_name
             bin_filesize = xstring_length
@@ -160,99 +291,38 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD generate_repo_folder.
 
-    DATA(lower_obj_type) = to_lower( aff_object-object_type ).
-    DATA(lower_interface) = to_lower( aff_object-interface ).
-    DATA(lower_example) = to_lower( aff_object-example ).
+    SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @aff_object-example AND object = @aff_object-object_type INTO @DATA(example_obj_devclass).
+    DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass  = example_obj_devclass obj_type = aff_object-object_type obj_name = aff_object-example ).
 
-    TRY.
-*       file_handler = cl_aff_factory=>get_object_file_handler( ).
-        DATA aff_factory TYPE REF TO object.
-        DATA file_handler TYPE REF TO object.
-        DATA log TYPE REF TO object.
-        CREATE OBJECT aff_factory TYPE ('CL_AFF_FACTORY').
-*        CREATE OBJECT file_handler TYPE ('IF_AFF_OBJECT_FILE_HANDLER').
-        CREATE OBJECT log TYPE ('CL_AFF_LOG').
+    IF aff_factory IS NOT INITIAL.
+      DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
+    ELSE.
+      file_handler = cl_aff_factory=>get_object_file_handler( ).
+    ENDIF.
 
-        CALL METHOD aff_factory->('GET_OBJECT_FILE_HANDLER')
-          RECEIVING
-            result = file_handler.
+    DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = NEW cl_aff_log( ) ).
 
-        SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @aff_object-example AND object = @aff_object-object_type INTO @DATA(example_obj_devclass).
-*        data(example_main_object) = value if_aff_object_file_handler=>ty_object( devclass  = example_obj_devclass obj_type = <object>-object_type obj_name = <object>-example ).
-        DATA: example_main_object TYPE REF TO data.
-        FIELD-SYMBOLS: <example_main_object> TYPE any.
-        CREATE DATA example_main_object TYPE ('IF_AFF_OBJECT_FILE_HANDLER=>TY_OBJECT').
-        ASSIGN example_main_object->* TO <example_main_object>.
-        ASSIGN COMPONENT 'DEVCLASS' OF STRUCTURE <example_main_object> TO FIELD-SYMBOL(<devclass>).
-        ASSIGN COMPONENT 'OBJ_TYPE' OF STRUCTURE <example_main_object> TO FIELD-SYMBOL(<obj_type>).
-        ASSIGN COMPONENT 'OBJ_NAME' OF STRUCTURE <example_main_object> TO FIELD-SYMBOL(<obj_name>).
-        <devclass> = example_obj_devclass.
-        <obj_type> = aff_object-object_type.
-        <obj_name> = aff_object-example.
+    add_aff_files_to_zip( files = example_files
+                          filename = |{ aff_object-object_type }/examples/| ).
 
-*    DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = NEW cl_aff_log( ) ).
-        DATA: objects TYPE REF TO data.
-        FIELD-SYMBOLS: <objects> TYPE any.
-        CREATE DATA objects TYPE ('IF_AFF_OBJECT_FILE_HANDLER=>TT_OBJECTS').
-        ASSIGN objects->* TO <objects>.
-        INSERT <example_main_object> INTO TABLE <objects>.
 
-        DATA: files TYPE REF TO data.
-        CREATE DATA files TYPE ('IF_AFF_OBJECT_FILE_HANDLER=>TY_OBJECT_FILES').
-*        data(file_handler1) = cast IF_AFF_OBJECT_FILE_HANDLER( file_handler ).
-        CALL METHOD file_handler->('SERIALIZE_OBJECTS')
-          EXPORTING
-            objects = objects->*
-            log     = log
-          RECEIVING
-            result  = files.
+    DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
+    DATA(interfaces) = get_sub_type_interfaces( aff_object ).
 
-        add_aff_files_to_zip( files = files
-                              filename = |{ lower_obj_type }/examples/| ).
+    LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
+      SELECT SINGLE devclass FROM tadir WHERE obj_name = @<interface> AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass).
 
-      CATCH cx_root INTO DATA(lx_error).
-        INSERT |Files for the Example object could not be generated.| INTO TABLE report_log ##NO_TEXT.
+      IF intf_obj_devclass IS INITIAL.
+        INSERT |{ <interface> } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
+      ENDIF.
 
-    ENDTRY.
-    TRY.
-        DATA(interfaces) = get_sub_type_interfaces( aff_object ).
-        CREATE DATA objects TYPE ('IF_AFF_OBJECT_FILE_HANDLER=>TT_OBJECTS').
-        ASSIGN objects->* TO <objects>.
-        LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
-          SELECT SINGLE devclass FROM tadir WHERE obj_name = @<interface> AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass).
+      APPEND VALUE #( devclass = intf_obj_devclass obj_type = 'INTF' obj_name = <interface> ) TO intf_objects.
+    ENDLOOP.
 
-          IF intf_obj_devclass IS INITIAL.
-            INSERT |{ <interface> } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
-          ENDIF.
-          DATA: interface_object TYPE REF TO data.
-          FIELD-SYMBOLS: <interface_object> TYPE any.
-          CREATE DATA interface_object TYPE ('IF_AFF_OBJECT_FILE_HANDLER=>TY_OBJECT').
-          ASSIGN interface_object->* TO <interface_object>.
-          ASSIGN COMPONENT 'DEVCLASS' OF STRUCTURE <interface_object> TO <devclass>.
-          ASSIGN COMPONENT 'OBJ_TYPE' OF STRUCTURE <interface_object> TO <obj_type>.
-          ASSIGN COMPONENT 'OBJ_NAME' OF STRUCTURE <interface_object> TO <obj_name>.
-          <devclass> = intf_obj_devclass.
-          <obj_type> = 'INTF'.
-          <obj_name> = <interface>.
-          INSERT <interface_object> INTO TABLE <objects>.
-*      APPEND VALUE #( devclass = intf_obj_devclass obj_type = 'INTF' obj_name = <interface> ) TO intf_objects.
-        ENDLOOP.
+    DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = NEW cl_aff_log( ) ).
 
-        CALL METHOD file_handler->('IF_AFF_OBJECT_FILE_HANDLER~SERIALIZE_OBJECTS')
-          EXPORTING
-            objects = objects->*
-            log     = log
-          RECEIVING
-            result  = files.
-
-*    DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = NEW cl_aff_log( ) ).
-
-        add_aff_files_to_zip( files = files
-                              filename = |{ lower_obj_type }/type/| ).
-      CATCH cx_root INTO DATA(lx_error2).
-        INSERT |Files for the interfaces could not be generated.| INTO TABLE report_log ##NO_TEXT.
-
-    ENDTRY.
+    add_aff_files_to_zip( files = intf_files
+                          filename = |{ aff_object-object_type }/type/| ).
 
     LOOP AT interfaces ASSIGNING <interface>.
 
@@ -267,12 +337,13 @@ CLASS lcl_generator IMPLEMENTATION.
       DATA(object_type_path) = get_object_type_path( <interface> ).
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ aff_object-format_version }.json| ##NO_TEXT.
       writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = aff_object-format_version ).
-      generator = NEW zcl_aff_generator( writer ).
+      generator = NEW lcl_generator_helper( writer ).
 
       DATA(str_table) = get_content( absolute_typename = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN| interfacename = <interface> ).
-      me->zip->add( name    = |{ lower_obj_type }/{ lower_obj_type }-v{ aff_object-format_version }.json|
+      me->zip->add( name    = |{ aff_object-object_type }/{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json|
                     content = cl_abap_codepage=>convert_to( concat_lines_of( table = str_table sep = cl_abap_char_utilities=>newline ) ) ).
     ENDLOOP.
+
 
 
 
@@ -281,12 +352,12 @@ CLASS lcl_generator IMPLEMENTATION.
 ( `` )
 ( `File | Cardinality | Definition | Schema | Example`)
 ( `:--- | :---  | :--- | :--- | :---` )
-( |`<name>.{ lower_obj_type }.json` \| 1 \| [`{ lower_interface }.intf.abap`](./type/{ lower_interface }.intf.abap) \| | &&
- | [`{ lower_obj_type }-v{ aff_object-format_version }.json`](./{ lower_obj_type }-v{ aff_object-format_version }.json)| &&
-| \| [`{ lower_example }.{ lower_obj_type }.json`](./examples/{ lower_example }.{ lower_obj_type }.json)| )
+( |`<name>.{ aff_object-object_type }.json` \| 1 \| [`{ aff_object-interface }.intf.abap`](./type/{ aff_object-interface }.intf.abap) \| | &&
+ | [`{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json`](./{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json)| &&
+| \| [`{ aff_object-example }.{ aff_object-object_type }.json`](./examples/{ aff_object-example }.{ aff_object-object_type }.json)| )
  ( `` )
  ).
-    me->zip->add( name    = |{ lower_obj_type }/README.md|
+    me->zip->add( name    = |{ aff_object-object_type }/README.md|
                   content = cl_abap_codepage=>convert_to( concat_lines_of( table = readme sep = cl_abap_char_utilities=>newline ) ) ).
 
   ENDMETHOD.
@@ -294,14 +365,9 @@ CLASS lcl_generator IMPLEMENTATION.
 
 
   METHOD add_aff_files_to_zip.
-    FIELD-SYMBOLS <files> TYPE any.
-    ASSIGN COMPONENT 'FILES' OF STRUCTURE files TO <files>.
-
-    LOOP AT <files> ASSIGNING FIELD-SYMBOL(<file>).
-      ASSIGN COMPONENT 'FILE_NAME' OF STRUCTURE <file> TO FIELD-SYMBOL(<file_name>).
-      ASSIGN COMPONENT 'CONTENT' OF STRUCTURE <file> TO FIELD-SYMBOL(<content>).
-      zip->add( name    = |{ filename }{ to_lower( <file_name> ) }|
-                content = <content> ).
+    LOOP AT files-files ASSIGNING FIELD-SYMBOL(<file>).
+      zip->add( name    = |{ filename }{ to_lower( <file>-file_name ) }|
+                content = <file>-content ).
     ENDLOOP.
   ENDMETHOD.
 
@@ -517,19 +583,111 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD start_of_selection.
 
-    me->zip = NEW cl_abap_zip( ).
-    me->log = NEW zcL_aff_log( ).
-
     aff_object = get_object_infos_by_intfname( CONV #( p_intf ) ).
     aff_object-example = p_examp.
 
     generate_repo_folder( ).
 
+    DATA(zip_archive) = zip->save( ).
+    DATA(zipname) = to_lower( aff_object-object_type ).
+    write_to_zip( zip_archive = zip_archive zipname = zipname ).
+
+  ENDMETHOD.
+
+
+
+  METHOD on_value_request_for_example.
+    DATA(example_value) = get_dynpro_value( fieldname  = `P_EXAMP` ).
+    example_value = to_upper( example_value ).
+
+    DATA(objtype_value) = get_dynpro_value( fieldname  = 'P_OBJTYP' ).
+    objtype_value = to_upper( objtype_value ).
+
+    IF example_value IS INITIAL AND objtype_value IS NOT INITIAL.
+      SELECT obj_name FROM tadir WHERE object = @objtype_value AND devclass = 'TEST_AFF_EXAMPLES' INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
+    ELSEIF example_value IS NOT INITIAL AND objtype_value IS NOT INITIAL.
+*  both are filled
+* The user does not have to type "*" on beginning and ending of the obj_name pattern, we add it automatically
+      DATA(example_with_percent) = |%{ to_upper( example_value ) }%|.
+      REPLACE ALL OCCURRENCES OF '*' IN example_with_percent WITH `%`.
+
+      " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
+      SELECT obj_name FROM tadir WHERE object = @objtype_value AND obj_name LIKE @example_with_percent INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER                         "#EC CI_NOORDER
+    ELSE.
+*  both are initial
+      SELECT obj_name FROM tadir WHERE devclass = 'TEST_AFF_EXAMPLES' INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
+    ENDIF.
+
+    DATA(example1) = set_value_help_result_to_field( fieldname = `P_EXAMP` value_help_result_table = value_help_result_table ).
+*    IF example1 IS NOT INITIAL.
+*      DATA(object_infos) = get_object_infos_by_exmplname( example1 ).
+*
+*      set_object_infos_in_ui( object_infos ).
+*      p_intf = object_infos-interface.
+*      p_objtyp = object_infos-object_type.
+*      p_examp = object_infos-example.
+*    ENDIF.
+
+  ENDMETHOD.
+
+  METHOD modify_screen.
+    TYPES: screen_name  TYPE c LENGTH 132,
+           screen_names TYPE STANDARD TABLE OF screen_name.
+    DATA hidden_elements TYPE screen_names.
+    CLEAR hidden_elements.
+
+    LOOP AT SCREEN.
+      DATA(element_name) = screen-name.
+*        %_UI_INPUT_%_APP_%-TEXT
+      REPLACE ALL OCCURRENCES OF '%_' IN element_name WITH ``.
+      REPLACE ALL OCCURRENCES OF '_APP_%-TEXT' IN element_name WITH ``.
+      REPLACE ALL OCCURRENCES OF '_APP_%-OPTI_PUSH' IN element_name WITH ``.
+      REPLACE ALL OCCURRENCES OF '_APP_%-VALU_PUSH' IN element_name WITH ``.
+      REPLACE ALL OCCURRENCES OF '-LOW' IN element_name WITH ``.
+
+      FIND FIRST OCCURRENCE OF REGEX element_name IN TABLE hidden_elements ##REGEX_POSIX. "or line exists
+      IF sy-subrc = 0.
+        screen-active = 0.
+        MODIFY SCREEN.
+      ELSE.
+        screen-active = 1.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD on_value_request_for_intfname.
+    DATA(intfname_value) = get_dynpro_value( fieldname  = `P_INTF` ).
+    intfname_value = to_upper( intfname_value ).
+
+    IF intfname_value IS INITIAL.
+* The user does not have to type "*" on beginning and ending of the obj_name pattern, we add it automatically
+      DATA(intfname_with_percent) = |%{ to_upper( intfname_value ) }%|.
+      REPLACE ALL OCCURRENCES OF '*' IN intfname_with_percent WITH `%`.
+
+      " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
+      SELECT obj_name FROM tadir INTO TABLE @DATA(value_help_result_table) UP TO 30 ROWS BYPASSING BUFFER
+      WHERE object = `INTF` AND obj_name LIKE @intfname_with_percent ORDER BY obj_name ##NUMBER_OK. "#EC CI_NOORDER
+    ENDIF.
+
+    DATA(intfname1) = set_value_help_result_to_field( fieldname = `P_INTF` value_help_result_table = value_help_result_table ).
+
+    IF intfname1 IS NOT INITIAL.
+      DATA(object_infos) = get_object_infos_by_intfname( intfname1 ).
+
+      set_object_infos_in_ui( object_infos ).
+    ENDIF.
   ENDMETHOD.
 
   METHOD at_selection_screen.
   ENDMETHOD.
 
+  METHOD constructor.
+    me->zip = NEW cl_abap_zip( ).
+    gui_frontend_service = NEW lcl_gui_frontend( ).
+    me->log = NEW zcL_aff_log( ).
+  ENDMETHOD.
 
   METHOD set_parameters.
     p_intf  = i_intf.
@@ -538,75 +696,30 @@ CLASS lcl_generator IMPLEMENTATION.
 
 ENDCLASS.
 
-CLASS ltc_generator DEFINITION FINAL FOR TESTING
-  DURATION SHORT RISK LEVEL HARMLESS.
-
-  PRIVATE SECTION.
-    DATA cut TYPE REF TO lcl_generator.
-    METHODS chkc FOR TESTING RAISING cx_static_check.
-
-ENDCLASS.
-
-CLASS ltc_generator IMPLEMENTATION.
-
-  METHOD chkc.
-    cut = NEW lcl_generator( ).
-
-    SELECT SINGLE @abap_true FROM tadir WHERE obj_name = 'IF_AFF_CHKC_V1'  INTO @DATA(intf_found).
-    SELECT SINGLE @abap_true FROM tadir WHERE obj_name = 'AFF_EXAMPLE_CHKC' INTO @DATA(example_found).
-    IF intf_found = abap_false OR example_found = abap_false.
-      cl_abap_unit_assert=>skip( 'CHKC is not available in this system' ).
-    ENDIF.
-
-    cut->set_parameters(
-      i_intf  = 'IF_AFF_CHKC_V1'
-      i_examp = 'AFF_EXAMPLE_CHKC'
-    ).
-
-    cut->start_of_selection( ).
-
-
-    DATA(actual_log) = cut->log.
-    DATA(actual_report_log) = cut->report_log.
-    DATA(actual_zip) = cut->zip.
-
-    DATA(expected_files_in_zip) = VALUE stringtab(
-     ( `chkc/examples/aff_example_chkc.chkc.json` )
-     ( `chkc/type/if_aff_chkc_v1.intf.abap` )
-     ( `chkc/type/if_aff_chkc_v1.intf.json` )
-     ( `chkc/chkc-v1.json` )
-     ( `chkc/README.md` )
-     ).
-
-    LOOP AT expected_files_in_zip ASSIGNING FIELD-SYMBOL(<filename>).
-      actual_zip->get( EXPORTING name  = <filename> IMPORTING content  = DATA(act_content) ).
-    ENDLOOP.
-
-    cl_abap_unit_assert=>assert_false( act = actual_log->has_messages( ) ).
-    cl_abap_unit_assert=>assert_initial( act = actual_report_log ).
-
-  ENDMETHOD.
-
-
-ENDCLASS.
 
 
 INITIALIZATION.
 
   helper = NEW lcl_generator( ).
+  helper->modify_screen( ).
+
 
 * when enter or F8 is pressed in the  screen
 AT SELECTION-SCREEN.
   helper->at_selection_screen( ).
 
 
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_intf.
+  helper->on_value_request_for_intfname( ).
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_examp.
+  helper->on_value_request_for_example( ).
+
 AT SELECTION-SCREEN OUTPUT.
+
+  helper->modify_screen( ).
 
 START-OF-SELECTION.
 
   helper->start_of_selection( ).
-
-  DATA(zip_archive) = helper->zip->save( ).
-  DATA(zipname) = to_lower( helper->aff_object-object_type ).
-  helper->write_to_zip( zip_archive = zip_archive zipname = zipname ).
   helper->print_logs( ).
