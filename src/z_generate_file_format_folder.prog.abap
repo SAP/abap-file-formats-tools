@@ -1,135 +1,12 @@
 *&---------------------------------------------------------------------*
-*& Report saff_generate_repo
+*& Report z_generate_file_format_folder
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
 REPORT z_generate_file_format_folder.
 CLASS lcl_generator DEFINITION DEFERRED.
-DATA obj_types TYPE saff_repo_types.
 DATA helper TYPE REF TO lcl_generator ##NEEDED.
 
-INTERFACE lif_gui_frontend_service.
-  METHODS display.
-  METHODS clear.
-  METHODS write
-    IMPORTING message TYPE any.
-  METHODS write_to_console_and_screen
-    IMPORTING message TYPE string.
-  METHODS file_save_dialog
-    IMPORTING VALUE(window_title)      TYPE string OPTIONAL
-              VALUE(default_extension) TYPE string OPTIONAL
-              VALUE(default_file_name) TYPE string OPTIONAL
-    CHANGING  filename                 TYPE string
-              path                     TYPE string
-              fullpath                 TYPE string
-              user_action              TYPE i OPTIONAL
-    RAISING   cx_root.
-  METHODS gui_download
-    IMPORTING
-              !bin_filesize     TYPE i OPTIONAL
-              !filename         TYPE string
-              !filetype         TYPE char10 DEFAULT 'ASC'
-              !write_lf         TYPE char01 DEFAULT 'X'
-    EXPORTING
-              VALUE(filelength) TYPE i
-    CHANGING
-              !data_tab         TYPE STANDARD TABLE
-    RAISING   cx_root.
-
-ENDINTERFACE.
-
-CLASS lcl_gui_frontend DEFINITION
-  FINAL CREATE PUBLIC.
-  PUBLIC SECTION.
-    INTERFACES lif_gui_frontend_service.
-ENDCLASS.
-
-CLASS lcl_gui_frontend IMPLEMENTATION.
-
-
-  METHOD lif_gui_frontend_service~file_save_dialog.
-    cl_gui_frontend_services=>file_save_dialog(
-      EXPORTING
-        default_extension   = default_extension
-        default_file_name   = default_file_name
-      CHANGING
-        filename            = filename
-        path                = path
-        fullpath            = fullpath
-        user_action         = user_action
-                              ) ##SUBRC_OK.
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~gui_download.
-    CLEAR filelength.
-    cl_gui_frontend_services=>gui_download(
-      EXPORTING
-        filename                  = filename
-        bin_filesize              = bin_filesize
-        filetype                  = filetype
-        write_lf                  = write_lf
-      CHANGING
-        data_tab                  = data_tab ).
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~write_to_console_and_screen.
-    WRITE: / message.
-    cl_demo_output=>write( message ).
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~clear.
-    cl_demo_output=>clear( ).
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~display.
-    cl_demo_output=>display( ).
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~write.
-    cl_demo_output=>write( message ).
-  ENDMETHOD.
-
-ENDCLASS.
-
-
-
-
-INTERFACE lif_generator.
-  METHODS generate_type
-    IMPORTING data          TYPE data
-    RETURNING VALUE(result) TYPE string_table
-    RAISING   cx_root.
-  METHODS get_log
-    RETURNING
-      VALUE(log) TYPE REF TO zif_aff_log.
-ENDINTERFACE.
-
-CLASS lcl_generator_helper DEFINITION
-  FINAL
-  CREATE PUBLIC.
-  PUBLIC SECTION.
-    INTERFACES lif_generator.
-    METHODS constructor
-      IMPORTING
-        writer TYPE REF TO zif_aff_writer.
-    DATA generator TYPE REF TO zcl_aff_generator.
-ENDCLASS.
-
-CLASS lcl_generator_helper IMPLEMENTATION.
-
-  METHOD constructor.
-    me->generator = NEW zcl_aff_generator( writer ).
-  ENDMETHOD.
-
-  METHOD lif_generator~generate_type.
-    result = me->generator->generate_type( data ).
-  ENDMETHOD.
-
-  METHOD lif_generator~get_log.
-    log = me->generator->get_log( ).
-  ENDMETHOD.
-
-ENDCLASS.
 
 
 SELECTION-SCREEN BEGIN OF BLOCK block_1 WITH FRAME TITLE TEXT-020.
@@ -154,14 +31,8 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
     DATA report_log TYPE stringtab.
     DATA xslt_schema_content TYPE string_table.
 
-    DATA gui_frontend_service TYPE REF TO lif_gui_frontend_service.
 
-    METHODS: set_parameters
-      IMPORTING
-        i_intf  TYPE sobj_name OPTIONAL
-        i_examp TYPE sobj_name OPTIONAL,
-
-      constructor,
+    METHODS: constructor,
       start_of_selection,
       on_value_request_for_intfname,
       on_value_request_for_example,
@@ -176,7 +47,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
     DATA: "needed for testing
       aff_factory TYPE REF TO  if_aff_factory,
-      generator   TYPE REF TO lif_generator,
+      generator   TYPE REF TO zcl_aff_generator,
       writer      TYPE REF TO zif_aff_writer,
       zip         TYPE REF TO cl_abap_zip,
       aff_object  TYPE aff_object.
@@ -229,7 +100,7 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA fullpath TYPE string.
     DATA user_action TYPE i.
     TRY.
-        gui_frontend_service->file_save_dialog(
+        cl_gui_frontend_services=>file_save_dialog(
           EXPORTING
             default_extension = `zip`
             default_file_name = zipname
@@ -262,7 +133,7 @@ CLASS lcl_generator IMPLEMENTATION.
       off = off + chunk_size.
     ENDWHILE.
     TRY.
-        gui_frontend_service->gui_download(
+        cl_gui_frontend_services=>gui_download(
           EXPORTING
             filename     = file_name
             bin_filesize = xstring_length
@@ -337,7 +208,7 @@ CLASS lcl_generator IMPLEMENTATION.
       DATA(object_type_path) = get_object_type_path( <interface> ).
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ aff_object-format_version }.json| ##NO_TEXT.
       writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = aff_object-format_version ).
-      generator = NEW lcl_generator_helper( writer ).
+      generator = NEW zcl_aff_generator( writer ).
 
       DATA(str_table) = get_content( absolute_typename = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN| interfacename = <interface> ).
       me->zip->add( name    = |{ aff_object-object_type }/{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json|
@@ -685,14 +556,9 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD constructor.
     me->zip = NEW cl_abap_zip( ).
-    gui_frontend_service = NEW lcl_gui_frontend( ).
-    me->log = NEW zcL_aff_log( ).
+    me->log = NEW zcl_aff_log( ).
   ENDMETHOD.
 
-  METHOD set_parameters.
-    p_intf  = i_intf.
-    p_examp = i_examp.
-  ENDMETHOD.
 
 ENDCLASS.
 
@@ -704,20 +570,13 @@ INITIALIZATION.
   helper->modify_screen( ).
 
 
-* when enter or F8 is pressed in the  screen
+* when enter or F8 is pressed in the screen
 AT SELECTION-SCREEN.
   helper->at_selection_screen( ).
 
 
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_intf.
-  helper->on_value_request_for_intfname( ).
-
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_examp.
-  helper->on_value_request_for_example( ).
-
 AT SELECTION-SCREEN OUTPUT.
 
-  helper->modify_screen( ).
 
 START-OF-SELECTION.
 
