@@ -93,6 +93,8 @@ CLASS lcl_generator_helper IMPLEMENTATION.
     DATA(main_object_type) = object_type.
     IF object_type = 'REPS' OR object_type = 'FUNC'.
       main_object_type = 'FUGR'.
+    ELSEIF object_type = 'INDX'.
+      main_object_type = 'TABL'.
     ENDIF.
     path = |{ to_lower( main_object_type ) }/{ to_lower( object_type ) }|.
   ENDMETHOD.
