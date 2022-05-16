@@ -146,8 +146,8 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_sub_type_interfaces.
-
-    APPEND object-interface TO result.
+    data(main_object) = |{ object-object_type }-V{ object-format_version } |.
+    APPEND main_object TO result.
     IF object-interface CP `IF_AFF_FUGR*`.
       APPEND `IF_AFF_FUNC_V1` TO result.
       APPEND `IF_AFF_REPS_V1` TO result.
@@ -202,11 +202,11 @@ CLASS lcl_generator IMPLEMENTATION.
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ aff_object-format_version }.json| ##NO_TEXT.
       DATA(writer) = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = aff_object-format_version ).
 
-      DATA(str_table) = get_content( absolute_typename  = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN|
-                                     interfacename      = <interface>
-                                     generator          = NEW zcl_aff_generator( writer ) ).
+      DATA(json_schema) = get_content( absolute_typename  = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN|
+                                       interfacename      = <interface>
+                                       generator          = NEW zcl_aff_generator( writer ) ).
       me->zip->add( name    = |{ aff_object-object_type }/{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json|
-                    content = cl_abap_codepage=>convert_to( concat_lines_of( table = str_table sep = cl_abap_char_utilities=>newline ) ) ).
+                    content = cl_abap_codepage=>convert_to( concat_lines_of( table = json_schema sep = cl_abap_char_utilities=>newline ) ) ).
     ENDLOOP.
 
 
