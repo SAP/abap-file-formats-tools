@@ -1,6 +1,7 @@
 {
   "global": {
     "files": "/src/**/*.*",
+    "exclude": ["src/z_generate_file_format_folder.prog.abap"],
     "skipGeneratedGatewayClasses": true,
     "skipGeneratedPersistentClasses": true,
     "skipGeneratedFunctionGroups": true,
