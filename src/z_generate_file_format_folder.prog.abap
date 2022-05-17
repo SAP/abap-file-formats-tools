@@ -146,8 +146,7 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_sub_type_interfaces.
-    data(main_object) = |{ object-object_type }-V{ object-format_version } |.
-    APPEND main_object TO result.
+    APPEND object-interface TO result.
     IF object-interface CP `IF_AFF_FUGR*`.
       APPEND `IF_AFF_FUNC_V1` TO result.
       APPEND `IF_AFF_REPS_V1` TO result.
