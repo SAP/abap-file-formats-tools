@@ -219,9 +219,9 @@ CLASS lcl_generator IMPLEMENTATION.
 ( `` )
 ( `File | Cardinality | Definition | Schema | Example`)
 ( `:--- | :---  | :--- | :--- | :---` )
-( |`<name>.{ aff_object-object_type }.json` \| 1 \| [`{ aff_object-interface }.intf.abap`](./type/{ aff_object-interface }.intf.abap) \| | &&
- | [`{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json`](./{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json)| &&
-| \| [`{ aff_object-example }.{ aff_object-object_type }.json`](./examples/{ aff_object-example }.{ aff_object-object_type }.json)| )
+( to_lower( |`<name>.{ aff_object-object_type }.json` \| 1 \| [`{ aff_object-interface }.intf.abap`](./type/{ aff_object-interface }.intf.abap) \| | &&
+ | [`{ aff_object-object_type }-v{ aff_object-format_version }.json`](./{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json)| &&
+| \| [`{ aff_object-example }.{ aff_object-object_type }.json`](./examples/{ aff_object-example }.{ aff_object-object_type }.json)| ) )
  ( `` )
  ).
     me->zip->add( name    = |{ aff_object-object_type }/README.md|
