@@ -161,6 +161,10 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(file_handler) = cl_aff_factory=>get_object_file_handler( ).
 
     SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @aff_object-example AND object = @aff_object-object_type INTO @DATA(example_obj_devclass).
+    if sy-subrc <> 0.
+        INSERT |The provided example { aff_object-example } does not exist.| INTO TABLE report_log ##NO_TEXT.
+    endif.
+
     DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass  = example_obj_devclass obj_type = aff_object-object_type obj_name = aff_object-example ).
 
     DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = NEW cl_aff_log( ) ).
@@ -198,13 +202,14 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
 
       DATA(object_type_path) = get_object_type_path( <interface> ).
+      DATA(obj) = get_object_infos_by_intfname( <interface> ).
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ aff_object-format_version }.json| ##NO_TEXT.
       DATA(writer) = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = aff_object-format_version ).
 
       DATA(json_schema) = get_content( absolute_typename  = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN|
                                        interfacename      = <interface>
                                        generator          = NEW zcl_aff_generator( writer ) ).
-      me->zip->add( name    = |{ aff_object-object_type }/{ to_lower( aff_object-object_type ) }-v{ aff_object-format_version }.json|
+      me->zip->add( name    = |{ aff_object-object_type }/{ to_lower( obj-object_type ) }-v{ aff_object-format_version }.json|
                     content = cl_abap_codepage=>convert_to( concat_lines_of( table = json_schema sep = cl_abap_char_utilities=>newline ) ) ).
     ENDLOOP.
 
