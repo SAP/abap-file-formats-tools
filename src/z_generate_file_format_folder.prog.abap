@@ -46,8 +46,8 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
   PRIVATE SECTION.
 
     DATA:
-      zip         TYPE REF TO cl_abap_zip,
-      aff_object  TYPE aff_object.
+      zip        TYPE REF TO cl_abap_zip,
+      aff_object TYPE aff_object.
 
     METHODS: get_sub_type_interfaces
       IMPORTING object        TYPE aff_object
@@ -80,10 +80,9 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
         IMPORTING interface_name TYPE string
         RETURNING VALUE(path)    TYPE string,
       get_content
-        IMPORTING absolute_typename TYPE string
-                  interfacename     TYPE string
-                  generator         TYPE REF TO zcl_aff_generator
-        RETURNING VALUE(result)     TYPE string_table,
+        IMPORTING interface     TYPE string
+                  generator     TYPE REF TO zcl_aff_generator
+        RETURNING VALUE(result) TYPE string_table,
       object_as_string
         IMPORTING object        TYPE if_aff_object_file_handler=>ty_object
         RETURNING VALUE(result) TYPE string.
@@ -161,9 +160,9 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(file_handler) = cl_aff_factory=>get_object_file_handler( ).
 
     SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @aff_object-example AND object = @aff_object-object_type INTO @DATA(example_obj_devclass).
-    if sy-subrc <> 0.
-        INSERT |The provided example { aff_object-example } does not exist.| INTO TABLE report_log ##NO_TEXT.
-    endif.
+    IF sy-subrc <> 0.
+      INSERT |The provided example { aff_object-example } does not exist.| INTO TABLE report_log ##NO_TEXT.
+    ENDIF.
 
     DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass  = example_obj_devclass obj_type = aff_object-object_type obj_name = aff_object-example ).
 
@@ -206,9 +205,8 @@ CLASS lcl_generator IMPLEMENTATION.
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ aff_object-format_version }.json| ##NO_TEXT.
       DATA(writer) = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = aff_object-format_version ).
 
-      DATA(json_schema) = get_content( absolute_typename  = |\\INTERFACE={ to_upper( <interface> ) }\\TYPE=TY_MAIN|
-                                       interfacename      = <interface>
-                                       generator          = NEW zcl_aff_generator( writer ) ).
+      DATA(json_schema) = get_content( interface = <interface>
+                                       generator = NEW zcl_aff_generator( writer ) ).
       me->zip->add( name    = |{ aff_object-object_type }/{ to_lower( obj-object_type ) }-v{ aff_object-format_version }.json|
                     content = cl_abap_codepage=>convert_to( concat_lines_of( table = json_schema sep = cl_abap_char_utilities=>newline ) ) ).
     ENDLOOP.
@@ -380,114 +378,115 @@ CLASS lcl_generator IMPLEMENTATION.
 
 
   METHOD get_content.
+    DATA(absolute_typename) = |\\INTERFACE={ to_upper( interface ) }\\TYPE=TY_MAIN|.
     TRY.
-        DATA(type) = create_the_variable_dynamicaly( absolute_typename ).
-      CATCH cx_root.
-        CLEAR result.
-        RETURN.
-    ENDTRY.
+    DATA(type) = create_the_variable_dynamicaly( absolute_typename ).
+  CATCH cx_root.
+    CLEAR result.
+    RETURN.
+ENDTRY.
 
-    FIELD-SYMBOLS <field> TYPE any.
-    ASSIGN type->* TO <field>.
-    TRY.
-        result = generator->generate_type( <field> ).
-      CATCH cx_root.
-        CLEAR result.
-        INSERT |The generator couldn't generate the schema/XSLT for type { absolute_typename }| INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-    ENDTRY.
+FIELD-SYMBOLS <field> TYPE any.
+ASSIGN type->* TO <field>.
+TRY.
+    result = generator->generate_type( <field> ).
+  CATCH cx_root.
+    CLEAR result.
+    INSERT |The generator couldn't generate the schema/XSLT for type { absolute_typename }| INTO TABLE report_log ##NO_TEXT.
+    RETURN.
+ENDTRY.
 
-    LOOP AT generator->get_log( )->get_messages( ) ASSIGNING FIELD-SYMBOL(<msg>).
-      IF <msg>-type = zif_aff_log=>c_message_type-info.
-        log->add_info( message = <msg>-message component_name = interfacename ).
-      ELSEIF <msg>-type = zif_aff_log=>c_message_type-warning.
-        log->add_warning( message = <msg>-message component_name = interfacename ).
-      ELSEIF <msg>-type = zif_aff_log=>c_message_type-error.
-        log->add_error( message = <msg>-message component_name = interfacename ).
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
+LOOP AT generator->get_log( )->get_messages( ) ASSIGNING FIELD-SYMBOL(<msg>).
+  IF <msg>-type = zif_aff_log=>c_message_type-info.
+    log->add_info( message = <msg>-message component_name = interface ).
+  ELSEIF <msg>-type = zif_aff_log=>c_message_type-warning.
+    log->add_warning( message = <msg>-message component_name = interface ).
+  ELSEIF <msg>-type = zif_aff_log=>c_message_type-error.
+    log->add_error( message = <msg>-message component_name = interface ).
+  ENDIF.
+ENDLOOP.
+ENDMETHOD.
 
 
 
-  METHOD print_logs.
-    IF lines( report_log ) > 0.
-      WRITE: / `Messages of the report` ##NO_TEXT.
-      LOOP AT report_log ASSIGNING FIELD-SYMBOL(<log_msg>).
-        WRITE: / <log_msg>.
+METHOD print_logs.
+IF lines( report_log ) > 0.
+  WRITE: / `Messages of the report` ##NO_TEXT.
+  LOOP AT report_log ASSIGNING FIELD-SYMBOL(<log_msg>).
+    WRITE: / <log_msg>.
+  ENDLOOP.
+ENDIF.
+
+IF lines( log->get_messages( ) ) > 0.
+  SKIP 1.
+  WRITE: / `Messages of the AFF Object Handlers and schema/ST Generator` ##NO_TEXT.
+  LOOP AT log->get_messages( ) ASSIGNING FIELD-SYMBOL(<log_message>).
+    IF NOT ( <log_message>-message-msgid = 'SAFF_CORE' AND
+    ( <log_message>-message-msgno = '026' ) OR
+    ( <log_message>-message-msgno = '027' ) ).
+      DATA obj TYPE if_aff_object_file_handler=>ty_object.
+      MOVE-CORRESPONDING <log_message> TO obj.
+      WRITE: / |{ object_as_string( obj ) } { <log_message>-type }|.
+      SPLIT <log_message>-text AT space INTO TABLE DATA(splitted).
+      LOOP AT splitted ASSIGNING FIELD-SYMBOL(<word>).
+        WRITE: <word>.
       ENDLOOP.
     ENDIF.
+  ENDLOOP.
+ENDIF.
+ENDMETHOD.
 
-    IF lines( log->get_messages( ) ) > 0.
-      SKIP 1.
-      WRITE: / `Messages of the AFF Object Handlers and schema/ST Generator` ##NO_TEXT.
-      LOOP AT log->get_messages( ) ASSIGNING FIELD-SYMBOL(<log_message>).
-        IF NOT ( <log_message>-message-msgid = 'SAFF_CORE' AND
-        ( <log_message>-message-msgno = '026' ) OR
-        ( <log_message>-message-msgno = '027' ) ).
-          DATA obj TYPE if_aff_object_file_handler=>ty_object.
-          MOVE-CORRESPONDING <log_message> TO obj.
-          WRITE: / |{ object_as_string( obj ) } { <log_message>-type }|.
-          SPLIT <log_message>-text AT space INTO TABLE DATA(splitted).
-          LOOP AT splitted ASSIGNING FIELD-SYMBOL(<word>).
-            WRITE: <word>.
-          ENDLOOP.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
-  ENDMETHOD.
+METHOD object_as_string.
+DATA(objname) = |{ object-obj_name WIDTH = 30 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
+DATA(objtype) = |{ object-obj_type WIDTH = 4 ALIGN = LEFT PAD = ' ' }|.
+result = |{ objname } { objtype }|.
 
-  METHOD object_as_string.
-    DATA(objname) = |{ object-obj_name WIDTH = 30 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
-    DATA(objtype) = |{ object-obj_type WIDTH = 4 ALIGN = LEFT PAD = ' ' }|.
-    result = |{ objname } { objtype }|.
-
-    IF object-sub_name IS NOT INITIAL AND object-sub_type IS NOT INITIAL.
-      DATA(subname) = |{ object-sub_name WIDTH = 50 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
-      DATA(subtype) = |{ object-sub_type WIDTH = 4 ALIGN = LEFT PAD = ' ' }|.
-      result = |{ objname } { objtype } { subname } { subtype }|.
-    ENDIF.
-  ENDMETHOD.
+IF object-sub_name IS NOT INITIAL AND object-sub_type IS NOT INITIAL.
+  DATA(subname) = |{ object-sub_name WIDTH = 50 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
+  DATA(subtype) = |{ object-sub_type WIDTH = 4 ALIGN = LEFT PAD = ' ' }|.
+  result = |{ objname } { objtype } { subname } { subtype }|.
+ENDIF.
+ENDMETHOD.
 
 
-  METHOD start_of_selection.
+METHOD start_of_selection.
 
-    aff_object = get_object_infos_by_intfname( CONV #( p_intf ) ).
-    aff_object-example = p_examp.
+aff_object = get_object_infos_by_intfname( CONV #( p_intf ) ).
+aff_object-example = p_examp.
 
-    generate_repo_folder( ).
+generate_repo_folder( ).
 
-    DATA(zip_archive) = zip->save( ).
-    DATA(zipname) = to_lower( aff_object-object_type ).
-    write_to_zip( zip_archive = zip_archive zipname = zipname ).
+DATA(zip_archive) = zip->save( ).
+DATA(zipname) = to_lower( aff_object-object_type ).
+write_to_zip( zip_archive = zip_archive zipname = zipname ).
 
-  ENDMETHOD.
+ENDMETHOD.
 
 
 
-  METHOD on_value_request_for_example.
-    DATA(example_value) = get_dynpro_value( fieldname  = `P_EXAMP` ).
-    example_value = to_upper( example_value ).
+METHOD on_value_request_for_example.
+DATA(example_value) = get_dynpro_value( fieldname  = `P_EXAMP` ).
+example_value = to_upper( example_value ).
 
-    DATA(objtype_value) = get_dynpro_value( fieldname  = 'P_OBJTYP' ).
-    objtype_value = to_upper( objtype_value ).
+DATA(objtype_value) = get_dynpro_value( fieldname  = 'P_OBJTYP' ).
+objtype_value = to_upper( objtype_value ).
 
-    IF example_value IS INITIAL AND objtype_value IS NOT INITIAL.
-      SELECT obj_name FROM tadir WHERE object = @objtype_value AND devclass = 'TEST_AFF_EXAMPLES' INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
-    ELSEIF example_value IS NOT INITIAL AND objtype_value IS NOT INITIAL.
+IF example_value IS INITIAL AND objtype_value IS NOT INITIAL.
+  SELECT obj_name FROM tadir WHERE object = @objtype_value AND devclass = 'TEST_AFF_EXAMPLES' INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
+  ELSEIF example_value IS NOT INITIAL AND objtype_value IS NOT INITIAL.
 *  both are filled
 * The user does not have to type "*" on beginning and ending of the obj_name pattern, we add it automatically
-      DATA(example_with_percent) = |%{ to_upper( example_value ) }%|.
-      REPLACE ALL OCCURRENCES OF '*' IN example_with_percent WITH `%`.
+    DATA(example_with_percent) = |%{ to_upper( example_value ) }%|.
+    REPLACE ALL OCCURRENCES OF '*' IN example_with_percent WITH `%`.
 
-      " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
-      SELECT obj_name FROM tadir WHERE object = @objtype_value AND obj_name LIKE @example_with_percent INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER                         "#EC CI_NOORDER
+    " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
+    SELECT obj_name FROM tadir WHERE object = @objtype_value AND obj_name LIKE @example_with_percent INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER                         "#EC CI_NOORDER
     ELSE.
 *  both are initial
       SELECT obj_name FROM tadir WHERE devclass = 'TEST_AFF_EXAMPLES' INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
-    ENDIF.
+      ENDIF.
 
-    DATA(example1) = set_value_help_result_to_field( fieldname = `P_EXAMP` value_help_result_table = value_help_result_table ).
+      DATA(example1) = set_value_help_result_to_field( fieldname = `P_EXAMP` value_help_result_table = value_help_result_table ).
 *    IF example1 IS NOT INITIAL.
 *      DATA(object_infos) = get_object_infos_by_exmplname( example1 ).
 *
@@ -497,65 +496,65 @@ CLASS lcl_generator IMPLEMENTATION.
 *      p_examp = object_infos-example.
 *    ENDIF.
 
-  ENDMETHOD.
+    ENDMETHOD.
 
-  METHOD modify_screen.
-    TYPES: screen_name  TYPE c LENGTH 132,
-           screen_names TYPE STANDARD TABLE OF screen_name.
-    DATA hidden_elements TYPE screen_names.
-    CLEAR hidden_elements.
+    METHOD modify_screen.
+      TYPES: screen_name  TYPE c LENGTH 132,
+             screen_names TYPE STANDARD TABLE OF screen_name.
+      DATA hidden_elements TYPE screen_names.
+      CLEAR hidden_elements.
 
-    LOOP AT SCREEN.
-      DATA(element_name) = screen-name.
+      LOOP AT SCREEN.
+        DATA(element_name) = screen-name.
 *        %_UI_INPUT_%_APP_%-TEXT
-      REPLACE ALL OCCURRENCES OF '%_' IN element_name WITH ``.
-      REPLACE ALL OCCURRENCES OF '_APP_%-TEXT' IN element_name WITH ``.
-      REPLACE ALL OCCURRENCES OF '_APP_%-OPTI_PUSH' IN element_name WITH ``.
-      REPLACE ALL OCCURRENCES OF '_APP_%-VALU_PUSH' IN element_name WITH ``.
-      REPLACE ALL OCCURRENCES OF '-LOW' IN element_name WITH ``.
+        REPLACE ALL OCCURRENCES OF '%_' IN element_name WITH ``.
+        REPLACE ALL OCCURRENCES OF '_APP_%-TEXT' IN element_name WITH ``.
+        REPLACE ALL OCCURRENCES OF '_APP_%-OPTI_PUSH' IN element_name WITH ``.
+        REPLACE ALL OCCURRENCES OF '_APP_%-VALU_PUSH' IN element_name WITH ``.
+        REPLACE ALL OCCURRENCES OF '-LOW' IN element_name WITH ``.
 
-      FIND FIRST OCCURRENCE OF REGEX element_name IN TABLE hidden_elements ##REGEX_POSIX. "or line exists
-      IF sy-subrc = 0.
-        screen-active = 0.
-        MODIFY SCREEN.
-      ELSE.
-        screen-active = 1.
-        MODIFY SCREEN.
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
+        FIND FIRST OCCURRENCE OF REGEX element_name IN TABLE hidden_elements ##REGEX_POSIX. "or line exists
+        IF sy-subrc = 0.
+          screen-active = 0.
+          MODIFY SCREEN.
+        ELSE.
+          screen-active = 1.
+          MODIFY SCREEN.
+        ENDIF.
+      ENDLOOP.
+    ENDMETHOD.
 
 
-  METHOD on_value_request_for_intfname.
-    DATA(intfname_value) = get_dynpro_value( fieldname  = `P_INTF` ).
-    intfname_value = to_upper( intfname_value ).
+    METHOD on_value_request_for_intfname.
+      DATA(intfname_value) = get_dynpro_value( fieldname  = `P_INTF` ).
+      intfname_value = to_upper( intfname_value ).
 
-    IF intfname_value IS INITIAL.
+      IF intfname_value IS INITIAL.
 * The user does not have to type "*" on beginning and ending of the obj_name pattern, we add it automatically
-      DATA(intfname_with_percent) = |%{ to_upper( intfname_value ) }%|.
-      REPLACE ALL OCCURRENCES OF '*' IN intfname_with_percent WITH `%`.
+        DATA(intfname_with_percent) = |%{ to_upper( intfname_value ) }%|.
+        REPLACE ALL OCCURRENCES OF '*' IN intfname_with_percent WITH `%`.
 
-      " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
-      SELECT obj_name FROM tadir INTO TABLE @DATA(value_help_result_table) UP TO 30 ROWS BYPASSING BUFFER
-      WHERE object = `INTF` AND obj_name LIKE @intfname_with_percent ORDER BY obj_name ##NUMBER_OK. "#EC CI_NOORDER
-    ENDIF.
+        " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
+        SELECT obj_name FROM tadir INTO TABLE @DATA(value_help_result_table) UP TO 30 ROWS BYPASSING BUFFER
+        WHERE object = `INTF` AND obj_name LIKE @intfname_with_percent ORDER BY obj_name ##NUMBER_OK. "#EC CI_NOORDER
+        ENDIF.
 
-    DATA(intfname1) = set_value_help_result_to_field( fieldname = `P_INTF` value_help_result_table = value_help_result_table ).
+        DATA(intfname1) = set_value_help_result_to_field( fieldname = `P_INTF` value_help_result_table = value_help_result_table ).
 
-    IF intfname1 IS NOT INITIAL.
-      DATA(object_infos) = get_object_infos_by_intfname( intfname1 ).
+        IF intfname1 IS NOT INITIAL.
+          DATA(object_infos) = get_object_infos_by_intfname( intfname1 ).
 
-      set_object_infos_in_ui( object_infos ).
-    ENDIF.
-  ENDMETHOD.
+          set_object_infos_in_ui( object_infos ).
+        ENDIF.
+      ENDMETHOD.
 
-  METHOD at_selection_screen.
-  ENDMETHOD.
+      METHOD at_selection_screen.
+      ENDMETHOD.
 
-  METHOD constructor.
-    me->zip = NEW cl_abap_zip( ).
-    me->log = NEW zcl_aff_log( ).
-  ENDMETHOD.
+      METHOD constructor.
+        me->zip = NEW cl_abap_zip( ).
+        me->log = NEW zcl_aff_log( ).
+      ENDMETHOD.
 
 
 ENDCLASS.
