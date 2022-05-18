@@ -18,6 +18,10 @@ Detailed information including third-party components and their licensing/copyri
 Pull the source code with [abapGit](https://github.com/abapGit/abapGit/) into your ABAP system.
 The latest abapGit build can be downloaded [here](https://raw.githubusercontent.com/abapGit/build/main/zabapgit.abap).
 
+The reports and their purpose
+* `z_generate_json_schema` generates the ABAP file formats JSON Schema (minimal requirement is v7.54)
+* `z_generate_repo` generates files and folder hierarchy for upload and maintain the [abap-file-formats](https://github.com/SAP/abap-file-formats) repository (requires ABAP file format framework)
+
 The development of the ABAP file formats tools takes place in the `Z` namespace.
 Coding policies are stated and verified by [abaplint](https://github.com/marketplace/abaplint), see configuration file [here](abaplint.jsonc), that run on every pull request.
 
