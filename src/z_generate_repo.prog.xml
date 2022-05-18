@@ -26,14 +26,44 @@
     </item>
     <item>
      <ID>R</ID>
-     <ENTRY>Helper for automated generation of XSLT</ENTRY>
-     <LENGTH>39</LENGTH>
+     <ENTRY>Helps to generate AFF Schemas/XSLTs and Github folders</ENTRY>
+     <LENGTH>54</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_CONSOL</KEY>
+     <ENTRY>Print To Console</ENTRY>
+     <LENGTH>24</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_DISK</KEY>
+     <ENTRY>Write To Harddisk</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_EXAMP</KEY>
+     <ENTRY>Example Object Name</ENTRY>
+     <LENGTH>27</LENGTH>
     </item>
     <item>
      <ID>S</ID>
      <KEY>P_INTF</KEY>
-     <ENTRY> Interface Name</ENTRY>
-     <LENGTH>23</LENGTH>
+     <ENTRY>Interface Name</ENTRY>
+     <LENGTH>22</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_MULTOB</KEY>
+     <ENTRY>Object Types</ENTRY>
+     <LENGTH>20</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_MULTRE</KEY>
+     <ENTRY>Repo Folder (Multiple Objects)</ENTRY>
+     <LENGTH>38</LENGTH>
     </item>
     <item>
      <ID>S</ID>
@@ -43,9 +73,21 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>P_READM</KEY>
+     <ENTRY>With readme</ENTRY>
+     <LENGTH>19</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_REPO</KEY>
+     <ENTRY>Repo Folder (One Object)</ENTRY>
+     <LENGTH>32</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>P_SCHEMA</KEY>
-     <ENTRY>Generate Schema</ENTRY>
-     <LENGTH>23</LENGTH>
+     <ENTRY>Only Schema</ENTRY>
+     <LENGTH>19</LENGTH>
     </item>
     <item>
      <ID>S</ID>
@@ -55,9 +97,15 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>P_WHOLE</KEY>
+     <ENTRY>Whole file-formats repo</ENTRY>
+     <LENGTH>31</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>P_XSLT</KEY>
-     <ENTRY>Generate Simple Transformation</ENTRY>
-     <LENGTH>38</LENGTH>
+     <ENTRY>Only ST</ENTRY>
+     <LENGTH>15</LENGTH>
     </item>
    </TPOOL>
    <I18N_TPOOL>
@@ -84,6 +132,102 @@
      </TEXTPOOL>
     </item>
    </I18N_TPOOL>
+   <LONGTEXTS>
+    <item>
+     <DOKIL>
+      <ID>RE</ID>
+      <OBJECT>Z_GENERATE_REPO</OBJECT>
+      <LANGU>E</LANGU>
+      <TYP>E</TYP>
+      <VERSION>0006</VERSION>
+      <MASTERLANG>X</MASTERLANG>
+      <TXTLINES>00005</TXTLINES>
+      <DOKSTATE>A</DOKSTATE>
+     </DOKIL>
+     <HEAD>
+      <TDOBJECT>DOKU</TDOBJECT>
+      <TDNAME>Z_GENERATE_REPO</TDNAME>
+      <TDID>RE</TDID>
+      <TDSPRAS>E</TDSPRAS>
+      <TDFORM>S_DOCU_SHOW</TDFORM>
+      <TDSTYLE>S_DOCUS1</TDSTYLE>
+      <TDVERSION>00006</TDVERSION>
+      <TDLINESIZE>072</TDLINESIZE>
+     </HEAD>
+     <LINES>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;PURPOSE&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>This report generates a Simple Transformation, a JSON schema&lt;(&gt;,&lt;)&gt; or</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDLINE>the folder used in the GitHub Repository for the ABAP file formats.</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;INTEGRATION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;PREREQUISITES&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;FEATURES&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U2</TDFORMAT>
+       <TDLINE>&amp;SELECTION&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U2</TDFORMAT>
+       <TDLINE>&amp;STANDARD_VARIANTS&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U2</TDFORMAT>
+       <TDLINE>&amp;OUTPUT&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;ACTIVITIES&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>U1</TDFORMAT>
+       <TDLINE>&amp;EXAMPLE&amp;</TDLINE>
+      </TLINE>
+      <TLINE>
+       <TDFORMAT>AS</TDFORMAT>
+      </TLINE>
+     </LINES>
+    </item>
+   </LONGTEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>
