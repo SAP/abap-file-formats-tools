@@ -1,9 +1,9 @@
 *&---------------------------------------------------------------------*
-*& Report z_aff_generate_repo
+*& Report z_generate_repo
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-report z_aff_generate_repo.
+report z_generate_repo.
 class lcl_generator definition deferred.
 data obj_types type saff_repo_types.
 data helper type ref to lcl_generator ##NEEDED.
