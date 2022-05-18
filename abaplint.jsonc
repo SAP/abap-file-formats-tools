@@ -1,6 +1,8 @@
 {
+
   "global": {
     "files": "/src/**/*.*",
+    "exclude": ["src/z_generate_repo.prog.abap"],
     "skipGeneratedGatewayClasses": true,
     "skipGeneratedPersistentClasses": true,
     "skipGeneratedFunctionGroups": true,
