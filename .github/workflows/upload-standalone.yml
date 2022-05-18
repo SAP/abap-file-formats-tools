@@ -1,0 +1,25 @@
+name: standalone-program
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-merged:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    - name: Run npm steps
+      run: |
+        npm install
+        npm run merge
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: z_generate_repo.prog.abap
+        path: z_generate_repo.prog.abap

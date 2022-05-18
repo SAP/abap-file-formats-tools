@@ -7,13 +7,16 @@
     "lint": "abaplint",
     "unit": "rm -rf output && abap_transpile && echo RUNNING && node output/index.mjs",
     "test": "npm run lint && npm run downport && npm run unit",
-    "downport": "rm -rf downport && cp -r src downport && cp deps/* downport && rm downport/*.prog.abap && rm downport/zcl_aff_writer_xslt.clas.testclasses.abap && abaplint --fix abaplint-downport.jsonc"
+    "downport": "rm -rf downport && cp -r src downport && cp deps/* downport && rm downport/*.prog.abap && rm downport/zcl_aff_writer_xslt.clas.testclasses.abap && abaplint --fix abaplint-downport.jsonc",
+    "merge": "rm src/z_generate_json_schema.prog.abap && abapmerge -f src/z_generate_repo.prog.abap -c z_generate_repo > z_generate_repo.prog.abap"
+
   },
   "license": "MIT",
   "dependencies": {
     "@abaplint/cli": "^2.89.14",
     "@abaplint/runtime": "^2.0.19",
     "@abaplint/database-sqlite": "^2.0.11",
-    "@abaplint/transpiler-cli": "^2.0.19"
+    "@abaplint/transpiler-cli": "^2.0.19",
+    "abapmerge": "^0.14.3"
   }
 }
