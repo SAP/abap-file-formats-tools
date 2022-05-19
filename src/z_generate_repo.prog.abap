@@ -3,246 +3,246 @@
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-REPORT z_generate_repo.
-CLASS lcl_generator DEFINITION DEFERRED.
-DATA obj_types TYPE saff_repo_types.
-DATA helper TYPE REF TO lcl_generator ##NEEDED.
+report z_generate_repo.
+class lcl_generator definition deferred.
+data obj_types type saff_repo_types.
+data helper type ref to lcl_generator ##NEEDED.
 
-INTERFACE lif_gui_frontend_service.
-  METHODS display.
-  METHODS clear.
-  METHODS write
-    IMPORTING message TYPE any.
-  METHODS write_to_console_and_screen
-    IMPORTING message TYPE string.
-  METHODS file_save_dialog
-    IMPORTING VALUE(window_title)      TYPE string OPTIONAL
-              VALUE(default_extension) TYPE string OPTIONAL
-              VALUE(default_file_name) TYPE string OPTIONAL
-    CHANGING  filename                 TYPE string
-              path                     TYPE string
-              fullpath                 TYPE string
-              user_action              TYPE i OPTIONAL
-    RAISING   zcx_aff_tools.
-  METHODS gui_download
-    IMPORTING
-              !bin_filesize     TYPE i OPTIONAL
-              !filename         TYPE string
-              !filetype         TYPE char10 DEFAULT 'ASC'
-              !write_lf         TYPE char01 DEFAULT 'X'
-    EXPORTING
-              VALUE(filelength) TYPE i
-    CHANGING
-              !data_tab         TYPE STANDARD TABLE
-    RAISING   zcx_aff_tools.
+interface lif_gui_frontend_service.
+  methods display.
+  methods clear.
+  methods write
+    importing message type any.
+  methods write_to_console_and_screen
+    importing message type string.
+  methods file_save_dialog
+    importing value(window_title)      type string optional
+              value(default_extension) type string optional
+              value(default_file_name) type string optional
+    changing  filename                 type string
+              path                     type string
+              fullpath                 type string
+              user_action              type i optional
+    raising   zcx_aff_tools.
+  methods gui_download
+    importing
+              !bin_filesize     type i optional
+              !filename         type string
+              !filetype         type char10 default 'ASC'
+              !write_lf         type char01 default 'X'
+    exporting
+              value(filelength) type i
+    changing
+              !data_tab         type standard table
+    raising   zcx_aff_tools.
 
-ENDINTERFACE.
+endinterface.
 
-CLASS lcl_gui_frontend DEFINITION
-  FINAL CREATE PUBLIC.
-  PUBLIC SECTION.
-    INTERFACES lif_gui_frontend_service.
-ENDCLASS.
+class lcl_gui_frontend definition
+  final create public.
+  public section.
+    interfaces lif_gui_frontend_service.
+endclass.
 
-CLASS lcl_gui_frontend IMPLEMENTATION.
+class lcl_gui_frontend implementation.
 
 
-  METHOD lif_gui_frontend_service~file_save_dialog.
+  method lif_gui_frontend_service~file_save_dialog.
     cl_gui_frontend_services=>file_save_dialog(
-      EXPORTING
+      exporting
         default_extension   = default_extension
         default_file_name   = default_file_name
-      CHANGING
+      changing
         filename            = filename
         path                = path
         fullpath            = fullpath
         user_action         = user_action
                               ) ##SUBRC_OK.
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~gui_download.
-    CLEAR filelength.
+  method lif_gui_frontend_service~gui_download.
+    clear filelength.
     cl_gui_frontend_services=>gui_download(
-      EXPORTING
+      exporting
         filename                  = filename
         bin_filesize              = bin_filesize
         filetype                  = filetype
         write_lf                  = write_lf
-      CHANGING
+      changing
         data_tab                  = data_tab
     ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~write_to_console_and_screen.
-    WRITE: / message.
+  method lif_gui_frontend_service~write_to_console_and_screen.
+    write: / message.
     cl_demo_output=>write( message ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~clear.
+  method lif_gui_frontend_service~clear.
     cl_demo_output=>clear( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~display.
+  method lif_gui_frontend_service~display.
     cl_demo_output=>display( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~write.
+  method lif_gui_frontend_service~write.
     cl_demo_output=>write( message  ).
-  ENDMETHOD.
+  endmethod.
 
-ENDCLASS.
+endclass.
 
-CLASS ltc_gui_frontend DEFINITION FINAL FOR TESTING.
-  PUBLIC SECTION .
-    INTERFACES lif_gui_frontend_service.
-ENDCLASS.
-CLASS ltc_gui_frontend IMPLEMENTATION.
+class ltc_gui_frontend definition final for testing.
+  public section .
+    interfaces lif_gui_frontend_service.
+endclass.
+class ltc_gui_frontend implementation.
 
-  METHOD lif_gui_frontend_service~file_save_dialog.
-    IF default_extension         = `zip`.
+  method lif_gui_frontend_service~file_save_dialog.
+    if default_extension         = `zip`.
 
       filename   = 'TESTFILENAME.zip'.
       path       = 'TESTPATH'.
       fullpath   = 'FULLPATH.zip'.
       user_action = 0.
 
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~gui_download.
-    CLEAR filelength.
-    IF filename = 'TESTFILENAME.zip' AND filetype = 'BIN' AND write_lf = space.
-      data_tab = VALUE #( ).
+  method lif_gui_frontend_service~gui_download.
+    clear filelength.
+    if filename = 'TESTFILENAME.zip' and filetype = 'BIN' and write_lf = space.
+      data_tab = value #( ).
       sy-subrc = 0.
-    ELSE.
-      data_tab = VALUE #( ).
+    else.
+      data_tab = value #( ).
       sy-subrc = 1.
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~write_to_console_and_screen ##NEEDED.
+  method lif_gui_frontend_service~write_to_console_and_screen ##NEEDED.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~clear ##NEEDED.
+  method lif_gui_frontend_service~clear ##NEEDED.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~display ##NEEDED.
+  method lif_gui_frontend_service~display ##NEEDED.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_gui_frontend_service~write ##NEEDED.
+  method lif_gui_frontend_service~write ##NEEDED.
 
-  ENDMETHOD.
+  endmethod.
 
-ENDCLASS.
+endclass.
 
-INTERFACE lif_generator.
-  METHODS generate_type
-    IMPORTING data          TYPE data
-    RETURNING VALUE(result) TYPE rswsourcet
-    RAISING   zcx_aff_tools.
-  METHODS get_log
-    RETURNING
-      VALUE(log) TYPE REF TO zif_aff_log.
-ENDINTERFACE.
+interface lif_generator.
+  methods generate_type
+    importing data          type data
+    returning value(result) type rswsourcet
+    raising   zcx_aff_tools.
+  methods get_log
+    returning
+      value(log) type ref to zif_aff_log.
+endinterface.
 
-CLASS lcl_generator_helper DEFINITION
-  FINAL
-  CREATE PUBLIC.
-  PUBLIC SECTION.
-    INTERFACES lif_generator.
-    METHODS constructor
-      IMPORTING
-        writer TYPE REF TO zif_aff_writer.
-    DATA generator TYPE REF TO zcl_aff_generator.
-ENDCLASS.
+class lcl_generator_helper definition
+  final
+  create public.
+  public section.
+    interfaces lif_generator.
+    methods constructor
+      importing
+        writer type ref to zif_aff_writer.
+    data generator type ref to zcl_aff_generator.
+endclass.
 
-CLASS lcl_generator_helper IMPLEMENTATION.
+class lcl_generator_helper implementation.
 
-  METHOD constructor.
-    me->generator = NEW zcl_aff_generator( writer ).
-  ENDMETHOD.
+  method constructor.
+    me->generator = new zcl_aff_generator( writer ).
+  endmethod.
 
-  METHOD lif_generator~generate_type.
+  method lif_generator~generate_type.
     result = me->generator->generate_type( data ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD lif_generator~get_log.
+  method lif_generator~get_log.
     log = me->generator->get_log( ).
-  ENDMETHOD.
+  endmethod.
 
-ENDCLASS.
-
-
-SELECTION-SCREEN BEGIN OF BLOCK block_1 WITH FRAME TITLE TEXT-020.
-  PARAMETERS:
-    p_schema TYPE c RADIOBUTTON GROUP sel USER-COMMAND upd DEFAULT 'X',
-    p_xslt   TYPE c RADIOBUTTON GROUP sel,
-    p_repo   TYPE c RADIOBUTTON GROUP sel,
-    p_whole  TYPE c RADIOBUTTON GROUP sel,
-    p_multre TYPE c RADIOBUTTON GROUP sel.
-SELECTION-SCREEN END OF BLOCK block_1.
-
-SELECTION-SCREEN BEGIN OF BLOCK block_2 WITH FRAME TITLE TEXT-021 ##TEXT_POOL.
-  PARAMETERS:
-    p_objtyp TYPE trobjtype,
-    p_intf   TYPE sobj_name,
-    p_type   TYPE sobj_name DEFAULT 'TY_MAIN',
-    p_examp  TYPE sobj_name,
-    p_readm  TYPE abap_bool DEFAULT abap_true AS CHECKBOX,
-    p_consol TYPE c RADIOBUTTON GROUP two USER-COMMAND two DEFAULT 'X',
-    p_disk   TYPE c RADIOBUTTON GROUP two.
-  SELECT-OPTIONS:
- p_multob FOR obj_types NO INTERVALS.
-SELECTION-SCREEN END OF BLOCK block_2.
-
-TYPES: BEGIN OF aff_object,
-         object_type    TYPE c LENGTH 4,
-         interface      TYPE sobj_name,
-         example        TYPE sobj_name,
-         format_version TYPE i,
-       END OF aff_object,
-       aff_objects_table TYPE STANDARD TABLE OF aff_object.
+endclass.
 
 
-CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
+selection-screen begin of block block_1 with frame title text-020.
+  parameters:
+    p_schema type c radiobutton group sel user-command upd default 'X',
+    p_xslt   type c radiobutton group sel,
+    p_repo   type c radiobutton group sel,
+    p_whole  type c radiobutton group sel,
+    p_multre type c radiobutton group sel.
+selection-screen end of block block_1.
 
-  PUBLIC SECTION.
-    DATA generator_log TYPE REF TO zif_aff_log.
-    DATA aff_framework_log TYPE REF TO if_aff_log.
-    DATA report_log TYPE stringtab.
-    DATA xslt_schema_content TYPE rswsourcet.
-    DATA schema_test_content TYPE rswsourcet.
-    DATA zip TYPE REF TO cl_abap_zip.
-    DATA gui_frontend_service TYPE REF TO lif_gui_frontend_service.
+selection-screen begin of block block_2 with frame title text-021 ##TEXT_POOL.
+  parameters:
+    p_objtyp type trobjtype,
+    p_intf   type sobj_name,
+    p_type   type sobj_name default 'TY_MAIN',
+    p_examp  type sobj_name,
+    p_readm  type abap_bool default abap_true as checkbox,
+    p_consol type c radiobutton group two user-command two default 'X',
+    p_disk   type c radiobutton group two.
+  select-options:
+ p_multob for obj_types no intervals.
+selection-screen end of block block_2.
 
-    METHODS: set_parameters
-      IMPORTING
-        i_schema TYPE abap_bool DEFAULT abap_false
-        i_xslt   TYPE abap_bool DEFAULT abap_false
-        i_repo   TYPE abap_bool DEFAULT abap_false
-        i_whole  TYPE abap_bool DEFAULT abap_false
-        i_multre TYPE abap_bool DEFAULT abap_false
-        i_objtyp TYPE trobjtype OPTIONAL
-        i_intf   TYPE sobj_name OPTIONAL
-        i_type   TYPE sobj_name OPTIONAL
-        i_examp  TYPE sobj_name OPTIONAL
-        i_consol TYPE abap_bool DEFAULT abap_false
-        i_disk   TYPE abap_bool DEFAULT abap_false
-        i_readm  TYPE abap_bool DEFAULT abap_true
-        i_multob TYPE stringtab OPTIONAL,
+types: begin of aff_object,
+         object_type    type c length 4,
+         interface      type sobj_name,
+         example        type sobj_name,
+         format_version type i,
+       end of aff_object,
+       aff_objects_table type standard table of aff_object.
+
+
+class lcl_generator definition final create public .
+
+  public section.
+    data generator_log type ref to zif_aff_log.
+    data aff_framework_log type ref to if_aff_log.
+    data report_log type stringtab.
+    data xslt_schema_content type rswsourcet.
+    data schema_test_content type rswsourcet.
+    data zip type ref to cl_abap_zip.
+    data gui_frontend_service type ref to lif_gui_frontend_service.
+
+    methods: set_parameters
+      importing
+        i_schema type abap_bool default abap_false
+        i_xslt   type abap_bool default abap_false
+        i_repo   type abap_bool default abap_false
+        i_whole  type abap_bool default abap_false
+        i_multre type abap_bool default abap_false
+        i_objtyp type trobjtype optional
+        i_intf   type sobj_name optional
+        i_type   type sobj_name optional
+        i_examp  type sobj_name optional
+        i_consol type abap_bool default abap_false
+        i_disk   type abap_bool default abap_false
+        i_readm  type abap_bool default abap_true
+        i_multob type stringtab optional,
 
       set_schema_test_content
-        IMPORTING schema_test_content TYPE rswsourcet,
+        importing schema_test_content type rswsourcet,
 
       constructor
-        IMPORTING
-          i_gui_frontend TYPE REF TO lif_gui_frontend_service OPTIONAL
-          aff_factory    TYPE REF TO if_aff_factory OPTIONAL
-          generator      TYPE REF TO lif_generator OPTIONAL
-          writer         TYPE REF TO zif_aff_writer OPTIONAL,
+        importing
+          i_gui_frontend type ref to lif_gui_frontend_service optional
+          aff_factory    type ref to if_aff_factory optional
+          generator      type ref to lif_generator optional
+          writer         type ref to zif_aff_writer optional,
       start_of_selection,
       on_value_request_for_type,
       on_value_request_for_objtype,
@@ -251,325 +251,325 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
       modify_screen,
       at_selection_screen,
       get_table_with_all_githubtypes
-        RETURNING VALUE(type_table) TYPE stringtab,
+        returning value(type_table) type stringtab,
       write_to_zip
-        IMPORTING zip_archive TYPE xstring
-                  zipname     TYPE string,
+        importing zip_archive type xstring
+                  zipname     type string,
       create_schema_xslt_zip
-        IMPORTING content      TYPE rswsourcet
-        RETURNING VALUE(r_zip) TYPE REF TO cl_abap_zip,
+        importing content      type rswsourcet
+        returning value(r_zip) type ref to cl_abap_zip,
       print_logs.
 
-  PRIVATE SECTION.
+  private section.
 
-    TYPES: clsname_tab TYPE STANDARD TABLE OF seoclsname,
-           BEGIN OF replacing_line,
-             to_be_replaced TYPE string,
-             replace_with   TYPE string,
-           END OF replacing_line.
+    types: clsname_tab type standard table of seoclsname,
+           begin of replacing_line,
+             to_be_replaced type string,
+             replace_with   type string,
+           end of replacing_line.
 
-    TYPES: replacing_tab TYPE STANDARD TABLE OF replacing_line.
+    types: replacing_tab type standard table of replacing_line.
 
-    DATA:"needed for testing
-      aff_factory TYPE REF TO  if_aff_factory,
-      generator   TYPE REF TO lif_generator,
-      writer      TYPE REF TO zif_aff_writer.
-    DATA replacing_table_string TYPE replacing_tab.
+    data:"needed for testing
+      aff_factory type ref to  if_aff_factory,
+      generator   type ref to lif_generator,
+      writer      type ref to zif_aff_writer.
+    data replacing_table_string type replacing_tab.
 
-    METHODS: get_replacing_table_and_intfs
-      IMPORTING name_of_intf_of_mainobj TYPE string
-                example_files           TYPE if_aff_object_file_handler=>ty_object_files
-      EXPORTING interfaces              TYPE clsname_tab,
+    methods: get_replacing_table_and_intfs
+      importing name_of_intf_of_mainobj type string
+                example_files           type if_aff_object_file_handler=>ty_object_files
+      exporting interfaces              type clsname_tab,
       replace_names_in_string
-        IMPORTING
-                  content_as_string      TYPE string
-                  replacing_table_string TYPE replacing_tab
-        RETURNING VALUE(content)         TYPE string,
+        importing
+                  content_as_string      type string
+                  replacing_table_string type replacing_tab
+        returning value(content)         type string,
       add_aff_files_to_zip
-        IMPORTING
-          files                  TYPE if_aff_object_file_handler=>ty_object_files
-          filename               TYPE string
-          replacing_table_string TYPE replacing_tab,
+        importing
+          files                  type if_aff_object_file_handler=>ty_object_files
+          filename               type string
+          replacing_table_string type replacing_tab,
       generate_repo_folder
-        IMPORTING objects          TYPE aff_objects_table
-                  whole_aff_folder TYPE boolean DEFAULT abap_false,
+        importing objects          type aff_objects_table
+                  whole_aff_folder type boolean default abap_false,
       create_the_variable_dynamicaly
-        IMPORTING absolute_typename TYPE string
-        RETURNING VALUE(variable)   TYPE REF TO data
-        RAISING
+        importing absolute_typename type string
+        returning value(variable)   type ref to data
+        raising
                   zcx_aff_tools,
       get_dynpro_value
-        IMPORTING fieldname         TYPE string
-        RETURNING VALUE(fieldvalue) TYPE string,
+        importing fieldname         type string
+        returning value(fieldvalue) type string,
       set_value_help_result_to_field
-        IMPORTING fieldname               TYPE string
-                  value_help_result_table TYPE STANDARD TABLE
-        RETURNING VALUE(chosen_value)     TYPE string,
+        importing fieldname               type string
+                  value_help_result_table type standard table
+        returning value(chosen_value)     type string,
       set_object_infos_in_ui
-        IMPORTING i_object TYPE aff_object,
+        importing i_object type aff_object,
       get_object_infos_by_objtype
-        IMPORTING objecttype    TYPE string
-        RETURNING VALUE(object) TYPE aff_object,
+        importing objecttype    type string
+        returning value(object) type aff_object,
       get_object_infos_by_intfname
-        IMPORTING intfname      TYPE string
-        RETURNING VALUE(object) TYPE aff_object,
+        importing intfname      type string
+        returning value(object) type aff_object,
       get_object_infos_by_exmplname
-        IMPORTING examplename   TYPE string
-        RETURNING VALUE(object) TYPE aff_object,
+        importing examplename   type string
+        returning value(object) type aff_object,
       get_intfname_highest_version
-        IMPORTING objecttype     TYPE string
-        EXPORTING intfname       TYPE string
-                  format_version TYPE i,
+        importing objecttype     type string
+        exporting intfname       type string
+                  format_version type i,
       get_format_version_of_intfname
-        IMPORTING intfname              TYPE string
-        RETURNING VALUE(format_version) TYPE i,
+        importing intfname              type string
+        returning value(format_version) type i,
       get_schema_or_xslt_content
-        RETURNING VALUE(content) TYPE rswsourcet,
+        returning value(content) type rswsourcet,
       get_content
-        IMPORTING absolute_typename TYPE string
-                  interfacename     TYPE string
-        RETURNING VALUE(content)    TYPE rswsourcet,
+        importing absolute_typename type string
+                  interfacename     type string
+        returning value(content)    type rswsourcet,
       object_as_string
-        IMPORTING object        TYPE if_aff_object_file_handler=>ty_object
-        RETURNING VALUE(result) TYPE string,
+        importing object        type if_aff_object_file_handler=>ty_object
+        returning value(result) type string,
       get_objname_wo_namspace_with_z
-        IMPORTING object_name   TYPE string
-        RETURNING VALUE(result) TYPE string,
+        importing object_name   type string
+        returning value(result) type string,
       add_file_to_zip
-        IMPORTING
-          i_file_name         TYPE string
-          i_stringtab_content TYPE rswsourcet
-          i_error_text        TYPE string.
+        importing
+          i_file_name         type string
+          i_stringtab_content type rswsourcet
+          i_error_text        type string.
 
-ENDCLASS.
+endclass.
 
-CLASS lcl_generator IMPLEMENTATION.
+class lcl_generator implementation.
 
-  METHOD write_to_zip.
-    DATA file_name TYPE string.
-    DATA path TYPE string.
-    DATA fullpath TYPE string.
-    DATA user_action TYPE i.
-    TRY.
+  method write_to_zip.
+    data file_name type string.
+    data path type string.
+    data fullpath type string.
+    data user_action type i.
+    try.
         gui_frontend_service->file_save_dialog(
-          EXPORTING
+          exporting
             default_extension = `zip`
             default_file_name = zipname
-          CHANGING
+          changing
             filename          = file_name
             path              = path
             fullpath          = fullpath
             user_action       = user_action
                                 ) ##SUBRC_OK.
-      CATCH zcx_aff_tools.
-        INSERT `Either Serialization canceled via UI or file-save-dialog caused errors` INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-    ENDTRY.
+      catch zcx_aff_tools.
+        insert `Either Serialization canceled via UI or file-save-dialog caused errors` into table report_log ##NO_TEXT.
+        return.
+    endtry.
 
 *     On mac computers file_save_dialog( ) does not add ".zip" at the file_name ending.
-    IF NOT file_name CP '*.zip'.
+    if not file_name cp '*.zip'.
       file_name = |{ file_name }.zip| ##NO_TEXT.
       fullpath = |{ fullpath }.zip| ##NO_TEXT.
-    ENDIF.
+    endif.
 
     " split xstring into a table
-    CONSTANTS chunk_size TYPE i VALUE 1000.
-    DATA line TYPE x LENGTH chunk_size.
-    DATA content_as_table LIKE TABLE OF line.
-    DATA off TYPE i.
-    DATA(xstring_length) = xstrlen( zip_archive ).
-    WHILE off < xstring_length.
+    constants chunk_size type i value 1000.
+    data line type x length chunk_size.
+    data content_as_table like table of line.
+    data off type i.
+    data(xstring_length) = xstrlen( zip_archive ).
+    while off < xstring_length.
       line = zip_archive+off.
-      APPEND line TO content_as_table.
+      append line to content_as_table.
       off = off + chunk_size.
-    ENDWHILE.
-    TRY.
+    endwhile.
+    try.
         gui_frontend_service->gui_download(
-          EXPORTING
+          exporting
             filename     = file_name
             bin_filesize = xstring_length
             filetype     = 'BIN'
             write_lf     = space
-          CHANGING
+          changing
             data_tab     = content_as_table
         ).
-        INSERT |Success: Zip file created here { fullpath }| INTO TABLE report_log ##NO_TEXT.
-      CATCH zcx_aff_tools.
-        INSERT |File { fullpath } not created| INTO TABLE report_log ##NO_TEXT.
-    ENDTRY.
-  ENDMETHOD.
+        insert |Success: Zip file created here { fullpath }| into table report_log ##NO_TEXT.
+      catch zcx_aff_tools.
+        insert |File { fullpath } not created| into table report_log ##NO_TEXT.
+    endtry.
+  endmethod.
 
-  METHOD get_replacing_table_and_intfs.
+  method get_replacing_table_and_intfs.
 *       fill the table with the strings which need to be replaced (interface objects need to begin with z)
-    CLEAR interfaces.
-    APPEND name_of_intf_of_mainobj TO interfaces.
-    IF name_of_intf_of_mainobj CP `IF_AFF_FUGR*`.
-      APPEND `IF_AFF_FUNC_V1` TO interfaces.
-      APPEND `IF_AFF_REPS_V1` TO interfaces.
-    ENDIF.
-    IF name_of_intf_of_mainobj CP `IF_AFF_TABL*`.
-      APPEND `IF_AFF_INDX_V1` TO interfaces.
-    ENDIF.
+    clear interfaces.
+    append name_of_intf_of_mainobj to interfaces.
+    if name_of_intf_of_mainobj cp `IF_AFF_FUGR*`.
+      append `IF_AFF_FUNC_V1` to interfaces.
+      append `IF_AFF_REPS_V1` to interfaces.
+    endif.
+    if name_of_intf_of_mainobj cp `IF_AFF_TABL*`.
+      append `IF_AFF_INDX_V1` to interfaces.
+    endif.
 
     " the interface names which need to be replaced
-    LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>).
-      DATA(intf_name) = to_lower( <intf> ).
-      IF NOT intf_name CP `z*`.
-        INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
-        IF intf_name CP `*/*`.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH'('.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH')'.
-          INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
-        ENDIF.
-      ENDIF.
-    ENDLOOP.
+    loop at interfaces assigning field-symbol(<intf>).
+      data(intf_name) = to_lower( <intf> ).
+      if not intf_name cp `z*`.
+        insert value #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) into table replacing_table_string.
+        if intf_name cp `*/*`.
+          replace first occurrence of '/' in intf_name with'('.
+          replace first occurrence of '/' in intf_name with')'.
+          insert value #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) into table replacing_table_string.
+        endif.
+      endif.
+    endloop.
 
 *  the example names which need to be replaced. (example objects need to begin with z)
-    LOOP AT example_files-object_to_file_name ASSIGNING FIELD-SYMBOL(<object>).
-      DATA(name_of_example_obj) = to_lower( <object>-object-obj_name ).
-      IF NOT name_of_example_obj CP `z*`.
-        INSERT VALUE #( to_be_replaced = name_of_example_obj replace_with = get_objname_wo_namspace_with_z( name_of_example_obj ) ) INTO TABLE replacing_table_string.
-        IF name_of_example_obj CP `*/*`.
-          REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_obj WITH'('.
-          REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_obj WITH')'.
-          INSERT VALUE #( to_be_replaced = name_of_example_obj replace_with = get_objname_wo_namspace_with_z( to_lower( <object>-object-obj_name  ) ) ) INTO TABLE replacing_table_string.
-        ENDIF.
-      ENDIF.
+    loop at example_files-object_to_file_name assigning field-symbol(<object>).
+      data(name_of_example_obj) = to_lower( <object>-object-obj_name ).
+      if not name_of_example_obj cp `z*`.
+        insert value #( to_be_replaced = name_of_example_obj replace_with = get_objname_wo_namspace_with_z( name_of_example_obj ) ) into table replacing_table_string.
+        if name_of_example_obj cp `*/*`.
+          replace first occurrence of '/' in name_of_example_obj with'('.
+          replace first occurrence of '/' in name_of_example_obj with')'.
+          insert value #( to_be_replaced = name_of_example_obj replace_with = get_objname_wo_namspace_with_z( to_lower( <object>-object-obj_name  ) ) ) into table replacing_table_string.
+        endif.
+      endif.
 
-      IF <object>-object-sub_name IS NOT INITIAL.
-        DATA(name_of_example_subobj) = to_lower( <object>-object-sub_name ).
-        IF NOT name_of_example_subobj CP `z*`.
-          IF ( <object>-object-obj_type = 'FUGR' AND <object>-object-sub_type = 'FUNC' ) OR
-            ( <object>-object-obj_type = 'TABL' AND <object>-object-sub_type = 'INDX' ) .
-            INSERT VALUE #( to_be_replaced = name_of_example_subobj replace_with = get_objname_wo_namspace_with_z( name_of_example_subobj ) ) INTO TABLE replacing_table_string.
-            IF <object>-object-sub_name CP `*/*`.
-              REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_subobj WITH'('.
-              REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_subobj WITH')'.
-              INSERT VALUE #( to_be_replaced = name_of_example_subobj replace_with = get_objname_wo_namspace_with_z( CONV #( <object>-object-sub_name ) ) ) INTO TABLE replacing_table_string.
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ENDIF.
-    ENDLOOP.
-    INSERT VALUE #( to_be_replaced = `if_aff_types_v1` replace_with = get_objname_wo_namspace_with_z( `zif_aff_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
-    INSERT VALUE #( to_be_replaced =  `if_aff_oo_types_v1` replace_with = get_objname_wo_namspace_with_z(  `zif_aff_oo_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
+      if <object>-object-sub_name is not initial.
+        data(name_of_example_subobj) = to_lower( <object>-object-sub_name ).
+        if not name_of_example_subobj cp `z*`.
+          if ( <object>-object-obj_type = 'FUGR' and <object>-object-sub_type = 'FUNC' ) or
+            ( <object>-object-obj_type = 'TABL' and <object>-object-sub_type = 'INDX' ) .
+            insert value #( to_be_replaced = name_of_example_subobj replace_with = get_objname_wo_namspace_with_z( name_of_example_subobj ) ) into table replacing_table_string.
+            if <object>-object-sub_name cp `*/*`.
+              replace first occurrence of '/' in name_of_example_subobj with'('.
+              replace first occurrence of '/' in name_of_example_subobj with')'.
+              insert value #( to_be_replaced = name_of_example_subobj replace_with = get_objname_wo_namspace_with_z( conv #( <object>-object-sub_name ) ) ) into table replacing_table_string.
+            endif.
+          endif.
+        endif.
+      endif.
+    endloop.
+    insert value #( to_be_replaced = `if_aff_types_v1` replace_with = get_objname_wo_namspace_with_z( `zif_aff_types_v1` ) ) into table replacing_table_string ##NO_TEXT ##NO_TEXT.
+    insert value #( to_be_replaced =  `if_aff_oo_types_v1` replace_with = get_objname_wo_namspace_with_z(  `zif_aff_oo_types_v1` ) ) into table replacing_table_string ##NO_TEXT ##NO_TEXT.
 
-    SORT replacing_table_string ASCENDING BY to_be_replaced.
-    DELETE ADJACENT DUPLICATES FROM replacing_table_string.
-  ENDMETHOD.
+    sort replacing_table_string ascending by to_be_replaced.
+    delete adjacent duplicates from replacing_table_string.
+  endmethod.
 
-  METHOD get_objname_wo_namspace_with_z.
-    SPLIT object_name AT '/' INTO TABLE DATA(splitted_obj_name_parts).
-    DATA(object_name_wo_namespace) = splitted_obj_name_parts[ lines( splitted_obj_name_parts ) ].
-    DATA(zname_of_obj) = to_lower( object_name_wo_namespace ).
-    IF NOT zname_of_obj CP `z*`.
+  method get_objname_wo_namspace_with_z.
+    split object_name at '/' into table data(splitted_obj_name_parts).
+    data(object_name_wo_namespace) = splitted_obj_name_parts[ lines( splitted_obj_name_parts ) ].
+    data(zname_of_obj) = to_lower( object_name_wo_namespace ).
+    if not zname_of_obj cp `z*`.
       result = |z{ zname_of_obj }|.
-    ELSE.
+    else.
       result = zname_of_obj.
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
 
-  METHOD generate_repo_folder.
-    IF p_repo = abap_true.
+  method generate_repo_folder.
+    if p_repo = abap_true.
       "serialize only one repo folder
-      IF p_objtyp IS INITIAL OR p_intf IS INITIAL OR p_examp IS INITIAL.
-        INSERT `Please fill out all fields (objecttype, interfacename, examplename)` INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-      ENDIF.
-    ENDIF.
+      if p_objtyp is initial or p_intf is initial or p_examp is initial.
+        insert `Please fill out all fields (objecttype, interfacename, examplename)` into table report_log ##NO_TEXT.
+        return.
+      endif.
+    endif.
     " generate zip folder
-    me->zip = NEW cl_abap_zip( ).
+    me->zip = new cl_abap_zip( ).
 
-    LOOP AT objects ASSIGNING FIELD-SYMBOL(<object>).
-      DATA(object_type_folder_name) = to_lower( <object>-object_type ).
+    loop at objects assigning field-symbol(<object>).
+      data(object_type_folder_name) = to_lower( <object>-object_type ).
 
-      SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @<object>-example AND object = @<object>-object_type INTO @DATA(example_obj_devclass).
-      DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass  = example_obj_devclass obj_type = <object>-object_type obj_name = <object>-example ).
-      IF aff_factory IS NOT INITIAL.
-        DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
-      ELSE.
+      select single devclass from tadir where pgmid = 'R3TR' and obj_name = @<object>-example and object = @<object>-object_type into @data(example_obj_devclass).
+      data(example_main_object) = value if_aff_object_file_handler=>ty_object( devclass  = example_obj_devclass obj_type = <object>-object_type obj_name = <object>-example ).
+      if aff_factory is not initial.
+        data(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
+      else.
         file_handler = cl_aff_factory=>get_object_file_handler( ).
-      ENDIF.
+      endif.
 *      DATA(l_log) = NEW cl_aff_log( ).
 *      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = l_log ).
-      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = aff_framework_log ).
+      data(example_files) = file_handler->serialize_objects( objects = value #( ( example_main_object ) ) log = aff_framework_log ).
 
       get_replacing_table_and_intfs(
-        EXPORTING name_of_intf_of_mainobj = CONV #( <object>-interface ) example_files = example_files
-        IMPORTING interfaces = DATA(interfaces)
+        exporting name_of_intf_of_mainobj = conv #( <object>-interface ) example_files = example_files
+        importing interfaces = data(interfaces)
       ).
       "adding the example files
       add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
 
-      DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
-      CLEAR intf_objects.
+      data intf_objects type if_aff_object_file_handler=>tt_objects.
+      clear intf_objects.
 
       "generate type folder with all serialized interfaces (main and subobjects)
-      LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
-        DATA(upper_intf) = to_upper( <interface> ).
-        SELECT SINGLE devclass FROM tadir WHERE obj_name = @upper_intf AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass) .
-        IF intf_obj_devclass IS INITIAL.
-          INSERT |{ upper_intf } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
-        ENDIF.
-        APPEND VALUE #( devclass  = intf_obj_devclass obj_type  = 'INTF' obj_name = upper_intf ) TO intf_objects.
-      ENDLOOP.
+      loop at interfaces assigning field-symbol(<interface>).
+        data(upper_intf) = to_upper( <interface> ).
+        select single devclass from tadir where obj_name = @upper_intf and pgmid = 'R3TR' and object = 'INTF' into @data(intf_obj_devclass) .
+        if intf_obj_devclass is initial.
+          insert |{ upper_intf } is not found in table tadir. Package of the interface is unknown| into table report_log ##NO_TEXT.
+        endif.
+        append value #( devclass  = intf_obj_devclass obj_type  = 'INTF' obj_name = upper_intf ) to intf_objects.
+      endloop.
 
 *      DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = l_log ).
-      DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = aff_framework_log ).
+      data(intf_files) = file_handler->serialize_objects( objects = intf_objects log = aff_framework_log ).
 
       add_aff_files_to_zip( files = intf_files filename = |{ object_type_folder_name }/type/| replacing_table_string = replacing_table_string ).
 
       "generate the schema(s) of the mainobject and all of its subobjects
       "add it to the zip folder
-      LOOP AT interfaces ASSIGNING <interface>.
-        DATA(intfname) = <interface>.
-        SPLIT intfname AT `_` INTO TABLE DATA(splitted_intfname).
-        IF lines( splitted_intfname ) < 4.
-          INSERT |The schema for interface { <interface> } could not be created. Objecttype could not be derived from intfname.| INTO TABLE report_log ##NO_TEXT.
-          CONTINUE.
-        ENDIF.
-        DATA(objecttype) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
+      loop at interfaces assigning <interface>.
+        data(intfname) = <interface>.
+        split intfname at `_` into table data(splitted_intfname).
+        if lines( splitted_intfname ) < 4.
+          insert |The schema for interface { <interface> } could not be created. Objecttype could not be derived from intfname.| into table report_log ##NO_TEXT.
+          continue.
+        endif.
+        data(objecttype) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
 
-        DATA(found) = abap_false.
-        SELECT SINGLE @abap_true FROM tadir WHERE obj_name = @<interface> INTO @found. "#EC CI_GENBUFF
-        IF found = abap_false.
-          INSERT |The schema for interface { <interface> } could not be created.| INTO TABLE report_log ##NO_TEXT.
-          CONTINUE.
-        ENDIF.
+        data(found) = abap_false.
+        select single @abap_true from tadir where obj_name = @<interface> into @found. "#EC CI_GENBUFF
+        if found = abap_false.
+          insert |The schema for interface { <interface> } could not be created.| into table report_log ##NO_TEXT.
+          continue.
+        endif.
 
-        DATA(mainobjtype) = objecttype.
-        IF objecttype = `FUNC` OR objecttype = `REPS`.
+        data(mainobjtype) = objecttype.
+        if objecttype = `FUNC` or objecttype = `REPS`.
           mainobjtype = `FUGR`.
-        ELSEIF objecttype = `INDX`.
+        elseif objecttype = `INDX`.
           mainobjtype = `TABL`.
-        ENDIF.
+        endif.
 
-        DATA(format_version) = get_format_version_of_intfname( CONV #( intfname ) ).
-        DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
-        IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
-          writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
-        ENDIF.
-        IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper. "in testcase we use ltc_generator
-          generator = NEW lcl_generator_helper( writer ).
-        ENDIF.
-        DATA(schema_content) = get_content( absolute_typename = |\\INTERFACE={ to_upper( intfname ) }\\TYPE=TY_MAIN| interfacename = CONV #( intfname ) ).
-        IF schema_test_content IS NOT INITIAL."in test case sometimes a test schema content is injected
+        data(format_version) = get_format_version_of_intfname( conv #( intfname ) ).
+        data(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
+        if writer is initial or writer is instance of zcl_aff_writer_json_schema or writer is instance of zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
+          writer = new zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
+        endif.
+        if generator is initial or generator is instance of lcl_generator_helper. "in testcase we use ltc_generator
+          generator = new lcl_generator_helper( writer ).
+        endif.
+        data(schema_content) = get_content( absolute_typename = |\\INTERFACE={ to_upper( intfname ) }\\TYPE=TY_MAIN| interfacename = conv #( intfname ) ).
+        if schema_test_content is not initial."in test case sometimes a test schema content is injected
           schema_content = schema_test_content.
-        ENDIF.
-        IF schema_content IS INITIAL.
-          INSERT |The schema for interface { intfname } could not be created.| INTO TABLE report_log ##NO_TEXT.
-        ELSE.
+        endif.
+        if schema_content is initial.
+          insert |The schema for interface { intfname } could not be created.| into table report_log ##NO_TEXT.
+        else.
           add_file_to_zip(  i_stringtab_content = schema_content
             i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
             i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ##NO_TEXT
           ).
-        ENDIF.
-      ENDLOOP.
-      IF p_readm = abap_true.
-        DATA(interfacename) = replace_names_in_string( content_as_string  = to_lower( intfname ) replacing_table_string = replacing_table_string ).
-        DATA(examplename) = replace_names_in_string( content_as_string  = to_lower( <object>-example ) replacing_table_string = replacing_table_string ).
-        DATA(readme) = VALUE rswsourcet(
+        endif.
+      endloop.
+      if p_readm = abap_true.
+        data(interfacename) = replace_names_in_string( content_as_string  = to_lower( intfname ) replacing_table_string = replacing_table_string ).
+        data(examplename) = replace_names_in_string( content_as_string  = to_lower( <object>-example ) replacing_table_string = replacing_table_string ).
+        data(readme) = value rswsourcet(
   ( |# { <object>-object_type } File Format| ) ##NO_TEXT
   ( `` )
   ( `File | Cardinality | Definition | Schema | Example`) ##NO_TEXT
@@ -581,357 +581,357 @@ CLASS lcl_generator IMPLEMENTATION.
         add_file_to_zip( i_stringtab_content = readme
                         i_file_name  = |{ object_type_folder_name }/README.md|
  i_error_text = |The readme for object { <object>-object_type } could not be created. Error when transforming readme content from string to xstring| ) ##NO_TEXT.
-      ENDIF.
-    ENDLOOP.
+      endif.
+    endloop.
 
-    IF whole_aff_folder = abap_true.
+    if whole_aff_folder = abap_true.
       "also serialize the two interfaces: if_aff_types_v1 and if_aff_oo_types_v1
-      DATA two_interfaces TYPE if_aff_object_file_handler=>tt_objects .
-      APPEND VALUE #( devclass = 'SAFF_CORE' obj_name = 'IF_AFF_TYPES_V1' obj_type = 'INTF' ) TO two_interfaces.
-      APPEND VALUE #( devclass = 'SEO_AFF' obj_name = 'IF_AFF_OO_TYPES_V1' obj_type = 'INTF' ) TO two_interfaces.
+      data two_interfaces type if_aff_object_file_handler=>tt_objects .
+      append value #( devclass = 'SAFF_CORE' obj_name = 'IF_AFF_TYPES_V1' obj_type = 'INTF' ) to two_interfaces.
+      append value #( devclass = 'SEO_AFF' obj_name = 'IF_AFF_OO_TYPES_V1' obj_type = 'INTF' ) to two_interfaces.
 
-      DATA replacing_names TYPE replacing_tab.
-      replacing_names = VALUE #(
+      data replacing_names type replacing_tab.
+      replacing_names = value #(
        ( to_be_replaced = `if_aff_types_v1` replace_with = `zif_aff_types_v1` ) ##NO_TEXT
        ( to_be_replaced = `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` ) ##NO_TEXT
       ) .
 
-      LOOP AT two_interfaces ASSIGNING FIELD-SYMBOL(<interf>).
-        DATA(intf_files2) = file_handler->serialize_objects( objects = VALUE #( ( <interf> ) ) log = aff_framework_log ).
+      loop at two_interfaces assigning field-symbol(<interf>).
+        data(intf_files2) = file_handler->serialize_objects( objects = value #( ( <interf> ) ) log = aff_framework_log ).
         add_aff_files_to_zip( files = intf_files2 filename = `` replacing_table_string = replacing_names ).
-      ENDLOOP.
-    ENDIF.
+      endloop.
+    endif.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD add_file_to_zip.
+  method add_file_to_zip.
     "convert the string_table to xstring
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    TRY.
-        DATA(xstring_content) = text_handler->if_aff_content_handler~serialize( i_stringtab_content ).
-      CATCH zcx_aff_tools.
-        INSERT i_error_text INTO TABLE report_log.
-        RETURN.
-    ENDTRY.
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    try.
+        data(xstring_content) = text_handler->if_aff_content_handler~serialize( i_stringtab_content ).
+      catch zcx_aff_tools.
+        insert i_error_text into table report_log.
+        return.
+    endtry.
     me->zip->add( name    = i_file_name
                 content = xstring_content ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD add_aff_files_to_zip.
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    LOOP AT files-files ASSIGNING FIELD-SYMBOL(<file>).
+  method add_aff_files_to_zip.
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    loop at files-files assigning field-symbol(<file>).
 *     replace the filenames of the files
-      DATA(file_name) = to_lower( <file>-file_name ).
+      data(file_name) = to_lower( <file>-file_name ).
       file_name = replace_names_in_string( content_as_string = file_name replacing_table_string = replacing_table_string ).
 
 *     replace the content of the files
-      DATA(file_content_xstring) = <file>-content.
-      DATA content_as_string TYPE string.
-      TRY.
-          text_handler->if_aff_content_handler~deserialize( EXPORTING content = file_content_xstring IMPORTING data = content_as_string ).
+      data(file_content_xstring) = <file>-content.
+      data content_as_string type string.
+      try.
+          text_handler->if_aff_content_handler~deserialize( exporting content = file_content_xstring importing data = content_as_string ).
           content_as_string = replace_names_in_string( content_as_string = content_as_string replacing_table_string = replacing_table_string ).
           file_content_xstring = text_handler->if_aff_content_handler~serialize( content_as_string ).
-        CATCH zcx_aff_tools INTO DATA(exception).
-          INSERT |Object names in file { <file>-file_name } could not be changed to 'z...'. { exception->get_text( ) }| INTO TABLE report_log ##NO_TEXT.
-      ENDTRY.
+        catch zcx_aff_tools into data(exception).
+          insert |Object names in file { <file>-file_name } could not be changed to 'z...'. { exception->get_text( ) }| into table report_log ##NO_TEXT.
+      endtry.
       zip->add( name    = |{ filename }{ file_name }|
                 content = file_content_xstring ).
-    ENDLOOP.
+    endloop.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD set_object_infos_in_ui.
-    DATA dynpfields TYPE STANDARD TABLE OF dynpread.
-    DATA(obj_type) = i_object-object_type.
-    APPEND VALUE #( fieldname = 'P_OBJTYP'  fieldvalue = obj_type ) TO dynpfields.
+  method set_object_infos_in_ui.
+    data dynpfields type standard table of dynpread.
+    data(obj_type) = i_object-object_type.
+    append value #( fieldname = 'P_OBJTYP'  fieldvalue = obj_type ) to dynpfields.
 
-    DATA(intf_name) = i_object-interface.
-    APPEND VALUE #( fieldname = 'P_INTF'  fieldvalue = intf_name ) TO dynpfields.
+    data(intf_name) = i_object-interface.
+    append value #( fieldname = 'P_INTF'  fieldvalue = intf_name ) to dynpfields.
 
-    DATA(example_name) = i_object-example .
-    APPEND VALUE #( fieldname = 'P_EXAMP'  fieldvalue = example_name ) TO dynpfields.
+    data(example_name) = i_object-example .
+    append value #( fieldname = 'P_EXAMP'  fieldvalue = example_name ) to dynpfields.
 
-    CALL FUNCTION 'DYNP_VALUES_UPDATE'
-      EXPORTING
+    call function 'DYNP_VALUES_UPDATE'
+      exporting
         dyname     = sy-repid
         dynumb     = sy-dynnr
-      TABLES
+      tables
         dynpfields = dynpfields.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD get_intfname_highest_version.
-    CLEAR intfname.
-    CLEAR format_version.
-    DATA(string_to_search) = |IF_AFF_{ objecttype  }_%|.
-    SELECT obj_name FROM tadir WHERE object = 'INTF' AND obj_name LIKE @string_to_search INTO TABLE @DATA(intfs). "#EC CI_GENBUFF
+  method get_intfname_highest_version.
+    clear intfname.
+    clear format_version.
+    data(string_to_search) = |IF_AFF_{ objecttype  }_%|.
+    select obj_name from tadir where object = 'INTF' and obj_name like @string_to_search into table @data(intfs). "#EC CI_GENBUFF
 * take the highest number
-    DATA version_list TYPE STANDARD TABLE OF i.
-    LOOP AT intfs ASSIGNING FIELD-SYMBOL(<intf>).
-      DATA(intf_format_version) = get_format_version_of_intfname( CONV #( <intf> ) ).
-      APPEND intf_format_version TO version_list.
-    ENDLOOP.
-    SORT version_list DESCENDING.
-    IF lines( version_list ) > 0.
+    data version_list type standard table of i.
+    loop at intfs assigning field-symbol(<intf>).
+      data(intf_format_version) = get_format_version_of_intfname( conv #( <intf> ) ).
+      append intf_format_version to version_list.
+    endloop.
+    sort version_list descending.
+    if lines( version_list ) > 0.
       format_version = version_list[ 1 ].
       string_to_search = |*{ version_list[ 1 ] }|.
-      LOOP AT intfs ASSIGNING <intf> WHERE obj_name CP string_to_search.
+      loop at intfs assigning <intf> where obj_name cp string_to_search.
         intfname = <intf>.
-        EXIT.                                           "#EC CI_NOORDER
-      ENDLOOP.
-    ELSE.
+        exit.                                           "#EC CI_NOORDER
+      endloop.
+    else.
       intfname = |IF_AFF_{ objecttype  }_V1|.
       format_version = 1.
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD get_object_infos_by_objtype.
+  method get_object_infos_by_objtype.
     get_intfname_highest_version(
-      EXPORTING
+      exporting
         objecttype     = objecttype
-      IMPORTING
-        intfname       = DATA(intfname)
-        format_version = DATA(format_version)
+      importing
+        intfname       = data(intfname)
+        format_version = data(format_version)
     ).
-    IF objecttype = 'DOMA'.
+    if objecttype = 'DOMA'.
       intfname = 'ZIF_AFF_DOMA_V1'.
-    ENDIF.
-    DATA(examplename) = |Z_AFF_EXAMPLE_{ objecttype }|.
-    IF objecttype = 'NROB'.
+    endif.
+    data(examplename) = |Z_AFF_EXAMPLE_{ objecttype }|.
+    if objecttype = 'NROB'.
       examplename = 'Z_AFF_NR'.
-    ENDIF.
-    object = VALUE #( object_type = objecttype interface = intfname example = examplename format_version = format_version ).
-  ENDMETHOD.
+    endif.
+    object = value #( object_type = objecttype interface = intfname example = examplename format_version = format_version ).
+  endmethod.
 
-  METHOD get_object_infos_by_intfname.
-    SPLIT intfname AT '_' INTO TABLE DATA(splitted_intfname).
-    IF lines( splitted_intfname ) >= 3.
-      DATA(objecttype) = splitted_intfname[ 3 ].
-      DATA(format_version) = get_format_version_of_intfname( intfname ).
-      DATA(examplename) = |Z_AFF_EXAMPLE_{ objecttype }|.
-      IF objecttype = 'NROB'.
+  method get_object_infos_by_intfname.
+    split intfname at '_' into table data(splitted_intfname).
+    if lines( splitted_intfname ) >= 3.
+      data(objecttype) = splitted_intfname[ 3 ].
+      data(format_version) = get_format_version_of_intfname( intfname ).
+      data(examplename) = |Z_AFF_EXAMPLE_{ objecttype }|.
+      if objecttype = 'NROB'.
         examplename = 'Z_AFF_NR'.
-      ENDIF.
-      object = VALUE #( object_type = objecttype interface = intfname example = examplename format_version = format_version ).
-    ENDIF.
-  ENDMETHOD.
+      endif.
+      object = value #( object_type = objecttype interface = intfname example = examplename format_version = format_version ).
+    endif.
+  endmethod.
 
-  METHOD get_object_infos_by_exmplname.
-    IF examplename IS NOT INITIAL.
-      SPLIT examplename AT '_' INTO TABLE DATA(splitted_examplename).
-      DATA(objecttype) = to_upper( splitted_examplename[ lines( splitted_examplename ) ] ).
-      IF objecttype IS NOT INITIAL.
-        IF strlen( objecttype ) < 4.
-          RETURN.
-        ENDIF.
+  method get_object_infos_by_exmplname.
+    if examplename is not initial.
+      split examplename at '_' into table data(splitted_examplename).
+      data(objecttype) = to_upper( splitted_examplename[ lines( splitted_examplename ) ] ).
+      if objecttype is not initial.
+        if strlen( objecttype ) < 4.
+          return.
+        endif.
         get_intfname_highest_version(
-          EXPORTING
+          exporting
             objecttype     = objecttype
-          IMPORTING
-            intfname       = DATA(intfname)
-            format_version = DATA(format_version)
+          importing
+            intfname       = data(intfname)
+            format_version = data(format_version)
         ).
-        IF objecttype = 'NROB'.
+        if objecttype = 'NROB'.
           intfname = 'Z_AFF_NR'.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-    object = VALUE #( object_type = objecttype interface = intfname example = examplename format_version = format_version ).
-  ENDMETHOD.
+        endif.
+      endif.
+    endif.
+    object = value #( object_type = objecttype interface = intfname example = examplename format_version = format_version ).
+  endmethod.
 
-  METHOD replace_names_in_string.
-    DATA(string_content) = content_as_string.
-    LOOP AT replacing_table_string ASSIGNING FIELD-SYMBOL(<replace_string>).
-      FIND ALL OCCURRENCES OF <replace_string>-to_be_replaced IN string_content IGNORING CASE RESULTS DATA(table).
+  method replace_names_in_string.
+    data(string_content) = content_as_string.
+    loop at replacing_table_string assigning field-symbol(<replace_string>).
+      find all occurrences of <replace_string>-to_be_replaced in string_content ignoring case results data(table).
 *      replace all occurrences of <replace_string>-to_be_replaced in string_content with <replace_string>-replace_with ignoring case.
-      DATA(counter_replaced) = 0.
-      LOOP AT table ASSIGNING FIELD-SYMBOL(<finding>).
-        IF <finding>-offset > 0.
-          DATA(offset) = <finding>-offset + counter_replaced.
-          DATA(before_offset) = offset - 1.
-          DATA(char_before_offset) = to_lower( string_content+before_offset(1) ).
-        ELSE.
+      data(counter_replaced) = 0.
+      loop at table assigning field-symbol(<finding>).
+        if <finding>-offset > 0.
+          data(offset) = <finding>-offset + counter_replaced.
+          data(before_offset) = offset - 1.
+          data(char_before_offset) = to_lower( string_content+before_offset(1) ).
+        else.
           char_before_offset = ' '.
           offset = 0.
-        ENDIF.
-        IF NOT to_lower( char_before_offset ) EQ 'z'.
+        endif.
+        if not to_lower( char_before_offset ) eq 'z'.
 *          string_content = insert( val = string_content sub = 'z' off = offset ).
 *         make the object names to lower
-          REPLACE SECTION OFFSET offset LENGTH <finding>-length OF string_content WITH <replace_string>-replace_with.
+          replace section offset offset length <finding>-length of string_content with <replace_string>-replace_with.
           counter_replaced += 1.
-        ENDIF.
-      ENDLOOP.
-    ENDLOOP.
+        endif.
+      endloop.
+    endloop.
     content = string_content.
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD get_dynpro_value.
-    DATA dynpfields TYPE STANDARD TABLE OF dynpread.
-    APPEND VALUE #( fieldname = to_upper( fieldname ) ) TO dynpfields.
+  method get_dynpro_value.
+    data dynpfields type standard table of dynpread.
+    append value #( fieldname = to_upper( fieldname ) ) to dynpfields.
 
-    CALL FUNCTION 'DYNP_VALUES_READ'
-      EXPORTING
+    call function 'DYNP_VALUES_READ'
+      exporting
         dyname     = sy-repid
         dynumb     = sy-dynnr
-      TABLES
+      tables
         dynpfields = dynpfields
-      EXCEPTIONS
-        OTHERS     = 1.
+      exceptions
+        others     = 1.
 
-    IF sy-subrc = 0.
+    if sy-subrc = 0.
       fieldvalue = dynpfields[ 1 ]-fieldvalue.
-    ELSE.
-      CLEAR fieldvalue.
-    ENDIF.
+    else.
+      clear fieldvalue.
+    endif.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD set_value_help_result_to_field.
-    DATA: i_f4_result TYPE STANDARD TABLE OF ddshretval.
-    DATA: w_f4_result TYPE ddshretval.
-    DATA dynpfields TYPE STANDARD TABLE OF dynpread.
-    IF value_help_result_table IS NOT INITIAL.
-      CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
-        EXPORTING
+  method set_value_help_result_to_field.
+    data: i_f4_result type standard table of ddshretval.
+    data: w_f4_result type ddshretval.
+    data dynpfields type standard table of dynpread.
+    if value_help_result_table is not initial.
+      call function 'F4IF_INT_TABLE_VALUE_REQUEST'
+        exporting
           retfield        = 'P_PROG'
           value_org       = 'S'
-        TABLES
+        tables
           value_tab       = value_help_result_table
           return_tab      = i_f4_result
-        EXCEPTIONS
+        exceptions
           parameter_error = 1
           no_values_found = 2
-          OTHERS          = 3.
+          others          = 3.
 
-      IF sy-subrc = 0.
-        READ TABLE i_f4_result INTO w_f4_result INDEX 1.
+      if sy-subrc = 0.
+        read table i_f4_result into w_f4_result index 1.
 
-        IF sy-subrc = 0.
+        if sy-subrc = 0.
           chosen_value = w_f4_result-fieldval.
-          APPEND VALUE #( fieldname = fieldname  fieldvalue = w_f4_result-fieldval ) TO dynpfields.
-          CALL FUNCTION 'DYNP_VALUES_UPDATE'
-            EXPORTING
+          append value #( fieldname = fieldname  fieldvalue = w_f4_result-fieldval ) to dynpfields.
+          call function 'DYNP_VALUES_UPDATE'
+            exporting
               dyname     = sy-repid
               dynumb     = sy-dynnr
-            TABLES
+            tables
               dynpfields = dynpfields.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-  ENDMETHOD.
+        endif.
+      endif.
+    endif.
+  endmethod.
 
-  METHOD create_the_variable_dynamicaly.
-    DATA r_typedescr TYPE REF TO cl_abap_typedescr.
-    DATA r_elemdescr TYPE REF TO cl_abap_structdescr.
-    cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_typename RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
-    IF sy-subrc = 1.
-      DATA(class_typename) = replace( val = absolute_typename sub = '\INTERFACE=' with = '\CLASS=' ).
-      cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = class_typename RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
-      IF sy-subrc = 1.
-        INSERT |Type { absolute_typename } was not found. Either interface or type doesnt exist.| INTO TABLE report_log ##NO_TEXT.
-        RAISE EXCEPTION TYPE zcx_aff_tools.
-      ENDIF.
-    ENDIF.
+  method create_the_variable_dynamicaly.
+    data r_typedescr type ref to cl_abap_typedescr.
+    data r_elemdescr type ref to cl_abap_structdescr.
+    cl_abap_typedescr=>describe_by_name( exporting  p_name = absolute_typename receiving p_descr_ref = r_typedescr exceptions type_not_found = 1 ).
+    if sy-subrc = 1.
+      data(class_typename) = replace( val = absolute_typename sub = '\INTERFACE=' with = '\CLASS=' ).
+      cl_abap_typedescr=>describe_by_name( exporting  p_name = class_typename receiving p_descr_ref = r_typedescr exceptions type_not_found = 1 ).
+      if sy-subrc = 1.
+        insert |Type { absolute_typename } was not found. Either interface or type doesnt exist.| into table report_log ##NO_TEXT.
+        raise exception type zcx_aff_tools.
+      endif.
+    endif.
     r_elemdescr ?= r_typedescr.
-    DATA r_field TYPE REF TO data.
-    FIELD-SYMBOLS <field> TYPE any.
-    CREATE DATA r_field TYPE HANDLE r_elemdescr.
-    ASSIGN r_field->* TO <field>.
-    GET REFERENCE OF <field> INTO variable.
-  ENDMETHOD.
+    data r_field type ref to data.
+    field-symbols <field> type any.
+    create data r_field type handle r_elemdescr.
+    assign r_field->* to <field>.
+    get reference of <field> into variable.
+  endmethod.
 
-  METHOD get_table_with_all_githubtypes.
-    APPEND 'CHKC' TO type_table.
-    APPEND 'CHKO' TO type_table.
-    APPEND 'CHKV' TO type_table.
-    APPEND 'CLAS' TO type_table.
-    APPEND 'DDLS' TO type_table.
-    APPEND 'ENHO' TO type_table.
-    APPEND 'ENHS' TO type_table.
-    APPEND 'FUGR' TO type_table.
-    APPEND 'INTF' TO type_table.
-    APPEND 'NROB' TO type_table.
-    APPEND 'DDLX' TO type_table.
-    APPEND 'DOMA' TO type_table.
-  ENDMETHOD.
+  method get_table_with_all_githubtypes.
+    append 'CHKC' to type_table.
+    append 'CHKO' to type_table.
+    append 'CHKV' to type_table.
+    append 'CLAS' to type_table.
+    append 'DDLS' to type_table.
+    append 'ENHO' to type_table.
+    append 'ENHS' to type_table.
+    append 'FUGR' to type_table.
+    append 'INTF' to type_table.
+    append 'NROB' to type_table.
+    append 'DDLX' to type_table.
+    append 'DOMA' to type_table.
+  endmethod.
 
-  METHOD get_format_version_of_intfname.
-    SPLIT intfname  AT '_' INTO TABLE DATA(splitted_intfname).
-    DATA(last) = splitted_intfname[ lines( splitted_intfname ) ].
-    REPLACE ALL OCCURRENCES OF 'v' IN last WITH ''.
-    REPLACE ALL OCCURRENCES OF 'V' IN last WITH ''.
-    TRY.
-        DATA(regx) = '[[:alpha:]]+'.
+  method get_format_version_of_intfname.
+    split intfname  at '_' into table data(splitted_intfname).
+    data(last) = splitted_intfname[ lines( splitted_intfname ) ].
+    replace all occurrences of 'v' in last with ''.
+    replace all occurrences of 'V' in last with ''.
+    try.
+        data(regx) = '[[:alpha:]]+'.
 *      check if the token only contains digits
-        DATA(contains_chars) = xsdbool( count( val = last regex = regx ) > 0 ) ##REGEX_POSIX.
-        IF contains_chars = abap_false.
+        data(contains_chars) = xsdbool( count( val = last regex = regx ) > 0 ) ##REGEX_POSIX.
+        if contains_chars = abap_false.
           format_version = last.
-        ELSE.
-          INSERT |Formatversion couldnt be derived from interface { intfname }. Format version 1 was assumed.| INTO TABLE report_log ##NO_TEXT.
+        else.
+          insert |Formatversion couldnt be derived from interface { intfname }. Format version 1 was assumed.| into table report_log ##NO_TEXT.
           format_version = 1.
-        ENDIF.
-      CATCH cx_sy_conversion_no_number.
+        endif.
+      catch cx_sy_conversion_no_number.
         "if the intfname is not correct we use format_version 1
-        INSERT |Formatversion couldnt be derived from interface { intfname }. Format version 1 was assumed.| INTO TABLE report_log ##NO_TEXT.
+        insert |Formatversion couldnt be derived from interface { intfname }. Format version 1 was assumed.| into table report_log ##NO_TEXT.
         format_version = 1.
-    ENDTRY.
-  ENDMETHOD.
+    endtry.
+  endmethod.
 
-  METHOD get_schema_or_xslt_content.
-    IF p_intf IS INITIAL OR p_type IS INITIAL OR p_objtyp IS INITIAL.
-      INSERT `Please fill out all fields (interfacename, objecttype, abaptypename)` INTO TABLE report_log ##NO_TEXT.
-      CLEAR content.
-      RETURN.
-    ENDIF.
+  method get_schema_or_xslt_content.
+    if p_intf is initial or p_type is initial or p_objtyp is initial.
+      insert `Please fill out all fields (interfacename, objecttype, abaptypename)` into table report_log ##NO_TEXT.
+      clear content.
+      return.
+    endif.
 
-    DATA(mainobjtype) = p_objtyp.
-    IF p_objtyp = 'REPS' OR p_objtyp = 'FUNC'.
+    data(mainobjtype) = p_objtyp.
+    if p_objtyp = 'REPS' or p_objtyp = 'FUNC'.
       mainobjtype = 'FUGR'.
-    ELSEIF p_objtyp = 'INDX'.
+    elseif p_objtyp = 'INDX'.
       mainobjtype = 'TABL'.
-    ENDIF.
+    endif.
 
-    DATA(format_version) = get_format_version_of_intfname( CONV #( p_intf ) ).
-    DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( p_objtyp ) }-v{ format_version }.json| ##NO_TEXT.
+    data(format_version) = get_format_version_of_intfname( conv #( p_intf ) ).
+    data(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( p_objtyp ) }-v{ format_version }.json| ##NO_TEXT.
 
-    IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "we are not in test scenario
-      IF p_schema = abap_true.
-        writer = NEW zcl_aff_writer_json_schema( schema_id  = schemid format_version = format_version ).
-      ELSEIF p_xslt = abap_true.
-        writer = NEW zcl_aff_writer_xslt( ).
-      ENDIF.
-    ENDIF.
-    IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper."we are not in test scenario
-      generator = NEW lcl_generator_helper( writer ).
-    ENDIF.
-    content = get_content( absolute_typename = |\\INTERFACE={ p_intf }\\TYPE={ p_type }| interfacename = CONV #( p_intf ) ).
-  ENDMETHOD .
+    if writer is initial or writer is instance of zcl_aff_writer_json_schema or writer is instance of zcl_aff_writer_xslt. "we are not in test scenario
+      if p_schema = abap_true.
+        writer = new zcl_aff_writer_json_schema( schema_id  = schemid format_version = format_version ).
+      elseif p_xslt = abap_true.
+        writer = new zcl_aff_writer_xslt( ).
+      endif.
+    endif.
+    if generator is initial or generator is instance of lcl_generator_helper."we are not in test scenario
+      generator = new lcl_generator_helper( writer ).
+    endif.
+    content = get_content( absolute_typename = |\\INTERFACE={ p_intf }\\TYPE={ p_type }| interfacename = conv #( p_intf ) ).
+  endmethod .
 
-  METHOD get_content.
-    TRY.
-        DATA(type) = create_the_variable_dynamicaly( absolute_typename ).
-      CATCH zcx_aff_tools.
-        CLEAR content.
-        RETURN.
-    ENDTRY.
+  method get_content.
+    try.
+        data(type) = create_the_variable_dynamicaly( absolute_typename ).
+      catch zcx_aff_tools.
+        clear content.
+        return.
+    endtry.
     "type was succesfully created (else an exception in create_the_variable_dynamicaly( ) would be raised)
-    FIELD-SYMBOLS <field> TYPE any.
-    ASSIGN type->* TO <field>.
+    field-symbols <field> type any.
+    assign type->* to <field>.
     " getting the XSLT/Schema of the type
-    TRY.
+    try.
         content = generator->generate_type( <field> ).
-      CATCH zcx_aff_tools .
-        CLEAR content.
-        INSERT |The generator couldn't generate the schema/XSLT for type { absolute_typename }| INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-    ENDTRY.
+      catch zcx_aff_tools .
+        clear content.
+        insert |The generator couldn't generate the schema/XSLT for type { absolute_typename }| into table report_log ##NO_TEXT.
+        return.
+    endtry.
     "content was succesfully created ( else an exception would be raised)
     "check if the content is valid
-    DATA(is_valid) = writer->validate( source = content log = me->generator_log ).
-    IF is_valid = abap_false.
-      INSERT |ATTENTION: The created schema/xslt for type { absolute_typename } is not valid.| INTO TABLE report_log ##NO_TEXT.
-    ENDIF.
+    data(is_valid) = writer->validate( source = content log = me->generator_log ).
+    if is_valid = abap_false.
+      insert |ATTENTION: The created schema/xslt for type { absolute_typename } is not valid.| into table report_log ##NO_TEXT.
+    endif.
 
 *    DATA(generator_log) = NEW zcl_aff_log( ).
     generator_log->join( generator->get_log( ) ).
@@ -948,332 +948,332 @@ CLASS lcl_generator IMPLEMENTATION.
 *      ENDIF.
 *    ENDLOOP.
 *    me->generator_log->join( generator_log ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD create_schema_xslt_zip.
-    r_zip = NEW cl_abap_zip( ).
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    TRY.
-        DATA(content_as_xstring) = text_handler->if_aff_content_handler~serialize( content ).
-      CATCH zcx_aff_tools.
-        CLEAR r_zip.
-        INSERT `Schema/Xslt could not be created. Error when serializing string to xstring` INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-    ENDTRY.
-    DATA(filename) = |{ to_lower( p_objtyp ) }_schema.txt| ##NO_TEXT.
-    IF p_xslt = abap_true.
+  method create_schema_xslt_zip.
+    r_zip = new cl_abap_zip( ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    try.
+        data(content_as_xstring) = text_handler->if_aff_content_handler~serialize( content ).
+      catch zcx_aff_tools.
+        clear r_zip.
+        insert `Schema/Xslt could not be created. Error when serializing string to xstring` into table report_log ##NO_TEXT.
+        return.
+    endtry.
+    data(filename) = |{ to_lower( p_objtyp ) }_schema.txt| ##NO_TEXT.
+    if p_xslt = abap_true.
       filename = |{ to_lower( p_objtyp ) }_xslt.txt| ##NO_TEXT.
-    ENDIF.
+    endif.
     r_zip->add( name    = |{ filename }|
                 content = content_as_xstring ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD print_logs.
-    IF lines( report_log ) > 0.
-      WRITE: / `Messages of the report:` ##NO_TEXT.
-      LOOP AT report_log ASSIGNING FIELD-SYMBOL(<log_msg>).
-        WRITE: / <log_msg>.
-      ENDLOOP.
-    ENDIF.
+  method print_logs.
+    if lines( report_log ) > 0.
+      write: / `Messages of the report:` ##NO_TEXT.
+      loop at report_log assigning field-symbol(<log_msg>).
+        write: / <log_msg>.
+      endloop.
+    endif.
 
-    IF lines( generator_log->get_messages( ) ) > 0.
-      SKIP 1.
-      WRITE: / `Messages schema/ST Generator:` ##NO_TEXT.
-      LOOP AT generator_log->get_messages( ) ASSIGNING FIELD-SYMBOL(<WRITER_log_message>).
-        WRITE: / |{ <WRITER_log_message>-type } { <WRITER_log_message>-component_name WIDTH = 40 ALIGN = LEFT PAD = ' ' } { <WRITER_log_message>-text }|.
-      ENDLOOP.
-    ENDIF.
+    if lines( generator_log->get_messages( ) ) > 0.
+      skip 1.
+      write: / `Messages schema/ST Generator:` ##NO_TEXT.
+      loop at generator_log->get_messages( ) assigning field-symbol(<WRITER_log_message>).
+        write: / |{ <WRITER_log_message>-type } { <WRITER_log_message>-component_name width = 40 align = left pad = ' ' } { <WRITER_log_message>-text }|.
+      endloop.
+    endif.
 
-    IF lines(  aff_framework_log->get_messages( ) ) > 0.
-      SKIP 1.
-      WRITE: / `Messages of the AFF Object Handlers:` ##NO_TEXT.
-      LOOP AT aff_framework_log->get_messages( ) ASSIGNING FIELD-SYMBOL(<framework_log_message>).
-        IF NOT ( <framework_log_message>-message-msgid = 'SAFF_CORE' AND
-               ( <framework_log_message>-message-msgno = '026' ) OR
+    if lines(  aff_framework_log->get_messages( ) ) > 0.
+      skip 1.
+      write: / `Messages of the AFF Object Handlers:` ##NO_TEXT.
+      loop at aff_framework_log->get_messages( ) assigning field-symbol(<framework_log_message>).
+        if not ( <framework_log_message>-message-msgid = 'SAFF_CORE' and
+               ( <framework_log_message>-message-msgno = '026' ) or
                ( <framework_log_message>-message-msgno = '027' ) ).
-          WRITE: / |{ <framework_log_message>-type } { <framework_log_message>-text }|.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
-  ENDMETHOD.
+          write: / |{ <framework_log_message>-type } { <framework_log_message>-text }|.
+        endif.
+      endloop.
+    endif.
+  endmethod.
 
-  METHOD object_as_string.
-    IF object-devclass IS NOT INITIAL.
-      DATA(package) = |{ object-devclass WIDTH = 20 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
-    ENDIF.
-    DATA(objname) = |{ object-obj_name WIDTH = 30 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
-    DATA(objtype) = |{ object-obj_type WIDTH = 4 ALIGN = LEFT PAD = ' ' }|.
+  method object_as_string.
+    if object-devclass is not initial.
+      data(package) = |{ object-devclass width = 20 align = left pad = ' ' }| ##NUMBER_OK.
+    endif.
+    data(objname) = |{ object-obj_name width = 30 align = left pad = ' ' }| ##NUMBER_OK.
+    data(objtype) = |{ object-obj_type width = 4 align = left pad = ' ' }|.
     result = |{ package }{ objname } { objtype }|.
 
-    IF object-sub_name IS NOT INITIAL AND object-sub_type IS NOT INITIAL.
-      DATA(subname) = |{ object-sub_name WIDTH = 50 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
-      DATA(subtype) = |{ object-sub_type WIDTH = 4 ALIGN = LEFT PAD = ' ' }|.
+    if object-sub_name is not initial and object-sub_type is not initial.
+      data(subname) = |{ object-sub_name width = 50 align = left pad = ' ' }| ##NUMBER_OK.
+      data(subtype) = |{ object-sub_type width = 4 align = left pad = ' ' }|.
       result = |{ package }{ objname } { objtype } { subname } { subtype }|.
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
 
-  METHOD start_of_selection.
+  method start_of_selection.
 
     p_objtyp = to_upper( p_objtyp ).
     p_intf   = to_upper( p_intf ).
     p_type   = to_upper( p_type ).
     p_examp  = to_upper( p_examp ).
 
-    IF p_xslt = abap_true OR p_schema = abap_true.
+    if p_xslt = abap_true or p_schema = abap_true.
       "serialize ST or schema
       xslt_schema_content  = get_schema_or_xslt_content( ).
-      IF p_disk = abap_true.
+      if p_disk = abap_true.
         zip = create_schema_xslt_zip( xslt_schema_content ).
-        CLEAR xslt_schema_content.
-      ENDIF.
-    ELSEIF p_repo = abap_true.
+        clear xslt_schema_content.
+      endif.
+    elseif p_repo = abap_true.
       "serialize one repo folder
-      generate_repo_folder( VALUE #( ( object_type  = p_objtyp interface =  p_intf example =  p_examp ) ) ).
-    ELSEIF p_multre = abap_true.
+      generate_repo_folder( value #( ( object_type  = p_objtyp interface =  p_intf example =  p_examp ) ) ).
+    elseif p_multre = abap_true.
       "    serialize multiple repo folders
-      DATA objects TYPE aff_objects_table.
-      LOOP AT p_multob ASSIGNING FIELD-SYMBOL(<object>).
-        DATA(object1) = get_object_infos_by_objtype( CONV #( <object>-low ) ).
-        APPEND object1 TO objects.
-      ENDLOOP.
+      data objects type aff_objects_table.
+      loop at p_multob assigning field-symbol(<object>).
+        data(object1) = get_object_infos_by_objtype( conv #( <object>-low ) ).
+        append object1 to objects.
+      endloop.
 
       generate_repo_folder( objects ).
-    ELSEIF p_whole = abap_true.
+    elseif p_whole = abap_true.
       "write complete file-formats folder
-      DATA(all_aff_objects) = get_table_with_all_githubtypes( ).
-      DATA aff_objects TYPE aff_objects_table.
-      LOOP AT all_aff_objects ASSIGNING FIELD-SYMBOL(<aff_object>).
-        DATA(aff_object) = get_object_infos_by_objtype( <aff_object> ).
-        APPEND aff_object TO aff_objects.
-      ENDLOOP.
+      data(all_aff_objects) = get_table_with_all_githubtypes( ).
+      data aff_objects type aff_objects_table.
+      loop at all_aff_objects assigning field-symbol(<aff_object>).
+        data(aff_object) = get_object_infos_by_objtype( <aff_object> ).
+        append aff_object to aff_objects.
+      endloop.
 
       generate_repo_folder( objects  = aff_objects whole_aff_folder = abap_true ).
-    ENDIF.
+    endif.
 
-    IF xslt_schema_content IS NOT INITIAL. "show it in the console
+    if xslt_schema_content is not initial. "show it in the console
       gui_frontend_service->write( xslt_schema_content ).
       gui_frontend_service->display( ).
-    ELSEIF zip IS NOT INITIAL. "write it to disk
-      DATA(zip_archive) = zip->save( ).
-      DATA(zipname) = to_lower( p_objtyp ).
-      IF p_multre = abap_true OR p_whole = abap_true.
+    elseif zip is not initial. "write it to disk
+      data(zip_archive) = zip->save( ).
+      data(zipname) = to_lower( p_objtyp ).
+      if p_multre = abap_true or p_whole = abap_true.
         zipname = `file-formats` ##NO_TEXT.
-      ENDIF.
+      endif.
       write_to_zip( zip_archive = zip_archive zipname = zipname ).
-    ENDIF.
+    endif.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD on_value_request_for_type.
-    DATA(typename_value) = get_dynpro_value( fieldname  = 'P_TYPE' ).
+  method on_value_request_for_type.
+    data(typename_value) = get_dynpro_value( fieldname  = 'P_TYPE' ).
     typename_value = to_upper( typename_value ) .
 
-    DATA(intfname_value) = get_dynpro_value( fieldname  = 'P_INTF' ).
+    data(intfname_value) = get_dynpro_value( fieldname  = 'P_INTF' ).
     intfname_value = to_upper( intfname_value ) .
 
-    IF typename_value IS INITIAL AND intfname_value IS INITIAL.
-      RETURN.
-    ELSEIF typename_value IS INITIAL AND intfname_value IS NOT INITIAL.
-      SELECT cmpname FROM seocompo  WHERE clsname = @intfname_value AND cmptype = 3 INTO TABLE @DATA(value_help_result)
-      UP TO 30 ROWS  BYPASSING BUFFER ##NUMBER_OK.      "#EC CI_NOORDER
-    ELSE. "both are filled
-      DATA(typename_with_percent) = |%{ to_upper( typename_value ) }%|.
-      REPLACE ALL OCCURRENCES OF '*' IN typename_with_percent WITH `%`.
-      SELECT cmpname FROM seocompo  WHERE clsname = @intfname_value AND cmptype = 3 AND cmpname LIKE @typename_with_percent
-        INTO TABLE @value_help_result UP TO 30 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
-    ENDIF.
+    if typename_value is initial and intfname_value is initial.
+      return.
+    elseif typename_value is initial and intfname_value is not initial.
+      select cmpname from seocompo  where clsname = @intfname_value and cmptype = 3 into table @data(value_help_result)
+      up to 30 rows  bypassing buffer ##NUMBER_OK.      "#EC CI_NOORDER
+    else. "both are filled
+      data(typename_with_percent) = |%{ to_upper( typename_value ) }%|.
+      replace all occurrences of '*' in typename_with_percent with `%`.
+      select cmpname from seocompo  where clsname = @intfname_value and cmptype = 3 and cmpname like @typename_with_percent
+        into table @value_help_result up to 30 rows bypassing buffer ##NUMBER_OK. "#EC CI_NOORDER
+    endif.
 
     set_value_help_result_to_field( fieldname = 'P_TYPE' value_help_result_table = value_help_result ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD on_value_request_for_example.
-    DATA(example_value) = get_dynpro_value( fieldname  =  `P_EXAMP` ).
+  method on_value_request_for_example.
+    data(example_value) = get_dynpro_value( fieldname  =  `P_EXAMP` ).
     example_value = to_upper( example_value ) .
 
-    DATA(objtype_value) = get_dynpro_value( fieldname  = 'P_OBJTYP' ).
+    data(objtype_value) = get_dynpro_value( fieldname  = 'P_OBJTYP' ).
     objtype_value = to_upper( objtype_value ) .
 
-    IF example_value IS INITIAL AND objtype_value IS NOT INITIAL.
-      SELECT obj_name FROM tadir WHERE object = @objtype_value AND devclass = 'TEST_AFF_EXAMPLES' INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
-    ELSEIF example_value IS NOT INITIAL AND objtype_value IS NOT INITIAL.
+    if example_value is initial and objtype_value is not initial.
+      select obj_name from tadir where object = @objtype_value and devclass = 'TEST_AFF_EXAMPLES' into table @data(value_help_result_table) up to 50 rows bypassing buffer ##NUMBER_OK. "#EC CI_NOORDER
+    elseif example_value is not initial and objtype_value is not initial.
 *  both are filled
 * The user does not have to type "*" on beginning and ending of the obj_name pattern, we add it automatically
-      DATA(example_with_percent) = |%{ to_upper( example_value ) }%|.
-      REPLACE ALL OCCURRENCES OF '*' IN example_with_percent WITH `%`.
+      data(example_with_percent) = |%{ to_upper( example_value ) }%|.
+      replace all occurrences of '*' in example_with_percent with `%`.
 
       " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
-      SELECT obj_name FROM tadir WHERE object = @objtype_value AND obj_name LIKE @example_with_percent INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER                         "#EC CI_NOORDER
-    ELSE.
+      select obj_name from tadir where object = @objtype_value and obj_name like @example_with_percent into table @value_help_result_table up to 50 rows bypassing buffer ##NUMBER_OK. "#EC CI_NOORDER                         "#EC CI_NOORDER
+    else.
 *  both are initial
-      SELECT obj_name FROM tadir WHERE devclass = 'TEST_AFF_EXAMPLES' INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
-    ENDIF.
+      select obj_name from tadir where devclass = 'TEST_AFF_EXAMPLES' into table @value_help_result_table up to 50 rows bypassing buffer ##NUMBER_OK. "#EC CI_NOORDER
+    endif.
 
-    DATA(example1) = set_value_help_result_to_field( fieldname = `P_EXAMP` value_help_result_table = value_help_result_table ).
-    IF example1 IS NOT INITIAL.
-      DATA(object_infos) = get_object_infos_by_exmplname( example1 ).
+    data(example1) = set_value_help_result_to_field( fieldname = `P_EXAMP` value_help_result_table = value_help_result_table ).
+    if example1 is not initial.
+      data(object_infos) = get_object_infos_by_exmplname( example1 ).
 
       set_object_infos_in_ui( object_infos ).
       p_intf = object_infos-interface.
       p_objtyp = object_infos-object_type.
       p_examp = object_infos-example.
-    ENDIF.
+    endif.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD modify_screen.
-    TYPES: screen_name  TYPE c LENGTH 132,
-           screen_names TYPE STANDARD TABLE OF screen_name.
-    DATA hidden_elements TYPE screen_names.
-    CLEAR hidden_elements.
+  method modify_screen.
+    types: screen_name  type c length 132,
+           screen_names type standard table of screen_name.
+    data hidden_elements type screen_names.
+    clear hidden_elements.
 
-    IF p_schema = abap_true OR p_xslt = abap_true.
-      APPEND 'P_EXAMP' TO hidden_elements.
-      APPEND 'P_MULTOB' TO hidden_elements.
-      APPEND 'P_READM' TO hidden_elements.
-    ENDIF.
-    IF p_repo = abap_true.
-      APPEND 'P_TYPE' TO hidden_elements.
-      APPEND 'P_MULTOB' TO hidden_elements.
-      APPEND 'P_CONSOL' TO hidden_elements.
-      APPEND 'P_DISK' TO hidden_elements.
-    ENDIF.
-    IF p_multre = abap_true OR p_whole = abap_true.
-      APPEND 'P_OBJTYP' TO hidden_elements.
-      APPEND 'P_EXAMP' TO hidden_elements.
-      APPEND 'P_TYPE' TO hidden_elements.
-      APPEND 'P_INTF' TO hidden_elements.
-      APPEND 'P_CONSOL' TO hidden_elements.
-      APPEND 'P_DISK' TO hidden_elements.
-      IF p_whole = abap_true.
-        APPEND 'P_MULTOB' TO hidden_elements.
-      ENDIF.
-    ENDIF.
+    if p_schema = abap_true or p_xslt = abap_true.
+      append 'P_EXAMP' to hidden_elements.
+      append 'P_MULTOB' to hidden_elements.
+      append 'P_READM' to hidden_elements.
+    endif.
+    if p_repo = abap_true.
+      append 'P_TYPE' to hidden_elements.
+      append 'P_MULTOB' to hidden_elements.
+      append 'P_CONSOL' to hidden_elements.
+      append 'P_DISK' to hidden_elements.
+    endif.
+    if p_multre = abap_true or p_whole = abap_true.
+      append 'P_OBJTYP' to hidden_elements.
+      append 'P_EXAMP' to hidden_elements.
+      append 'P_TYPE' to hidden_elements.
+      append 'P_INTF' to hidden_elements.
+      append 'P_CONSOL' to hidden_elements.
+      append 'P_DISK' to hidden_elements.
+      if p_whole = abap_true.
+        append 'P_MULTOB' to hidden_elements.
+      endif.
+    endif.
 
-    LOOP AT SCREEN.
-      DATA(element_name) = screen-name.
+    loop at screen.
+      data(element_name) = screen-name.
 *        %_UI_INPUT_%_APP_%-TEXT
-      REPLACE ALL OCCURRENCES OF '%_' IN element_name WITH ``.
-      REPLACE ALL OCCURRENCES OF '_APP_%-TEXT' IN element_name WITH ``.
-      REPLACE ALL OCCURRENCES OF '_APP_%-OPTI_PUSH' IN element_name WITH ``.
-      REPLACE ALL OCCURRENCES OF '_APP_%-VALU_PUSH' IN element_name WITH ``.
-      REPLACE ALL OCCURRENCES OF '-LOW' IN element_name WITH ``.
+      replace all occurrences of '%_' in element_name with ``.
+      replace all occurrences of '_APP_%-TEXT' in element_name with ``.
+      replace all occurrences of '_APP_%-OPTI_PUSH' in element_name with ``.
+      replace all occurrences of '_APP_%-VALU_PUSH' in element_name with ``.
+      replace all occurrences of '-LOW' in element_name with ``.
 
-      FIND FIRST OCCURRENCE OF REGEX element_name IN TABLE hidden_elements ##REGEX_POSIX. "or line exists
-      IF sy-subrc = 0.
+      find first occurrence of regex element_name in table hidden_elements ##REGEX_POSIX. "or line exists
+      if sy-subrc = 0.
         screen-active = 0.
-        MODIFY SCREEN.
-      ELSE.
+        modify screen.
+      else.
         screen-active = 1.
-        MODIFY SCREEN.
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
+        modify screen.
+      endif.
+    endloop.
+  endmethod.
 
-  METHOD on_value_request_for_objtype.
-    DATA(objtype_value) = get_dynpro_value( fieldname  =  `P_OBJTYP` ).
+  method on_value_request_for_objtype.
+    data(objtype_value) = get_dynpro_value( fieldname  =  `P_OBJTYP` ).
     objtype_value = to_upper( objtype_value ) .
-    IF objtype_value IS INITIAL.
+    if objtype_value is initial.
 *  put all Types into the value help
-      SELECT DISTINCT object FROM e071 INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ORDER BY object ##NUMBER_OK. "#EC CI_NOWHERE
-      LOOP AT get_table_with_all_githubtypes( ) ASSIGNING FIELD-SYMBOL(<type>).
-        INSERT <type> INTO value_help_result_table INDEX 1.
-      ENDLOOP.
-    ELSE.
+      select distinct object from e071 into table @data(value_help_result_table) up to 50 rows bypassing buffer order by object ##NUMBER_OK. "#EC CI_NOWHERE
+      loop at get_table_with_all_githubtypes( ) assigning field-symbol(<type>).
+        insert <type> into value_help_result_table index 1.
+      endloop.
+    else.
 * The user does not have to type "*" on beginning and ending of the obj type pattern, we add it automatically
-      DATA(objtype_with_percent) = |%{ to_upper( objtype_value ) }%|.
-      REPLACE ALL OCCURRENCES OF '*' IN objtype_with_percent WITH `%`.
+      data(objtype_with_percent) = |%{ to_upper( objtype_value ) }%|.
+      replace all occurrences of '*' in objtype_with_percent with `%`.
 
       " Retrieve object which match the search pattern entered in UI Element objtype
-      SELECT DISTINCT object FROM e071 INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER WHERE object LIKE @objtype_with_percent ##NUMBER_OK. "#EC CI_NOORDER "#EC CI_NOFIELD
-    ENDIF.
+      select distinct object from e071 into table @value_help_result_table up to 30 rows bypassing buffer where object like @objtype_with_percent ##NUMBER_OK. "#EC CI_NOORDER "#EC CI_NOFIELD
+    endif.
 
-    DATA(objtype) = set_value_help_result_to_field(  fieldname = `P_OBJTYP` value_help_result_table = value_help_result_table ).
+    data(objtype) = set_value_help_result_to_field(  fieldname = `P_OBJTYP` value_help_result_table = value_help_result_table ).
 
-    IF objtype IS NOT INITIAL.
-      DATA(object_infos) = get_object_infos_by_objtype( objtype ).
+    if objtype is not initial.
+      data(object_infos) = get_object_infos_by_objtype( objtype ).
 
       set_object_infos_in_ui( object_infos ).
       p_intf = object_infos-interface.
       p_objtyp = object_infos-object_type.
       p_examp = object_infos-example.
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD on_value_request_for_intfname.
-    DATA(intfname_value) = get_dynpro_value( fieldname  =  `P_INTF` ).
+  method on_value_request_for_intfname.
+    data(intfname_value) = get_dynpro_value( fieldname  =  `P_INTF` ).
     intfname_value = to_upper( intfname_value ) .
 
-    DATA(objtype_value) = get_dynpro_value( fieldname  =  `P_OBJTYP` ).
+    data(objtype_value) = get_dynpro_value( fieldname  =  `P_OBJTYP` ).
     objtype_value = to_upper( objtype_value ) .
 
-    IF intfname_value IS INITIAL.
-      DATA search_pattern TYPE string.
+    if intfname_value is initial.
+      data search_pattern type string.
       search_pattern = |IF_AFF%{ objtype_value }%|.
 *  put all IF_AFF* Interfaces into the value help
-      SELECT obj_name  FROM tadir WHERE obj_name LIKE @search_pattern AND devclass <> `SAFF_CORE` AND object = `INTF`
-      INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
-    ELSE.
+      select obj_name  from tadir where obj_name like @search_pattern and devclass <> `SAFF_CORE` and object = `INTF`
+      into table @data(value_help_result_table) up to 50 rows bypassing buffer ##NUMBER_OK. "#EC CI_NOORDER
+    else.
 * The user does not have to type "*" on beginning and ending of the obj_name pattern, we add it automatically
-      DATA(intfname_with_percent) = |%{ to_upper( intfname_value ) }%|.
-      REPLACE ALL OCCURRENCES OF '*' IN intfname_with_percent WITH `%`.
+      data(intfname_with_percent) = |%{ to_upper( intfname_value ) }%|.
+      replace all occurrences of '*' in intfname_with_percent with `%`.
 
       " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
-      SELECT obj_name FROM tadir INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER
-      WHERE object = `INTF` AND obj_name LIKE @intfname_with_percent ORDER BY obj_name ##NUMBER_OK. "#EC CI_NOORDER
-    ENDIF.
+      select obj_name from tadir into table @value_help_result_table up to 30 rows bypassing buffer
+      where object = `INTF` and obj_name like @intfname_with_percent order by obj_name ##NUMBER_OK. "#EC CI_NOORDER
+    endif.
 
-    DATA(intfname1) = set_value_help_result_to_field( fieldname = `P_INTF` value_help_result_table = value_help_result_table ).
+    data(intfname1) = set_value_help_result_to_field( fieldname = `P_INTF` value_help_result_table = value_help_result_table ).
 
-    IF intfname1 IS NOT INITIAL.
-      DATA(object_infos) = get_object_infos_by_intfname( intfname1 ).
+    if intfname1 is not initial.
+      data(object_infos) = get_object_infos_by_intfname( intfname1 ).
 
       set_object_infos_in_ui( object_infos ).
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD at_selection_screen.
-    IF p_objtyp IS NOT INITIAL AND p_intf IS INITIAL AND p_examp IS INITIAL.
+  method at_selection_screen.
+    if p_objtyp is not initial and p_intf is initial and p_examp is initial.
       p_objtyp = to_upper( p_objtyp ).
-      DATA(objinfos) = get_object_infos_by_objtype( CONV #( p_objtyp ) ).
+      data(objinfos) = get_object_infos_by_objtype( conv #( p_objtyp ) ).
       set_object_infos_in_ui( objinfos ).
       p_intf = objinfos-interface.
       p_examp = objinfos-example.
-    ELSEIF p_objtyp IS INITIAL AND p_intf IS NOT INITIAL AND p_examp IS INITIAL.
+    elseif p_objtyp is initial and p_intf is not initial and p_examp is initial.
       p_intf = to_upper( p_intf ).
-      objinfos = get_object_infos_by_intfname( CONV #( p_intf ) ).
+      objinfos = get_object_infos_by_intfname( conv #( p_intf ) ).
       set_object_infos_in_ui( objinfos ).
       p_objtyp = objinfos-object_type.
       p_examp = objinfos-example.
-    ELSEIF p_objtyp IS  INITIAL AND p_intf IS INITIAL AND p_examp IS NOT INITIAL.
+    elseif p_objtyp is  initial and p_intf is initial and p_examp is not initial.
       p_examp = to_upper( p_examp ).
-      objinfos = get_object_infos_by_exmplname( CONV #( p_examp ) ).
+      objinfos = get_object_infos_by_exmplname( conv #( p_examp ) ).
       set_object_infos_in_ui( objinfos ).
       p_intf = objinfos-interface.
       p_objtyp = objinfos-object_type.
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD constructor.
-    IF generator IS SUPPLIED.
+  method constructor.
+    if generator is supplied.
       me->generator = generator.
-    ENDIF.
-    IF writer IS SUPPLIED.
+    endif.
+    if writer is supplied.
       me->writer = writer.
-    ENDIF.
-    IF aff_factory IS SUPPLIED.
+    endif.
+    if aff_factory is supplied.
       me->aff_factory = aff_factory.
-    ENDIF.
-    generator_log = NEW zcl_aff_log( ).
-    aff_framework_log = NEW cl_aff_log( ).
-    IF i_gui_frontend IS SUPPLIED.
+    endif.
+    generator_log = new zcl_aff_log( ).
+    aff_framework_log = new cl_aff_log( ).
+    if i_gui_frontend is supplied.
       gui_frontend_service = i_gui_frontend.
-    ELSE.
-      gui_frontend_service = NEW lcl_gui_frontend( ).
-    ENDIF.
-  ENDMETHOD.
+    else.
+      gui_frontend_service = new lcl_gui_frontend( ).
+    endif.
+  endmethod.
 
-  METHOD set_parameters.
+  method set_parameters.
     p_schema = i_schema.
     p_xslt  =      i_xslt  .
     p_repo  =      i_repo  .
@@ -1287,172 +1287,172 @@ CLASS lcl_generator IMPLEMENTATION.
     p_disk  =      i_disk  .
     p_readm  =      i_readm  .
 
-    DATA object LIKE LINE OF p_multob.
-    LOOP AT i_multob ASSIGNING FIELD-SYMBOL(<type>).
+    data object like line of p_multob.
+    loop at i_multob assigning field-symbol(<type>).
       object-option = 'EQ'.
       object-sign = 'I'.
       object-low = <type>.
-      APPEND object TO p_multob.
-    ENDLOOP.
-  ENDMETHOD.
+      append object to p_multob.
+    endloop.
+  endmethod.
 
-  METHOD set_schema_test_content.
+  method set_schema_test_content.
     me->schema_test_content = schema_test_content.
-  ENDMETHOD.
+  endmethod.
 
-ENDCLASS.
+endclass.
 
-CLASS ltc_generator_double DEFINITION FINAL FOR TESTING.
-  PUBLIC SECTION .
-    INTERFACES lif_generator.
-    METHODS constructor
-      IMPORTING
-        log_to_return                TYPE REF TO zif_aff_log
-        generate_type_will_raise_err TYPE abap_bool OPTIONAL.
-    DATA log_to_return TYPE REF TO zif_aff_log.
-    DATA generate_type_will_raise_err TYPE abap_bool.
-ENDCLASS.
-CLASS ltc_generator_double IMPLEMENTATION.
+class ltc_generator_double definition final for testing.
+  public section .
+    interfaces lif_generator.
+    methods constructor
+      importing
+        log_to_return                type ref to zif_aff_log
+        generate_type_will_raise_err type abap_bool optional.
+    data log_to_return type ref to zif_aff_log.
+    data generate_type_will_raise_err type abap_bool.
+endclass.
+class ltc_generator_double implementation.
 
-  METHOD lif_generator~generate_type.
-    IF generate_type_will_raise_err = abap_true.
-      RAISE EXCEPTION TYPE zcx_aff_tools.
-    ELSE.
-      DATA(type_description) = cl_abap_typedescr=>describe_by_data( data ).
-      DATA(absolutename) = type_description->absolute_name.
+  method lif_generator~generate_type.
+    if generate_type_will_raise_err = abap_true.
+      raise exception type zcx_aff_tools.
+    else.
+      data(type_description) = cl_abap_typedescr=>describe_by_data( data ).
+      data(absolutename) = type_description->absolute_name.
 *   \INTERFACE=IF_AFF_CHKC_V1\TYPE=TY_MAIN
-      SPLIT absolutename AT '\' INTO TABLE DATA(splitted).
-      DATA(objectpart) = splitted[ 2 ].
-      REPLACE 'INTERFACE=' IN objectpart WITH ''.
-      SPLIT objectpart AT '_' INTO TABLE DATA(splitted2).
-      DATA(objecttype) = splitted2[ lines( splitted2 ) - 1 ].
-      result = VALUE #(
+      split absolutename at '\' into table data(splitted).
+      data(objectpart) = splitted[ 2 ].
+      replace 'INTERFACE=' in objectpart with ''.
+      split objectpart at '_' into table data(splitted2).
+      data(objecttype) = splitted2[ lines( splitted2 ) - 1 ].
+      result = value #(
           ( |Test ST/Schema for { objecttype }| )
       ).
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD lif_generator~get_log.
+  method lif_generator~get_log.
     log = log_to_return.
-  ENDMETHOD.
+  endmethod.
 
-  METHOD constructor.
+  method constructor.
     me->log_to_return = log_to_return.
     me->generate_type_will_raise_err = generate_type_will_raise_err.
-  ENDMETHOD.
+  endmethod.
 
-ENDCLASS.
+endclass.
 
 
-CLASS ltc_generator DEFINITION FINAL FOR TESTING
-  DURATION SHORT RISK LEVEL HARMLESS.
+class ltc_generator definition final for testing
+  duration short risk level harmless.
 
-  PRIVATE SECTION.
-    DATA cut TYPE REF TO lcl_generator.
-    DATA generator_double TYPE REF TO lif_generator.
-    DATA writer_double TYPE REF TO zif_aff_writer.
-    DATA writer_log TYPE REF TO zcl_aff_log.
-    DATA generator_log TYPE REF TO zcl_aff_log.
-    DATA aff_factory_double TYPE REF TO if_aff_factory.
-    DATA file_handler_double TYPE REF TO if_aff_object_file_handler.
-    DATA expected_log_messages TYPE zif_aff_log=>tt_log_out.
-    DATA expected_report_log TYPE stringtab.
-    DATA gui_frontend TYPE REF TO ltc_gui_frontend.
+  private section.
+    data cut type ref to lcl_generator.
+    data generator_double type ref to lif_generator.
+    data writer_double type ref to zif_aff_writer.
+    data writer_log type ref to zcl_aff_log.
+    data generator_log type ref to zcl_aff_log.
+    data aff_factory_double type ref to if_aff_factory.
+    data file_handler_double type ref to if_aff_object_file_handler.
+    data expected_log_messages type zif_aff_log=>tt_log_out.
+    data expected_report_log type stringtab.
+    data gui_frontend type ref to ltc_gui_frontend.
 
-    CONSTANTS c_aff_example_intf TYPE string VALUE 'AFF_EXAMPLE_INTF' ##NO_TEXT.
-    CONSTANTS c_aff_example_intf_nspace TYPE string VALUE '/NAMESPACE/AFF_EXAMPLE_INTF' ##NO_TEXT.
-    CONSTANTS c_example_intf_package TYPE string VALUE 'TEST_AFF_EXAMPLES' ##NO_TEXT.
-    CONSTANTS c_intf TYPE string VALUE 'IF_AFF_INTF_V1' ##NO_TEXT.
-    CONSTANTS c_intf_w_namespace TYPE string VALUE '/NAMESP/IF_AFF_INTF_V1' ##NO_TEXT.
+    constants c_aff_example_intf type string value 'AFF_EXAMPLE_INTF' ##NO_TEXT.
+    constants c_aff_example_intf_nspace type string value '/NAMESPACE/AFF_EXAMPLE_INTF' ##NO_TEXT.
+    constants c_example_intf_package type string value 'TEST_AFF_EXAMPLES' ##NO_TEXT.
+    constants c_intf type string value 'IF_AFF_INTF_V1' ##NO_TEXT.
+    constants c_intf_w_namespace type string value '/NAMESP/IF_AFF_INTF_V1' ##NO_TEXT.
 
-    METHODS setup.
+    methods setup.
 
-    METHODS configure_file_handler
-      IMPORTING objects TYPE if_aff_object_file_handler=>tt_objects
-      RAISING
+    methods configure_file_handler
+      importing objects type if_aff_object_file_handler=>tt_objects
+      raising
                 zcx_aff_tools.
 
-    METHODS assert_file_content
-      IMPORTING file_name_tab TYPE stringtab
-                zip           TYPE REF TO cl_abap_zip
-      RAISING
+    methods assert_file_content
+      importing file_name_tab type stringtab
+                zip           type ref to cl_abap_zip
+      raising
                 zcx_aff_tools .
 
-    METHODS insert_objects_into_tadir IMPORTING objects TYPE if_aff_object_file_handler=>tt_objects.
+    methods insert_objects_into_tadir importing objects type if_aff_object_file_handler=>tt_objects.
 
-    METHODS create_new_cut_with_new_params
-      IMPORTING
-        i_schema TYPE abap_bool OPTIONAL
-        i_xslt   TYPE abap_bool OPTIONAL
-        i_repo   TYPE abap_bool OPTIONAL
-        i_whole  TYPE abap_bool OPTIONAL
-        i_multre TYPE abap_bool OPTIONAL
-        i_objtyp TYPE trobjtype OPTIONAL
-        i_intf   TYPE sobj_name OPTIONAL
-        i_type   TYPE sobj_name OPTIONAL
-        i_examp  TYPE sobj_name OPTIONAL
-        i_consol TYPE abap_bool OPTIONAL
-        i_disk   TYPE abap_bool OPTIONAL
-        i_multob TYPE stringtab OPTIONAL.
+    methods create_new_cut_with_new_params
+      importing
+        i_schema type abap_bool optional
+        i_xslt   type abap_bool optional
+        i_repo   type abap_bool optional
+        i_whole  type abap_bool optional
+        i_multre type abap_bool optional
+        i_objtyp type trobjtype optional
+        i_intf   type sobj_name optional
+        i_type   type sobj_name optional
+        i_examp  type sobj_name optional
+        i_consol type abap_bool optional
+        i_disk   type abap_bool optional
+        i_multob type stringtab optional.
 
-    METHODS assert_logs_and_file_handler.
-    METHODS schema_console_intf FOR TESTING RAISING cx_static_check.
-    METHODS schema_zip_intf FOR TESTING RAISING cx_static_check.
-    METHODS xslt_console_intf FOR TESTING RAISING cx_static_check.
-    METHODS xslt_zip_intf FOR TESTING RAISING cx_static_check.
-    METHODS repo_zip_intf FOR TESTING RAISING cx_static_check.
-    METHODS whole_repo_zip FOR TESTING RAISING cx_static_check.
-    METHODS multirepo_zip FOR TESTING RAISING cx_static_check.
-    METHODS error_not_all_paramtrs_supplid FOR TESTING RAISING cx_static_check.
-    METHODS generate_type_raises_error FOR TESTING RAISING cx_static_check.
-    METHODS writer_validate_returns_false FOR TESTING RAISING cx_static_check.
-    METHODS schema_console_func FOR TESTING RAISING cx_static_check.
-    METHODS schema_zip_func FOR TESTING RAISING cx_static_check.
-    METHODS xslt_consl_error_intf_not_exis FOR TESTING RAISING cx_static_check.
-    METHODS xslt_consl_error_type_not_exis FOR TESTING RAISING cx_static_check.
-    METHODS xsl_cons_intf_vers_not_readabl FOR TESTING RAISING cx_static_check.
-    METHODS repo_zip_fugr FOR TESTING RAISING cx_static_check.
-    METHODS repo_zip_intf_w_namespace FOR TESTING RAISING cx_static_check.
-    METHODS repo_zip_tabl FOR TESTING RAISING cx_static_check.
-    CLASS-DATA function_test_environment TYPE REF TO if_function_test_environment.
-    CLASS-DATA environment TYPE REF TO if_osql_test_environment.
-    CLASS-METHODS class_setup.
-    CLASS-METHODS class_teardown.
+    methods assert_logs_and_file_handler.
+    methods schema_console_intf for testing raising cx_static_check.
+    methods schema_zip_intf for testing raising cx_static_check.
+    methods xslt_console_intf for testing raising cx_static_check.
+    methods xslt_zip_intf for testing raising cx_static_check.
+    methods repo_zip_intf for testing raising cx_static_check.
+    methods whole_repo_zip for testing raising cx_static_check.
+    methods multirepo_zip for testing raising cx_static_check.
+    methods error_not_all_paramtrs_supplid for testing raising cx_static_check.
+    methods generate_type_raises_error for testing raising cx_static_check.
+    methods writer_validate_returns_false for testing raising cx_static_check.
+    methods schema_console_func for testing raising cx_static_check.
+    methods schema_zip_func for testing raising cx_static_check.
+    methods xslt_consl_error_intf_not_exis for testing raising cx_static_check.
+    methods xslt_consl_error_type_not_exis for testing raising cx_static_check.
+    methods xsl_cons_intf_vers_not_readabl for testing raising cx_static_check.
+    methods repo_zip_fugr for testing raising cx_static_check.
+    methods repo_zip_intf_w_namespace for testing raising cx_static_check.
+    methods repo_zip_tabl for testing raising cx_static_check.
+    class-data function_test_environment type ref to if_function_test_environment.
+    class-data environment type ref to if_osql_test_environment.
+    class-methods class_setup.
+    class-methods class_teardown.
 
-ENDCLASS.
+endclass.
 
-CLASS ltc_generator IMPLEMENTATION.
+class ltc_generator implementation.
 
-  METHOD class_setup.
+  method class_setup.
     " keep in mind, the test doubles created for the given function modules would be active for the entire test session
     " and any CALL FUNCTION statement on actual function module would get replaced with the corresponding test double in the session.
-    function_test_environment = cl_function_test_environment=>create( VALUE #( ( 'DYNP_VALUES_UPDATE' )
+    function_test_environment = cl_function_test_environment=>create( value #( ( 'DYNP_VALUES_UPDATE' )
                                                                                ( 'DYNP_VALUES_READ' )
                                                                                ( 'F4IF_INT_TABLE_VALUE_REQUEST' )
                                                                                ) ).
-    environment = cl_osql_test_environment=>create(  VALUE #( ( 'TADIR' ) ) ).
+    environment = cl_osql_test_environment=>create(  value #( ( 'TADIR' ) ) ).
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD class_teardown.
-    IF environment IS BOUND.
+  method class_teardown.
+    if environment is bound.
       environment->destroy( ).
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD setup.
+  method setup.
     " clear all configurations on test doubles
     function_test_environment->clear_doubles( ).
     environment->clear_doubles( ).
 
     writer_double ?= cl_abap_testdouble=>create( 'zif_aff_writer' ).
     cl_abap_testdouble=>configure_call( writer_double )->returning( abap_true )->ignore_all_parameters( ).
-    writer_double->validate( source = VALUE #( ) log = NEW zcl_aff_log( ) ).
+    writer_double->validate( source = value #( ) log = new zcl_aff_log( ) ).
 
     file_handler_double ?= cl_abap_testdouble=>create( 'IF_AFF_OBJECT_FILE_HANDLER' ).
 
-    DATA objects TYPE if_aff_object_file_handler=>tt_objects.
-    objects = VALUE #(
+    data objects type if_aff_object_file_handler=>tt_objects.
+    objects = value #(
         ( obj_name = 'IF_AFF_TYPES_V1' devclass = 'SAFF_CORE' obj_type = 'INTF' )
         ( obj_name = 'IF_AFF_OO_TYPES_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
         ( obj_name = c_intf  devclass = 'SEO_AFF' obj_type = 'INTF' )
@@ -1487,170 +1487,170 @@ CLASS ltc_generator IMPLEMENTATION.
         ( obj_name = 'Z_AFF_EXAMPLE_FUGR' devclass = c_example_intf_package obj_type = 'FUGR' )
         ( obj_name = 'Z_AFF_NR' devclass = c_example_intf_package obj_type = 'NROB' )
     ).
-    TRY.
+    try.
         configure_file_handler( objects ).
-      CATCH zcx_aff_tools.
+      catch zcx_aff_tools.
         cl_abap_unit_assert=>fail( ).
-    ENDTRY.
+    endtry.
     insert_objects_into_tadir( objects ).
 
     aff_factory_double ?= cl_abap_testdouble=>create( 'IF_AFF_FACTORY' ).
     cl_abap_testdouble=>configure_call( aff_factory_double )->returning( file_handler_double ).
     aff_factory_double->get_object_file_handler( ).
 
-    writer_log = NEW zcl_aff_log( ).
-    writer_log->zif_aff_log~add_info( message = VALUE #(  msgty = 'I'  msgv1 = 'Writer Log' ) component_name = VALUE #( ) ).
+    writer_log = new zcl_aff_log( ).
+    writer_log->zif_aff_log~add_info( message = value #(  msgty = 'I'  msgv1 = 'Writer Log' ) component_name = value #( ) ).
 
     cl_abap_testdouble=>configure_call( writer_double )->returning( writer_log ).
     writer_double->get_log( ).
 
-    generator_log = NEW zcl_aff_log( ).
-    generator_log->zif_aff_log~add_info( message = VALUE #(  msgty = 'I' msgv1 = 'Generator Log' ) component_name = VALUE #( ) ).
-    generator_double = NEW ltc_generator_double( generator_log ).
+    generator_log = new zcl_aff_log( ).
+    generator_log->zif_aff_log~add_info( message = value #(  msgty = 'I' msgv1 = 'Generator Log' ) component_name = value #( ) ).
+    generator_double = new ltc_generator_double( generator_log ).
 
-    gui_frontend = NEW ltc_gui_frontend( ).
+    gui_frontend = new ltc_gui_frontend( ).
 
-    cut = NEW lcl_generator(
+    cut = new lcl_generator(
       aff_factory    = aff_factory_double
       generator      = generator_double
       writer         = writer_double
       i_gui_frontend = gui_frontend
     ).
 
-    INSERT LINES OF generator_double->get_log( )->get_messages( ) INTO TABLE expected_log_messages.
+    insert lines of generator_double->get_log( )->get_messages( ) into table expected_log_messages.
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD assert_logs_and_file_handler.
+  method assert_logs_and_file_handler.
     cl_abap_testdouble=>verify_expectations( file_handler_double ).
     cl_abap_unit_assert=>assert_equals( act = cut->report_log exp = expected_report_log ).
     cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ) .
-    LOOP AT expected_log_messages ASSIGNING FIELD-SYMBOL(<exp_msg>).
-      READ TABLE cut->generator_log->get_messages( ) WITH KEY text = <exp_msg>-text TRANSPORTING NO FIELDS.
-      IF sy-subrc <> 0.
+    loop at expected_log_messages assigning field-symbol(<exp_msg>).
+      read table cut->generator_log->get_messages( ) with key text = <exp_msg>-text transporting no fields.
+      if sy-subrc <> 0.
         cl_abap_unit_assert=>fail( ).
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
+      endif.
+    endloop.
+  endmethod.
 
-  METHOD insert_objects_into_tadir.
+  method insert_objects_into_tadir.
 
-    DATA tadir TYPE STANDARD TABLE OF tadir.
-    LOOP AT objects ASSIGNING FIELD-SYMBOL(<object>).
-      APPEND VALUE #( pgmid = 'R3TR' object = <object>-obj_type obj_name = <object>-obj_name devclass = <object>-devclass ) TO tadir.
-    ENDLOOP.
+    data tadir type standard table of tadir.
+    loop at objects assigning field-symbol(<object>).
+      append value #( pgmid = 'R3TR' object = <object>-obj_type obj_name = <object>-obj_name devclass = <object>-devclass ) to tadir.
+    endloop.
     environment->insert_test_data( tadir ).
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD configure_file_handler.
-    DATA files TYPE if_aff_object_file_handler=>ty_object_files.
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
+  method configure_file_handler.
+    data files type if_aff_object_file_handler=>ty_object_files.
+    data(text_handler) = new cl_aff_content_handler_text( ).
 
-    LOOP AT objects ASSIGNING FIELD-SYMBOL(<object>).
-      DATA(file_name) = |{ <object>-obj_name }.{ <object>-obj_type }.json|.
-      IF <object>-obj_name = c_aff_example_intf_nspace.
+    loop at objects assigning field-symbol(<object>).
+      data(file_name) = |{ <object>-obj_name }.{ <object>-obj_type }.json|.
+      if <object>-obj_name = c_aff_example_intf_nspace.
         file_name = |(NAMESPACE)AFF_EXAMPLE_INTF.{ <object>-obj_type }.json|.
-      ELSEIF <object>-obj_name = c_intf_w_namespace.
+      elseif <object>-obj_name = c_intf_w_namespace.
         file_name = |(NAMESP)IF_AFF_INTF_V1.{ <object>-obj_type }.json|.
-      ENDIF.
-      DATA(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
-      files = VALUE #(
-          object_to_file_name = VALUE #(
+      endif.
+      data(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
+      files = value #(
+          object_to_file_name = value #(
               ( object = <object> file_name = file_name )
           )
-        files = VALUE #(
+        files = value #(
          ( obj_type = <object>-obj_type obj_name = <object>-obj_name file_name = file_name content = file_content )
         ) )  .
       cl_abap_testdouble=>configure_call( file_handler_double )->returning( files )->ignore_parameter( name = 'LOG' ).
-      file_handler_double->serialize_objects( objects =  VALUE #( ( <object> ) ) log = NEW cl_aff_log( )  ).
-    ENDLOOP.
+      file_handler_double->serialize_objects( objects =  value #( ( <object> ) ) log = new cl_aff_log( )  ).
+    endloop.
 
     file_name = `file_of_reps_func_fugr.json`.
     file_content = text_handler->if_aff_content_handler~serialize( `File of REPS, FUNC, FUGR` ).
-    files = VALUE #(
-        object_to_file_name = VALUE #(
+    files = value #(
+        object_to_file_name = value #(
             ( object = <object> file_name = file_name )
         )
-      files = VALUE #(
+      files = value #(
        ( obj_type = <object>-obj_type obj_name = <object>-obj_name file_name = file_name content = file_content )
       ) )  .
     cl_abap_testdouble=>configure_call( file_handler_double )->returning( files )->ignore_parameter( name = 'LOG' ).
-    file_handler_double->serialize_objects( objects = VALUE #(
+    file_handler_double->serialize_objects( objects = value #(
                                             ( obj_name = 'IF_AFF_FUGR_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_FUNC_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_REPS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             )
-                                            log     = NEW cl_aff_log( ) ).
+                                            log     = new cl_aff_log( ) ).
     file_name = `file_of_indx_tabl.json`.
     file_content = text_handler->if_aff_content_handler~serialize( `File of INDX, TABL` ).
-    files = VALUE #(
-        object_to_file_name = VALUE #(
+    files = value #(
+        object_to_file_name = value #(
             ( object = <object> file_name = file_name )
         )
-      files = VALUE #(
+      files = value #(
        ( obj_type = <object>-obj_type obj_name = <object>-obj_name file_name = file_name content = file_content )
       ) )  .
     cl_abap_testdouble=>configure_call( file_handler_double )->returning( files )->ignore_parameter( name = 'LOG' ).
-    file_handler_double->serialize_objects( objects = VALUE #(
+    file_handler_double->serialize_objects( objects = value #(
                                             ( obj_name = 'IF_AFF_TABL_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_INDX_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             )
-                                            log     = NEW cl_aff_log( ) ).
-  ENDMETHOD.
+                                            log     = new cl_aff_log( ) ).
+  endmethod.
 
-  METHOD xslt_console_intf.
+  method xslt_console_intf.
 
     cut->set_parameters(
       i_xslt   = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
     "Then
-    expected_report_log = VALUE #( ).
+    expected_report_log = value #( ).
     assert_logs_and_file_handler( ).
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD xsl_cons_intf_vers_not_readabl.
+  method xsl_cons_intf_vers_not_readabl.
 
     cut->set_parameters(
       i_xslt   = abap_true
       i_objtyp = 'INTF'
       i_intf   = 'IF_AFF_INTF_V1X' "version not readable
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
     "Then
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Formatversion couldnt be derived from interface IF_AFF_INTF_V1X. Format version 1 was assumed.` )
   ( `Type \INTERFACE=IF_AFF_INTF_V1X\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
   ).
-    CLEAR expected_log_messages.
+    clear expected_log_messages.
     assert_logs_and_file_handler( ).
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD xslt_consl_error_intf_not_exis.
+  method xslt_consl_error_intf_not_exis.
 
     cut->set_parameters(
       i_xslt   = abap_true
       i_objtyp = 'INTF'
       i_intf   = 'IF_AFF_INTF_V99999' "interface does not exist in system
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
@@ -1658,162 +1658,162 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_initial( cut->zip ).
 
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Type \INTERFACE=IF_AFF_INTF_V99999\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
   ).
-    CLEAR expected_log_messages.
+    clear expected_log_messages.
     assert_logs_and_file_handler( ).
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD xslt_consl_error_type_not_exis.
+  method xslt_consl_error_type_not_exis.
 
     cut->set_parameters(
       i_xslt   = abap_true
       i_objtyp = 'INTF'
       i_intf   = 'IF_AFF_INTF_V1'
       i_type   = 'TY_BLABLA' "type does not exist in interface IF_AFF_INTF_V1
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
     "Then
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_initial( cut->zip ).
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_BLABLA was not found. Either interface or type doesnt exist.` )
   ).
-    CLEAR expected_log_messages.
+    clear expected_log_messages.
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD schema_console_intf.
+  method schema_console_intf.
     cut->set_parameters(
       i_schema = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
     "Then
-    cl_abap_unit_assert=>assert_equals( act = cut->xslt_schema_content exp = VALUE rswsourcet( ( |Test ST/Schema for INTF| ) ) ).
+    cl_abap_unit_assert=>assert_equals( act = cut->xslt_schema_content exp = value rswsourcet( ( |Test ST/Schema for INTF| ) ) ).
 
-    expected_report_log = VALUE #( ).
+    expected_report_log = value #( ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD schema_console_func.
+  method schema_console_func.
     cut->set_parameters(
       i_schema = abap_true
       i_objtyp = 'FUNC'
       i_intf   = 'IF_AFF_FUNC_V1'
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
     "Then
-    cl_abap_unit_assert=>assert_equals( act = cut->xslt_schema_content exp = VALUE rswsourcet( ( |Test ST/Schema for FUNC| ) ) ).
-    expected_report_log = VALUE #( ).
+    cl_abap_unit_assert=>assert_equals( act = cut->xslt_schema_content exp = value rswsourcet( ( |Test ST/Schema for FUNC| ) ) ).
+    expected_report_log = value #( ).
     assert_logs_and_file_handler( ).
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD schema_zip_func.
+  method schema_zip_func.
     cut->set_parameters(
       i_schema = abap_true
       i_objtyp = 'FUNC'
       i_intf   = 'IF_AFF_FUNC_V1'
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_disk   = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
     "Then
     cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 1 ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 1 ]-name exp = `func_schema.txt` ).
-    cut->zip->get( EXPORTING name = `func_schema.txt` IMPORTING content = DATA(act_content) ).
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for FUNC` ).
+    cut->zip->get( exporting name = `func_schema.txt` importing content = data(act_content) ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    data(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for FUNC` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD schema_zip_intf.
+  method schema_zip_intf.
     cut->set_parameters(
       i_schema = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_disk   = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
     "Then
     cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 1 ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 1 ]-name exp = `intf_schema.txt` ).
-    cut->zip->get( EXPORTING name = `intf_schema.txt` IMPORTING content = DATA(act_content) ).
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
+    cut->zip->get( exporting name = `intf_schema.txt` importing content = data(act_content) ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    data(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD xslt_zip_intf.
+  method xslt_zip_intf.
     cut->set_parameters(
       i_xslt   = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_disk   = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
     "Then
     cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 1 ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 1 ]-name exp = `intf_xslt.txt` ).
-    cut->zip->get( EXPORTING name = `intf_xslt.txt` IMPORTING content = DATA(act_content) ).
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
+    cut->zip->get( exporting name = `intf_xslt.txt` importing content = data(act_content) ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    data(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD repo_zip_intf.
+  method repo_zip_intf.
     cut->set_parameters(
       i_repo   = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_disk   = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
@@ -1824,37 +1824,37 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 2 ]-name exp = `intf/type/zif_aff_intf_v1.intf.json` ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 3 ]-name exp = `intf/intf-v1.json` ).
 
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of zaff_example_intf` ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    data(expected_content) = text_handler->if_aff_content_handler~serialize( `File of zaff_example_intf` ).
 
-    cut->zip->get(  EXPORTING name  = `intf/examples/zaff_example_intf.intf.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get(  exporting name  = `intf/examples/zaff_example_intf.intf.json` importing content  = data(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_content = text_handler->if_aff_content_handler~serialize( `File of zif_aff_intf_v1` ).
-    cut->zip->get(  EXPORTING name  = `intf/type/zif_aff_intf_v1.intf.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `intf/type/zif_aff_intf_v1.intf.json` importing content  = act_content ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    cut->zip->get(  EXPORTING name  = `intf/intf-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `intf/intf-v1.json` importing content  = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD repo_zip_intf_w_namespace.
+  method repo_zip_intf_w_namespace.
     cut->set_parameters(
       i_repo   = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf_w_namespace )
+      i_intf   = conv #( c_intf_w_namespace )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf_nspace )
+      i_examp  = conv #( c_aff_example_intf_nspace )
       i_disk   = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
-    cut->set_schema_test_content( VALUE #( ( `TEST ABC` ) ) ).
+    cut->set_schema_test_content( value #( ( `TEST ABC` ) ) ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1864,29 +1864,29 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 2 ]-name exp = `intf/type/zif_aff_intf_v1.intf.json` ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 3 ]-name exp = `intf/intf-v1.json` ).
 
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of zaff_example_intf` ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    data(expected_content) = text_handler->if_aff_content_handler~serialize( `File of zaff_example_intf` ).
 
-    cut->zip->get(  EXPORTING name  = `intf/examples/zaff_example_intf.intf.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get(  exporting name  = `intf/examples/zaff_example_intf.intf.json` importing content  = data(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_content = text_handler->if_aff_content_handler~serialize( `File of zif_aff_intf_v1` ).
-    cut->zip->get(  EXPORTING name  = `intf/type/zif_aff_intf_v1.intf.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `intf/type/zif_aff_intf_v1.intf.json` importing content  = act_content ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    cut->zip->get(  EXPORTING name  = `intf/intf-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `intf/intf-v1.json` importing content  = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `TEST ABC` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Type \INTERFACE=/NAMESP/IF_AFF_INTF_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
-    CLEAR expected_log_messages.
+    clear expected_log_messages.
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD repo_zip_fugr.
+  method repo_zip_fugr.
     cut->set_parameters(
       i_repo   = abap_true
       i_objtyp = 'FUGR'
@@ -1894,7 +1894,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_type   = 'TY_MAIN'
       i_examp  = 'Z_AFF_EXAMPLE_FUGR'
       i_disk   = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
@@ -1902,27 +1902,27 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 6 ).
 
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of Z_AFF_EXAMPLE_FUGR` ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    data(expected_content) = text_handler->if_aff_content_handler~serialize( `File of Z_AFF_EXAMPLE_FUGR` ).
 
-    cut->zip->get(  EXPORTING name  = `fugr/examples/z_aff_example_fugr.fugr.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get(  exporting name  = `fugr/examples/z_aff_example_fugr.fugr.json` importing content  = data(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_content = text_handler->if_aff_content_handler~serialize( `File of REPS, FUNC, FUGR` ).
-    cut->zip->get(  EXPORTING name  = `fugr/type/file_of_reps_func_fugr.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `fugr/type/file_of_reps_func_fugr.json` importing content  = act_content ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    cut->zip->get(  EXPORTING name  = `fugr/fugr-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `fugr/fugr-v1.json` importing content  = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for FUGR` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    cut->zip->get(  EXPORTING name  = `fugr/func-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `fugr/func-v1.json` importing content  = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for FUNC` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    cut->zip->get(  EXPORTING name  = `fugr/reps-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `fugr/reps-v1.json` importing content  = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for REPS` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
     expected_log_messages = value #(
@@ -1931,10 +1931,10 @@ CLASS ltc_generator IMPLEMENTATION.
   ( type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
    ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
 
-  METHOD repo_zip_tabl.
+  method repo_zip_tabl.
     cut->set_parameters(
       i_repo   = abap_true
       i_objtyp = 'TABL'
@@ -1942,7 +1942,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_type   = 'TY_MAIN'
       i_examp  = 'Z_AFF_EXAMPLE_TABL'
       i_disk   = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
@@ -1950,16 +1950,16 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 3 ).
 
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of INDX, TABL` ).
-    cut->zip->get(  EXPORTING name  = `tabl/type/file_of_indx_tabl.json` IMPORTING content  = DATA(act_content) ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
+    data(expected_content) = text_handler->if_aff_content_handler~serialize( `File of INDX, TABL` ).
+    cut->zip->get(  exporting name  = `tabl/type/file_of_indx_tabl.json` importing content  = data(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    cut->zip->get(  EXPORTING name  = `tabl/indx-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get(  exporting name  = `tabl/indx-v1.json` importing content  = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INDX` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Type \INTERFACE=IF_AFF_TABL_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
   ( `The schema for interface IF_AFF_TABL_V1 could not be created.` )
   ( `Success: Zip file created here FULLPATH.zip` )
@@ -1968,17 +1968,17 @@ CLASS ltc_generator IMPLEMENTATION.
 *  ( object = value #( devclass = 'IF_AFF_INDX_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
 *   ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD whole_repo_zip.
+  method whole_repo_zip.
     cut->set_parameters(
       i_whole  = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_disk   = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
     "When
     cut->start_of_selection( ).
@@ -1990,12 +1990,12 @@ CLASS ltc_generator IMPLEMENTATION.
       number = lines( cut->zip->files )
     ).
 
-    cut->zip->get( EXPORTING name  = `fugr/type/file_of_reps_func_fugr.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get( exporting name  = `fugr/type/file_of_reps_func_fugr.json` importing content  = data(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = cl_abap_codepage=>convert_to( `File of REPS, FUNC, FUGR` ) ).
 
     "these are the expected files. In our unit test (for simplicity reasons) the aff of all object types consist only of 1 json file
-    DATA file_name_tab TYPE stringtab.
-    file_name_tab = VALUE #(
+    data file_name_tab type stringtab.
+    file_name_tab = value #(
     ( `chkc/examples/z_aff_example_chkc.chkc.json` )
     ( `chkc/type/zif_aff_chkc_v1.intf.json` )
     ( `chkc/chkc-v1.json` )
@@ -2069,20 +2069,20 @@ CLASS ltc_generator IMPLEMENTATION.
         upper            = 14
         number           = lines( cut->generator_log->get_messages( ) )
     ).
-    IF lines( cut->generator_log->get_messages( ) ) = 14.
+    if lines( cut->generator_log->get_messages( ) ) = 14.
       cl_abap_unit_assert=>assert_equals( act = cut->generator_log->get_messages( ) exp = expected_log_messages ).
-    ENDIF.
-  ENDMETHOD.
+    endif.
+  endmethod.
 
-  METHOD multirepo_zip.
+  method multirepo_zip.
     cut->set_parameters(
       i_multre = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_disk   = abap_true
-      i_multob = VALUE #( ( `CHKC` ) ( `CHKO` ) ( `CHKV` ) )
+      i_multob = value #( ( `CHKC` ) ( `CHKO` ) ( `CHKV` ) )
     ).
     "When
     cut->start_of_selection( ).
@@ -2091,8 +2091,8 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 12 ).
 
     "these are the expected files. In our unit test (for simplicity reasons) the aff of all object types consist only of 1 json file
-    DATA file_name_tab TYPE stringtab.
-    file_name_tab = VALUE #(
+    data file_name_tab type stringtab.
+    file_name_tab = value #(
     ( `chkc/examples/z_aff_example_chkc.chkc.json` )
     ( `chkc/type/zif_aff_chkc_v1.intf.json` )
     ( `chkc/chkc-v1.json` )
@@ -2108,7 +2108,7 @@ CLASS ltc_generator IMPLEMENTATION.
       file_name_tab = file_name_tab
       zip           = cut->zip
     ).
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
     expected_log_messages = value #(
@@ -2117,15 +2117,15 @@ CLASS ltc_generator IMPLEMENTATION.
    ( type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
     ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
 
 
-  METHOD generate_type_raises_error.
+  method generate_type_raises_error.
     "generator will raise an error when generate_type is called
-    generator_double = NEW ltc_generator_double( log_to_return  = generator_log generate_type_will_raise_err = abap_true ).
+    generator_double = new ltc_generator_double( log_to_return  = generator_log generate_type_will_raise_err = abap_true ).
 
-    cut = NEW lcl_generator(
+    cut = new lcl_generator(
       aff_factory = aff_factory_double
       generator   = generator_double
       writer      = writer_double
@@ -2135,11 +2135,11 @@ CLASS ltc_generator IMPLEMENTATION.
     cut->set_parameters(
       i_schema = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
 
     "When
@@ -2148,23 +2148,23 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_initial( cut->zip ).
 
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `The generator couldn't generate the schema/XSLT for type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_MAIN` )
   ).
-    CLEAR expected_log_messages.
+    clear expected_log_messages.
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD writer_validate_returns_false.
+  method writer_validate_returns_false.
     "writer returns false when validate is called
     writer_double ?= cl_abap_testdouble=>create( 'zif_aff_writer' ).
     cl_abap_testdouble=>configure_call( writer_double )->returning( abap_false )->ignore_all_parameters( ).
-    writer_double->validate( source = VALUE #( ) log = NEW zcl_aff_log( ) ).
+    writer_double->validate( source = value #( ) log = new zcl_aff_log( ) ).
 
     cl_abap_testdouble=>configure_call( writer_double )->returning( writer_log ).
     writer_double->get_log( ).
 
-    cut = NEW lcl_generator(
+    cut = new lcl_generator(
       aff_factory = aff_factory_double
       generator   = generator_double
       writer      = writer_double
@@ -2174,37 +2174,37 @@ CLASS ltc_generator IMPLEMENTATION.
     cut->set_parameters(
       i_schema = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
 
     "When
     cut->start_of_selection( ).
     "Then
     cl_abap_unit_assert=>assert_not_initial( cut->xslt_schema_content ).
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `ATTENTION: The created schema/xslt for type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_MAIN is not valid.` )
   ).
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD error_not_all_paramtrs_supplid.
-    expected_log_messages = VALUE #( ).
-    expected_report_log = VALUE #(
+  method error_not_all_paramtrs_supplid.
+    expected_log_messages = value #( ).
+    expected_report_log = value #(
   ( `Please fill out all fields (interfacename, objecttype, abaptypename)` )
   ).
     "schema on console
     create_new_cut_with_new_params(
       i_schema = abap_true
 *     i_objtyp = 'INTF'          object type not supplied
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
 
     create_new_cut_with_new_params(
@@ -2212,22 +2212,22 @@ CLASS ltc_generator IMPLEMENTATION.
       i_objtyp = 'INTF'
 *     i_intf   = conv #( c_intf )    interfacename not supplied
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
 
     create_new_cut_with_new_params(
       i_schema = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
 *     i_type   = 'TY_MAIN'               typename not supplied
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
 
-    expected_report_log = VALUE #(
+    expected_report_log = value #(
   ( `Please fill out all fields (objecttype, interfacename, examplename)` )
   ).
 
@@ -2235,11 +2235,11 @@ CLASS ltc_generator IMPLEMENTATION.
     create_new_cut_with_new_params(
       i_repo   = abap_true
 *     i_objtyp = 'INTF'          object type not supplied
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
 
     create_new_cut_with_new_params(
@@ -2247,25 +2247,25 @@ CLASS ltc_generator IMPLEMENTATION.
       i_objtyp = 'INTF'
 *     i_intf   = conv #( c_intf )    interfacename not supplied
       i_type   = 'TY_MAIN'
-      i_examp  = CONV #( c_aff_example_intf )
+      i_examp  = conv #( c_aff_example_intf )
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
 
     create_new_cut_with_new_params(
       i_repo   = abap_true
       i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
+      i_intf   = conv #( c_intf )
       i_type   = 'TY_MAIN'
 *     i_examp  = conv #( c_aff_example_intf )   examplename not supplied
       i_consol = abap_true
-      i_multob = VALUE #( )
+      i_multob = value #( )
     ).
 
-  ENDMETHOD.
+  endmethod.
 
-  METHOD create_new_cut_with_new_params.
-    cut = NEW lcl_generator(
+  method create_new_cut_with_new_params.
+    cut = new lcl_generator(
       aff_factory = aff_factory_double
       generator   = generator_double
       writer      = writer_double
@@ -2292,37 +2292,37 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( cut->zip ).
 
     assert_logs_and_file_handler( ).
-  ENDMETHOD.
+  endmethod.
 
-  METHOD assert_file_content.
+  method assert_file_content.
 
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
+    data(text_handler) = new cl_aff_content_handler_text( ).
 
-    LOOP AT file_name_tab ASSIGNING FIELD-SYMBOL(<filename>).
-      zip->get( EXPORTING name  = <filename> IMPORTING content  = DATA(act_content) ).
-      IF <filename> CP '*-v1.json'.
-        SPLIT <filename> AT '/' INTO TABLE DATA(splitted).
-        DATA(objecttype) = splitted[ 2 ].
-        REPLACE '-v1.json' IN objecttype WITH ''.
-        DATA(expected_content) = text_handler->if_aff_content_handler~serialize( |Test ST/Schema for { to_upper( objecttype ) }| ).
+    loop at file_name_tab assigning field-symbol(<filename>).
+      zip->get( exporting name  = <filename> importing content  = data(act_content) ).
+      if <filename> cp '*-v1.json'.
+        split <filename> at '/' into table data(splitted).
+        data(objecttype) = splitted[ 2 ].
+        replace '-v1.json' in objecttype with ''.
+        data(expected_content) = text_handler->if_aff_content_handler~serialize( |Test ST/Schema for { to_upper( objecttype ) }| ).
         cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-      ELSE.
-        SPLIT <filename> AT '/' INTO TABLE splitted.
-        DATA(objectname_part) = splitted[ lines( splitted ) ].
-        SPLIT objectname_part AT '.' INTO TABLE DATA(splitted2).
-        DATA(objectname) = splitted2[ 1 ].
-        DATA(expected_content_str) = |file of { to_lower( objectname ) }|.
-        DATA(actual) = to_lower( cl_abap_codepage=>convert_from( act_content ) ).
+      else.
+        split <filename> at '/' into table splitted.
+        data(objectname_part) = splitted[ lines( splitted ) ].
+        split objectname_part at '.' into table data(splitted2).
+        data(objectname) = splitted2[ 1 ].
+        data(expected_content_str) = |file of { to_lower( objectname ) }|.
+        data(actual) = to_lower( cl_abap_codepage=>convert_from( act_content ) ).
 
         cl_abap_unit_assert=>assert_equals( act = actual exp = expected_content_str ).
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
+      endif.
+    endloop.
+  endmethod.
 
-ENDCLASS.
+endclass.
 
 
-INITIALIZATION.
+initialization.
 *  selection-screen begin of block comment with frame.
 *    selection-screen comment /05(79) text1.
 *    selection-screen comment /05(79) text2.
@@ -2333,33 +2333,33 @@ INITIALIZATION.
 *  https://wiki.wdf.sap.corp/wiki/display/ADTVEGA/Bring+your+own+object#Bringyourownobject-CreateABAPobjecttypeforyourobject
 *  text1 = 'Enter an interfacename in field "object name" and a typename in field "type"' ##NO_TEXT.
 
-  helper = NEW lcl_generator( ).
+  helper = new lcl_generator( ).
   helper->modify_screen( ).
 
-  LOOP AT helper->get_table_with_all_githubtypes( ) ASSIGNING FIELD-SYMBOL(<type>) ##NEEDED.
+  loop at helper->get_table_with_all_githubtypes( ) assigning field-symbol(<type>) ##NEEDED.
     p_multob-option = 'EQ'.
     p_multob-sign = 'I'.
     p_multob-low = <type>.
-    APPEND p_multob.
-  ENDLOOP.
+    append p_multob.
+  endloop.
 
 * when enter or F8 is pressed in the  screen
-AT SELECTION-SCREEN.
+at selection-screen.
   helper->at_selection_screen( ).
 
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_objtyp.
+at selection-screen on value-request for p_objtyp.
   helper->on_value_request_for_objtype( ).
 
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_intf.
+at selection-screen on value-request for p_intf.
   helper->on_value_request_for_intfname( ).
 
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_examp.
+at selection-screen on value-request for p_examp.
   helper->on_value_request_for_example( ).
 
-AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_type.
+at selection-screen on value-request for p_type.
   helper->on_value_request_for_type( ).
 
-AT SELECTION-SCREEN OUTPUT.
+at selection-screen output.
 * The OUTPUT event is also trigged to re-draw ABAP report screen allowing it to
 * be used to hide, display or deactivate fields. Please note at this point sy-ucomm field
 * has been refreshed so you need to use value captured above in gd_ucomm
@@ -2369,7 +2369,7 @@ AT SELECTION-SCREEN OUTPUT.
 
   helper->modify_screen( ).
 
-START-OF-SELECTION.
+start-of-selection.
 
   helper->start_of_selection( ).
   helper->print_logs( ).
