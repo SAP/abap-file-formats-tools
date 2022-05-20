@@ -21,5 +21,5 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
       with:
-        name: saff_generate_reop.prog.abap
-        path: saff_generate_reop.prog.abap
+        name: saff_generate_repo.prog.abap
+        path: saff_generate_repo.prog.abap
