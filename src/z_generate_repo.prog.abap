@@ -210,7 +210,8 @@ types: begin of aff_object,
 class lcl_generator definition final create public .
 
   public section.
-    data log type ref to zif_aff_log.
+    data generator_log type ref to zif_aff_log.
+    data aff_framework_log type ref to if_aff_log.
     data report_log type stringtab.
     data xslt_schema_content type rswsourcet.
     data schema_test_content type rswsourcet.
@@ -490,8 +491,7 @@ class lcl_generator implementation.
       else.
         file_handler = cl_aff_factory=>get_object_file_handler( ).
       endif.
-      data(l_log) = new cl_aff_log( ).
-      data(example_files) = file_handler->serialize_objects( objects = value #( ( example_main_object ) ) log = l_log ).
+      data(example_files) = file_handler->serialize_objects( objects = value #( ( example_main_object ) ) log = aff_framework_log ).
 
       get_replacing_table_and_intfs(
         exporting name_of_intf_of_mainobj = conv #( <object>-interface ) example_files = example_files
@@ -513,7 +513,7 @@ class lcl_generator implementation.
         append value #( devclass  = intf_obj_devclass obj_type  = 'INTF' obj_name = upper_intf ) to intf_objects.
       endloop.
 
-      data(intf_files) = file_handler->serialize_objects( objects = intf_objects log = l_log ).
+      data(intf_files) = file_handler->serialize_objects( objects = intf_objects log = aff_framework_log ).
 
       add_aff_files_to_zip( files = intf_files filename = |{ object_type_folder_name }/type/| replacing_table_string = replacing_table_string ).
 
@@ -594,7 +594,7 @@ class lcl_generator implementation.
       ) .
 
       loop at two_interfaces assigning field-symbol(<interf>).
-        data(intf_files2) = file_handler->serialize_objects( objects = value #( ( <interf> ) ) log = l_log ).
+        data(intf_files2) = file_handler->serialize_objects( objects = value #( ( <interf> ) ) log = aff_framework_log ).
         add_aff_files_to_zip( files = intf_files2 filename = `` replacing_table_string = replacing_names ).
       endloop.
     endif.
@@ -925,23 +925,12 @@ class lcl_generator implementation.
     endtry.
     "content was succesfully created ( else an exception would be raised)
     "check if the content is valid
-    data(is_valid) = writer->validate( source = content log = me->log ).
+    data(is_valid) = writer->validate( source = content log = me->generator_log ).
     if is_valid = abap_false.
       insert |ATTENTION: The created schema/xslt for type { absolute_typename } is not valid.| into table report_log ##NO_TEXT.
     endif.
 
-    data(object) = new cl_aff_obj( package = ' '  name = conv #( interfacename ) type = ' ' ) .
-    data(generator_log) = new zcl_aff_log( ).
-    loop at generator->get_log( )->get_messages( ) assigning field-symbol(<msg>).
-      if <msg>-type = zif_aff_log=>c_message_type-info.
-        generator_log->zif_aff_log~add_info( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-      elseif <msg>-type = zif_aff_log=>c_message_type-warning.
-        generator_log->zif_aff_log~add_warning( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-      elseif <msg>-type = zif_aff_log=>c_message_type-error.
-        generator_log->zif_aff_log~add_error( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-      endif.
-    endloop.
-    me->log->join( generator_log ).
+    generator_log->join( generator->get_log( ) ).
   endmethod.
 
   method create_schema_xslt_zip.
@@ -964,40 +953,45 @@ class lcl_generator implementation.
 
   method print_logs.
     if lines( report_log ) > 0.
-      write: / `Messages of the report` ##NO_TEXT.
+      write: / `Messages of the report:` ##NO_TEXT.
       loop at report_log assigning field-symbol(<log_msg>).
         write: / <log_msg>.
       endloop.
     endif.
 
-    if lines( log->get_messages( ) ) > 0.
+    if lines( generator_log->get_messages( ) ) > 0.
       skip 1.
-      write: / `Messages of the AFF Object Handlers and schema/ST Generator` ##NO_TEXT.
-      loop at log->get_messages( ) assigning field-symbol(<log_message>).
-*        if not ( <log_message>-message-msgid = 'SAFF_CORE' and
-*        ( <log_message>-message-msgno = '026' ) or
-*        ( <log_message>-message-msgno = '027' )  ).
-*          data obj type if_aff_object_file_handler=>ty_object.
-*          move-corresponding <log_message>-object to obj.
-*          write: / |{ object_as_string( obj ) } { <log_message>-type }|.
-*          split <log_message>-text at space into table data(splitted).
-*          loop at splitted assigning field-symbol(<word>).
-*            write: <word>.
-*          endloop.
-*        endif.
+      write: / `Messages schema/ST Generator:` ##NO_TEXT.
+      loop at generator_log->get_messages( ) assigning field-symbol(<WRITER_log_message>).
+        write: / |{ <WRITER_log_message>-type } { <WRITER_log_message>-component_name width = 40 align = left pad = ' ' } { <WRITER_log_message>-text }|.
+      endloop.
+    endif.
+
+    if lines(  aff_framework_log->get_messages( ) ) > 0.
+      skip 1.
+      write: / `Messages of the AFF Object Handlers:` ##NO_TEXT.
+      loop at aff_framework_log->get_messages( ) assigning field-symbol(<framework_log_message>).
+        if not ( <framework_log_message>-message-msgid = 'SAFF_CORE' and
+               ( <framework_log_message>-message-msgno = '026' ) or
+               ( <framework_log_message>-message-msgno = '027' ) ).
+          write: / |{ <framework_log_message>-type } { <framework_log_message>-text }|.
+        endif.
       endloop.
     endif.
   endmethod.
 
   method object_as_string.
+    if object-devclass is not initial.
+      data(package) = |{ object-devclass width = 20 align = left pad = ' ' }| ##NUMBER_OK.
+    endif.
     data(objname) = |{ object-obj_name width = 30 align = left pad = ' ' }| ##NUMBER_OK.
     data(objtype) = |{ object-obj_type width = 4 align = left pad = ' ' }|.
-    result = |{ objname } { objtype }|.
+    result = |{ package }{ objname } { objtype }|.
 
     if object-sub_name is not initial and object-sub_type is not initial.
       data(subname) = |{ object-sub_name width = 50 align = left pad = ' ' }| ##NUMBER_OK.
       data(subtype) = |{ object-sub_type width = 4 align = left pad = ' ' }|.
-      result = |{ objname } { objtype } { subname } { subtype }|.
+      result = |{ package }{ objname } { objtype } { subname } { subtype }|.
     endif.
   endmethod.
 
@@ -1253,7 +1247,8 @@ class lcl_generator implementation.
     if aff_factory is supplied.
       me->aff_factory = aff_factory.
     endif.
-    log = new zcl_aff_log( ).
+    generator_log = new zcl_aff_log( ).
+    aff_framework_log = new cl_aff_log( ).
     if i_gui_frontend is supplied.
       gui_frontend_service = i_gui_frontend.
     else.
@@ -1512,9 +1507,9 @@ class ltc_generator implementation.
   method assert_logs_and_file_handler.
     cl_abap_testdouble=>verify_expectations( file_handler_double ).
     cl_abap_unit_assert=>assert_equals( act = cut->report_log exp = expected_report_log ).
-    cl_abap_unit_assert=>assert_equals( act = lines( cut->log->get_messages( ) ) exp = lines( expected_log_messages ) ) .
+    cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ) .
     loop at expected_log_messages assigning field-symbol(<exp_msg>).
-      read table cut->log->get_messages( ) with key text = <exp_msg>-text transporting no fields.
+      read table cut->generator_log->get_messages( ) with key text = <exp_msg>-text transporting no fields.
       if sy-subrc <> 0.
         cl_abap_unit_assert=>fail( ).
       endif.
@@ -1913,11 +1908,11 @@ class ltc_generator implementation.
     expected_report_log = value #(
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
-*    expected_log_messages = value #(
-*  ( object = value #( devclass = 'IF_AFF_FUGR_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
-*  ( object = value #( devclass = 'IF_AFF_FUNC_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
-*  ( object = value #( devclass = 'IF_AFF_REPS_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
-*   ).
+    expected_log_messages = value #(
+  ( type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
+  ( type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
+  ( type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
+   ).
     assert_logs_and_file_handler( ).
   endmethod.
 
@@ -1948,10 +1943,10 @@ class ltc_generator implementation.
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_report_log = value #(
-( `Type \INTERFACE=IF_AFF_TABL_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
-( `The schema for interface IF_AFF_TABL_V1 could not be created.` )
-( `Success: Zip file created here FULLPATH.zip` )
- ).
+  ( `Type \INTERFACE=IF_AFF_TABL_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
+  ( `The schema for interface IF_AFF_TABL_V1 could not be created.` )
+  ( `Success: Zip file created here FULLPATH.zip` )
+  ).
 *    expected_log_messages = value #(
 *  ( object = value #( devclass = 'IF_AFF_INDX_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
 *   ).
@@ -2055,10 +2050,10 @@ class ltc_generator implementation.
     cl_abap_unit_assert=>assert_number_between(
         lower            = 12 "DOMA only has a local interface in UIA
         upper            = 14
-        number           = lines( cut->log->get_messages( ) )
+        number           = lines( cut->generator_log->get_messages( ) )
     ).
-    if lines( cut->log->get_messages( ) ) = 14.
-      cl_abap_unit_assert=>assert_equals( act = cut->log->get_messages( ) exp = expected_log_messages ).
+    if lines( cut->generator_log->get_messages( ) ) = 14.
+      cl_abap_unit_assert=>assert_equals( act = cut->generator_log->get_messages( ) exp = expected_log_messages ).
     endif.
   endmethod.
 
@@ -2099,11 +2094,11 @@ class ltc_generator implementation.
     expected_report_log = value #(
   ( `Success: Zip file created here FULLPATH.zip` )
   ).
-*    expected_log_messages = value #(
-*   ( object = value #( devclass = 'IF_AFF_CHKC_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
-*   ( object = value #( devclass = 'IF_AFF_CHKO_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
-*   ( object = value #( devclass = 'IF_AFF_CHKV_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
-*    ).
+    expected_log_messages = value #(
+   ( type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
+   ( type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
+   ( type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
+    ).
     assert_logs_and_file_handler( ).
   endmethod.
 
