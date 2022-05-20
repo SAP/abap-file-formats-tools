@@ -491,8 +491,6 @@ class lcl_generator implementation.
       else.
         file_handler = cl_aff_factory=>get_object_file_handler( ).
       endif.
-*      DATA(l_log) = NEW cl_aff_log( ).
-*      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = l_log ).
       data(example_files) = file_handler->serialize_objects( objects = value #( ( example_main_object ) ) log = aff_framework_log ).
 
       get_replacing_table_and_intfs(
@@ -933,21 +931,7 @@ class lcl_generator implementation.
       insert |ATTENTION: The created schema/xslt for type { absolute_typename } is not valid.| into table report_log ##NO_TEXT.
     endif.
 
-*    DATA(generator_log) = NEW zcl_aff_log( ).
     generator_log->join( generator->get_log( ) ).
-*    LOOP AT generator->get_log( )->get_messages( ) ASSIGNING FIELD-SYMBOL(<msg>).
-*      IF <msg>-type = zif_aff_log=>c_message_type-info.
-**        generator_log->zif_aff_log~add_info( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-*        generator_log->add_info( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-*      ELSEIF <msg>-type = zif_aff_log=>c_message_type-warning.
-**        generator_log->zif_aff_log~add_warning( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-*        generator_log->add_warning( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-*      ELSEIF <msg>-type = zif_aff_log=>c_message_type-error.
-**        generator_log->zif_aff_log~add_error( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-*        generator_log->add_error( message = <msg>-message component_name = object->if_aff_obj~get_name( ) ).
-*      ENDIF.
-*    ENDLOOP.
-*    me->generator_log->join( generator_log ).
   endmethod.
 
   method create_schema_xslt_zip.
