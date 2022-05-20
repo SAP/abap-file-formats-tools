@@ -55,18 +55,6 @@
     </item>
     <item>
      <ID>S</ID>
-     <KEY>P_MULTOB</KEY>
-     <ENTRY>Object Types</ENTRY>
-     <LENGTH>20</LENGTH>
-    </item>
-    <item>
-     <ID>S</ID>
-     <KEY>P_MULTRE</KEY>
-     <ENTRY>Repo Folder (Multiple Objects)</ENTRY>
-     <LENGTH>38</LENGTH>
-    </item>
-    <item>
-     <ID>S</ID>
      <KEY>P_OBJTYP</KEY>
      <ENTRY>Object Type</ENTRY>
      <LENGTH>19</LENGTH>
@@ -94,12 +82,6 @@
      <KEY>P_TYPE</KEY>
      <ENTRY>Type Name</ENTRY>
      <LENGTH>17</LENGTH>
-    </item>
-    <item>
-     <ID>S</ID>
-     <KEY>P_WHOLE</KEY>
-     <ENTRY>Whole file-formats repo</ENTRY>
-     <LENGTH>31</LENGTH>
     </item>
     <item>
      <ID>S</ID>
