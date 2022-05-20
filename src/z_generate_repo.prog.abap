@@ -8,135 +8,6 @@ CLASS lcl_generator DEFINITION DEFERRED.
 DATA obj_types TYPE saff_repo_types.
 DATA helper TYPE REF TO lcl_generator ##NEEDED.
 
-INTERFACE lif_gui_frontend_service.
-  METHODS display.
-  METHODS clear.
-  METHODS write
-    IMPORTING message TYPE any.
-  METHODS write_to_console_and_screen
-    IMPORTING message TYPE string.
-  METHODS file_save_dialog
-    IMPORTING VALUE(window_title)      TYPE string OPTIONAL
-              VALUE(default_extension) TYPE string OPTIONAL
-              VALUE(default_file_name) TYPE string OPTIONAL
-    CHANGING  filename                 TYPE string
-              path                     TYPE string
-              fullpath                 TYPE string
-              user_action              TYPE i OPTIONAL
-    RAISING   zcx_aff_tools.
-  METHODS gui_download
-    IMPORTING
-              !bin_filesize     TYPE i OPTIONAL
-              !filename         TYPE string
-              !filetype         TYPE char10 DEFAULT 'ASC'
-              !write_lf         TYPE char01 DEFAULT 'X'
-    EXPORTING
-              VALUE(filelength) TYPE i
-    CHANGING
-              !data_tab         TYPE STANDARD TABLE
-    RAISING   zcx_aff_tools.
-
-ENDINTERFACE.
-
-CLASS lcl_gui_frontend DEFINITION
-  FINAL CREATE PUBLIC.
-  PUBLIC SECTION.
-    INTERFACES lif_gui_frontend_service.
-ENDCLASS.
-
-CLASS lcl_gui_frontend IMPLEMENTATION.
-
-
-  METHOD lif_gui_frontend_service~file_save_dialog.
-    cl_gui_frontend_services=>file_save_dialog(
-      EXPORTING
-        default_extension   = default_extension
-        default_file_name   = default_file_name
-      CHANGING
-        filename            = filename
-        path                = path
-        fullpath            = fullpath
-        user_action         = user_action
-                              ) ##SUBRC_OK.
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~gui_download.
-    CLEAR filelength.
-    cl_gui_frontend_services=>gui_download(
-      EXPORTING
-        filename                  = filename
-        bin_filesize              = bin_filesize
-        filetype                  = filetype
-        write_lf                  = write_lf
-      CHANGING
-        data_tab                  = data_tab
-    ).
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~write_to_console_and_screen.
-    WRITE: / message.
-    cl_demo_output=>write( message ).
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~clear.
-    cl_demo_output=>clear( ).
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~display.
-    cl_demo_output=>display( ).
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~write.
-    cl_demo_output=>write( message  ).
-  ENDMETHOD.
-
-ENDCLASS.
-
-CLASS ltc_gui_frontend DEFINITION FINAL FOR TESTING.
-  PUBLIC SECTION .
-    INTERFACES lif_gui_frontend_service.
-ENDCLASS.
-CLASS ltc_gui_frontend IMPLEMENTATION.
-
-  METHOD lif_gui_frontend_service~file_save_dialog.
-    IF default_extension         = `zip`.
-
-      filename   = 'TESTFILENAME.zip'.
-      path       = 'TESTPATH'.
-      fullpath   = 'FULLPATH.zip'.
-      user_action = 0.
-
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~gui_download.
-    CLEAR filelength.
-    IF filename = 'TESTFILENAME.zip' AND filetype = 'BIN' AND write_lf = space.
-      data_tab = VALUE #( ).
-      sy-subrc = 0.
-    ELSE.
-      data_tab = VALUE #( ).
-      sy-subrc = 1.
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~write_to_console_and_screen ##NEEDED.
-
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~clear ##NEEDED.
-
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~display ##NEEDED.
-
-  ENDMETHOD.
-
-  METHOD lif_gui_frontend_service~write ##NEEDED.
-
-  ENDMETHOD.
-
-ENDCLASS.
 
 INTERFACE lif_generator.
   METHODS generate_type
@@ -216,7 +87,6 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
     DATA xslt_schema_content TYPE rswsourcet.
     DATA schema_test_content TYPE rswsourcet.
     DATA zip TYPE REF TO cl_abap_zip.
-    DATA gui_frontend_service TYPE REF TO lif_gui_frontend_service.
 
     METHODS: set_parameters
       IMPORTING
@@ -239,10 +109,9 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
 
       constructor
         IMPORTING
-          i_gui_frontend TYPE REF TO lif_gui_frontend_service OPTIONAL
-          aff_factory    TYPE REF TO if_aff_factory OPTIONAL
-          generator      TYPE REF TO lif_generator OPTIONAL
-          writer         TYPE REF TO zif_aff_writer OPTIONAL,
+          aff_factory TYPE REF TO if_aff_factory OPTIONAL
+          generator   TYPE REF TO lif_generator OPTIONAL
+          writer      TYPE REF TO zif_aff_writer OPTIONAL,
       start_of_selection,
       on_value_request_for_type,
       on_value_request_for_objtype,
@@ -258,7 +127,8 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
       create_schema_xslt_zip
         IMPORTING content      TYPE rswsourcet
         RETURNING VALUE(r_zip) TYPE REF TO cl_abap_zip,
-      print_logs.
+      print_logs,
+      output.
 
   PRIVATE SECTION.
 
@@ -275,6 +145,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
       generator   TYPE REF TO lif_generator,
       writer      TYPE REF TO zif_aff_writer.
     DATA replacing_table_string TYPE replacing_tab.
+
 
     METHODS: get_replacing_table_and_intfs
       IMPORTING name_of_intf_of_mainobj TYPE string
@@ -329,9 +200,6 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
         IMPORTING absolute_typename TYPE string
                   interfacename     TYPE string
         RETURNING VALUE(content)    TYPE rswsourcet,
-      object_as_string
-        IMPORTING object        TYPE if_aff_object_file_handler=>ty_object
-        RETURNING VALUE(result) TYPE string,
       get_objname_wo_namspace_with_z
         IMPORTING object_name   TYPE string
         RETURNING VALUE(result) TYPE string,
@@ -351,7 +219,7 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA fullpath TYPE string.
     DATA user_action TYPE i.
     TRY.
-        gui_frontend_service->file_save_dialog(
+        cl_gui_frontend_services=>file_save_dialog(
           EXPORTING
             default_extension = `zip`
             default_file_name = zipname
@@ -384,7 +252,7 @@ CLASS lcl_generator IMPLEMENTATION.
       off = off + chunk_size.
     ENDWHILE.
     TRY.
-        gui_frontend_service->gui_download(
+        cl_gui_frontend_services=>gui_download(
           EXPORTING
             filename     = file_name
             bin_filesize = xstring_length
@@ -980,21 +848,6 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD object_as_string.
-    IF object-devclass IS NOT INITIAL.
-      DATA(package) = |{ object-devclass WIDTH = 20 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
-    ENDIF.
-    DATA(objname) = |{ object-obj_name WIDTH = 30 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
-    DATA(objtype) = |{ object-obj_type WIDTH = 4 ALIGN = LEFT PAD = ' ' }|.
-    result = |{ package }{ objname } { objtype }|.
-
-    IF object-sub_name IS NOT INITIAL AND object-sub_type IS NOT INITIAL.
-      DATA(subname) = |{ object-sub_name WIDTH = 50 ALIGN = LEFT PAD = ' ' }| ##NUMBER_OK.
-      DATA(subtype) = |{ object-sub_type WIDTH = 4 ALIGN = LEFT PAD = ' ' }|.
-      result = |{ package }{ objname } { objtype } { subname } { subtype }|.
-    ENDIF.
-  ENDMETHOD.
-
 
   METHOD start_of_selection.
 
@@ -1032,18 +885,6 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDLOOP.
 
       generate_repo_folder( objects  = aff_objects whole_aff_folder = abap_true ).
-    ENDIF.
-
-    IF xslt_schema_content IS NOT INITIAL. "show it in the console
-      gui_frontend_service->write( xslt_schema_content ).
-      gui_frontend_service->display( ).
-    ELSEIF zip IS NOT INITIAL. "write it to disk
-      DATA(zip_archive) = zip->save( ).
-      DATA(zipname) = to_lower( p_objtyp ).
-      IF p_multre = abap_true OR p_whole = abap_true.
-        zipname = `file-formats` ##NO_TEXT.
-      ENDIF.
-      write_to_zip( zip_archive = zip_archive zipname = zipname ).
     ENDIF.
 
   ENDMETHOD.
@@ -1249,11 +1090,6 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDIF.
     generator_log = NEW zcl_aff_log( ).
     aff_framework_log = NEW cl_aff_log( ).
-    IF i_gui_frontend IS SUPPLIED.
-      gui_frontend_service = i_gui_frontend.
-    ELSE.
-      gui_frontend_service = NEW lcl_gui_frontend( ).
-    ENDIF.
   ENDMETHOD.
 
   METHOD set_parameters.
@@ -1281,6 +1117,21 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD set_schema_test_content.
     me->schema_test_content = schema_test_content.
+  ENDMETHOD.
+
+  METHOD output.
+    IF xslt_schema_content IS NOT INITIAL. "show it in the console
+      cl_demo_output=>write( xslt_schema_content ).
+      cl_demo_output=>display( ).
+    ELSEIF zip IS NOT INITIAL. "write it to disk
+      DATA(zip_archive) = zip->save( ).
+      DATA(zipname) = to_lower( p_objtyp ).
+      IF p_multre = abap_true OR p_whole = abap_true.
+        zipname = `file-formats` ##NO_TEXT.
+      ENDIF.
+      write_to_zip( zip_archive = zip_archive zipname = zipname ).
+    ENDIF.
+    print_logs( ).
   ENDMETHOD.
 
 ENDCLASS.
@@ -1340,7 +1191,6 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
     DATA file_handler_double TYPE REF TO if_aff_object_file_handler.
     DATA expected_log_messages TYPE zif_aff_log=>tt_log_out.
     DATA expected_report_log TYPE stringtab.
-    DATA gui_frontend TYPE REF TO ltc_gui_frontend.
 
     CONSTANTS c_aff_example_intf TYPE string VALUE 'AFF_EXAMPLE_INTF' ##NO_TEXT.
     CONSTANTS c_aff_example_intf_nspace TYPE string VALUE '/NAMESPACE/AFF_EXAMPLE_INTF' ##NO_TEXT.
@@ -1491,13 +1341,10 @@ CLASS ltc_generator IMPLEMENTATION.
     generator_log->zif_aff_log~add_info( message = VALUE #(  msgty = 'I' msgv1 = 'Generator Log' ) component_name = VALUE #( ) ).
     generator_double = NEW ltc_generator_double( generator_log ).
 
-    gui_frontend = NEW ltc_gui_frontend( ).
-
     cut = NEW lcl_generator(
       aff_factory    = aff_factory_double
       generator      = generator_double
       writer         = writer_double
-      i_gui_frontend = gui_frontend
     ).
 
     INSERT LINES OF generator_double->get_log( )->get_messages( ) INTO TABLE expected_log_messages.
@@ -1731,9 +1578,6 @@ CLASS ltc_generator IMPLEMENTATION.
     DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for FUNC` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    expected_report_log = VALUE #(
-  ( `Success: Zip file created here FULLPATH.zip` )
-  ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
@@ -1757,9 +1601,6 @@ CLASS ltc_generator IMPLEMENTATION.
     DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    expected_report_log = VALUE #(
-  ( `Success: Zip file created here FULLPATH.zip` )
-  ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
@@ -1782,9 +1623,6 @@ CLASS ltc_generator IMPLEMENTATION.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
     DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    expected_report_log = VALUE #(
-  ( `Success: Zip file created here FULLPATH.zip` )
-  ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
@@ -1820,9 +1658,6 @@ CLASS ltc_generator IMPLEMENTATION.
     cut->zip->get(  EXPORTING name  = `intf/intf-v1.json` IMPORTING content  = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    expected_report_log = VALUE #(
-  ( `Success: Zip file created here FULLPATH.zip` )
-  ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
@@ -1862,7 +1697,6 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
     expected_report_log = VALUE #(
   ( `Type \INTERFACE=/NAMESP/IF_AFF_INTF_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
-  ( `Success: Zip file created here FULLPATH.zip` )
   ).
     CLEAR expected_log_messages.
     assert_logs_and_file_handler( ).
@@ -1905,9 +1739,6 @@ CLASS ltc_generator IMPLEMENTATION.
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for REPS` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    expected_report_log = VALUE #(
-  ( `Success: Zip file created here FULLPATH.zip` )
-  ).
     expected_log_messages = VALUE #(
   ( type = 'I' text = `I::000 Generator Log` message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) )
   ( type = 'I' text = `I::000 Generator Log` message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) )
@@ -1945,11 +1776,8 @@ CLASS ltc_generator IMPLEMENTATION.
     expected_report_log = VALUE #(
   ( `Type \INTERFACE=IF_AFF_TABL_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
   ( `The schema for interface IF_AFF_TABL_V1 could not be created.` )
-  ( `Success: Zip file created here FULLPATH.zip` )
   ).
-*    expected_log_messages = value #(
-*  ( object = value #( devclass = 'IF_AFF_INDX_V1' ) type = 'I' text = `I::000 Generator Log` message = value #( msgty = 'I' msgv1 = 'Generator Log' ) )
-*   ).
+
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
@@ -2091,9 +1919,6 @@ CLASS ltc_generator IMPLEMENTATION.
       file_name_tab = file_name_tab
       zip           = cut->zip
     ).
-    expected_report_log = VALUE #(
-  ( `Success: Zip file created here FULLPATH.zip` )
-  ).
     expected_log_messages = VALUE #(
    ( type = 'I' text = `I::000 Generator Log` message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) )
    ( type = 'I' text = `I::000 Generator Log` message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) )
@@ -2355,4 +2180,5 @@ AT SELECTION-SCREEN OUTPUT.
 START-OF-SELECTION.
 
   helper->start_of_selection( ).
-  helper->print_logs( ).
+
+  helper->output( ).
