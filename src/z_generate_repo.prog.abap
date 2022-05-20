@@ -513,7 +513,6 @@ class lcl_generator implementation.
         append value #( devclass  = intf_obj_devclass obj_type  = 'INTF' obj_name = upper_intf ) to intf_objects.
       endloop.
 
-*      DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = l_log ).
       data(intf_files) = file_handler->serialize_objects( objects = intf_objects log = aff_framework_log ).
 
       add_aff_files_to_zip( files = intf_files filename = |{ object_type_folder_name }/type/| replacing_table_string = replacing_table_string ).
