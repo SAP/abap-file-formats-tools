@@ -465,7 +465,7 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
     TRY.
         DATA(xstring_content) = text_handler->if_aff_content_handler~serialize( i_stringtab_content ).
-      CATCH zcx_aff_tools.
+      CATCH cx_aff_root.
         INSERT i_error_text INTO TABLE report_log.
         RETURN.
     ENDTRY.
@@ -487,7 +487,7 @@ CLASS lcl_generator IMPLEMENTATION.
           text_handler->if_aff_content_handler~deserialize( EXPORTING content = file_content_xstring IMPORTING data = content_as_string ).
           content_as_string = replace_names_in_string( content_as_string = content_as_string replacing_table_string = replacing_table_string ).
           file_content_xstring = text_handler->if_aff_content_handler~serialize( content_as_string ).
-        CATCH zcx_aff_tools INTO DATA(exception).
+        CATCH cx_aff_root INTO DATA(exception).
           INSERT |Object names in file { <file>-file_name } could not be changed to 'z...'. { exception->get_text( ) }| INTO TABLE report_log ##NO_TEXT.
       ENDTRY.
       zip->add( name    = |{ filename }{ file_name }|
@@ -783,7 +783,7 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
     TRY.
         DATA(content_as_xstring) = text_handler->if_aff_content_handler~serialize( content ).
-      CATCH zcx_aff_tools.
+      CATCH cx_aff_root.
         CLEAR r_zip.
         INSERT `Schema/Xslt could not be created. Error when serializing string to xstring` INTO TABLE report_log ##NO_TEXT.
         RETURN.
