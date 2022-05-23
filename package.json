@@ -8,8 +8,8 @@
     "unit": "rm -rf output && abap_transpile && echo RUNNING && node output/index.mjs",
     "test": "npm run lint && npm run downport && npm run unit",
     "downport": "rm -rf downport && cp -r src downport && cp deps/* downport && rm downport/*.prog.abap && rm downport/zcl_aff_writer_xslt.clas.testclasses.abap && abaplint --fix abaplint-downport.jsonc",
-    "merge": "rm src/z_generate_json_schema.prog.abap && abapmerge -f src/z_generate_repo.prog.abap -c saff_generate_repo > saff_generate_repo.prog.abap"
-
+    "merge": "rm -f src/z_generate_json_schema.prog.abap && abapmerge -f src/z_generate_repo.prog.abap -c saff_generate_repo > saff_generate_repo.prog.abap",
+    "cutUnitTests": "sed -i '/CLASS\\ ltc_generator\\ I/,/ENDCLASS./d' saff_generate_repo.prog.abap && sed -i '/CLASS\\ ltc_generator\\ D/,/ENDCLASS./d' saff_generate_repo.prog.abap"
   },
   "license": "MIT",
   "dependencies": {
