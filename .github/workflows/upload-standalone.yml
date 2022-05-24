@@ -18,6 +18,7 @@ jobs:
       run: |
         npm install
         npm run merge
+        npm run cutUnitTests
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
       with:
