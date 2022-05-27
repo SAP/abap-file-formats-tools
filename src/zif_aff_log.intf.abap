@@ -48,15 +48,6 @@ INTERFACE zif_aff_log
       IMPORTING message        TYPE symsg
                 component_name TYPE string,
 
-
-    "! Add messages without use of a message class
-    add_message_dev
-      IMPORTING
-        type           TYPE symsgty
-        message        TYPE string
-        component_name TYPE string,
-
-
     "! Adds an exception to the log. Actually not the exception is added
     "! but the message of the exception. The message type can be submitted.
     "!
