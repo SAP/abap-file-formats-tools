@@ -107,12 +107,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>114</MSGNR>
-     <TEXT>Default argument is invalid</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>116</MSGNR>
      <TEXT>Text between annotations will not be parsed</TEXT>
     </T100>

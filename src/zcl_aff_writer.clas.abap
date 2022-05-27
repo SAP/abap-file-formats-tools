@@ -736,8 +736,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       ENDTRY.
     ENDIF.
     IF is_valid = abap_false.
-      MESSAGE w114(zaff_tools) INTO message.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg114 component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.
 
