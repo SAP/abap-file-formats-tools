@@ -32,7 +32,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_AFF_LOG IMPLEMENTATION.
+CLASS zcl_aff_log IMPLEMENTATION.
 
 
   METHOD zif_aff_log~get_messages.
@@ -44,7 +44,7 @@ CLASS ZCL_AFF_LOG IMPLEMENTATION.
     APPEND VALUE #( component_name = component_name
                     type         = type
                     text         = message
-                    message      = value #( ) ) TO me->messages.
+                    message      = VALUE #( ) ) TO me->messages.
   ENDMETHOD.
 
   METHOD zif_aff_log~add_info.
