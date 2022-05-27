@@ -131,26 +131,8 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>118</MSGNR>
-     <TEXT>Annotation &amp;1 is not allowed</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>119</MSGNR>
      <TEXT>&amp;1 is missing</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>120</MSGNR>
-     <TEXT>Mandatory field &quot;FORMAT_VERSION&quot; is not contained in the type</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>121</MSGNR>
-     <TEXT>Mandatory field &quot;header&quot; is not contained in the type</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
