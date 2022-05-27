@@ -461,7 +461,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     DATA(mapped_and_formatted_name) = map_and_format_name( structure_name ).
 
-    set_abapdoc_fullname_struc_tab( type_description = structure_description type_name  = structure_name ).
+    set_abapdoc_fullname_struc_tab( type_description = structure_description type_name = structure_name ).
 
     DATA(callback_class) = to_upper( abap_doc-callback_class ).
     IF callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = callback_class component_name = fullname_of_type ).
@@ -616,7 +616,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
-      abap_doc = call_reader_and_decode( name_of_source = source element_name   = fullname_of_type ).
+      abap_doc = call_reader_and_decode( name_of_source = source element_name = fullname_of_type ).
     ENDIF.
 
     IF already_searched = abap_false.
@@ -683,7 +683,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     DATA(source_type) = splitted_absolute_name[ 1 ].
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
       DATA(source) = splitted_absolute_name[ 2 ].
-      abap_doc = call_reader_and_decode( name_of_source = source element_name   = table_name ).
+      abap_doc = call_reader_and_decode( name_of_source = source element_name = table_name ).
     ENDIF.
     fullname_of_type = table_name.
     check_redundant_annotations( ).
@@ -845,7 +845,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
           has_initial_component = abap_true.
         ENDIF.
         DATA(fullname_of_value) = name_of_constant && '-' && <component>-name.
-        DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name   = fullname_of_value ).
+        DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name = fullname_of_value ).
         IF abap_doc_of_component-enum_value IS INITIAL.
           DATA(enum_value) = apply_formatting( CONV #( <component>-name ) ).
         ELSE.
@@ -859,7 +859,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         check_title_and_description( abap_doc_to_check = abap_doc_of_component fullname_of_checked_type = fullname_of_value ).
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        data(msg) = `Elements of type enum should be required or have a default`.
+        DATA(msg) = `Elements of type enum should be required or have a default`.
         log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
@@ -1031,8 +1031,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         DATA min_str TYPE string.
         min_str = <min>.
         DATA(length) = strlen( min_str ) - 1.
-        DATA(front) = substring( val = min_str off = 0  len = length ).
-        DATA(back) = substring( val = min_str off = length  len = 1 ).
+        DATA(front) = substring( val = min_str off = 0 len = length ).
+        DATA(back) = substring( val = min_str off = length len = 1 ).
         IF back = '-'.
           min = back && front.
         ELSE.
