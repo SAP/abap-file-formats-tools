@@ -113,12 +113,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>115</MSGNR>
-     <TEXT>Description is at wrong position</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>116</MSGNR>
      <TEXT>Text between annotations will not be parsed</TEXT>
     </T100>

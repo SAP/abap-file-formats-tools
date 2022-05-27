@@ -479,10 +479,9 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD write_description_message.
     IF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS INITIAL.
-      MESSAGE w115(zaff_tools) INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      parser_log->add_message_dev( type = 'W' message = `Description is at wrong position` component_name = component_name ).
     ELSEIF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS NOT INITIAL.
-      MESSAGE i116(zaff_tools) INTO message.
+      MESSAGE i116(zaff_tools) INTO data(message).
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
   ENDMETHOD.
