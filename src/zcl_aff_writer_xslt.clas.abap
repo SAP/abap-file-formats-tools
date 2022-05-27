@@ -336,7 +336,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
           fullname_of_type = fullname_of_type ).
     ENDIF.
     IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
-      abap_doc = call_reader_and_decode( name_of_source = source element_name   = fullname_of_type ).
+      abap_doc = call_reader_and_decode( name_of_source = source element_name = fullname_of_type ).
     ENDIF.
     IF already_searched = abap_false.
       DATA(abap_doc_second) = get_abap_doc_for_absolute_name( absolute_name = element_description->absolute_name ).
@@ -542,7 +542,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         ENDIF.
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        data(msg) = `Elements of type enum should be required or have a default`.
+        DATA(msg) = `Elements of type enum should be required or have a default`.
         log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
