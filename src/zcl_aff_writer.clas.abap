@@ -774,8 +774,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     ENDIF.
 
     IF abap_doc-required = abap_true AND abap_doc-default IS NOT INITIAL.
-      MESSAGE w126(zaff_tools) INTO message.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+      log->add_message_dev( type = 'W' message = `For required fields, a default handling is not possible` component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.
 
