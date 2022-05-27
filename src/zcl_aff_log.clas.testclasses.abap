@@ -202,10 +202,6 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
     MESSAGE i000(zaff_tools) WITH '1' '2' '3' '4' INTO DATA(message) ##NEEDED.
     DATA(act_message) = zcl_aff_log=>get_sy_message( ).
     cl_abap_unit_assert=>assert_equals( exp = VALUE symsg( msgid = 'ZAFF_TOOLS' msgno = '000' msgty = 'I' msgv1 = '1' msgv2 = '2' msgv3 = '3' msgv4 = '4' ) act = act_message ).
-
-    MESSAGE e001(zaff_tools) INTO message.
-    act_message = zcl_aff_log=>get_sy_message( ).
-    cl_abap_unit_assert=>assert_equals( exp = VALUE symsg( msgid = 'ZAFF_TOOLS' msgno = '001' msgty = 'E' ) act = act_message ).
   ENDMETHOD.
 
 ENDCLASS.

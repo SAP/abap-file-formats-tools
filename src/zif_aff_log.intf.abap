@@ -8,6 +8,16 @@ INTERFACE zif_aff_log
       warning TYPE symsgty VALUE 'W',
       info    TYPE symsgty VALUE 'I',
     END OF c_message_type.
+  CONSTANTS:
+    co_msg106 TYPE string VALUE `Callback class is invalid`,
+    co_msg113 TYPE string VALUE `Title is at wrong position`,
+    co_msg114 TYPE string VALUE `Default argument is invalid`,
+    co_msg115 TYPE string VALUE `Description is at wrong position`,
+    co_msg116 TYPE string VALUE `Text between annotations will not be parsed`,
+    co_msg123 TYPE string VALUE `No structure was provided for type generator`,
+    co_msg124 TYPE string VALUE `Given structure must have mandatory fields format_version and header`,
+    co_msg126 TYPE string VALUE `For required fields, a default handling is not possible`,
+    co_msg127 TYPE string VALUE `Elements of type enum should be required or have a default`.
 
   TYPES:
     "! A single message entry in the log
@@ -47,6 +57,15 @@ INTERFACE zif_aff_log
     add_error
       IMPORTING message        TYPE symsg
                 component_name TYPE string,
+
+
+    "! Add messages without use of a message class
+    add_message_dev
+      IMPORTING
+        type           TYPE symsgty
+        message        TYPE string
+        component_name TYPE string,
+
 
     "! Adds an exception to the log. Actually not the exception is added
     "! but the message of the exception. The message type can be submitted.

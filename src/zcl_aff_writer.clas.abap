@@ -349,11 +349,11 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD zif_aff_writer~open_node.
     CASE node_description->kind.
       WHEN cl_abap_typedescr=>kind_struct.
-        open_structure( structure_name = node_name  structure_description = node_description ).
+        open_structure( structure_name = node_name structure_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-open_structure name = node_name ) ).
 
       WHEN cl_abap_typedescr=>kind_table.
-        open_table( table_name = node_name  table_description = node_description ).
+        open_table( table_name = node_name table_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-open_table name = node_name ) ).
       WHEN OTHERS.
         RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e101(zaff_tools) WITH node_description->kind.
@@ -364,11 +364,11 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD zif_aff_writer~close_node.
     CASE node_description->kind.
       WHEN cl_abap_typedescr=>kind_struct.
-        close_structure( structure_name = node_name  structure_description = node_description ).
+        close_structure( structure_name = node_name structure_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-close_structure name = node_name ) ).
 
       WHEN cl_abap_typedescr=>kind_table.
-        close_table( table_name = node_name  table_description = node_description ).
+        close_table( table_name = node_name table_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-close_table name = node_name ) ).
 
       WHEN OTHERS.
@@ -580,7 +580,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       DATA(source) = splitted_prev_name[ 2 ].
       DATA(fullname_of_type) = splitted_prev_name[ 4 ].
       IF source_type = 'CLASS' OR source_type = 'INTERFACE'.
-        abap_doc = call_reader_and_decode( name_of_source = source element_name   = fullname_of_type ).
+        abap_doc = call_reader_and_decode( name_of_source = source element_name = fullname_of_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -647,8 +647,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       is_valid = xsdbool( has_method_get_subschema = abap_true AND has_method_serialize = abap_true AND has_method_deserialize = abap_true ).
     ENDIF.
     IF is_valid = abap_false.
-      MESSAGE w106(zaff_tools) INTO DATA(message) ##NEEDED.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg106 component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
@@ -736,8 +735,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       ENDTRY.
     ENDIF.
     IF is_valid = abap_false.
-      MESSAGE w114(zaff_tools) INTO message.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg114 component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.
 
@@ -774,8 +772,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     ENDIF.
 
     IF abap_doc-required = abap_true AND abap_doc-default IS NOT INITIAL.
-      MESSAGE w126(zaff_tools) INTO message.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg126 component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.
 

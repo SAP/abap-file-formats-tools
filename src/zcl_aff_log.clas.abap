@@ -12,7 +12,6 @@ CLASS zcl_aff_log DEFINITION
       "! @parameter result | The actual system message
       get_sy_message
         RETURNING VALUE(result) TYPE symsg.
-
   PROTECTED SECTION.
 
   PRIVATE SECTION.
@@ -32,13 +31,21 @@ CLASS zcl_aff_log DEFINITION
 ENDCLASS.
 
 
+
 CLASS zcl_aff_log IMPLEMENTATION.
 
 
   METHOD zif_aff_log~get_messages.
     messages = me->messages.
   ENDMETHOD.
+  METHOD zif_aff_log~add_message_dev.
+    set_max_severity( type ).
 
+    APPEND VALUE #( component_name = component_name
+                    type         = type
+                    text         = message
+                    message      = VALUE #( ) ) TO me->messages.
+  ENDMETHOD.
 
   METHOD zif_aff_log~add_info.
     set_max_severity( zif_aff_log=>c_message_type-info ).
@@ -134,5 +141,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
       ENDIF.
     ENDIF.
   ENDMETHOD.
+
+
 
 ENDCLASS.

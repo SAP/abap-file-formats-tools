@@ -17,12 +17,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>001</MSGNR>
-     <TEXT>An error has occurred in the AFF tools framework</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>100</MSGNR>
      <TEXT>The type &amp;1 is not supported by the generator</TEXT>
     </T100>
@@ -55,12 +49,6 @@
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>105</MSGNR>
      <TEXT>Component &amp;1 of constant &amp;2 in ABAP Doc link doesn&apos;t exist</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>106</MSGNR>
-     <TEXT>Callback class is invalid</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -101,30 +89,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>113</MSGNR>
-     <TEXT>Title is at wrong position</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>114</MSGNR>
-     <TEXT>Default argument is invalid</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>115</MSGNR>
-     <TEXT>Description is at wrong position</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>116</MSGNR>
-     <TEXT>Text between annotations will not be parsed</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>117</MSGNR>
      <TEXT>Annotation $$default for type &amp;1 is not supported</TEXT>
     </T100>
@@ -143,32 +107,8 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>123</MSGNR>
-     <TEXT>No structure was provided for type generator</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>124</MSGNR>
-     <TEXT>Given structure must have mandatory fields format_version and header</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>125</MSGNR>
      <TEXT>Description exceeds &amp;2 characters and might be too long</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>126</MSGNR>
-     <TEXT>For required fields, a default handling is not possible</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>127</MSGNR>
-     <TEXT>Elements of type enum should be required or have a default</TEXT>
     </T100>
    </T100>
   </asx:values>
