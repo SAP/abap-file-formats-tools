@@ -164,6 +164,12 @@
      <MSGNR>126</MSGNR>
      <TEXT>For required fields, a default handling is not possible</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZAFF_TOOLS</ARBGB>
+     <MSGNR>127</MSGNR>
+     <TEXT>Elements of type enum should be required or have a default</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
