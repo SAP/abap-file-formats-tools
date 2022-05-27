@@ -647,8 +647,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       is_valid = xsdbool( has_method_get_subschema = abap_true AND has_method_serialize = abap_true AND has_method_deserialize = abap_true ).
     ENDIF.
     IF is_valid = abap_false.
-      MESSAGE w106(zaff_tools) INTO DATA(message) ##NEEDED.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg106 component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 

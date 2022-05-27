@@ -17,12 +17,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>001</MSGNR>
-     <TEXT>An error has occurred in the AFF tools framework</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>100</MSGNR>
      <TEXT>The type &amp;1 is not supported by the generator</TEXT>
     </T100>
@@ -55,12 +49,6 @@
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>105</MSGNR>
      <TEXT>Component &amp;1 of constant &amp;2 in ABAP Doc link doesn&apos;t exist</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>106</MSGNR>
-     <TEXT>Callback class is invalid</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -115,18 +103,6 @@
      <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>122</MSGNR>
      <TEXT>Type of constant &amp;1 does not match type of &amp;2</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>123</MSGNR>
-     <TEXT>No structure was provided for type generator</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>124</MSGNR>
-     <TEXT>Given structure must have mandatory fields format_version and header</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
