@@ -9,7 +9,9 @@ INTERFACE zif_aff_log
       info    TYPE symsgty VALUE 'I',
     END OF c_message_type.
   CONSTANTS:
-    co_msg114 TYPE string VALUE `Default argument is invalid`.
+    co_msg113 TYPE string VALUE `Title is at wrong position`,
+    co_msg114 TYPE string VALUE `Default argument is invalid`,
+    co_msg116 TYPE string VALUE `Text between annotations will not be parsed`.
 
   TYPES:
     "! A single message entry in the log

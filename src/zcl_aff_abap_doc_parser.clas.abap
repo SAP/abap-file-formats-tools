@@ -145,8 +145,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
     ENDIF.
     IF ( find( val = abap_doc_string regex = co_shorttext_tag_open ) > 0 ) ##REGEX_POSIX.
-      MESSAGE i113(zaff_tools) INTO message.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      parser_log->add_message_dev( type = 'I' message = zif_aff_log=>co_msg113 component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
@@ -481,8 +480,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     IF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS INITIAL.
       parser_log->add_message_dev( type = 'W' message = `Description is at wrong position` component_name = component_name ).
     ELSEIF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS NOT INITIAL.
-      MESSAGE i116(zaff_tools) INTO data(message).
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      parser_log->add_message_dev( type = 'I' message = zif_aff_log=>co_msg116 component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
