@@ -14,6 +14,14 @@ CLASS zcl_aff_tools_unit_test_helper DEFINITION FINAL FOR TESTING
           exp_type           TYPE symsgty DEFAULT zif_aff_log=>c_message_type-error
           exp_component_name TYPE string OPTIONAL,
 
+      "! Checks whether the text string is contained in the log.
+      assert_log_contains_text
+        IMPORTING
+          log                TYPE REF TO zif_aff_log
+          exp_text           TYPE string
+          exp_type           TYPE symsgty DEFAULT zif_aff_log=>c_message_type-error
+          exp_component_name TYPE string OPTIONAL,
+
       "! Asserts that both string tables are equal, ignoring all spaces.
       assert_equals_ignore_spaces
         IMPORTING
@@ -66,6 +74,19 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
     ELSEIF NOT line_exists( act_messages[ type = exp_type message = msg ] ).
       cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD assert_log_contains_text.
+    DATA(act_messages) = log->get_messages( ).
+    IF exp_component_name IS SUPPLIED.
+      IF NOT line_exists( act_messages[ type = exp_type text = exp_text component_name = exp_component_name ] ).
+        cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
+      ENDIF.
+    ELSEIF NOT line_exists( act_messages[ type = exp_type text = exp_text ] ).
+      cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
+    ENDIF.
+
   ENDMETHOD.
 
   METHOD assert_log_has_no_message.
@@ -139,5 +160,6 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals( exp = exp_work_copy act = act_work_copy msg = 'Expected and actual abap source does not match' ).
   ENDMETHOD.
+
 
 ENDCLASS.
