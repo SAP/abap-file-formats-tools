@@ -32,7 +32,8 @@ CLASS zcl_aff_log DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_aff_log IMPLEMENTATION.
+
+CLASS ZCL_AFF_LOG IMPLEMENTATION.
 
 
   METHOD zif_aff_log~get_messages.
@@ -135,4 +136,13 @@ CLASS zcl_aff_log IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
+  METHOD zif_aff_log~add_message_dev.
+    set_max_severity( type ).
+
+    APPEND VALUE #( component_name = component_name
+                    type         = type
+                    text         = message
+                    message      = value #( ) ) TO me->messages.
+  ENDMETHOD.
 ENDCLASS.
