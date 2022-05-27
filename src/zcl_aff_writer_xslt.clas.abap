@@ -542,8 +542,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         ENDIF.
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        DATA(msg) = `Elements of type enum should be required or have a default`.
-        log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
+        log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.

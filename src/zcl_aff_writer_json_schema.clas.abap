@@ -859,8 +859,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         check_title_and_description( abap_doc_to_check = abap_doc_of_component fullname_of_checked_type = fullname_of_value ).
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        DATA(msg) = `Elements of type enum should be required or have a default`.
-        log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
+        log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
