@@ -158,12 +158,6 @@
      <MSGNR>125</MSGNR>
      <TEXT>Description exceeds &amp;2 characters and might be too long</TEXT>
     </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>126</MSGNR>
-     <TEXT>For required fields, a default handling is not possible</TEXT>
-    </T100>
    </T100>
   </asx:values>
  </asx:abap>
