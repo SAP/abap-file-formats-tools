@@ -393,11 +393,10 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     DATA(is_valid) = cut->is_callback_class_valid( class_name = class_name component_name = 'Component Name' ).
     DATA(log) = cut->zif_aff_writer~get_log( ).
     cl_abap_unit_assert=>assert_equals( exp = abap_false act = is_valid ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 106 )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg106
+                                                              exp_component_name = `Component Name`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD validate_default.

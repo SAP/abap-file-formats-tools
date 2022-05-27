@@ -977,11 +977,10 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     DATA(test) = VALUE zcl_aff_test_types=>structure_with_different_enum( ).
     test_generator->generate_type( test ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 127 )
-                                                             exp_component_name = `STRUCTURE_WITH_DIFFERENT_ENUM-ENUM_WITHOUT_ALL`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg127
+                                                              exp_component_name = `STRUCTURE_WITH_DIFFERENT_ENUM-ENUM_WITHOUT_ALL`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
 
@@ -1637,16 +1636,14 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( ) ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 126 )
-                                                             exp_component_name = `STRUCTURE_WITH_DEFAULT_PROBLEM-INTEGER`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 126 )
-                                                             exp_component_name = `STRUCTURE_WITH_DEFAULT_PROBLEM-ENUM_REQUIRED`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg126
+                                                              exp_component_name = `STRUCTURE_WITH_DEFAULT_PROBLEM-INTEGER`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg126
+                                                              exp_component_name = `STRUCTURE_WITH_DEFAULT_PROBLEM-ENUM_REQUIRED`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
 
 
   ENDMETHOD.
@@ -2191,11 +2188,10 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 106 )
-                                                             exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg106
+                                                              exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
                                                              exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                            msgno = 109

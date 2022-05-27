@@ -446,10 +446,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( title = `Title` minimum = `12` default = `"20"`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(  log                = log
-                                                               exp_text           = zif_aff_log=>co_msg115
-                                                               exp_component_name = `Component Name`
-                                                               exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg115
+                                                              exp_component_name = `Component Name`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD text_between_annotations.
@@ -462,11 +462,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Here is text between annotation` title = `Title` required = abap_true default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi`).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 116 )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg116
+                                                              exp_component_name = `Component Name`
+                                                              exp_type           = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD title_at_wrong_position.
@@ -479,16 +478,14 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Description first` title = `This is the title at wrong position` enumvalues_link = `cl_aff_test_types_for_writer.data:enum_values` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 116 )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 113 )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg116
+                                                              exp_component_name = `Component Name`
+                                                              exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg113
+                                                              exp_component_name = `Component Name`
+                                                              exp_type           = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
   METHOD overwriting_enum_value.
