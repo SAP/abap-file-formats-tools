@@ -8,8 +8,8 @@ INTERFACE zif_aff_log
       warning TYPE symsgty VALUE 'W',
       info    TYPE symsgty VALUE 'I',
     END OF c_message_type.
-  constants:
-    co_msg114 type string value `Default argument is invalid`.
+  CONSTANTS:
+    co_msg114 TYPE string VALUE `Default argument is invalid`.
 
   TYPES:
     "! A single message entry in the log
