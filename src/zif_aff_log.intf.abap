@@ -64,7 +64,7 @@ INTERFACE zif_aff_log
       IMPORTING
         type           TYPE symsgty
         message        TYPE string
-        component_name TYPE string optional,
+        component_name TYPE string OPTIONAL,
 
 
     "! Returns message for a given msg number
@@ -72,12 +72,12 @@ INTERFACE zif_aff_log
     "!
     "! @parameter msgno | the message number
     get_message
-      importing
-        msgno type syst_msgno
-        msgv1 type syst_msgv optional
-        msgv2 type syst_msgv optional
-        msgv3 type syst_msgv optional
-        msgv4 type syst_msgv optional
+      IMPORTING
+                msgno          TYPE syst_msgno
+                msgv1          TYPE syst_msgv OPTIONAL
+                msgv2          TYPE syst_msgv OPTIONAL
+                msgv3          TYPE syst_msgv OPTIONAL
+                msgv4          TYPE syst_msgv OPTIONAL
       RETURNING VALUE(message) TYPE string,
 
 
