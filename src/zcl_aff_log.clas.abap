@@ -29,9 +29,9 @@ CLASS zcl_aff_log DEFINITION
     TYPES: tt_msg TYPE STANDARD TABLE OF ty_msg WITH DEFAULT KEY.
 
     DATA:
-      messages     TYPE zif_aff_log=>tt_log_out,
-      message_table type tt_msg,
-      max_severity TYPE symsgty.
+      messages      TYPE zif_aff_log=>tt_log_out,
+      message_table TYPE tt_msg,
+      max_severity  TYPE symsgty.
 
 
     METHODS:
@@ -149,7 +149,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
                 message_entry-str2 && ` ` && msgv2 && ` ` &&
                 message_entry-str3 && ` ` && msgv3 && ` ` &&
                 message_entry-str4 && ` ` && msgv4.
-    endif.
+    ENDIF.
   ENDMETHOD.
 
   METHOD set_max_severity.
@@ -170,8 +170,8 @@ CLASS zcl_aff_log IMPLEMENTATION.
 
   METHOD constructor.
     " do fill tt_msg
-    append value #( msgno = 100 str1 = `The type`  str2 = `is not supported by the generator`) to message_table.
-    append value #( msgno = 101 str1 = `The node`  str2 = `is not supported by the generator`) to message_table.
+    APPEND VALUE #( msgno = 100 str1 = `The type`  str2 = `is not supported by the generator`) TO message_table.
+    APPEND VALUE #( msgno = 101 str1 = `The node`  str2 = `is not supported by the generator`) TO message_table.
 
   ENDMETHOD.
 
