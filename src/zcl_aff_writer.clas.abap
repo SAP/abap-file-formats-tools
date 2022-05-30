@@ -372,7 +372,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-close_table name = node_name ) ).
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e101(zaff_tools) WITH node_description->kind.
+        data(msg) = log->get_message( msgno = 101 msgv1 = conv #( node_description->kind ) ).
+        RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
     ENDCASE.
   ENDMETHOD.
 

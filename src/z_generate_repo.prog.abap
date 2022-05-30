@@ -763,7 +763,8 @@ CLASS lcl_generator IMPLEMENTATION.
     " getting the XSLT/Schema of the type
     TRY.
         content = generator->generate_type( <field> ).
-      CATCH zcx_aff_tools .
+      CATCH zcx_aff_tools into data(exception).
+        generator_log->add_message_dev( message = exception->get_text( ) type = 'W' ).
         CLEAR content.
         INSERT |The generator couldn't generate the schema/XSLT for type { absolute_typename }| INTO TABLE report_log ##NO_TEXT.
         RETURN.
