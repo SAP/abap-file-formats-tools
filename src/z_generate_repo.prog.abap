@@ -1729,7 +1729,8 @@ CLASS ltc_generator IMPLEMENTATION.
     expected_report_log = VALUE #(
   ( `The generator couldn't generate the schema/XSLT for type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_MAIN` )
   ).
-    CLEAR expected_log_messages.
+
+    expected_log_messages = value #( ( text = `I:ZAFF_TOOLS:001` type = 'W' )  ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
