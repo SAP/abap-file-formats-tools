@@ -98,7 +98,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
   METHOD check_mandatory_fields.
     DATA(components) = structure_description->get_components( ).
     IF NOT ( line_exists( components[ name = 'HEADER' ] ) AND line_exists( components[ name = 'FORMAT_VERSION' ] ) ).
-      log->add_message_dev( type ='W' message = zif_aff_log=>co_msg124 component_name = structure_description->get_relative_name( ) ).
+      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg124 component_name = structure_description->get_relative_name( ) ).
     ENDIF.
   ENDMETHOD.
 
@@ -117,7 +117,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
           table_name        = type_name
           table_description = CAST #( type_description ) ).
       WHEN OTHERS.
-        data(msg) = log->get_message( msgno = 100 msgv1 = conv #( type_description->kind ) ).
+        DATA(msg) = log->get_message( msgno = 100 msgv1 = CONV #( type_description->kind ) ).
         RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
     ENDCASE.
   ENDMETHOD.
