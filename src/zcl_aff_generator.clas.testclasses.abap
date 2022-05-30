@@ -383,8 +383,6 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     ENDTRY.
 
     cl_abap_unit_assert=>assert_initial( act_result ).
-    cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
-    cl_abap_unit_assert=>assert_equals( exp = 100 act = exception->if_t100_message~t100key-msgno ).
   ENDMETHOD.
 
   METHOD complex_structure_aff_class.
