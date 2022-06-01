@@ -170,8 +170,9 @@ CLASS zcl_aff_log IMPLEMENTATION.
 
   METHOD constructor.
     " do fill tt_msg
-    APPEND VALUE #( msgno = 100 str1 = `The type`  str2 = `is not supported by the generator`) TO message_table.
-    APPEND VALUE #( msgno = 101 str1 = `The node`  str2 = `is not supported by the generator`) TO message_table.
+    APPEND VALUE #( msgno = 102 str1 = `The JSON type`  str2 = `is not supported by the XSLT writer`) TO message_table.
+    APPEND VALUE #( msgno = 103 str1 = `Class/Interface type`  str2 = `given in ABAP Doc link doesn't exists`) TO message_table.
+    " more to come
 
   ENDMETHOD.
 
