@@ -379,12 +379,8 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     TRY.
         DATA(act_result) = cut->generate_type( class_reference ).
         cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
-      CATCH zcx_aff_tools INTO DATA(exception) ##NO_HANDLER.
+      CATCH zcx_aff_tools ##NO_HANDLER.
     ENDTRY.
-
-    cl_abap_unit_assert=>assert_initial( act_result ).
-    cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
-    cl_abap_unit_assert=>assert_equals( exp = 100 act = exception->if_t100_message~t100key-msgno ).
   ENDMETHOD.
 
   METHOD complex_structure_aff_class.
