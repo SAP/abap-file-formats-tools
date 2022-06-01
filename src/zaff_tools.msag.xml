@@ -23,18 +23,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>103</MSGNR>
-     <TEXT>Class/Interface &amp;1 given in ABAP Doc link doesn&apos;t exist</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>104</MSGNR>
-     <TEXT>Constant &amp;1 given in ABAP Doc link doesn&apos;t exist</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>105</MSGNR>
      <TEXT>Component &amp;1 of constant &amp;2 in ABAP Doc link doesn&apos;t exist</TEXT>
     </T100>
