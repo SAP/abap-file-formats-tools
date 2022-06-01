@@ -952,7 +952,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD check_title_and_description.
-    data msg type string.
+    DATA msg TYPE string.
 
     IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level. "Only write message if no callback class provided
       IF abap_doc_to_check-title IS INITIAL.
@@ -961,10 +961,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ENDIF.
 
       IF abap_doc_to_check-description IS INITIAL.
-         msg = log->get_message( msgno = 119 msgv1 = `Description` ).
+        msg = log->get_message( msgno = 119 msgv1 = `Description` ).
         log->add_message_dev( type = 'I' message = msg component_name = fullname_of_checked_type ).
       ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
-        MESSAGE w125(zaff_tools) WITH c_max_length_of_description INTO data(message).
+        MESSAGE w125(zaff_tools) WITH c_max_length_of_description INTO DATA(message).
         log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_checked_type ).
       ENDIF.
     ENDIF.
