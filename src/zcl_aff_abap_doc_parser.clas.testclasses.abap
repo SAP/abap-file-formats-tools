@@ -313,7 +313,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
       log                = log
       exp_text           = `Annotation $unknown is unknown`
       exp_type           = zif_aff_log=>c_message_type-warning
-      exp_component_name =  `Component Name` ).
+      exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD wrong_usage_callback_class.
