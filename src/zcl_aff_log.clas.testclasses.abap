@@ -13,7 +13,6 @@ CLASS ltcl_log_unit_test DEFINITION FINAL FOR TESTING
       add_info FOR TESTING RAISING cx_static_check,
       add_warning FOR TESTING RAISING cx_static_check,
       add_error FOR TESTING RAISING cx_static_check,
-      add_t102_exception FOR TESTING RAISING cx_static_check,
       joins_log FOR TESTING RAISING cx_static_check,
       clears_log FOR TESTING RAISING cx_static_check,
       get_max_severity FOR TESTING RAISING cx_static_check,
@@ -69,17 +68,7 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD add_t102_exception.
-    DATA(previous) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 102 ) ).
-    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 104 ) previous = previous ).
 
-    log->add_exception( exception = exception component_name = test_component_name ).
-
-    DATA(messages) = log->get_messages( ).
-    cl_abap_unit_assert=>assert_equals( exp = 2 act = lines( messages ) ).
-    assert_message( act_message = messages[ 1 ] type = 'E' exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 102 ) ).
-    assert_message( act_message = messages[ 2 ] type = 'E' exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 104 ) ).
-  ENDMETHOD.
 
 
   METHOD add_catched_exception.
