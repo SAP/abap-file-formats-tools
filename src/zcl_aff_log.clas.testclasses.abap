@@ -68,9 +68,6 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
   ENDMETHOD.
 
 
-
-
-
   METHOD add_catched_exception.
     TRY.
         RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(zaff_tools) WITH '1' '2' '3' '4'.
