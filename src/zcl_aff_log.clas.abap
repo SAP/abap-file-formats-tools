@@ -150,6 +150,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
                 message_entry-str2 && ` ` && msgv2 && ` ` &&
                 message_entry-str3 && ` ` && msgv3 && ` ` &&
                 message_entry-str4 && ` ` && msgv4.
+      CONDENSE message.
     ENDIF.
   ENDMETHOD.
 
