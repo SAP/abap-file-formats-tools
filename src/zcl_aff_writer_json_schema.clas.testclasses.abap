@@ -2322,14 +2322,12 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
       log                = log
       exp_text           = `Title is missing`
       exp_type           = zif_aff_log=>c_message_type-info
-      exp_component_name = `TABLE_NO_TITLE_DESCR`
-    ).
+      exp_component_name = `TABLE_NO_TITLE_DESCR` ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
       exp_text           = `Description is missing`
       exp_type           = zif_aff_log=>c_message_type-info
-      exp_component_name = `TABLE_NO_TITLE_DESCR`
-    ).
+      exp_component_name = `TABLE_NO_TITLE_DESCR` ).
   ENDMETHOD.
 
   METHOD structure_with_include.
