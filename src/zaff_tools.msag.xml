@@ -47,18 +47,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>108</MSGNR>
-     <TEXT>Annotation &amp;1 is unknown</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>109</MSGNR>
-     <TEXT>Annotation &amp;1  was used incorrectly</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>110</MSGNR>
      <TEXT>No number was provided for annotation &amp;1</TEXT>
     </T100>
