@@ -71,12 +71,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>119</MSGNR>
-     <TEXT>&amp;1 is missing</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>122</MSGNR>
      <TEXT>Type of constant &amp;1 does not match type of &amp;2</TEXT>
     </T100>

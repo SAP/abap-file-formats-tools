@@ -1768,12 +1768,11 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
                                                                                            attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default )
                                                              exp_component_name = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_TWO`
                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Title` )
-                                                             exp_component_name = `ENUM_VALUES-CLASSIC_BADI`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Title is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `ENUM_VALUES-CLASSIC_BADI` ).
   ENDMETHOD.
 
 
@@ -2237,42 +2236,36 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Title` )
-                                                             exp_component_name = `STRUCTURE_NO_TITLE_DESCR`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Description` )
-                                                             exp_component_name = `STRUCTURE_NO_TITLE_DESCR`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Title` )
-                                                             exp_component_name = `STRUCTURE_NO_TITLE_DESCR-FIELD1`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Description` )
-                                                             exp_component_name = `STRUCTURE_NO_TITLE_DESCR-INNER_STRUC`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                               msgno = 119
-                                                                                               attr1 = `Title` )
-                                                             exp_component_name = `STRUCTURE_NO_TITLE_DESCR-INNER_TABLE`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Description` )
-                                                             exp_component_name = `STRUCTURE_NO_TITLE_DESCR-INNER_TABLE`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Title is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `STRUCTURE_NO_TITLE_DESCR` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Description is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `STRUCTURE_NO_TITLE_DESCR` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Title is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `STRUCTURE_NO_TITLE_DESCR-FIELD1` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Description is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `STRUCTURE_NO_TITLE_DESCR-INNER_STRUC` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Title is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `STRUCTURE_NO_TITLE_DESCR-INNER_TABLE` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Description is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `STRUCTURE_NO_TITLE_DESCR-INNER_TABLE` ).
   ENDMETHOD.
 
   METHOD element_no_title_descr.
@@ -2287,18 +2280,16 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Title` )
-                                                             exp_component_name = `ELEMENT_NO_TITLE_DESCR`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Description` )
-                                                             exp_component_name = `ELEMENT_NO_TITLE_DESCR`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Title is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `ELEMENT_NO_TITLE_DESCR` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Description is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `ELEMENT_NO_TITLE_DESCR` ).
   ENDMETHOD.
 
   METHOD table_no_title_descr.
@@ -2316,18 +2307,16 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Title` )
-                                                             exp_component_name = `TABLE_NO_TITLE_DESCR`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Description` )
-                                                             exp_component_name = `TABLE_NO_TITLE_DESCR`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Title is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `TABLE_NO_TITLE_DESCR` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Description is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `TABLE_NO_TITLE_DESCR` ).
   ENDMETHOD.
 
   METHOD structure_with_include.
@@ -2411,19 +2400,16 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Title` )
-                                                             exp_component_name = `STRUCTURE_WITH_INCLUDE-OTHER_ELEMENT`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Description` )
-                                                             exp_component_name = `TY_INCLUDE_TYPE-FIRST_ELEMENT`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Title is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `STRUCTURE_WITH_INCLUDE-OTHER_ELEMENT` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Description is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `TY_INCLUDE_TYPE-FIRST_ELEMENT` ).
   ENDMETHOD.
 
   METHOD description_too_long.
