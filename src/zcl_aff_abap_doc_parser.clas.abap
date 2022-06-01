@@ -196,8 +196,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
           parse_enum_value( ).
         WHEN OTHERS.
           REPLACE key_word IN modified_abap_doc_string WITH ''.
-          MESSAGE w108(zaff_tools) WITH key_word INTO DATA(message) ##NEEDED.
-          parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+          DATA(msg) = parser_log->get_message( msgno = 108 msgv1 = CONV #( key_word ) ).
+          parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
       ENDCASE.
     ENDLOOP.
     abap_doc_string = modified_abap_doc_string.
@@ -211,8 +211,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF REGEX `\$callbackClass[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$callbackClass\{@link` ##REGEX_POSIX.
     FIND ALL OCCURRENCES OF REGEX `\$callbackClass\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
-      MESSAGE w109(zaff_tools) WITH abap_doc_annotation-callback_class INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-callback_class ) ).
+      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
       RETURN.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-callback_class ).
@@ -236,6 +236,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_default.
+    DATA message TYPE string.
     IF decoded_abap_doc-default IS NOT INITIAL.
       RETURN.
     ENDIF.
@@ -255,8 +256,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDLOOP.
 
     IF lines( mixed_result_table ) = 0.
-      MESSAGE w109(zaff_tools) WITH abap_doc_annotation-default INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-default ) ).
+      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
       RETURN.
     ENDIF.
     IF lines( mixed_result_table ) > 1.
@@ -288,6 +289,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_enum_values.
+    DATA message TYPE string.
+
     IF decoded_abap_doc-enumvalues_link IS NOT INITIAL.
       RETURN.
     ENDIF.
@@ -295,8 +298,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF REGEX `\$values[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$values\{@link` ##REGEX_POSIX.
     FIND ALL OCCURRENCES OF REGEX `\$values\{@link([^\}]+)\}` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
-      MESSAGE w109(zaff_tools) WITH abap_doc_annotation-values INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-values ) ).
+      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
       RETURN.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-values ).
@@ -304,7 +307,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       DATA(offset_found) = <entry>-offset.
       DATA(length_found) = <entry>-length.
-      DATA(link) = get_annotation_value( length = length_found - 1  offset = offset_found to_decode = string_to_parse length_of_annotation = 13 remove_whitespaces = abap_true ).
+      DATA(link) = get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 13 remove_whitespaces = abap_true ).
       check_next_word( offset = offset_found + length_found text_to_check = string_to_parse ).
       DATA(link_for_testing) = link.
       REPLACE ALL OCCURRENCES OF REGEX `\s` IN link_for_testing WITH `` ##REGEX_POSIX.
@@ -382,14 +385,15 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD get_number_annotation.
+    DATA message TYPE string.
     DATA(abap_doc) = abap_doc_string.
     DATA(dummy_annotation) = `$dummyannotation`.
     REPLACE ALL OCCURRENCES OF annotation_name IN abap_doc WITH dummy_annotation.
     REPLACE ALL OCCURRENCES OF REGEX  `\$dummyannotation[\s]*(:[\s]*)?` IN abap_doc WITH `\$dummyannotation` ##REGEX_POSIX.
     FIND ALL OCCURRENCES OF REGEX `\$dummyannotation[^\s]+` IN abap_doc RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
-      MESSAGE w109(zaff_tools) WITH abap_doc_annotation-values INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-values ) ).
+      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
       RETURN.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = annotation_name ).
@@ -425,8 +429,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF REGEX `\$enumValue[\s]*(:[\s]*)?'` IN string_to_parse WITH `\$enumValue'` ##REGEX_POSIX.
     FIND ALL OCCURRENCES OF REGEX `\$enumValue'[^']*'` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
-      MESSAGE w109(zaff_tools) WITH abap_doc_annotation-enum_value INTO DATA(message) ##NEEDED.
-      parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-enum_value ) ).
+      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
       RETURN.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-enum_value ).
