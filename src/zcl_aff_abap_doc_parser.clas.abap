@@ -196,7 +196,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
           parse_enum_value( ).
         WHEN OTHERS.
           REPLACE key_word IN modified_abap_doc_string WITH ''.
-          data(msg) = parser_log->get_message( msgno = 108 msgv1 = conv #( key_word ) ).
+          DATA(msg) = parser_log->get_message( msgno = 108 msgv1 = CONV #( key_word ) ).
           parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
       ENDCASE.
     ENDLOOP.
@@ -304,7 +304,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       DATA(offset_found) = <entry>-offset.
       DATA(length_found) = <entry>-length.
-      DATA(link) = get_annotation_value( length = length_found - 1  offset = offset_found to_decode = string_to_parse length_of_annotation = 13 remove_whitespaces = abap_true ).
+      DATA(link) = get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 13 remove_whitespaces = abap_true ).
       check_next_word( offset = offset_found + length_found text_to_check = string_to_parse ).
       DATA(link_for_testing) = link.
       REPLACE ALL OCCURRENCES OF REGEX `\s` IN link_for_testing WITH `` ##REGEX_POSIX.
