@@ -3,6 +3,7 @@ CLASS zcl_aff_log DEFINITION
   FINAL
   CREATE PUBLIC.
 
+
   PUBLIC SECTION.
     INTERFACES zif_aff_log.
 
