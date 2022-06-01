@@ -328,7 +328,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
-      exp_text           = `Annotation $callbackClass is unknown`
+      exp_text           = `Annotation $callbackClass was used incorrectly`
       exp_type           = zif_aff_log=>c_message_type-warning
       exp_component_name = `Component Name` ).
   ENDMETHOD.
@@ -356,12 +356,12 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
 
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
-      exp_text           = `Annotation $default is unknown`
+      exp_text           = `Annotation $default was used incorrectly`
       exp_type           = zif_aff_log=>c_message_type-warning
       exp_component_name = `Component Name1` ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
-      exp_text           = `Annotation $default is unknown`
+      exp_text           = `Annotation $default was used incorrectly`
       exp_type           = zif_aff_log=>c_message_type-warning
       exp_component_name = `Component Name2` ).
   ENDMETHOD.
@@ -378,7 +378,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
-      exp_text           = `Annotation $values is unknown`
+      exp_text           = `Annotation $values was used incorrectly`
       exp_type           = zif_aff_log=>c_message_type-warning
       exp_component_name = `Component Name` ).
 
