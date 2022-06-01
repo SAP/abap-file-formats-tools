@@ -117,7 +117,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
           table_name        = type_name
           table_description = CAST #( type_description ) ).
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(zaff_tools) WITH type_description->kind.
+        RAISE EXCEPTION NEW zcx_aff_tools( ).
     ENDCASE.
   ENDMETHOD.
 
