@@ -73,11 +73,11 @@ INTERFACE zif_aff_log
     "! @parameter msgno | the message number
     get_message
       IMPORTING
-                msgno          TYPE syst_msgno
-                msgv1          TYPE syst_msgv OPTIONAL
-                msgv2          TYPE syst_msgv OPTIONAL
-                msgv3          TYPE syst_msgv OPTIONAL
-                msgv4          TYPE syst_msgv OPTIONAL
+                msgno          TYPE symsgno
+                msgv1          TYPE symsgv OPTIONAL
+                msgv2          TYPE symsgv OPTIONAL
+                msgv3          TYPE symsgv OPTIONAL
+                msgv4          TYPE symsgv OPTIONAL
       RETURNING VALUE(message) TYPE string,
 
 
