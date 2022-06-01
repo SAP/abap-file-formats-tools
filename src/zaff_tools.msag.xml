@@ -17,18 +17,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>100</MSGNR>
-     <TEXT>The type &amp;1 is not supported by the generator</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>101</MSGNR>
-     <TEXT>The node &amp;1 is not supported by the generator</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>102</MSGNR>
      <TEXT>The JSON type &amp;1 is not supported by the XSLT writer</TEXT>
     </T100>
