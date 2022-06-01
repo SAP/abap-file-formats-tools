@@ -1750,12 +1750,12 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `</tt:cond>` ) ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 108
-                                                                                           attr1 = `$ructure` )
-                                                             exp_component_name = `MY_STRUCTURE2`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Annotation $ructure is unknown`
+      exp_type           = zif_aff_log=>c_message_type-warning
+      exp_component_name = `MY_STRUCTURE2` ).
+
   ENDMETHOD.
 
   METHOD structure_in_structure.
@@ -2770,12 +2770,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
                                                               exp_text           = zif_aff_log=>co_msg106
                                                               exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT`
                                                               exp_type           = zif_aff_log=>c_message_type-warning ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 109
-                                                                                           attr1 = `$callbackClass` )
-                                                             exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Annotation $callbackClass was used incorrectly`
+      exp_type           = zif_aff_log=>c_message_type-warning
+      exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT` ).
   ENDMETHOD.
 
   METHOD struc_with_own_enum_values.

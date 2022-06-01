@@ -621,7 +621,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN cl_abap_typedescr=>typekind_utclong.
         RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e117(zaff_tools) WITH `UTCLONG`.
       WHEN OTHERS.
-        RAISE EXCEPTION NEW zcx_aff_tools( ).
+        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(zaff_tools) WITH element_description->type_kind.
     ENDCASE.
   ENDMETHOD.
 
