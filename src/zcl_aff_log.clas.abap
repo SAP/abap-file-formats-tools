@@ -181,7 +181,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
     APPEND VALUE #( msgno = 111 str1 = `Link in annotation`  str2 = `is incorrect` ) TO message_table.
     APPEND VALUE #( msgno = 112 str1 = `If $required is set, $showAlways is redundant` ) TO message_table.
     APPEND VALUE #( msgno = 117 str1 = `Annotation $default for type`  str2 = `is not supported` ) TO message_table.
-    APPEND VALUE #( msgno = 119 str1 = ``  str2 = `is Missing` ) TO message_table.
+    APPEND VALUE #( msgno = 119 str1 = ``  str2 = `is missing` ) TO message_table.
     APPEND VALUE #( msgno = 122 str1 = `Type of constant`  str2 = `does not match type of` ) TO message_table.
     APPEND VALUE #( msgno = 125 str1 = `Description exceeds`  str2 = `characters and might be too long` ) TO message_table.
   ENDMETHOD.
