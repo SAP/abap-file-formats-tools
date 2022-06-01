@@ -196,8 +196,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
           parse_enum_value( ).
         WHEN OTHERS.
           REPLACE key_word IN modified_abap_doc_string WITH ''.
-          MESSAGE w108(zaff_tools) WITH key_word INTO DATA(message) ##NEEDED.
-          parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+          data(msg) = parser_log->get_message( msgno = 108 msgv1 = conv #( key_word ) ).
+          parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
       ENDCASE.
     ENDLOOP.
     abap_doc_string = modified_abap_doc_string.
