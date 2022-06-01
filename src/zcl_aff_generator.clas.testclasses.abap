@@ -377,7 +377,7 @@ CLASS ltcl_type_generator IMPLEMENTATION.
   METHOD unsupported_type.
     DATA class_reference TYPE REF TO zcl_aff_generator ##NEEDED.
     TRY.
-        DATA(act_result) = cut->generate_type( class_reference ).
+        cut->generate_type( class_reference ).
         cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
       CATCH zcx_aff_tools ##NO_HANDLER.
     ENDTRY.
