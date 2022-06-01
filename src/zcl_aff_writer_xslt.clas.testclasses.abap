@@ -816,11 +816,8 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
           node_description = cl_abap_typedescr=>describe_by_data( VALUE i( ) )
           node_name        = 'Unssuprted Type' ).
         cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
-      CATCH zcx_aff_tools INTO DATA(exception) ##NO_HANDLER.
+      CATCH zcx_aff_tools ##NO_HANDLER.
     ENDTRY.
-
-    cl_abap_unit_assert=>assert_equals( exp = '101' act = exception->if_t100_message~t100key-msgno ).
-    cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
   ENDMETHOD.
 
   METHOD close_unsupported_node.
@@ -829,11 +826,8 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
           node_description = cl_abap_typedescr=>describe_by_data( VALUE i( ) )
           node_name        = 'Unssuprted Type' ).
         cl_abap_unit_assert=>fail( msg = 'Exception expected' ).
-      CATCH zcx_aff_tools INTO DATA(exception) ##NO_HANDLER.
+      CATCH zcx_aff_tools ##NO_HANDLER.
     ENDTRY.
-
-    cl_abap_unit_assert=>assert_equals( exp = '101' act = exception->if_t100_message~t100key-msgno ).
-    cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = exception->if_t100_message~t100key-msgid ).
   ENDMETHOD.
 
   METHOD validate_output.

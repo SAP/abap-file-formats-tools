@@ -323,7 +323,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
            cl_abap_typedescr=>typekind_utclong.
         result = zif_aff_writer=>type_info-date_time.
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e100(zaff_tools) WITH element_description->type_kind.
+        RAISE EXCEPTION NEW zcx_aff_tools( ).
     ENDCASE.
   ENDMETHOD.
 
@@ -356,7 +356,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         open_table( table_name = node_name table_description = node_description ).
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-open_table name = node_name ) ).
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e101(zaff_tools) WITH node_description->kind.
+        RAISE EXCEPTION NEW zcx_aff_tools( ).
     ENDCASE.
   ENDMETHOD.
 
@@ -372,7 +372,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
         add_to_stack( VALUE #( operation = zif_aff_writer=>operation-close_table name = node_name ) ).
 
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e101(zaff_tools) WITH node_description->kind.
+        RAISE EXCEPTION NEW zcx_aff_tools( ).
     ENDCASE.
   ENDMETHOD.
 
