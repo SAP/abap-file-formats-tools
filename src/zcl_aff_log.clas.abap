@@ -12,12 +12,27 @@ CLASS zcl_aff_log DEFINITION
       "! @parameter result | The actual system message
       get_sy_message
         RETURNING VALUE(result) TYPE symsg.
+
+    METHODS:
+      constructor.
   PROTECTED SECTION.
 
   PRIVATE SECTION.
+    TYPES: BEGIN OF ty_msg,
+             msgno TYPE i,
+             str1  TYPE c LENGTH 100,
+             str2  TYPE c LENGTH 100,
+             str3  TYPE c LENGTH 100,
+             str4  TYPE c LENGTH 100,
+           END OF ty_msg.
+
+    TYPES: tt_msg TYPE STANDARD TABLE OF ty_msg WITH DEFAULT KEY.
+
     DATA:
-      messages     TYPE zif_aff_log=>tt_log_out,
-      max_severity TYPE symsgty.
+      messages      TYPE zif_aff_log=>tt_log_out,
+      message_table TYPE tt_msg,
+      max_severity  TYPE symsgty.
+
 
     METHODS:
       add_message
@@ -127,6 +142,15 @@ CLASS zcl_aff_log IMPLEMENTATION.
       msgv4 = sy-msgv4 ).
   ENDMETHOD.
 
+  METHOD zif_aff_log~get_message.
+    IF line_exists( message_table[ msgno = msgno ] ).
+      DATA(message_entry) = VALUE #( message_table[ msgno = msgno ] ).
+      message = message_entry-str1 && ` ` && msgv1 && ` ` &&
+                message_entry-str2 && ` ` && msgv2 && ` ` &&
+                message_entry-str3 && ` ` && msgv3 && ` ` &&
+                message_entry-str4 && ` ` && msgv4.
+    ENDIF.
+  ENDMETHOD.
 
   METHOD set_max_severity.
     IF type = zif_aff_log=>c_message_type-error.
@@ -143,5 +167,12 @@ CLASS zcl_aff_log IMPLEMENTATION.
   ENDMETHOD.
 
 
+
+  METHOD constructor.
+    " do fill tt_msg
+    APPEND VALUE #( msgno = 100 str1 = `The type`  str2 = `is not supported by the generator`) TO message_table.
+    APPEND VALUE #( msgno = 101 str1 = `The node`  str2 = `is not supported by the generator`) TO message_table.
+
+  ENDMETHOD.
 
 ENDCLASS.

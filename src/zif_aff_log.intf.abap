@@ -64,7 +64,22 @@ INTERFACE zif_aff_log
       IMPORTING
         type           TYPE symsgty
         message        TYPE string
-        component_name TYPE string,
+        component_name TYPE string OPTIONAL,
+
+
+    "! Returns message for a given msg number
+    "! This emulates the behaviour of the object type message classes
+    "!
+    "! @parameter msgno | the message number
+    get_message
+      IMPORTING
+                msgno          TYPE syst_msgno
+                msgv1          TYPE syst_msgv OPTIONAL
+                msgv2          TYPE syst_msgv OPTIONAL
+                msgv3          TYPE syst_msgv OPTIONAL
+                msgv4          TYPE syst_msgv OPTIONAL
+      RETURNING VALUE(message) TYPE string,
+
 
 
     "! Adds an exception to the log. Actually not the exception is added
