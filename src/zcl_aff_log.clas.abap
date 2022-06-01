@@ -20,10 +20,10 @@ CLASS zcl_aff_log DEFINITION
   PRIVATE SECTION.
     TYPES: BEGIN OF ty_msg,
              msgno TYPE i,
-             str1  TYPE c LENGTH 100,
-             str2  TYPE c LENGTH 100,
-             str3  TYPE c LENGTH 100,
-             str4  TYPE c LENGTH 100,
+             str1  TYPE c LENGTH 50,
+             str2  TYPE c LENGTH 50,
+             str3  TYPE c LENGTH 50,
+             str4  TYPE c LENGTH 50,
            END OF ty_msg.
 
     TYPES: tt_msg TYPE STANDARD TABLE OF ty_msg WITH DEFAULT KEY.
