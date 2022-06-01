@@ -2318,18 +2318,18 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Title` )
-                                                             exp_component_name = `TABLE_NO_TITLE_DESCR`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 119
-                                                                                           attr1 = `Description` )
-                                                             exp_component_name = `TABLE_NO_TITLE_DESCR`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Title is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `TABLE_NO_TITLE_DESCR`
+    ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Description is missing`
+      exp_type           = zif_aff_log=>c_message_type-info
+      exp_component_name = `TABLE_NO_TITLE_DESCR`
+    ).
   ENDMETHOD.
 
   METHOD structure_with_include.
