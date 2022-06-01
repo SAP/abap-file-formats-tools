@@ -1896,8 +1896,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
       log                = log
       exp_text           = 'Constant ZCL_AFF_TEST_TYPES=>ENUM_VALUES_WRONG given in ABAP Doc link doesn''t exist'
       exp_type           = zif_aff_log=>c_message_type-warning
-      exp_component_name = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO`
-    ).
+      exp_component_name = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO` ).
   ENDMETHOD.
 
   METHOD structure_with_enum_values.
