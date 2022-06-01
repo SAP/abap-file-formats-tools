@@ -70,8 +70,8 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
 
 
   METHOD add_t102_exception.
-    DATA(previous) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 104 ) ).
-    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 102 ) previous = previous ).
+    DATA(previous) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 102 ) ).
+    DATA(exception) = NEW zcx_aff_tools( textid = VALUE #( msgid = 'ZAFF_TOOLS' msgno = 104 ) previous = previous ).
 
     log->add_exception( exception = exception component_name = test_component_name ).
 
