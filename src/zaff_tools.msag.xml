@@ -29,18 +29,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>110</MSGNR>
-     <TEXT>No number was provided for annotation &amp;1</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>111</MSGNR>
-     <TEXT>Link in annotation &amp;1 is incorrect</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>112</MSGNR>
      <TEXT>If $$required is set, $$showAlways is redundant</TEXT>
     </T100>

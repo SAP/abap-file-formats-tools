@@ -394,18 +394,14 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Wrong usage of minimum and maximum.` default = '"3"' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 110
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 110
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |No number was provided for annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum }|
+                                                              exp_type           = zif_aff_log=>c_message_type-warning
+                                                              exp_component_name = `Component Name` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |No number was provided for annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum }|
+                                                              exp_type           = zif_aff_log=>c_message_type-warning
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD wrong_links.
@@ -418,18 +414,14 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Wrong links for default and values.` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 111
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-values )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 111
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |Link in annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-values } is incorrect|
+                                                              exp_type           = zif_aff_log=>c_message_type-warning
+                                                              exp_component_name = `Component Name` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |Link in annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-default } is incorrect|
+                                                              exp_type           = zif_aff_log=>c_message_type-warning
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD description_at_false_position.
