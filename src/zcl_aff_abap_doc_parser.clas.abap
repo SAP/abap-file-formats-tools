@@ -236,7 +236,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_default.
-    DATA message TYPE string.
     IF decoded_abap_doc-default IS NOT INITIAL.
       RETURN.
     ENDIF.
@@ -383,7 +382,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD get_number_annotation.
-    DATA message TYPE string.
     DATA(abap_doc) = abap_doc_string.
     DATA(dummy_annotation) = `$dummyannotation`.
     REPLACE ALL OCCURRENCES OF annotation_name IN abap_doc WITH dummy_annotation.
