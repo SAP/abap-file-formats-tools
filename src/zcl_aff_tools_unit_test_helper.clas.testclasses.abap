@@ -23,13 +23,16 @@ CLASS ltcl_unit_test_helper IMPLEMENTATION.
 
   METHOD log_contains_msg_with_env.
     TRY.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(zaff_tools) WITH 'TEST_ATTR'.
+        data(msg) = log->get_message( msgno = 102 msgv1 = `TEST_ATTR` ).
+        RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
       CATCH zcx_aff_tools INTO DATA(exception).
         log->add_exception( exception = exception component_name = '' ).
     ENDTRY.
 
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log         = log
-                                                             exp_message = VALUE #( msgid = 'ZAFF_TOOLS' msgno = '102' attr1 = 'TEST_ATTR' ) ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log         = log
+      exp_type    = ''
+      exp_text    = `The JSON type TEST_ATTR is not supported by the XSLT writer` ).
   ENDMETHOD.
 
   METHOD log_contains_msg_without_env.
