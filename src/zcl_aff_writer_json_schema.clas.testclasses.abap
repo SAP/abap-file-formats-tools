@@ -547,24 +547,18 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 122
-                                                                                           attr1 = `CO_TEST`
-                                                                                           attr2 = `DEFAULT_LINK` )
-                                                             exp_component_name = `DEFAULT_LINK`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Type of constant CO_TEST does not match type of DEFAULT_LINK`
+      exp_component_name = `DEFAULT_LINK`
+      exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD type_of_enumtype_and_co_differ.
     TRY.
         test_generator->generate_type( VALUE zcl_aff_test_types=>enum( ) ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_aff_tools INTO DATA(ex).
-        cl_abap_unit_assert=>assert_equals( exp = 'CO_ENUM' act = ex->if_t100_dyn_msg~msgv1 ).
-        cl_abap_unit_assert=>assert_equals( exp = 'ENUM' act = ex->if_t100_dyn_msg~msgv2 ).
-        cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = ex->if_t100_message~t100key-msgid ).
-        cl_abap_unit_assert=>assert_equals( exp = 122 act = ex->if_t100_message~t100key-msgno ).
+      CATCH zcx_aff_tools.
     ENDTRY.
   ENDMETHOD.
 
