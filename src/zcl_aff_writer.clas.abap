@@ -669,8 +669,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
           IF row-type->type_kind = element_type.
             is_valid = abap_true.
           ELSE.
-            MESSAGE w122(zaff_tools) WITH constant_name fullname_of_type INTO DATA(message) ##NEEDED.
-            log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+            msg = log->get_message( msgno = 122 msgv1 = CONV #( constant_name ) msgv2 = CONV #( fullname_of_type ) ).
+            log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
           ENDIF.
         ELSE.
           msg = log->get_message( msgno = 105 msgv1 = CONV #( component_name ) msgv2 = CONV #( constant_name ) ).

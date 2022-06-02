@@ -837,7 +837,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
         IF <component>-type_kind <> enum_type.
-          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(zaff_tools) WITH name_of_constant fullname_of_type.
+          DATA(msg) = log->get_message( msgno = 122 msgv1 = CONV #( name_of_constant ) msgv2 = CONV #( fullname_of_type ) ).
+          RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
         ENDIF.
 
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.

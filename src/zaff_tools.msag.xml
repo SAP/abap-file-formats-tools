@@ -26,12 +26,6 @@
      <MSGNR>112</MSGNR>
      <TEXT>If $$required is set, $$showAlways is redundant</TEXT>
     </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>122</MSGNR>
-     <TEXT>Type of constant &amp;1 does not match type of &amp;2</TEXT>
-    </T100>
    </T100>
   </asx:values>
  </asx:abap>

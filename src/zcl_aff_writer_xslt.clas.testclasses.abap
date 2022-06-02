@@ -2480,11 +2480,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 *    expect error /no output (type of type and constant has to be the same)
         test_generator->generate_type( test_type ).
         cl_abap_unit_assert=>fail( ).
-      CATCH zcx_aff_tools INTO DATA(ex).
-        cl_abap_unit_assert=>assert_equals( exp = 'CO_ENUM' act = ex->if_t100_dyn_msg~msgv1 ).
-        cl_abap_unit_assert=>assert_equals( exp = 'ENUM' act = ex->if_t100_dyn_msg~msgv2 ).
-        cl_abap_unit_assert=>assert_equals( exp = 'ZAFF_TOOLS' act = ex->if_t100_message~t100key-msgid ).
-        cl_abap_unit_assert=>assert_equals( exp = 122 act = ex->if_t100_message~t100key-msgno ).
+      CATCH zcx_aff_tools.
     ENDTRY.
   ENDMETHOD.
 
@@ -2517,13 +2513,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 122
-                                                                                           attr1 = `CO_TEST`
-                                                                                           attr2 = `STRUC_LINK_WRONG_TYPE-DEFAULT_LINK` )
-                                                             exp_component_name = `STRUC_LINK_WRONG_TYPE-DEFAULT_LINK`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = |Type of constant CO_TEST does not match type of STRUC_LINK_WRONG_TYPE-DEFAULT_LINK|
+      exp_component_name = `STRUC_LINK_WRONG_TYPE-DEFAULT_LINK`
+      exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_with_wrong_default.
