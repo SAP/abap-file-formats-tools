@@ -81,7 +81,7 @@ ENDINTERFACE.
 
 "!@testing ZCL_AFF_GENERATOR
 CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
-  DURATION SHORT
+  DURATION MEDIUM
   RISK LEVEL HARMLESS.
 
   PRIVATE SECTION.
@@ -851,7 +851,7 @@ ENDCLASS.
 
 "!@testing ZCL_AFF_GENERATOR
 CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
-  DURATION SHORT
+  DURATION MEDIUM
   RISK LEVEL DANGEROUS.
 
   PRIVATE SECTION.
@@ -1589,7 +1589,7 @@ ENDCLASS.
 
 "!@testing ZCL_AFF_GENERATOR
 CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
-  DURATION SHORT
+  DURATION MEDIUM
   RISK LEVEL HARMLESS.
 
   PRIVATE SECTION.
@@ -2565,13 +2565,10 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `</tt:cond>` ) ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 105
-                                                                                           attr1 = `WRONG_COMPONENT`
-                                                                                           attr2 = `ENUM_VALUES` )
-                                                             exp_component_name = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_ONE`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = 'Component WRONG_COMPONENT of constant ENUM_VALUES in ABAP Doc link doesn''t exist'
+                                                              exp_type           = zif_aff_log=>c_message_type-warning
+                                                              exp_component_name = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_ONE` ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
                                                              exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
                                                                                            msgno = 111
@@ -2832,7 +2829,7 @@ ENDCLASS.
 
 
 CLASS ltcl_integration_test_ad DEFINITION FINAL FOR TESTING
-DURATION SHORT
+DURATION MEDIUM
 RISK LEVEL DANGEROUS.
 
   PRIVATE SECTION.
