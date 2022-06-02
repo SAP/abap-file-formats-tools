@@ -236,7 +236,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_default.
-    DATA message TYPE string.
     IF decoded_abap_doc-default IS NOT INITIAL.
       RETURN.
     ENDIF.
@@ -278,8 +277,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         IF lines( splitted ) = 3.
           decoded_abap_doc-default = link.
         ELSEIF warning_set = abap_false.
-          MESSAGE w111(zaff_tools) WITH abap_doc_annotation-default INTO message.
-          parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+          msg = parser_log->get_message( msgno = 111 msgv1 = CONV #( abap_doc_annotation-default ) ).
+          parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
           warning_set = abap_true.
         ENDIF.
       ENDIF.
@@ -289,8 +288,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_enum_values.
-    DATA message TYPE string.
-
     IF decoded_abap_doc-enumvalues_link IS NOT INITIAL.
       RETURN.
     ENDIF.
@@ -316,8 +313,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       IF lines( splitted ) = 2 AND decoded_abap_doc-enumvalues_link IS INITIAL.
         decoded_abap_doc-enumvalues_link = link.
       ELSEIF lines( splitted ) <> 2 AND warning_written = abap_false.
-        MESSAGE w111(zaff_tools) WITH abap_doc_annotation-values INTO message.
-        parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+        msg = parser_log->get_message( msgno = 111 msgv1 = CONV #( abap_doc_annotation-values ) ).
+        parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
         warning_written = abap_true.
       ENDIF.
     ENDLOOP.
@@ -385,7 +382,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD get_number_annotation.
-    DATA message TYPE string.
     DATA(abap_doc) = abap_doc_string.
     DATA(dummy_annotation) = `$dummyannotation`.
     REPLACE ALL OCCURRENCES OF annotation_name IN abap_doc WITH dummy_annotation.
@@ -414,8 +410,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       IF match = abap_true AND number IS INITIAL.
         number = number_candidate.
       ELSEIF match = abap_false AND warning_written = abap_false.
-        MESSAGE w110(zaff_tools) WITH annotation_name INTO message.
-        parser_log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+        msg = parser_log->get_message( msgno = 110 msgv1 = CONV #( annotation_name ) ).
+        parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
         warning_written = abap_true.
       ENDIF.
     ENDLOOP.
