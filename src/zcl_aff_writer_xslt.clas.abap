@@ -385,7 +385,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN zif_aff_writer=>type_info-numeric.
         result = `num`.
       WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(zaff_tools) WITH json_type.
+        DATA(msg) = log->get_message( msgno = 102 msgv1 = CONV #( json_type ) ).
+        RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
     ENDCASE.
   ENDMETHOD.
 
@@ -404,7 +405,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         WHEN zif_aff_writer=>type_info-numeric.
           result = ` option="format(alpha)"` ##NO_TEXT.
         WHEN OTHERS.
-          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e102(zaff_tools) WITH json_type.
+          DATA(msg) = log->get_message( msgno = 102 msgv1 = CONV #( json_type ) ).
+          RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
       ENDCASE.
     ENDIF.
   ENDMETHOD.
