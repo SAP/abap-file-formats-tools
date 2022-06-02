@@ -1548,12 +1548,11 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( ) ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema_co exp_data = exp_schema ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 117
-                                                                                           attr1 = `UTCLONG` )
-                                                             exp_component_name = `STRUCTURE_DIFFERENT_DEFAULT-DATE_TIME_FIELD`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = `Annotation $default for type UTCLONG is not supported`
+      exp_component_name = `STRUCTURE_DIFFERENT_DEFAULT-DATE_TIME_FIELD`
+      exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_with_default_problem.
