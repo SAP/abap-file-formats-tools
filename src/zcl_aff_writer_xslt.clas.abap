@@ -528,7 +528,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         DATA(fullname_of_component) = name_of_constant && '-' && <component>-name.
         DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name = fullname_of_component ).
         IF <component>-type_kind <> enum_type.
-          RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e122(zaff_tools) WITH name_of_constant fullname_of_type.
+          DATA(msg) = log->get_message( msgno = 122 msgv1 = CONV #( name_of_constant ) msgv2 = CONV #( fullname_of_type ) ).
+          RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
         ENDIF.
         IF abap_doc_of_component-enum_value IS INITIAL.
           DATA(json_name) = map_and_format_name( CONV #( <component>-name ) ).
