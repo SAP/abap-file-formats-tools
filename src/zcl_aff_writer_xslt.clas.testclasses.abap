@@ -1892,12 +1892,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `</tt:cond>` ) ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 104
-                                                                                           attr1 = `ZCL_AFF_TEST_TYPES=>ENUM_VALUES_WRONG` )
-                                                             exp_component_name = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = 'Constant ZCL_AFF_TEST_TYPES=>ENUM_VALUES_WRONG given in ABAP Doc link doesn''t exist'
+      exp_type           = zif_aff_log=>c_message_type-warning
+      exp_component_name = `STRUCTURE_WITH_WRONG_LINK-ELEMENT_TWO` ).
   ENDMETHOD.
 
   METHOD structure_with_enum_values.

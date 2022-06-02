@@ -510,6 +510,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD get_constant_as_struc.
     DATA constant TYPE REF TO cl_abap_datadescr.
+    DATA msg TYPE string.
 
     cl_abap_typedescr=>describe_by_name(
       EXPORTING
@@ -522,8 +523,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
     IF sy-subrc <> 0.
 *    class or interface doesn't exist
-      MESSAGE w103(zaff_tools) WITH name_of_source INTO DATA(message) ##NEEDED.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+      msg = log->get_message( msgno = 103 msgv1 = CONV #( name_of_source ) ).
+      log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
     ELSE.
       IF constant_descr->kind = cl_abap_typedescr=>kind_intf.
         DATA(constant_descr_intf) = CAST cl_abap_intfdescr( constant_descr ).
@@ -537,8 +538,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             OTHERS              = 2 ).
         IF sy-subrc <> 0.
 *      constant in interface does not exist
-          MESSAGE w104(zaff_tools) WITH name_of_source && '=>' && name_of_constant INTO message.
-          log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+          msg = log->get_message( msgno = 104 msgv1 = CONV #( name_of_source && '=>' && name_of_constant ) ).
+          log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
         ENDIF.
       ELSEIF constant_descr->kind = cl_abap_typedescr=>kind_class.
         DATA(constant_descr_clas) = CAST cl_abap_classdescr( constant_descr ).
@@ -552,8 +553,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             OTHERS              = 2 ).
         IF sy-subrc <> 0.
 *      constant in class does not exits
-          MESSAGE w104(zaff_tools) WITH name_of_source && '=>' && name_of_constant INTO message.
-          log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+          msg = log->get_message( msgno = 104 msgv1 = CONV #( name_of_source && '=>' && name_of_constant ) ).
+          log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
         ENDIF.
       ENDIF.
       constant_as_struc = CAST cl_abap_structdescr( constant ).
