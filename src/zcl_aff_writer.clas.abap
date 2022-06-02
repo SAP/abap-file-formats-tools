@@ -691,8 +691,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     ASSIGN r_field->* TO <field>.
     IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
 *      No support for default with utclong
-      MESSAGE w117(zaff_tools) WITH 'UTCLONG' INTO DATA(message) ##NEEDED.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+      DATA(message) = log->get_message( msgno = 117 msgv1 = `UTCLONG` ).
+      log->add_message_dev( type = 'W' message = message component_name = fullname_of_type ).
       is_valid = abap_false.
       RETURN.
     ELSEIF type = zif_aff_writer=>type_info-boolean.

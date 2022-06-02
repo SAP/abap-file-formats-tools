@@ -557,8 +557,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_default_value_from_default.
     IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
-      MESSAGE w117(zaff_tools) WITH 'UTCLONG' INTO DATA(message) ##NEEDED.
-      log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+      DATA(message) = log->get_message( msgno = 117 msgv1 = `UTCLONG` ).
+      log->add_message_dev( type = 'W' message = message component_name = fullname_of_type ).
       RETURN.
     ENDIF.
 
@@ -619,7 +619,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN cl_abap_typedescr=>typekind_time.
         result = |T('{ value }')|.
       WHEN cl_abap_typedescr=>typekind_utclong.
-        RAISE EXCEPTION TYPE zcx_aff_tools MESSAGE e117(zaff_tools) WITH `UTCLONG`.
+        DATA(message) = log->get_message( msgno = 117 msgv1 = `UTCLONG` ).
+        RAISE EXCEPTION NEW zcx_aff_tools( message = message ).
       WHEN OTHERS.
         RAISE EXCEPTION NEW zcx_aff_tools( ).
     ENDCASE.
