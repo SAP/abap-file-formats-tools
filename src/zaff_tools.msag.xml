@@ -26,12 +26,6 @@
      <MSGNR>112</MSGNR>
      <TEXT>If $$required is set, $$showAlways is redundant</TEXT>
     </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>117</MSGNR>
-     <TEXT>Annotation $$default for type &amp;1 is not supported</TEXT>
-    </T100>
    </T100>
   </asx:values>
  </asx:abap>
