@@ -141,7 +141,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD check_title_positions.
     IF ( count( val = abap_doc_string regex = co_shorttext_tag_open ) > 1 ) ##REGEX_POSIX.
-      data(msg) = parser_log->get_message( msgno = 107 msgv1 = `'Title'` ).
+      DATA(msg) = parser_log->get_message( msgno = 107 msgv1 = `'Title'` ).
       parser_log->add_message_dev( type = 'I' message = msg component_name = component_name ).
     ENDIF.
     IF ( find( val = abap_doc_string regex = co_shorttext_tag_open ) > 0 ) ##REGEX_POSIX.
@@ -490,7 +490,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD write_log_for_multiple_entries.
     IF lines( result_table ) > 1.
-      data(msg) = parser_log->get_message( msgno = 107 msgv1 = CONV #( annotaion ) ).
+      DATA(msg) = parser_log->get_message( msgno = 107 msgv1 = CONV #( annotaion ) ).
       parser_log->add_message_dev( type = 'I' message = msg component_name = component_name ).
     ENDIF.
   ENDMETHOD.
