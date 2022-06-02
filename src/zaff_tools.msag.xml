@@ -23,12 +23,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>107</MSGNR>
-     <TEXT>There are several occurrences of annotation &amp;1. First valid is used</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>110</MSGNR>
      <TEXT>No number was provided for annotation &amp;1</TEXT>
     </T100>

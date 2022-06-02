@@ -152,19 +152,15 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( title = `Title`  description = `This is the description` showalways = abap_true minimum = `2` default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = `'Title'` )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation 'Title' . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
 
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-show_always )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-show_always } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD too_many_number_annotations.
@@ -177,18 +173,14 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many number annotations`  minimum = '4' maximum = '9' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-minimum } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-maximum } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD too_many_default_mixed.
@@ -201,12 +193,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `"10"` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-default } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD too_many_default_link.
@@ -219,12 +209,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-default } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD too_many_default_value.
@@ -237,12 +225,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many defaults`  minimum = '4' default = `"10"` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-default } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD too_many_value_links.
@@ -255,12 +241,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Here are two many value links.` enumvalues_link = `cl_aff_test_types_for_writer.data:enum_values` required = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-values )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-values } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD too_many_callbackclasses.
@@ -273,12 +257,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many callbackclass links.` callback_class = `cl_aff_test_types_for_writer` minimum = '4').
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD too_many_required_annotations.
@@ -291,12 +273,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Here are too many required annotations.` required = abap_true min_length = '5' max_length = '10').
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-required )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-required } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
   METHOD unknown_annotation.
@@ -507,12 +487,10 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `Field with overwritten enum value` title = `Field With Overwritten Enum Value` enum_value = `ownValue` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 107
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-enum_value )
-                                                             exp_component_name = `Component Name`
-                                                             exp_type           = zif_aff_log=>c_message_type-info ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-enum_value } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
 ENDCLASS.
