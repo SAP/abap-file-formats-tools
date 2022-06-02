@@ -23,12 +23,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>107</MSGNR>
-     <TEXT>There are several occurrences of annotation &amp;1. First valid is used</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>112</MSGNR>
      <TEXT>If $$required is set, $$showAlways is redundant</TEXT>
     </T100>
