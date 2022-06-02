@@ -653,6 +653,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD validate_default_link.
+    DATA msg TYPE string.
     IF lines( splitted_link ) = 3.
       DATA(source_name) = to_upper( splitted_link[ 1 ] ).
       DATA(constant_name) = to_upper( splitted_link[ 2 ] ).
@@ -672,8 +673,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
           ENDIF.
         ELSE.
-          MESSAGE w105(zaff_tools) WITH component_name constant_name INTO message.
-          log->add_warning( message = zcl_aff_log=>get_sy_message( ) component_name = fullname_of_type ).
+          msg = log->get_message( msgno = 105 msgv1 = CONV #( component_name ) msgv2 = CONV #( constant_name ) ).
+          log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
         ENDIF.
       ENDIF.
     ENDIF.

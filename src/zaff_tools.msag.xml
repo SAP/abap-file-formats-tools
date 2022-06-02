@@ -23,12 +23,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>105</MSGNR>
-     <TEXT>Component &amp;1 of constant &amp;2 in ABAP Doc link doesn&apos;t exist</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
      <MSGNR>107</MSGNR>
      <TEXT>There are several occurrences of annotation &amp;1. First valid is used</TEXT>
     </T100>
