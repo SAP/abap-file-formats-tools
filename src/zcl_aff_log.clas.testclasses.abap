@@ -20,7 +20,6 @@ CLASS ltcl_log_unit_test DEFINITION FINAL FOR TESTING
       two_messages_for_one_object FOR TESTING RAISING cx_static_check,
       add_catched_exception FOR TESTING RAISING cx_static_check,
       add_classic_exception FOR TESTING RAISING cx_static_check,
-      get_sy_message FOR TESTING RAISING cx_static_check,
       add_exception_as_info FOR TESTING RAISING cx_static_check,
       assert_message
         IMPORTING
@@ -181,13 +180,6 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
     ENDIF.
     cl_abap_unit_assert=>assert_equals( exp = type act = act_message-type ).
     cl_abap_unit_assert=>assert_equals( exp = VALUE #( BASE exp_message msgty = type ) act = act_message-message ).
-  ENDMETHOD.
-
-
-  METHOD get_sy_message.
-    MESSAGE i000(zaff_tools) WITH '1' '2' '3' '4' INTO DATA(message) ##NEEDED.
-    DATA(act_message) = zcl_aff_log=>get_sy_message( ).
-    cl_abap_unit_assert=>assert_equals( exp = VALUE symsg( msgid = 'ZAFF_TOOLS' msgno = '000' msgty = 'I' msgv1 = '1' msgv2 = '2' msgv3 = '3' msgv4 = '4' ) act = act_message ).
   ENDMETHOD.
 
 ENDCLASS.
