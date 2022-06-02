@@ -964,7 +964,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         msg = log->get_message( msgno = 119 msgv1 = `Description` ).
         log->add_message_dev( type = 'I' message = msg component_name = fullname_of_checked_type ).
       ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
-        msg = log->get_message( msgno = 125 msgv1 = conv #( c_max_length_of_description ) ).
+        msg = log->get_message( msgno = 125 msgv1 = CONV #( c_max_length_of_description ) ).
         log->add_message_dev( type = 'W' message = msg component_name = fullname_of_checked_type ).
       ENDIF.
     ENDIF.
