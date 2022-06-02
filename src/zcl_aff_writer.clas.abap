@@ -769,7 +769,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD check_redundant_annotations.
     IF abap_doc-showalways = abap_true AND abap_doc-required = abap_true.
-      data(msg) = log->get_message( msgno = 112 ).
+      DATA(msg) = log->get_message( msgno = 112 ).
       log->add_message_dev( type = 'I' message = msg component_name = fullname_of_type ).
     ENDIF.
 
