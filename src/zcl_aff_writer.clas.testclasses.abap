@@ -48,7 +48,9 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       value_mapping_found FOR TESTING RAISING cx_static_check,
       value_mapping_not_found FOR TESTING RAISING cx_static_check,
       get_type_info_string_like FOR TESTING RAISING cx_static_check,
-      get_type_info_boolean FOR TESTING RAISING cx_static_check,
+      get_type_info_boolean1 FOR TESTING RAISING cx_static_check,
+      get_type_info_boolean2 FOR TESTING RAISING cx_static_check,
+      get_type_info_boolean3 FOR TESTING RAISING cx_static_check,
       get_type_info_numeric FOR TESTING RAISING cx_static_check,
       get_type_info_date_time FOR TESTING RAISING cx_static_check,
       set_name_mappings FOR TESTING RAISING cx_static_check,
@@ -193,9 +195,15 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( VALUE numc4( ) ) ) ).
   ENDMETHOD.
 
-  METHOD get_type_info_boolean.
+  METHOD get_type_info_boolean1.
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-boolean act = cut->get_json_type_from_description( get_element_description( VALUE abap_boolean( ) ) ) ).
+  ENDMETHOD.
+
+  METHOD get_type_info_boolean2.
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-boolean act = cut->get_json_type_from_description( get_element_description( VALUE abap_bool( ) ) ) ).
+  ENDMETHOD.
+
+  METHOD get_type_info_boolean3.
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-boolean act = cut->get_json_type_from_description( get_element_description( VALUE flag( ) ) ) ).
   ENDMETHOD.
 
