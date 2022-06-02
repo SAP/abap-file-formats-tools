@@ -2188,12 +2188,11 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
                                                               exp_text           = zif_aff_log=>co_msg106
                                                               exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT`
                                                               exp_type           = zif_aff_log=>c_message_type-warning ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 109
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class )
-                                                             exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = |Annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class } was used incorrectly|
+      exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT`
+      exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD structure_no_title_descr.
