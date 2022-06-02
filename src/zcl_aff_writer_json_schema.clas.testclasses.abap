@@ -1758,12 +1758,6 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
                                                               exp_text           = 'Component WRONG_COMPONENT of constant ENUM_VALUES in ABAP Doc link doesn''t exist'
                                                               exp_type           = zif_aff_log=>c_message_type-warning
                                                               exp_component_name = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_ONE` ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 111
-                                                                                           attr1 = zcl_aff_abap_doc_parser=>abap_doc_annotation-default )
-                                                             exp_component_name = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_TWO`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
                                                               exp_text           = `Title is missing`
                                                               exp_type           = zif_aff_log=>c_message_type-info

@@ -289,8 +289,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_enum_values.
-    DATA message TYPE string.
-
     IF decoded_abap_doc-enumvalues_link IS NOT INITIAL.
       RETURN.
     ENDIF.
