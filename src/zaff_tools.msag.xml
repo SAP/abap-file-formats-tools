@@ -14,12 +14,6 @@
      <MSGNR>000</MSGNR>
      <TEXT>&amp;1&amp;2&amp;3&amp;4</TEXT>
     </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZAFF_TOOLS</ARBGB>
-     <MSGNR>112</MSGNR>
-     <TEXT>If $$required is set, $$showAlways is redundant</TEXT>
-    </T100>
    </T100>
   </asx:values>
  </asx:abap>
