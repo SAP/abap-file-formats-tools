@@ -2413,12 +2413,12 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   METHOD description_too_long.
     test_generator->generate_type( VALUE zcl_aff_test_types=>type_with_long_description( ) ).
     log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_msg( log                = log
-                                                             exp_message        = VALUE #( msgid = 'ZAFF_TOOLS'
-                                                                                           msgno = 125
-                                                                                           attr1 = zcl_aff_writer_json_schema=>c_max_length_of_description )
-                                                             exp_component_name = `TYPE_WITH_LONG_DESCRIPTION`
-                                                             exp_type           = zif_aff_log=>c_message_type-warning ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = |Description exceeds { zcl_aff_writer_json_schema=>c_max_length_of_description } characters and might be too long|
+      exp_component_name = `TYPE_WITH_LONG_DESCRIPTION`
+      exp_type           = zif_aff_log=>c_message_type-warning ).
+
   ENDMETHOD.
 
   METHOD get_extrema.
