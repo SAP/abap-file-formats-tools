@@ -141,8 +141,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD check_title_positions.
     IF ( count( val = abap_doc_string regex = co_shorttext_tag_open ) > 1 ) ##REGEX_POSIX.
-      MESSAGE i107(zaff_tools) WITH `'Title'` INTO DATA(message)  ##NEEDED.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      DATA(msg) = parser_log->get_message( msgno = 107 msgv1 = `'Title'` ).
+      parser_log->add_message_dev( type = 'I' message = msg component_name = component_name ).
     ENDIF.
     IF ( find( val = abap_doc_string regex = co_shorttext_tag_open ) > 0 ) ##REGEX_POSIX.
       parser_log->add_message_dev( type = 'I' message = zif_aff_log=>co_msg113 component_name = component_name ).
@@ -261,8 +261,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     IF lines( mixed_result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH abap_doc_annotation-default INTO message.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      msg = parser_log->get_message( msgno = 107 msgv1 = CONV #( abap_doc_annotation-default ) ).
+      parser_log->add_message_dev( type = 'I' message = msg component_name = component_name ).
     ENDIF.
     DATA(warning_set) = abap_false.
     LOOP AT mixed_result_table ASSIGNING FIELD-SYMBOL(<entry>).
@@ -488,8 +488,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD write_log_for_multiple_entries.
     IF lines( result_table ) > 1.
-      MESSAGE i107(zaff_tools) WITH annotaion INTO DATA(message) ##NEEDED.
-      parser_log->add_info( message = zcl_aff_log=>get_sy_message( ) component_name = component_name ).
+      DATA(msg) = parser_log->get_message( msgno = 107 msgv1 = CONV #( annotaion ) ).
+      parser_log->add_message_dev( type = 'I' message = msg component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
