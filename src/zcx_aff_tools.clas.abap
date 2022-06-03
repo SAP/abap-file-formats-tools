@@ -28,9 +28,7 @@ CLASS zcx_aff_tools IMPLEMENTATION.
     CLEAR me->textid.
     IF message IS NOT INITIAL.
       cl_message_helper=>set_msg_vars_for_clike( message ).
-      if_t100_message~t100key = VALUE #( msgid = 'ZAFF_TOOLS'
-                                         msgno = '000'
-                                         attr1 = 'IF_T100_DYN_MSG~MSGV1'
+      if_t100_message~t100key = VALUE #( attr1 = 'IF_T100_DYN_MSG~MSGV1'
                                          attr2 = 'IF_T100_DYN_MSG~MSGV2'
                                          attr3 = 'IF_T100_DYN_MSG~MSGV3'
                                          attr4 = 'IF_T100_DYN_MSG~MSGV4' ).
@@ -39,8 +37,6 @@ CLASS zcx_aff_tools IMPLEMENTATION.
       if_t100_dyn_msg~msgv2 = sy-msgv2.
       if_t100_dyn_msg~msgv3 = sy-msgv3.
       if_t100_dyn_msg~msgv4 = sy-msgv4.
-    ELSEIF textid IS INITIAL.
-      if_t100_message~t100key = VALUE #( msgid = 'ZAFF_TOOLS' msgno = '001' ).
     ELSE.
       if_t100_message~t100key = textid.
     ENDIF.

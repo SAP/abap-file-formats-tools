@@ -709,7 +709,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF lines( errors ) > 0 OR exception IS BOUND.
       LOOP AT errors ASSIGNING FIELD-SYMBOL(<error>).
         cl_message_helper=>set_msg_vars_for_clike( <error>-text ).
-        log->add_error( message = VALUE #( msgid = 'ZAFF_TOOLS' msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ) component_name = `` ).
+        DATA(msg) = log->get_message( msgno = 0 msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ).
+        log->add_message_dev( type = 'E' message = msg ).
       ENDLOOP.
       RETURN.
     ENDIF.

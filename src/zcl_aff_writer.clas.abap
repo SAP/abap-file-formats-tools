@@ -170,13 +170,11 @@ CLASS zcl_aff_writer DEFINITION
           VALUE(is_valid) TYPE abap_boolean,
 
       is_default_value_valid
-        IMPORTING
-                  element_description TYPE REF TO cl_abap_elemdescr
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
                   default_value       TYPE string
                   fullname_of_type    TYPE string
         RETURNING VALUE(is_valid)     TYPE abap_boolean
-        RAISING
-                  zcx_aff_tools,
+        RAISING   zcx_aff_tools,
 
       is_sy_langu
         IMPORTING

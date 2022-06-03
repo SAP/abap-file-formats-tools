@@ -131,8 +131,7 @@
     "object_naming": {
       "clas": "^ZC(L|X)\\_AFF\\_",
       "intf": "^ZIF\\_AFF\\_",
-      "prog": "^Z",
-      "msag": "^ZAFF\\_"
+      "prog": "^Z"
     },
     "obsolete_statement": true,
     "omit_parameter_name": false,
