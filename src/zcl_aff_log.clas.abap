@@ -171,6 +171,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
 
 
   METHOD constructor.
+    APPEND VALUE #( msgno = 0 ) TO message_table.
     APPEND VALUE #( msgno = 102 str1 = `The JSON type`  str2 = `is not supported by the XSLT writer` ) TO message_table.
     APPEND VALUE #( msgno = 103 str1 = `Class/Interface type`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table.
     APPEND VALUE #( msgno = 104 str1 = `Constant`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table.
