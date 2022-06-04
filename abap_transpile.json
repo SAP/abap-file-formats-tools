@@ -35,7 +35,6 @@
       {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_elem_wo_adoc"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "callback_class"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "default_minimum", "note": "https://github.com/SAP/abap-file-formats-tools/issues/137"},
-      {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "default_with_link"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "description_at_false_position"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "enum_values"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "required_max_exclmin", "note": "https://github.com/SAP/abap-file-formats-tools/issues/137"},
