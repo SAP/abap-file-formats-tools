@@ -7,9 +7,9 @@ CLASS ltcl_abap_doc_reader DEFINITION FINAL FOR TESTING
     DATA test_obj TYPE REF TO zcl_aff_abap_doc_reader.
 
     METHODS setup.
-    METHODS get_abap_doc_4_element_types FOR TESTING.
-    METHODS get_abap_doc_4_element_data FOR TESTING.
-    METHODS get_abap_doc_4_sub_elem_types FOR TESTING.
+    METHODS get_abap_doc_4_element_types FOR TESTING RAISING cx_static_check.
+    METHODS get_abap_doc_4_element_data FOR TESTING RAISING cx_static_check.
+    METHODS get_abap_doc_4_sub_elem_types FOR TESTING RAISING cx_static_check.
     METHODS get_abap_doc_4_wrong_elem_name FOR TESTING.
     METHODS get_abap_doc_4_elem_wo_adoc FOR TESTING.
 ENDCLASS.
@@ -59,33 +59,24 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_abap_doc_4_element_types.
-    TRY.
-        DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ty_pub_structure' ).
-        cl_abap_unit_assert=>assert_equals( exp = 'abap doc comment begin of ty_pub_structure'
-    act = result ).
-      CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
-    ENDTRY.
-
+    DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ty_pub_structure' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'abap doc comment begin of ty_pub_structure'
+      act = result ).
   ENDMETHOD.
 
   METHOD get_abap_doc_4_element_data.
-    TRY.
-        DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ABC' ).
-        cl_abap_unit_assert=>assert_equals(
-          exp = 'Just simple data'
-          act = result ).
-      CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
-    ENDTRY.
+    DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ABC' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'Just simple data'
+      act = result ).
   ENDMETHOD.
 
   METHOD get_abap_doc_4_sub_elem_types.
-    TRY.
-        DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ty_pub_structure-field_a' ).
-        cl_abap_unit_assert=>assert_equals(
-          exp = 'ABAP Doc This is field A of the structure'
-          act = result ).
-      CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
-    ENDTRY.
+    DATA(result) = test_obj->get_abap_doc_for_element( element_name = 'ty_pub_structure-field_a' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'ABAP Doc This is field A of the structure'
+      act = result ).
   ENDMETHOD.
 
   METHOD get_abap_doc_4_wrong_elem_name.
