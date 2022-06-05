@@ -25,7 +25,7 @@
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_build_in_type"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "include_in_include"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "structure_in_structure"},
-      {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_structure"},
+      {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_structure", "note": "structure_description.get(...).get_components is not a function"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "structure_with_table"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "include_table"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_in_table"},
@@ -38,7 +38,7 @@
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "no_structure"},
       {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_wrong_elem_name"},
       {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_element_types"},
-      {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_element_data"},
+      {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_element_data", "note": "SCAN ABAP-SOURCE"},
       {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_sub_elem_types"},
       {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_elem_wo_adoc"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "callback_class"},
@@ -132,8 +132,7 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_default_problem"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "calculate_max_length"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "struc_with_own_enum_values"},
-      {"object": "ZCX_AFF_TOOLS", "class": "ltcl_aff_root", "method": "message_is_supplied"}
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "struc_with_own_enum_values"}
     ]
   }
 }
