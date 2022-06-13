@@ -172,20 +172,20 @@ CLASS zcl_aff_log IMPLEMENTATION.
 
   METHOD constructor.
     APPEND VALUE #( msgno = 0 ) TO message_table.
-    APPEND VALUE #( msgno = 102 str1 = `The JSON type`  str2 = `is not supported by the XSLT writer` ) TO message_table.
-    APPEND VALUE #( msgno = 103 str1 = `Class/Interface type`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table.
-    APPEND VALUE #( msgno = 104 str1 = `Constant`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table.
-    APPEND VALUE #( msgno = 105 str1 = `Component`  str2 = `of constant` str3 = `in ABAP Doc link doesn't exist` ) TO message_table.
-    APPEND VALUE #( msgno = 107 str1 = `There are several occurrences of annotation`  str2 = `. First valid is used` ) TO message_table.
-    APPEND VALUE #( msgno = 108 str1 = `Annotation`  str2 = `is unknown` ) TO message_table.
-    APPEND VALUE #( msgno = 109 str1 = `Annotation`  str2 = `was used incorrectly` ) TO message_table.
-    APPEND VALUE #( msgno = 110 str1 = `No number was provided for annotation` ) TO message_table.
-    APPEND VALUE #( msgno = 111 str1 = `Link in annotation`  str2 = `is incorrect` ) TO message_table.
-    APPEND VALUE #( msgno = 112 str1 = `If $required is set, $showAlways is redundant` ) TO message_table.
-    APPEND VALUE #( msgno = 117 str1 = `Annotation $default for type`  str2 = `is not supported` ) TO message_table.
-    APPEND VALUE #( msgno = 119 str1 = ``  str2 = `is missing` ) TO message_table.
-    APPEND VALUE #( msgno = 122 str1 = `Type of constant`  str2 = `does not match type of` ) TO message_table.
-    APPEND VALUE #( msgno = 125 str1 = `Description exceeds`  str2 = `characters and might be too long` ) TO message_table.
+    APPEND VALUE #( msgno = 102 str1 = `The JSON type`  str2 = `is not supported by the XSLT writer` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 103 str1 = `Class/Interface type`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 104 str1 = `Constant`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 105 str1 = `Component`  str2 = `of constant` str3 = `in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 107 str1 = `There are several occurrences of annotation`  str2 = `. First valid is used` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 108 str1 = `Annotation`  str2 = `is unknown` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 109 str1 = `Annotation`  str2 = `was used incorrectly` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 110 str1 = `No number was provided for annotation` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 111 str1 = `Link in annotation`  str2 = `is incorrect` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 112 str1 = `If $required is set, $showAlways is redundant` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 117 str1 = `Annotation $default for type`  str2 = `is not supported` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 119 str1 = ``  str2 = `is missing` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 122 str1 = `Type of constant`  str2 = `does not match type of` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 125 str1 = `Description exceeds`  str2 = `characters and might be too long` ) TO message_table ##NO_TEXT.
   ENDMETHOD.
 
 ENDCLASS.
