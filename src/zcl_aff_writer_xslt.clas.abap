@@ -723,9 +723,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD enable_extension.
 
-    write_open_tag( |<tt:d-cond frq="*">| ).
-    write_open_tag( | <_ tt:lax="on">| ).
-    write_open_tag( |<tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">| ).
+    write_open_tag( `<tt:d-cond frq="*">` ).
+    write_open_tag( ` <_ tt:lax="on">` ).
+    write_open_tag( `<tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` ).
 
     DATA(components) = structure_description->get_components( ).
     DATA str_comp TYPE string.
@@ -742,7 +742,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDLOOP.
     DATA(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>|.
     IF strlen( tag ) > 255.
-      write_tag( |<tt:with-parameter name="MEMBERS"| ).
+      write_tag( `<tt:with-parameter name="MEMBERS"` ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
         APPEND |val="'{ str_comp }'"/>| TO content.
       ENDIF.
@@ -750,12 +750,12 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
     ENDIF.
     write_closing_tag( `</tt:call-method>` ).
-    write_tag( |<tt:skip/>| ).
-    write_closing_tag( |</_>| ).
-    write_closing_tag( |</tt:d-cond>| ).
-    write_open_tag( |<tt:d-cond frq="?">| ).
-    write_tag( |<__/>| ).
-    write_closing_tag( |</tt:d-cond>| ).
+    write_tag( `<tt:skip/>` ).
+    write_closing_tag( `</_>` ).
+    write_closing_tag( `</tt:d-cond>` ).
+    write_open_tag( `<tt:d-cond frq="?">` ).
+    write_tag( `<__/>` ).
+    write_closing_tag( `</tt:d-cond>` ).
 
   ENDMETHOD.
 
