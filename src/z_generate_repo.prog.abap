@@ -5,7 +5,6 @@
 *&---------------------------------------------------------------------*
 REPORT z_generate_repo.
 CLASS lcl_generator DEFINITION DEFERRED.
-DATA obj_types TYPE saff_repo_types.
 DATA helper TYPE REF TO lcl_generator ##NEEDED.
 
 
@@ -189,7 +188,6 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
         RETURNING VALUE(content) TYPE rswsourcet,
       get_content
         IMPORTING absolute_typename TYPE string
-                  interfacename     TYPE string
         RETURNING VALUE(content)    TYPE rswsourcet,
       get_objname_wo_namspace_with_z
         IMPORTING object_name   TYPE string
@@ -409,7 +407,7 @@ CLASS lcl_generator IMPLEMENTATION.
         IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper. "in testcase we use ltc_generator
           generator = NEW lcl_generator_helper( writer ).
         ENDIF.
-        DATA(schema_content) = get_content( absolute_typename = |\\INTERFACE={ to_upper( intfname ) }\\TYPE=TY_MAIN| interfacename = CONV #( intfname ) ).
+        DATA(schema_content) = get_content( absolute_typename = |\\INTERFACE={ to_upper( intfname ) }\\TYPE=TY_MAIN| ).
         IF schema_test_content IS NOT INITIAL."in test case sometimes a test schema content is injected
           schema_content = schema_test_content.
         ENDIF.
@@ -747,7 +745,7 @@ CLASS lcl_generator IMPLEMENTATION.
     IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper."we are not in test scenario
       generator = NEW lcl_generator_helper( writer ).
     ENDIF.
-    content = get_content( absolute_typename = |\\INTERFACE={ p_intf }\\TYPE={ p_type }| interfacename = CONV #( p_intf ) ).
+    content = get_content( absolute_typename = |\\INTERFACE={ p_intf }\\TYPE={ p_type }| ).
   ENDMETHOD .
 
   METHOD get_content.
@@ -1135,12 +1133,6 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
       RAISING
                 zcx_aff_tools.
 
-    METHODS assert_file_content
-      IMPORTING file_name_tab TYPE stringtab
-                zip           TYPE REF TO cl_abap_zip
-      RAISING
-                zcx_aff_tools .
-
     METHODS insert_objects_into_tadir IMPORTING objects TYPE if_aff_object_file_handler=>tt_objects.
 
     METHODS create_new_cut_with_new_params
@@ -1148,15 +1140,12 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
         i_schema TYPE abap_bool OPTIONAL
         i_xslt   TYPE abap_bool OPTIONAL
         i_repo   TYPE abap_bool OPTIONAL
-        i_whole  TYPE abap_bool OPTIONAL
-        i_multre TYPE abap_bool OPTIONAL
         i_objtyp TYPE trobjtype OPTIONAL
         i_intf   TYPE sobj_name OPTIONAL
         i_type   TYPE sobj_name OPTIONAL
         i_examp  TYPE sobj_name OPTIONAL
         i_consol TYPE abap_bool OPTIONAL
-        i_disk   TYPE abap_bool OPTIONAL
-        i_multob TYPE stringtab OPTIONAL.
+        i_disk   TYPE abap_bool OPTIONAL.
 
     METHODS assert_logs_and_file_handler.
     METHODS schema_console_intf FOR TESTING RAISING cx_static_check.
@@ -1770,8 +1759,7 @@ CLASS ltc_generator IMPLEMENTATION.
   METHOD error_not_all_paramtrs_supplid.
     expected_log_messages = VALUE #( ).
     expected_report_log = VALUE #(
-  ( `Please fill out all fields (interfacename, objecttype, abaptypename)` )
-  ).
+  ( `Please fill out all fields (interfacename, objecttype, abaptypename)` ) ).
     "schema on console
     create_new_cut_with_new_params(
       i_schema = abap_true
@@ -1779,9 +1767,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-      i_multob = VALUE #( )
-    ).
+      i_consol = abap_true ).
 
     create_new_cut_with_new_params(
       i_schema = abap_true
@@ -1789,9 +1775,7 @@ CLASS ltc_generator IMPLEMENTATION.
 *     i_intf   = conv #( c_intf )    interfacename not supplied
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-      i_multob = VALUE #( )
-    ).
+      i_consol = abap_true ).
 
     create_new_cut_with_new_params(
       i_schema = abap_true
@@ -1799,13 +1783,10 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
 *     i_type   = 'TY_MAIN'               typename not supplied
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-      i_multob = VALUE #( )
-    ).
+      i_consol = abap_true ).
 
     expected_report_log = VALUE #(
-  ( `Please fill out all fields (objecttype, interfacename, examplename)` )
-  ).
+  ( `Please fill out all fields (objecttype, interfacename, examplename)` ) ).
 
     " repo folder for one object
     create_new_cut_with_new_params(
@@ -1814,9 +1795,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-      i_multob = VALUE #( )
-    ).
+      i_consol = abap_true ).
 
     create_new_cut_with_new_params(
       i_repo   = abap_true
@@ -1824,9 +1803,7 @@ CLASS ltc_generator IMPLEMENTATION.
 *     i_intf   = conv #( c_intf )    interfacename not supplied
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-      i_multob = VALUE #( )
-    ).
+      i_consol = abap_true ).
 
     create_new_cut_with_new_params(
       i_repo   = abap_true
@@ -1834,9 +1811,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
 *     i_examp  = conv #( c_aff_example_intf )   examplename not supplied
-      i_consol = abap_true
-      i_multob = VALUE #( )
-    ).
+      i_consol = abap_true ).
 
   ENDMETHOD.
 
@@ -1866,32 +1841,6 @@ CLASS ltc_generator IMPLEMENTATION.
 
     assert_logs_and_file_handler( ).
   ENDMETHOD.
-
-  METHOD assert_file_content.
-
-    DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-
-    LOOP AT file_name_tab ASSIGNING FIELD-SYMBOL(<filename>).
-      zip->get( EXPORTING name  = <filename> IMPORTING content  = DATA(act_content) ).
-      IF <filename> CP '*-v1.json'.
-        SPLIT <filename> AT '/' INTO TABLE DATA(splitted).
-        DATA(objecttype) = splitted[ 2 ].
-        REPLACE '-v1.json' IN objecttype WITH ''.
-        DATA(expected_content) = text_handler->if_aff_content_handler~serialize( |Test ST/Schema for { to_upper( objecttype ) }| ).
-        cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-      ELSE.
-        SPLIT <filename> AT '/' INTO TABLE splitted.
-        DATA(objectname_part) = splitted[ lines( splitted ) ].
-        SPLIT objectname_part AT '.' INTO TABLE DATA(splitted2).
-        DATA(objectname) = splitted2[ 1 ].
-        DATA(expected_content_str) = |file of { to_lower( objectname ) }|.
-        DATA(actual) = to_lower( cl_abap_codepage=>convert_from( act_content ) ).
-
-        cl_abap_unit_assert=>assert_equals( act = actual exp = expected_content_str ).
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
-
 ENDCLASS.
 
 

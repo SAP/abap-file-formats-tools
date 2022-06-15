@@ -172,7 +172,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_annotations.
-    FIND ALL OCCURRENCES OF REGEX `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(result_table) ##REGEX_POSIX.
+    FIND ALL OCCURRENCES OF REGEX `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(result_table) ##REGEX_POSIX ##NO_TEXT.
     DATA(modified_abap_doc_string) = abap_doc_string.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       DATA(offset) = <entry>-offset.
