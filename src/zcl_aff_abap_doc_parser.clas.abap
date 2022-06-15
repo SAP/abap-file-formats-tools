@@ -395,7 +395,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     write_log_for_multiple_entries( result_table = result_table annotaion = annotation_name ).
     DATA(annotation_length) = strlen( dummy_annotation ).
     DATA(regex_of_number_expressions) = NEW cl_abap_regex( pattern       = `(\+|-)?[0-9]+(.[0-9]+)?(e(\+|-)?[0-9]+)?`
-                                                           ignore_case = abap_true ) ##REGEX_POSIX.
+                                                           ignore_case   = abap_true ) ##REGEX_POSIX.
 
     DATA(warning_written) = abap_false.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
