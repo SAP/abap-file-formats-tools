@@ -460,7 +460,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     IF current_offset >= strlen( text_to_check ).
       RETURN.
     ENDIF.
-    DATA(posix_of_letter) = cl_abap_regex=>create_posix( pattern = `[a-zA-Z]` ) ##REGEX_POSIX.
+    DATA(posix_of_letter) = cl_abap_regex=>create_xsd( pattern = `[a-zA-Z]` ) ##REGEX_POSIX.
     DO.
       next_char = text_to_check+current_offset(1).
       current_offset += 1.
