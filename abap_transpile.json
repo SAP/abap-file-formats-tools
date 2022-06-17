@@ -55,7 +55,7 @@
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "wrong_usage_default"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "wrong_usage_enum_values"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode", "note": "Void type: cl_oo_abap_doc_reader"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_invalid", "note": "Void type: CL_OO_CLASSNAME_SERVICE"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_invalid", "note": "??"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_valid", "note": "cl_oo_classname_service=>get_all_method_includes"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_abap_doc_for_absolute_name", "note": "Void type: cl_oo_abap_doc_reader"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_struc_of_enum_values_cl"},
