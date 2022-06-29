@@ -80,10 +80,10 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
   METHOD assert_log_contains_text.
     DATA(act_messages) = log->get_messages( ).
     IF exp_component_name IS SUPPLIED.
-      IF NOT line_exists( act_messages[ type = exp_type text = exp_text component_name = exp_component_name ] ).
+      IF NOT line_exists( act_messages[ type = exp_type message_text = exp_text component_name = exp_component_name ] ).
         cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
       ENDIF.
-    ELSEIF NOT line_exists( act_messages[ type = exp_type text = exp_text ] ).
+    ELSEIF NOT line_exists( act_messages[ type = exp_type message_text = exp_text ] ).
       cl_abap_unit_assert=>fail( msg = 'The expected message is not contained in the log' ).
     ENDIF.
 
@@ -108,7 +108,7 @@ CLASS zcl_aff_tools_unit_test_helper IMPLEMENTATION.
       DATA detail TYPE string.
       LOOP AT log->get_messages( ) ASSIGNING FIELD-SYMBOL(<message>).
         IF line_exists( types_to_report[ table_line = <message>-type ] ).
-          detail = detail && <message>-text && cl_abap_char_utilities=>newline.
+          detail = detail && <message>-message_text && cl_abap_char_utilities=>newline.
         ENDIF.
       ENDLOOP.
       cl_abap_unit_assert=>fail( msg = |Log contains messages with severity >= { message_severity_threshold }| detail = detail ).

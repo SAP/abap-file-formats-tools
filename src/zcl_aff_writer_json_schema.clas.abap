@@ -837,7 +837,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
         IF <component>-type_kind <> enum_type.
-          DATA(msg) = log->get_message( msgno = 122 msgv1 = CONV #( name_of_constant ) msgv2 = CONV #( fullname_of_type ) ).
+          DATA(msg) = log->get_message_text( msgno = 122 msgv1 = CONV #( name_of_constant ) msgv2 = CONV #( fullname_of_type ) ).
           RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
         ENDIF.
 
@@ -860,7 +860,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         check_title_and_description( abap_doc_to_check = abap_doc_of_component fullname_of_checked_type = fullname_of_value ).
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
+        log->add_warning( message_text = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -957,16 +957,16 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level. "Only write message if no callback class provided
       IF abap_doc_to_check-title IS INITIAL.
-        msg = log->get_message( msgno = 119 msgv1 = `Title` ) ##NO_TEXT.
-        log->add_message_dev( type = 'I' message = msg component_name = fullname_of_checked_type ).
+        msg = log->get_message_text( msgno = 119 msgv1 = `Title` ) ##NO_TEXT.
+        log->add_info( message_text = msg component_name = fullname_of_checked_type ).
       ENDIF.
 
       IF abap_doc_to_check-description IS INITIAL.
-        msg = log->get_message( msgno = 119 msgv1 = `Description` ) ##NO_TEXT.
-        log->add_message_dev( type = 'I' message = msg component_name = fullname_of_checked_type ).
+        msg = log->get_message_text( msgno = 119 msgv1 = `Description` ) ##NO_TEXT.
+        log->add_info( message_text = msg component_name = fullname_of_checked_type ).
       ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
-        msg = log->get_message( msgno = 125 msgv1 = CONV #( c_max_length_of_description ) ).
-        log->add_message_dev( type = 'W' message = msg component_name = fullname_of_checked_type ).
+        msg = log->get_message_text( msgno = 125 msgv1 = CONV #( c_max_length_of_description ) ).
+        log->add_warning( message_text = msg component_name = fullname_of_checked_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.

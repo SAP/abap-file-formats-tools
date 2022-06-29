@@ -708,12 +708,12 @@ CLASS lcl_generator IMPLEMENTATION.
         IF contains_chars = abap_false.
           format_version = last.
         ELSE.
-          INSERT |Formatversion couldnt be derived from interface { intfname }. Format version 1 was assumed.| INTO TABLE report_log ##NO_TEXT.
+          INSERT |Formatversion couldn't be derived from interface { intfname }. Format version 1 was assumed.| INTO TABLE report_log ##NO_TEXT.
           format_version = 1.
         ENDIF.
       CATCH cx_sy_conversion_no_number.
         "if the intfname is not correct we use format_version 1
-        INSERT |Formatversion couldnt be derived from interface { intfname }. Format version 1 was assumed.| INTO TABLE report_log ##NO_TEXT.
+        INSERT |Formatversion couldn't be derived from interface { intfname }. Format version 1 was assumed.| INTO TABLE report_log ##NO_TEXT.
         format_version = 1.
     ENDTRY.
   ENDMETHOD.
@@ -806,7 +806,7 @@ CLASS lcl_generator IMPLEMENTATION.
       SKIP 1.
       WRITE: / `Messages schema/ST Generator:` ##NO_TEXT.
       LOOP AT generator_log->get_messages( ) ASSIGNING FIELD-SYMBOL(<WRITER_log_message>).
-        WRITE: / |{ <WRITER_log_message>-type } { <WRITER_log_message>-component_name WIDTH = 40 ALIGN = LEFT PAD = ' ' } { <WRITER_log_message>-text }|.
+        WRITE: / |{ <WRITER_log_message>-type } { <WRITER_log_message>-component_name WIDTH = 40 ALIGN = LEFT PAD = ' ' } { <WRITER_log_message>-message_text }|.
       ENDLOOP.
     ENDIF.
 
@@ -1251,13 +1251,13 @@ CLASS ltc_generator IMPLEMENTATION.
     aff_factory_double->get_object_file_handler( ).
 
     writer_log = NEW zcl_aff_log( ).
-    writer_log->zif_aff_log~add_info( message = VALUE #(  msgty = 'I'  msgv1 = 'Writer Log' ) component_name = VALUE #( ) ).
+    writer_log->zif_aff_log~add_info( message_text = 'Writer Log' component_name = VALUE #( ) ).
 
     cl_abap_testdouble=>configure_call( writer_double )->returning( writer_log ).
     writer_double->get_log( ).
 
     generator_log = NEW zcl_aff_log( ).
-    generator_log->zif_aff_log~add_info( message = VALUE #(  msgty = 'I' msgv1 = 'Generator Log' ) component_name = VALUE #( ) ).
+    generator_log->zif_aff_log~add_info( message_text = 'Generator Log' component_name = VALUE #( ) ).
     generator_double = NEW ltc_generator_double( generator_log ).
 
     cut = NEW lcl_generator(
@@ -1275,7 +1275,7 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = cut->report_log exp = expected_report_log ).
     cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ) .
     LOOP AT expected_log_messages ASSIGNING FIELD-SYMBOL(<exp_msg>).
-      READ TABLE cut->generator_log->get_messages( ) WITH KEY text = <exp_msg>-text TRANSPORTING NO FIELDS.
+      READ TABLE cut->generator_log->get_messages( ) WITH KEY message_text = <exp_msg>-message_text TRANSPORTING NO FIELDS.
       IF sy-subrc <> 0.
         cl_abap_unit_assert=>fail( ).
       ENDIF.
@@ -1380,7 +1380,7 @@ CLASS ltc_generator IMPLEMENTATION.
     cut->start_of_selection( ).
     "Then
     expected_report_log = VALUE #(
-  ( `Formatversion couldnt be derived from interface IF_AFF_INTF_V1X. Format version 1 was assumed.` )
+  ( `Formatversion couldn't be derived from interface IF_AFF_INTF_V1X. Format version 1 was assumed.` )
   ( `Type \INTERFACE=IF_AFF_INTF_V1X\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
   ).
     CLEAR expected_log_messages.
@@ -1647,9 +1647,9 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_log_messages = VALUE #(
-  ( type = 'I' text = `I::000 Generator Log` message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) )
-  ( type = 'I' text = `I::000 Generator Log` message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) )
-  ( type = 'I' text = `I::000 Generator Log` message = VALUE #( msgty = 'I' msgv1 = 'Generator Log' ) )
+  ( type = 'I' message_text = `Generator Log` )
+  ( type = 'I' message_text = `Generator Log` )
+  ( type = 'I' message_text = `Generator Log` )
    ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.

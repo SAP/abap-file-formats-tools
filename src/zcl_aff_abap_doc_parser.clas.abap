@@ -141,11 +141,11 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD check_title_positions.
     IF ( count( val = abap_doc_string regex = co_shorttext_tag_open ) > 1 ) ##REGEX_POSIX.
-      DATA(msg) = parser_log->get_message( msgno = 107 msgv1 = `'Title'` ).
-      parser_log->add_message_dev( type = 'I' message = msg component_name = component_name ).
+      DATA(msg) = parser_log->get_message_text( msgno = 107 msgv1 = `'Title'` ).
+      parser_log->add_info( message_text   = msg component_name = component_name ).
     ENDIF.
     IF ( find( val = abap_doc_string regex = co_shorttext_tag_open ) > 0 ) ##REGEX_POSIX.
-      parser_log->add_message_dev( type = 'I' message = zif_aff_log=>co_msg113 component_name = component_name ).
+      parser_log->add_info( message_text   = zif_aff_log=>co_msg113 component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
@@ -196,8 +196,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
           parse_enum_value( ).
         WHEN OTHERS.
           REPLACE key_word IN modified_abap_doc_string WITH ''.
-          DATA(msg) = parser_log->get_message( msgno = 108 msgv1 = CONV #( key_word ) ).
-          parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+          DATA(msg) = parser_log->get_message_text( msgno = 108 msgv1 = CONV #( key_word ) ).
+          parser_log->add_warning( message_text = msg component_name = component_name ).
       ENDCASE.
     ENDLOOP.
     abap_doc_string = modified_abap_doc_string.
@@ -211,8 +211,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF REGEX `\$callbackClass[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$callbackClass\{@link` ##REGEX_POSIX.
     FIND ALL OCCURRENCES OF REGEX `\$callbackClass\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
-      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-callback_class ) ).
-      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-callback_class ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
       RETURN.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-callback_class ).
@@ -255,13 +255,13 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDLOOP.
 
     IF lines( mixed_result_table ) = 0.
-      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-default ) ).
-      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-default ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
       RETURN.
     ENDIF.
     IF lines( mixed_result_table ) > 1.
-      msg = parser_log->get_message( msgno = 107 msgv1 = CONV #( abap_doc_annotation-default ) ).
-      parser_log->add_message_dev( type = 'I' message = msg component_name = component_name ).
+      msg = parser_log->get_message_text( msgno = 107 msgv1 = CONV #( abap_doc_annotation-default ) ).
+      parser_log->add_info( message_text = msg component_name = component_name ).
     ENDIF.
     DATA(warning_set) = abap_false.
     LOOP AT mixed_result_table ASSIGNING FIELD-SYMBOL(<entry>).
@@ -277,8 +277,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         IF lines( splitted ) = 3.
           decoded_abap_doc-default = link.
         ELSEIF warning_set = abap_false.
-          msg = parser_log->get_message( msgno = 111 msgv1 = CONV #( abap_doc_annotation-default ) ).
-          parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+          msg = parser_log->get_message_text( msgno = 111 msgv1 = CONV #( abap_doc_annotation-default ) ).
+          parser_log->add_warning( message_text = msg component_name = component_name ).
           warning_set = abap_true.
         ENDIF.
       ENDIF.
@@ -295,8 +295,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF REGEX `\$values[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$values\{@link` ##REGEX_POSIX.
     FIND ALL OCCURRENCES OF REGEX `\$values\{@link([^\}]+)\}` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
-      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-values ) ).
-      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-values ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
       RETURN.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-values ).
@@ -313,8 +313,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       IF lines( splitted ) = 2 AND decoded_abap_doc-enumvalues_link IS INITIAL.
         decoded_abap_doc-enumvalues_link = link.
       ELSEIF lines( splitted ) <> 2 AND warning_written = abap_false.
-        msg = parser_log->get_message( msgno = 111 msgv1 = CONV #( abap_doc_annotation-values ) ).
-        parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+        msg = parser_log->get_message_text( msgno = 111 msgv1 = CONV #( abap_doc_annotation-values ) ).
+        parser_log->add_warning( message_text = msg component_name = component_name ).
         warning_written = abap_true.
       ENDIF.
     ENDLOOP.
@@ -388,8 +388,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF REGEX  `\$dummyannotation[\s]*(:[\s]*)?` IN abap_doc WITH `\$dummyannotation` ##REGEX_POSIX.
     FIND ALL OCCURRENCES OF REGEX `\$dummyannotation[^\s]+` IN abap_doc RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
-      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-values ) ).
-      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-values ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
       RETURN.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = annotation_name ).
@@ -411,8 +411,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       IF match = abap_true AND number IS INITIAL.
         number = number_candidate.
       ELSEIF match = abap_false AND warning_written = abap_false.
-        msg = parser_log->get_message( msgno = 110 msgv1 = CONV #( annotation_name ) ).
-        parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+        msg = parser_log->get_message_text( msgno = 110 msgv1 = CONV #( annotation_name ) ).
+        parser_log->add_warning( message_text = msg component_name = component_name ).
         warning_written = abap_true.
       ENDIF.
     ENDLOOP.
@@ -426,8 +426,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF REGEX `\$enumValue[\s]*(:[\s]*)?'` IN string_to_parse WITH `\$enumValue'` ##REGEX_POSIX.
     FIND ALL OCCURRENCES OF REGEX `\$enumValue'[^']*'` IN string_to_parse RESULTS DATA(result_table) ##REGEX_POSIX.
     IF lines( result_table ) = 0.
-      DATA(msg) = parser_log->get_message( msgno = 109 msgv1 = CONV #( abap_doc_annotation-enum_value ) ).
-      parser_log->add_message_dev( type = 'W' message = msg component_name = component_name ).
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-enum_value ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
       RETURN.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-enum_value ).
@@ -480,16 +480,16 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
   METHOD write_description_message.
     IF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS INITIAL.
-      parser_log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg115 component_name = component_name ).
+      parser_log->add_warning( message_text = zif_aff_log=>co_msg115 component_name = component_name ).
     ELSEIF description_warning_is_needed = abap_true AND decoded_abap_doc-description IS NOT INITIAL.
-      parser_log->add_message_dev( type = 'I' message = zif_aff_log=>co_msg116 component_name = component_name ).
+      parser_log->add_info( message_text = zif_aff_log=>co_msg116 component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
   METHOD write_log_for_multiple_entries.
     IF lines( result_table ) > 1.
-      DATA(msg) = parser_log->get_message( msgno = 107 msgv1 = CONV #( annotaion ) ).
-      parser_log->add_message_dev( type = 'I' message = msg component_name = component_name ).
+      DATA(msg) = parser_log->get_message_text( msgno = 107 msgv1 = CONV #( annotaion ) ).
+      parser_log->add_info( message_text = msg component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 

@@ -36,10 +36,15 @@ CLASS zcl_aff_log DEFINITION
 
 
     METHODS:
-      add_message
+      add_message_for_exception
         IMPORTING
           type           TYPE symsgty
           message        TYPE symsg
+          component_name TYPE string,
+      add_message
+        IMPORTING
+          type           TYPE symsgty
+          message_text   TYPE string
           component_name TYPE string,
       set_max_severity
         IMPORTING
@@ -54,30 +59,26 @@ CLASS zcl_aff_log IMPLEMENTATION.
   METHOD zif_aff_log~get_messages.
     messages = me->messages.
   ENDMETHOD.
-  METHOD zif_aff_log~add_message_dev.
-    set_max_severity( type ).
 
+  METHOD add_message.
+    set_max_severity( type ).
     APPEND VALUE #( component_name = component_name
                     type         = type
-                    text         = message
-                    message      = VALUE #( ) ) TO me->messages.
+                    message_text = message_text ) TO me->messages.
   ENDMETHOD.
 
   METHOD zif_aff_log~add_info.
-    set_max_severity( zif_aff_log=>c_message_type-info ).
-    add_message( type = zif_aff_log=>c_message_type-info message = message component_name = component_name ).
+    add_message( type = zif_aff_log=>c_message_type-info message_text = message_text component_name = component_name ).
   ENDMETHOD.
 
 
   METHOD zif_aff_log~add_warning.
-    set_max_severity( zif_aff_log=>c_message_type-warning ).
-    add_message( type = zif_aff_log=>c_message_type-warning message = message component_name = component_name ).
+    add_message( type = zif_aff_log=>c_message_type-warning message_text = message_text component_name = component_name ).
   ENDMETHOD.
 
 
   METHOD zif_aff_log~add_error.
-    set_max_severity( zif_aff_log=>c_message_type-error ).
-    add_message( type = zif_aff_log=>c_message_type-error message = message component_name = component_name ).
+    add_message( type = zif_aff_log=>c_message_type-error message_text = message_text component_name = component_name ).
   ENDMETHOD.
 
 
@@ -86,7 +87,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
 
     IF exception->get_text( ) IS NOT INITIAL.
       cl_message_helper=>set_msg_vars_for_if_msg( exception ).
-      add_message( type = message_type message = get_sy_message( ) component_name = component_name ).
+      add_message_for_exception( type = message_type message = get_sy_message( ) component_name = component_name ).
     ENDIF.
 
     IF exception->previous IS BOUND.
@@ -95,7 +96,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD add_message.
+  METHOD add_message_for_exception.
 
     MESSAGE
       ID message-msgid
@@ -105,9 +106,9 @@ CLASS zcl_aff_log IMPLEMENTATION.
       INTO DATA(text).
 
     APPEND VALUE #( component_name = component_name
-                    type         = type
-                    text         = text
-                    message      = get_sy_message( ) ) TO me->messages.
+                    type           = type
+                    message_text   = text
+                    message        = get_sy_message( ) ) TO me->messages.
   ENDMETHOD.
 
 
@@ -143,14 +144,14 @@ CLASS zcl_aff_log IMPLEMENTATION.
       msgv4 = sy-msgv4 ).
   ENDMETHOD.
 
-  METHOD zif_aff_log~get_message.
+  METHOD zif_aff_log~get_message_text.
     IF line_exists( message_table[ msgno = msgno ] ).
       DATA(message_entry) = VALUE #( message_table[ msgno = msgno ] ).
-      message = message_entry-str1 && ` ` && msgv1 && ` ` &&
+      message_text = message_entry-str1 && ` ` && msgv1 && ` ` &&
                 message_entry-str2 && ` ` && msgv2 && ` ` &&
                 message_entry-str3 && ` ` && msgv3 && ` ` &&
                 message_entry-str4 && ` ` && msgv4.
-      CONDENSE message.
+      CONDENSE message_text.
     ENDIF.
   ENDMETHOD.
 

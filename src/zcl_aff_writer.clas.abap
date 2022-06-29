@@ -521,8 +521,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
     IF sy-subrc <> 0.
 *    class or interface doesn't exist
-      msg = log->get_message( msgno = 103 msgv1 = CONV #( name_of_source ) ).
-      log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
+      msg = log->get_message_text( msgno = 103 msgv1 = CONV #( name_of_source ) ).
+      log->add_warning( message_text = msg component_name = fullname_of_type ).
     ELSE.
       IF constant_descr->kind = cl_abap_typedescr=>kind_intf.
         DATA(constant_descr_intf) = CAST cl_abap_intfdescr( constant_descr ).
@@ -536,8 +536,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             OTHERS              = 2 ).
         IF sy-subrc <> 0.
 *      constant in interface does not exist
-          msg = log->get_message( msgno = 104 msgv1 = CONV #( name_of_source && '=>' && name_of_constant ) ).
-          log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
+          msg = log->get_message_text( msgno = 104 msgv1 = CONV #( name_of_source && '=>' && name_of_constant ) ).
+          log->add_warning( message_text = msg component_name = fullname_of_type ).
         ENDIF.
       ELSEIF constant_descr->kind = cl_abap_typedescr=>kind_class.
         DATA(constant_descr_clas) = CAST cl_abap_classdescr( constant_descr ).
@@ -551,8 +551,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             OTHERS              = 2 ).
         IF sy-subrc <> 0.
 *      constant in class does not exits
-          msg = log->get_message( msgno = 104 msgv1 = CONV #( name_of_source && '=>' && name_of_constant ) ).
-          log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
+          msg = log->get_message_text( msgno = 104 msgv1 = CONV #( name_of_source && '=>' && name_of_constant ) ).
+          log->add_warning( message_text = msg component_name = fullname_of_type ).
         ENDIF.
       ENDIF.
       constant_as_struc = CAST cl_abap_structdescr( constant ).
@@ -646,7 +646,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       is_valid = xsdbool( has_method_get_subschema = abap_true AND has_method_serialize = abap_true AND has_method_deserialize = abap_true ).
     ENDIF.
     IF is_valid = abap_false.
-      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg106 component_name = component_name ).
+      log->add_warning( message_text = zif_aff_log=>co_msg106 component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
@@ -667,12 +667,12 @@ CLASS zcl_aff_writer IMPLEMENTATION.
           IF row-type->type_kind = element_type.
             is_valid = abap_true.
           ELSE.
-            msg = log->get_message( msgno = 122 msgv1 = CONV #( constant_name ) msgv2 = CONV #( fullname_of_type ) ).
-            log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
+            msg = log->get_message_text( msgno = 122 msgv1 = CONV #( constant_name ) msgv2 = CONV #( fullname_of_type ) ).
+            log->add_warning( message_text = msg component_name = fullname_of_type ).
           ENDIF.
         ELSE.
-          msg = log->get_message( msgno = 105 msgv1 = CONV #( component_name ) msgv2 = CONV #( constant_name ) ).
-          log->add_message_dev( type = 'W' message = msg component_name = fullname_of_type ).
+          msg = log->get_message_text( msgno = 105 msgv1 = CONV #( component_name ) msgv2 = CONV #( constant_name ) ).
+          log->add_warning( message_text = msg component_name = fullname_of_type ).
         ENDIF.
       ENDIF.
     ENDIF.
@@ -689,8 +689,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     ASSIGN r_field->* TO <field>.
     IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
 *      No support for default with utclong
-      DATA(message) = log->get_message( msgno = 117 msgv1 = `UTCLONG` ).
-      log->add_message_dev( type = 'W' message = message component_name = fullname_of_type ).
+      DATA(message_text) = log->get_message_text( msgno = 117 msgv1 = `UTCLONG` ).
+      log->add_warning( message_text = message_text component_name = fullname_of_type ).
       is_valid = abap_false.
       RETURN.
     ELSEIF type = zif_aff_writer=>type_info-boolean.
@@ -735,7 +735,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       ENDTRY.
     ENDIF.
     IF is_valid = abap_false.
-      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg114 component_name = fullname_of_type ).
+      log->add_warning( message_text = zif_aff_log=>co_msg114 component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.
 
@@ -767,12 +767,12 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD check_redundant_annotations.
     IF abap_doc-showalways = abap_true AND abap_doc-required = abap_true.
-      DATA(msg) = log->get_message( msgno = 112 ).
-      log->add_message_dev( type = 'I' message = msg component_name = fullname_of_type ).
+      DATA(msg) = log->get_message_text( msgno = 112 ).
+      log->add_info( message_text = msg component_name = fullname_of_type ).
     ENDIF.
 
     IF abap_doc-required = abap_true AND abap_doc-default IS NOT INITIAL.
-      log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg126 component_name = fullname_of_type ).
+      log->add_warning( message_text = zif_aff_log=>co_msg126 component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.
 

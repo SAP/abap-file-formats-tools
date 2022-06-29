@@ -385,7 +385,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN zif_aff_writer=>type_info-numeric.
         result = `num`.
       WHEN OTHERS.
-        DATA(msg) = log->get_message( msgno = 102 msgv1 = CONV #( json_type ) ).
+        DATA(msg) = log->get_message_text( msgno = 102 msgv1 = CONV #( json_type ) ).
         RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
     ENDCASE.
   ENDMETHOD.
@@ -405,7 +405,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         WHEN zif_aff_writer=>type_info-numeric.
           result = ` option="format(alpha)"` ##NO_TEXT.
         WHEN OTHERS.
-          DATA(msg) = log->get_message( msgno = 102 msgv1 = CONV #( json_type ) ).
+          DATA(msg) = log->get_message_text( msgno = 102 msgv1 = CONV #( json_type ) ).
           RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
       ENDCASE.
     ENDIF.
@@ -530,7 +530,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         DATA(fullname_of_component) = name_of_constant && '-' && <component>-name.
         DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name = fullname_of_component ).
         IF <component>-type_kind <> enum_type.
-          DATA(msg) = log->get_message( msgno = 122 msgv1 = CONV #( name_of_constant ) msgv2 = CONV #( fullname_of_type ) ).
+          DATA(msg) = log->get_message_text( msgno = 122 msgv1 = CONV #( name_of_constant ) msgv2 = CONV #( fullname_of_type ) ).
           RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
         ENDIF.
         IF abap_doc_of_component-enum_value IS INITIAL.
@@ -545,7 +545,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         ENDIF.
       ENDLOOP.
       IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
-        log->add_message_dev( type = 'W' message = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
+        log->add_warning( message_text = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -560,8 +560,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_default_value_from_default.
     IF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
-      DATA(message) = log->get_message( msgno = 117 msgv1 = `UTCLONG` ).
-      log->add_message_dev( type = 'W' message = message component_name = fullname_of_type ).
+      DATA(message) = log->get_message_text( msgno = 117 msgv1 = `UTCLONG` ).
+      log->add_warning( message_text = message component_name = fullname_of_type ).
       RETURN.
     ENDIF.
 
@@ -622,7 +622,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       WHEN cl_abap_typedescr=>typekind_time.
         result = |T('{ value }')|.
       WHEN cl_abap_typedescr=>typekind_utclong.
-        DATA(message) = log->get_message( msgno = 117 msgv1 = `UTCLONG` ).
+        DATA(message) = log->get_message_text( msgno = 117 msgv1 = `UTCLONG` ).
         RAISE EXCEPTION NEW zcx_aff_tools( message = message ).
       WHEN OTHERS.
         RAISE EXCEPTION NEW zcx_aff_tools( ).
@@ -709,8 +709,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF lines( errors ) > 0 OR exception IS BOUND.
       LOOP AT errors ASSIGNING FIELD-SYMBOL(<error>).
         cl_message_helper=>set_msg_vars_for_clike( <error>-text ).
-        DATA(msg) = log->get_message( msgno = 0 msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ).
-        log->add_message_dev( type = 'E' message = msg ).
+        DATA(msg) = log->get_message_text( msgno = 0 msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ).
+        log->add_error( message_text = msg component_name = VALUE #( ) ).
       ENDLOOP.
       RETURN.
     ENDIF.
