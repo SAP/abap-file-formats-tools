@@ -27,7 +27,7 @@ INTERFACE zif_aff_log
       "! The type of the message
       type           TYPE symsgty,
       "! The text of the message
-      text           TYPE string,
+      message_text   TYPE string,
       "! The message
       message        TYPE symsg,
     END OF ty_log_out,
@@ -36,49 +36,40 @@ INTERFACE zif_aff_log
   METHODS:
     "! Adds an info message (type I) to the log.
     "!
-    "! @parameter message | the message
+    "! @parameter  message_text  | the text of the message
     "! @parameter component_name | the name of the element for which the log entry is created
     add_info
-      IMPORTING message        TYPE symsg
+      IMPORTING message_text   TYPE string
                 component_name TYPE string,
 
     "! Adds a warning message (type W) to the log.
     "!
-    "! @parameter message | the message
+    "! @parameter message_text   | the text of the message
     "! @parameter component_name | the name of the element for which the log entry is created
     add_warning
-      IMPORTING message        TYPE symsg
+      IMPORTING message_text   TYPE string
                 component_name TYPE string,
 
     "! Adds an error message (type E) to the log.
     "!
-    "! @parameter message | the message
+    "! @parameter message_text   | the text of the message
     "! @parameter component_name | the name of the element for which the log entry is created
     add_error
-      IMPORTING message        TYPE symsg
+      IMPORTING message_text   TYPE string
                 component_name TYPE string,
-
-
-    "! Add messages without use of a message class
-    add_message_dev
-      IMPORTING
-        type           TYPE symsgty
-        message        TYPE string
-        component_name TYPE string OPTIONAL,
-
 
     "! Returns message for a given msg number
     "! This emulates the behaviour of the object type message classes
     "!
     "! @parameter msgno | the message number
-    get_message
+    get_message_text
       IMPORTING
-                msgno          TYPE symsgno
-                msgv1          TYPE symsgv OPTIONAL
-                msgv2          TYPE symsgv OPTIONAL
-                msgv3          TYPE symsgv OPTIONAL
-                msgv4          TYPE symsgv OPTIONAL
-      RETURNING VALUE(message) TYPE string,
+                msgno               TYPE symsgno
+                msgv1               TYPE symsgv OPTIONAL
+                msgv2               TYPE symsgv OPTIONAL
+                msgv3               TYPE symsgv OPTIONAL
+                msgv4               TYPE symsgv OPTIONAL
+      RETURNING VALUE(message_text) TYPE string,
 
 
 
