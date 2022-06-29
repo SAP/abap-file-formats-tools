@@ -44,9 +44,8 @@ CLASS zcl_aff_log DEFINITION
       add_message
         IMPORTING
           type           TYPE symsgty
-          message_text   TYPE string OPTIONAL
-          message        TYPE symsg  OPTIONAL
-          component_name TYPE string OPTIONAL,
+          message_text   TYPE string
+          component_name TYPE string,
       set_max_severity
         IMPORTING
           type TYPE symsgty.
@@ -65,8 +64,7 @@ CLASS zcl_aff_log IMPLEMENTATION.
     set_max_severity( type ).
     APPEND VALUE #( component_name = component_name
                     type         = type
-                    message_text = message_text
-                    message      = message ) TO me->messages.
+                    message_text = message_text ) TO me->messages.
   ENDMETHOD.
 
   METHOD zif_aff_log~add_info.
@@ -108,9 +106,9 @@ CLASS zcl_aff_log IMPLEMENTATION.
       INTO DATA(text).
 
     APPEND VALUE #( component_name = component_name
-                    type         = type
-                    message_text = text
-                    message      = get_sy_message( ) ) TO me->messages.
+                    type           = type
+                    message_text   = text
+                    message        = get_sy_message( ) ) TO me->messages.
   ENDMETHOD.
 
 
