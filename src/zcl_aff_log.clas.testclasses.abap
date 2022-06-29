@@ -23,7 +23,6 @@ CLASS ltcl_log_unit_test DEFINITION FINAL FOR TESTING
       two_messages_for_one_object FOR TESTING RAISING cx_static_check,
       add_catched_exception FOR TESTING RAISING cx_static_check,
       add_classic_exception FOR TESTING RAISING cx_static_check,
-*      get_sy_message FOR TESTING RAISING cx_static_check,
       add_exception_as_info FOR TESTING RAISING cx_static_check,
 
       get_message_text FOR TESTING RAISING cx_static_check,
