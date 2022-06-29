@@ -206,7 +206,7 @@ CLASS ltcl_log_unit_test IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_message_text.
-    DATA(act_message) = log->get_message_text( msgno = 109 msgv1 = CONV #( `$test` )  ).
+    DATA(act_message) = log->get_message_text( msgno = 109 msgv1 = CONV #( `$test` ) ).
     DATA(exp_message) = `Annotation $test was used incorrectly`.
     cl_abap_unit_assert=>assert_equals( exp = exp_message act = act_message ).
   ENDMETHOD.

@@ -256,7 +256,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
     IF lines( mixed_result_table ) = 0.
       DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-default ) ).
-      parser_log->add_warning( message_text = msg component_name = component_name  ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
       RETURN.
     ENDIF.
     IF lines( mixed_result_table ) > 1.

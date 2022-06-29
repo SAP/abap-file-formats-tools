@@ -710,7 +710,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       LOOP AT errors ASSIGNING FIELD-SYMBOL(<error>).
         cl_message_helper=>set_msg_vars_for_clike( <error>-text ).
         DATA(msg) = log->get_message_text( msgno = 0 msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3 msgv4 = sy-msgv4 ).
-        log->add_error( message_text = msg component_name = value #(  ) ).
+        log->add_error( message_text = msg component_name = VALUE #( ) ).
       ENDLOOP.
       RETURN.
     ENDIF.
