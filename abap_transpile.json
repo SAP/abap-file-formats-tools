@@ -19,7 +19,7 @@
     "addCommonJS": true,
     "unknownTypes": "runtimeError",
     "skip": [
-      {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "element"},
+      {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "element", "note": "problem with casting, should throw CX_SY_MOVE_CAST_ERROR"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "structure"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "include"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_build_in_type"},
