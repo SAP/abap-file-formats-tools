@@ -122,7 +122,6 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "calculate_max_length"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "struc_with_own_enum_values"},
-      {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_error"},
       {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "add_exception"},
       {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "joins_log"},
       {"object": "ZCL_AFF_LOG", "class": "ltcl_log_unit_test", "method": "clears_log"},
