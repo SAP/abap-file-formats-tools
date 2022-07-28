@@ -191,7 +191,6 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( VALUE string( ) ) ) ).
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( VALUE char1( ) ) ) ).
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( VALUE xstring( ) ) ) ).
-    cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( VALUE zif_aff_writer=>enum_type_info( ) ) ) ).
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( VALUE numc4( ) ) ) ).
   ENDMETHOD.
 
