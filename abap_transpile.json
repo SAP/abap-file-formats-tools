@@ -60,7 +60,6 @@
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_struc_of_enum_values_cl"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_numeric", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_string_like"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "name_mapping_and_camel_case", "note": "VALUE #( table_expr OPTIONAL )"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "name_mapping_found", "note": "VALUE #( table_expr OPTIONAL )"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "stack_stores_operations", "note": "VALUE #( stack[ 1 ]-operation OPTIONAL )"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_default", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
