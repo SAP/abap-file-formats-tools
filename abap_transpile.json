@@ -44,9 +44,7 @@
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "wrong_usage_default"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode", "note": "Void type: cl_oo_abap_doc_reader"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_abap_doc_for_absolute_name", "note": "Void type: cl_oo_abap_doc_reader"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_numeric", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "stack_stores_operations", "note": "VALUE #( stack[ 1 ]-operation OPTIONAL )"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_default", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "value_mapping_found"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_element", "note": "casting should throw exception, transpiler todo"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "value_mapping"},
@@ -57,7 +55,6 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "nested_table"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_max_length", "note": "casting fails? structure_description.get(...).get_components is not a function"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "max_length"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "number_max_value", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "validate_invalid_json_schema", "note": "implement cl_message_helper->set_msg_vars_for_if_msg in open-abap, requires casting"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "standard_table"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "nested_structure"},
@@ -91,6 +88,11 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_default_problem"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "calculate_max_length"},
+
+
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "number_max_value", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_numeric", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_default", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
 
 
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "simple_table_with_callbackclas"},
