@@ -38,7 +38,6 @@
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "no_structure"},
       {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_element_types"},
       {"object": "ZCL_AFF_ABAP_DOC_READER", "class": "ltcl_abap_doc_reader", "method": "get_abap_doc_4_sub_elem_types"},
-      {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "too_many_number_annotations"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "too_many_required_annotations"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "too_many_titles_and_showalways"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "too_many_value_links", "note": "??"},
