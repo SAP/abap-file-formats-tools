@@ -19,7 +19,6 @@
     "addCommonJS": true,
     "unknownTypes": "runtimeError",
     "skip": [
-      {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "include"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_build_in_type"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "include_in_include"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "structure_in_structure"},
