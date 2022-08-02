@@ -48,6 +48,7 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       value_mapping_found FOR TESTING RAISING cx_static_check,
       value_mapping_not_found FOR TESTING RAISING cx_static_check,
       get_type_info_string_like FOR TESTING RAISING cx_static_check,
+      get_type_info_string_like_enum FOR TESTING RAISING cx_static_check,
       get_type_info_boolean1 FOR TESTING RAISING cx_static_check,
       get_type_info_boolean2 FOR TESTING RAISING cx_static_check,
       get_type_info_boolean3 FOR TESTING RAISING cx_static_check,
@@ -183,6 +184,10 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     DATA(act_value_mappings) = cut->get_value_mapping_for_element( 'MY_TEST_ELEMENT' ).
 
     cl_abap_unit_assert=>assert_initial( act_value_mappings ).
+  ENDMETHOD.
+
+  METHOD get_type_info_string_like_enum.
+    cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( VALUE zif_aff_writer=>enum_type_info( ) ) ) ).
   ENDMETHOD.
 
   METHOD get_type_info_string_like.
