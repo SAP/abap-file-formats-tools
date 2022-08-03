@@ -71,17 +71,16 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_default_problem", "note": "todo in cl_abap_exceptional_values=>get_max_value()"},
 
 
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema_integer", "note": "??"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema_decfloat16", "note": "??"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema_ftype", "note": "??"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema_packed", "note": "??"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema_integer1", "note": "??"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "number_max_value", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "number_max_value", "note": "should be split into multiple tests, skip for now"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_numeric", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_default", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
 
 
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "simple_table_with_callbackclas"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "simple_table_with_callbackclas", "note": "callbacks.. https://github.com/SAP/abap-file-formats-tools/issues/63 "},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "struct_with_table_callback"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "element_with_callbackclas"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "element_in_structure_callback"},
