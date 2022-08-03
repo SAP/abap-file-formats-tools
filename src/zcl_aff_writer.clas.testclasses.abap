@@ -187,7 +187,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_type_info_string_like_enum.
-    cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( VALUE zif_aff_writer=>enum_type_info( ) ) ) ).
+    cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-string act = cut->get_json_type_from_description( get_element_description( '' ) ) ).
   ENDMETHOD.
 
   METHOD get_type_info_string_like.
