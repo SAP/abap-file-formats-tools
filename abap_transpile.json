@@ -33,7 +33,6 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "value_mapping", "note": "Expected table to contain '21' rows , got '18'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "no_formatting", "note": ""},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "name_mapping", "note": ""},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "date_time_element", "note": "Expected table to contain '8' rows , got '5'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "structure_in_table", "note": ""},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "nested_table"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_max_length", "note": ""},
