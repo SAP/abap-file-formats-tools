@@ -514,10 +514,13 @@ CLASS ltcl_json_writer_abap_doc DEFINITION FINAL FOR TESTING
       structure_with_include FOR TESTING RAISING cx_static_check,
       description_too_long FOR TESTING RAISING cx_static_check,
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
-      get_extrema FOR TESTING RAISING cx_static_check,
+      get_extrema_integer FOR TESTING RAISING cx_static_check,
+      get_extrema_decfloat16 FOR TESTING RAISING cx_static_check,
+      get_extrema_ftype FOR TESTING RAISING cx_static_check,
+      get_extrema_packed FOR TESTING RAISING cx_static_check,
+      get_extrema_integer1 FOR TESTING RAISING cx_static_check,
       calculate_max_length FOR TESTING RAISING cx_static_check,
       struc_with_own_enum_values FOR TESTING RAISING cx_static_check.
-
 
 ENDCLASS.
 
@@ -2404,44 +2407,64 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD get_extrema.
-    DATA: integer    TYPE i, "-2147483648 to +2147483647 for i
-          decfloat16 TYPE decfloat16, "1E385(1E-16 - 1) to -1E-383, 0, +1E-383 to 1E385(1 - 1E-16) for decfloat16
-          ftype      TYPE f, "2.2250738585072014E-308 to 1.7976931348623157E+308, positive as well as negative
-          packed     TYPE p LENGTH 14 DECIMALS 2, "length multiplied by 2 minus 1 digits and can have a maximum of 14 decimal places
-          integer1   TYPE int1.
-    DATA table_of_descriptions TYPE STANDARD TABLE OF REF TO cl_abap_elemdescr WITH DEFAULT KEY.
-    TYPES: BEGIN OF line_of_table,
-             min TYPE string,
-             max TYPE string,
-           END OF line_of_table.
-    DATA table_of_expected TYPE STANDARD TABLE OF line_of_table WITH DEFAULT KEY.
-    INSERT CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( integer ) ) INTO TABLE table_of_descriptions.
-    INSERT VALUE #( min = `-2147483648` max = `2147483647` ) INTO TABLE table_of_expected.
+  METHOD get_extrema_integer.
+    DATA val TYPE i. "-2147483648 to +2147483647 for i
+    cut->get_extrema(
+      EXPORTING
+        element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( val ) )
+      IMPORTING
+        max                 = DATA(max)
+        min                 = DATA(min) ).
+    cl_abap_unit_assert=>assert_equals( exp = `-2147483648` act = min ).
+    cl_abap_unit_assert=>assert_equals( exp = `2147483647` act = max ).
+  ENDMETHOD.
 
-    INSERT CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( decfloat16 ) ) INTO TABLE table_of_descriptions.
-    INSERT VALUE #( min = `-9.999999999999999e384` max = `9.999999999999999e384` ) INTO TABLE table_of_expected.
+  METHOD get_extrema_decfloat16.
+    DATA val TYPE decfloat16. "1E385(1E-16 - 1) to -1E-383, 0, +1E-383 to 1E385(1 - 1E-16) for decfloat16
+    cut->get_extrema(
+      EXPORTING
+        element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( val ) )
+      IMPORTING
+        max                 = DATA(max)
+        min                 = DATA(min) ).
+    cl_abap_unit_assert=>assert_equals( exp = `-9.999999999999999e384` act = min ).
+    cl_abap_unit_assert=>assert_equals( exp = `9.999999999999999e384` act = max ).
+  ENDMETHOD.
 
-    INSERT CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( ftype ) ) INTO TABLE table_of_descriptions.
-    INSERT VALUE #( min = `-1.7976931348623157e308` max = `1.7976931348623157e308` ) INTO TABLE table_of_expected.
+  METHOD get_extrema_ftype.
+    DATA val TYPE f. "2.2250738585072014E-308 to 1.7976931348623157E+308, positive as well as negative
+    cut->get_extrema(
+      EXPORTING
+        element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( val ) )
+      IMPORTING
+        max                 = DATA(max)
+        min                 = DATA(min) ).
+    cl_abap_unit_assert=>assert_equals( exp = `-1.7976931348623157e308` act = min ).
+    cl_abap_unit_assert=>assert_equals( exp = `1.7976931348623157e308` act = max ).
+  ENDMETHOD.
 
-    INSERT CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( packed ) ) INTO TABLE table_of_descriptions.
-    INSERT VALUE #( min = `-9999999999999999999999999.99` max = `9999999999999999999999999.99` ) INTO TABLE table_of_expected.
+  METHOD get_extrema_packed.
+    DATA val TYPE p LENGTH 14 DECIMALS 2. "length multiplied by 2 minus 1 digits and can have a maximum of 14 decimal places
+    cut->get_extrema(
+      EXPORTING
+        element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( val ) )
+      IMPORTING
+        max                 = DATA(max)
+        min                 = DATA(min) ).
+    cl_abap_unit_assert=>assert_equals( exp = `-9999999999999999999999999.99` act = min ).
+    cl_abap_unit_assert=>assert_equals( exp = `9999999999999999999999999.99` act = max ).
+  ENDMETHOD.
 
-    INSERT CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( integer1 ) ) INTO TABLE table_of_descriptions.
-    INSERT VALUE #( min = `0` max = `255` ) INTO TABLE table_of_expected.
-
-    LOOP AT table_of_descriptions ASSIGNING FIELD-SYMBOL(<description>).
-      DATA(table_index) = sy-tabix.
-      cut->get_extrema(
-        EXPORTING
-          element_description = <description>
-        IMPORTING
-          max                 = DATA(max)
-          min                 = DATA(min) ).
-      cl_abap_unit_assert=>assert_equals( exp = table_of_expected[ table_index ]-min act = min ).
-      cl_abap_unit_assert=>assert_equals( exp = table_of_expected[ table_index ]-max act = max ).
-    ENDLOOP.
+  METHOD get_extrema_integer1.
+    DATA val TYPE int1.
+    cut->get_extrema(
+      EXPORTING
+        element_description = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( val ) )
+      IMPORTING
+        max                 = DATA(max)
+        min                 = DATA(min) ).
+    cl_abap_unit_assert=>assert_equals( exp = `0` act = min ).
+    cl_abap_unit_assert=>assert_equals( exp = `255` act = max ).
   ENDMETHOD.
 
   METHOD calculate_max_length.
