@@ -12,7 +12,7 @@ CLASS zcl_aff_writer DEFINITION
   PROTECTED SECTION.
     TYPES:
       BEGIN OF ty_stack_entry,
-        operation TYPE zif_aff_writer=>enum_operation,
+        operation TYPE string,
         name      TYPE string,
       END OF ty_stack_entry.
 
@@ -25,7 +25,7 @@ CLASS zcl_aff_writer DEFINITION
 
     DATA:
       output                     TYPE string_table,
-      formatting_option          TYPE zif_aff_writer=>enum_formatting_option,
+      formatting_option          TYPE string,
       name_mappings              TYPE zif_aff_writer=>ty_name_mappings,
       abap_value_mappings        TYPE zif_aff_writer=>ty_abap_value_mappings,
       content                    TYPE string_table,
@@ -47,7 +47,7 @@ CLASS zcl_aff_writer DEFINITION
         RETURNING VALUE(result) TYPE string,
       get_json_type_from_description
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING VALUE(result)       TYPE zif_aff_writer=>enum_type_info
+        RETURNING VALUE(result)       TYPE string
         RAISING   zcx_aff_tools,
 
       write_open_tag FINAL
@@ -60,7 +60,7 @@ CLASS zcl_aff_writer DEFINITION
         IMPORTING
           entry TYPE ty_stack_entry,
       last_operation FINAL
-        RETURNING VALUE(result) TYPE zif_aff_writer=>enum_operation,
+        RETURNING VALUE(result) TYPE string,
       append_to_previous_line FINAL
         IMPORTING
           string TYPE string,

@@ -64,7 +64,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       get_json_schema_type
         IMPORTING element_name        TYPE string
                   element_description TYPE REF TO cl_abap_elemdescr
-                  json_type           TYPE zif_aff_writer=>enum_type_info
+                  json_type           TYPE string
         RETURNING VALUE(result)       TYPE string
         RAISING   zcx_aff_tools,
 
@@ -130,7 +130,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       handle_default
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
-          json_type           TYPE zif_aff_writer=>enum_type_info
+          json_type           TYPE string
         RAISING
           zcx_aff_tools,
 

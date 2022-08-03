@@ -62,7 +62,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
 
     METHODS: get_tag_from_type
       IMPORTING
-        json_type     TYPE zif_aff_writer=>enum_type_info
+        json_type     TYPE string
       RETURNING
         VALUE(result) TYPE string
       RAISING
@@ -70,7 +70,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
 
       get_option
         IMPORTING
-          json_type           TYPE zif_aff_writer=>enum_type_info
+          json_type           TYPE string
           element_description TYPE REF TO cl_abap_elemdescr
         RETURNING
           VALUE(result)       TYPE string
@@ -80,7 +80,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
       write_value_mappings
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
-          json_type           TYPE zif_aff_writer=>enum_type_info
+          json_type           TYPE string
           element_name        TYPE string
           value_mapping       TYPE zif_aff_writer=>ty_abap_value_mapping
         RAISING
@@ -122,7 +122,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
         IMPORTING
           element_name        TYPE string
           element_description TYPE REF TO cl_abap_elemdescr
-          type                TYPE zif_aff_writer=>enum_type_info
+          type                TYPE string
           value_mappings      TYPE zif_aff_writer=>ty_value_mappings
         RETURNING
           VALUE(condition)    TYPE string
@@ -141,7 +141,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
       get_default_value_from_default
         IMPORTING
           value_mappings      TYPE zif_aff_writer=>ty_value_mappings
-          type                TYPE zif_aff_writer=>enum_type_info
+          type                TYPE string
           element_description TYPE REF TO cl_abap_elemdescr
         RETURNING
           VALUE(default)      TYPE string
@@ -177,7 +177,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
           structure_name      TYPE string
           value_mappings      TYPE zif_aff_writer=>ty_value_mappings
           element_description TYPE REF TO cl_abap_elemdescr
-          type                TYPE zif_aff_writer=>enum_type_info
+          type                TYPE string
         RETURNING
           VALUE(default)      TYPE string
         RAISING
