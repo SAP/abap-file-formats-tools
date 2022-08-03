@@ -401,7 +401,12 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
 
   METHOD last_operation.
-    result = VALUE #( stack[ 1 ]-operation OPTIONAL ).
+    READ TABLE stack INDEX 1 INTO DATA(ls_stack).
+    IF sy-subrc = 0.
+      result = ls_stack-operation.
+    ELSE.
+      result = zif_aff_writer=>operation-initial.
+    ENDIF.
   ENDMETHOD.
 
 
