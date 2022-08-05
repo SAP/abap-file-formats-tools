@@ -403,9 +403,9 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD last_operation.
     IF stack IS NOT INITIAL.
       result = VALUE #( stack[ 1 ]-operation OPTIONAL ).
-    else.
+    ELSE.
       result = zif_aff_writer=>operation-initial.
-    endif.
+    ENDIF.
   ENDMETHOD.
 
 
