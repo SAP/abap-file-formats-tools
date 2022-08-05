@@ -175,7 +175,7 @@
       "exclude": ["zcl_aff_test_types"]
     },
     "unused_variables": {
-      "exclude": ["zcl_aff_test_types"]
+      "exclude": ["zcl_aff_test_types", "zcl_aff_writer.clas.testclasses"]
     },
     "use_bool_expression": true,
     "use_class_based_exceptions": true,
