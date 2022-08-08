@@ -490,10 +490,11 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   METHOD value_mappings.
     DATA test_type TYPE lif_test_types=>element.
     cut->zif_aff_writer~set_abap_value_mappings( abap_value_mappings = VALUE #( (
-                                                 abap_element = 'ELEMENT'
-                                                 value_mappings = VALUE #(
-                                                     ( abap = 'X' json = 'true' )
-                                                     ( abap = '' json = 'false' ) ) ) ) ).
+                                                   abap_element   = 'ELEMENT'
+                                                   target_type    = zif_aff_writer=>type_info-string
+                                                   value_mappings = VALUE #(
+                                                       ( abap = 'X' json = 'true' )
+                                                       ( abap = '' json = 'false' ) ) ) ) ).
 
     DATA(act_output) = test_generator->generate_type( test_type ).
 
@@ -894,7 +895,7 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
           test_type      TYPE data
           name_mappings  TYPE zif_aff_writer=>ty_name_mappings OPTIONAL
           value_mappings TYPE zif_aff_writer=>ty_abap_value_mappings OPTIONAL
-          formatting     TYPE zif_aff_writer=>enum_formatting_option DEFAULT zif_aff_writer=>formatting_option-no_formatting
+          formatting     TYPE string DEFAULT zif_aff_writer=>formatting_option-no_formatting
         EXPORTING
           VALUE(result)  TYPE string_table
           VALUE(json)    TYPE xstring
@@ -1334,10 +1335,11 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       EXPORTING
         test_type      = test_type
         value_mappings = VALUE #(
-                            ( abap_element = 'ELEMENT'
-                                value_mappings = VALUE #(
-                                    ( abap = 'X' json = 'true' )
-                                    ( abap = '' json = 'false' ) ) ) )
+                            ( abap_element   = 'ELEMENT'
+                              target_type    = zif_aff_writer=>type_info-string
+                              value_mappings = VALUE #(
+                                  ( abap = 'X' json = 'true' )
+                                  ( abap = '' json = 'false' ) ) ) )
       IMPORTING
         result         = DATA(act_json)
         json           = DATA(json_xstring) ).
