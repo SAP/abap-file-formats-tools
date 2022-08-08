@@ -31,7 +31,6 @@
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_abap_doc_for_absolute_name", "note": "Void type: cl_oo_abap_doc_reader"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_element", "note": "Expected table to contain '18' rows , got '7'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "value_mapping", "note": "Expected table to contain '21' rows , got '18'"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "no_formatting", "note": ""},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "name_mapping", "note": ""},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "structure_in_table", "note": ""},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "nested_table"},
