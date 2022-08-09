@@ -44,6 +44,8 @@
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_abap_doc_for_absolute_name", "note": "Void type: cl_oo_abap_doc_reader"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "stack_stores_operations", "note": "??"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_string_like_enum", "note": "enums are not yet supported"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_string_like_enum", "note": "enums are not yet supported"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_boolean2", "note": "??"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_element", "note": "casting should throw exception, transpiler todo"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "value_mapping"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "no_formatting", "note": "casting fails? element_description.get(...).get_ddic_field is not a function"},
