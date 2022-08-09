@@ -431,8 +431,8 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD call_reader_and_decode.
     DATA(ref) = cl_oo_factory=>create_instance( )->create_clif_source( name_of_source ).
-    ref->get_source( IMPORTING source = DATA(lt_source) ).
-    DATA(reader) = zcl_aff_abap_doc_reader=>create_instance( lt_source ).
+    ref->get_source( IMPORTING source = DATA(source) ).
+    DATA(reader) = zcl_aff_abap_doc_reader=>create_instance( source ).
     TRY.
         DATA(result) = reader->get_abap_doc_for_element( element_name ).
 
