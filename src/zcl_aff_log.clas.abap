@@ -53,12 +53,8 @@ ENDCLASS.
 
 
 
-CLASS zcl_aff_log IMPLEMENTATION.
+CLASS ZCL_AFF_LOG IMPLEMENTATION.
 
-
-  METHOD zif_aff_log~get_messages.
-    messages = me->messages.
-  ENDMETHOD.
 
   METHOD add_message.
     set_max_severity( type ).
@@ -67,13 +63,66 @@ CLASS zcl_aff_log IMPLEMENTATION.
                     message_text = message_text ) TO me->messages.
   ENDMETHOD.
 
-  METHOD zif_aff_log~add_info.
-    add_message( type = zif_aff_log=>c_message_type-info message_text = message_text component_name = component_name ).
+
+  METHOD add_message_for_exception.
+
+    MESSAGE
+      ID message-msgid
+      TYPE type
+      NUMBER message-msgno
+      WITH message-msgv1 message-msgv2 message-msgv3 message-msgv4
+      INTO DATA(text).
+
+    APPEND VALUE #( component_name = component_name
+                    type           = type
+                    message_text   = text
+                    message        = get_sy_message( ) ) TO me->messages.
   ENDMETHOD.
 
 
-  METHOD zif_aff_log~add_warning.
-    add_message( type = zif_aff_log=>c_message_type-warning message_text = message_text component_name = component_name ).
+  METHOD constructor.
+    APPEND VALUE #( msgno = 0 ) TO message_table.
+    APPEND VALUE #( msgno = 102 str1 = `The JSON type`  str2 = `is not supported by the XSLT writer` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 103 str1 = `Class/Interface type`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 104 str1 = `Constant`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 105 str1 = `Component`  str2 = `of constant` str3 = `in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 107 str1 = `There are several occurrences of annotation`  str2 = `. First valid is used` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 108 str1 = `Annotation`  str2 = `is unknown` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 109 str1 = `Annotation`  str2 = `was used incorrectly` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 110 str1 = `No number was provided for annotation` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 111 str1 = `Link in annotation`  str2 = `is incorrect` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 112 str1 = `If $required is set, $showAlways is redundant` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 117 str1 = `Annotation $default for type`  str2 = `is not supported` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 119 str1 = ``  str2 = `is missing` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 122 str1 = `Type of constant`  str2 = `does not match type of` ) TO message_table ##NO_TEXT.
+    APPEND VALUE #( msgno = 125 str1 = `Description exceeds`  str2 = `characters and might be too long` ) TO message_table ##NO_TEXT.
+  ENDMETHOD.
+
+
+  METHOD get_sy_message.
+    result = VALUE #(
+      msgid = sy-msgid
+      msgno = sy-msgno
+      msgty = sy-msgty
+      msgv1 = sy-msgv1
+      msgv2 = sy-msgv2
+      msgv3 = sy-msgv3
+      msgv4 = sy-msgv4 ).
+  ENDMETHOD.
+
+
+  METHOD set_max_severity.
+    IF type = zif_aff_log=>c_message_type-error.
+      max_severity = zif_aff_log=>c_message_type-error.
+    ELSEIF type = zif_aff_log=>c_message_type-warning.
+      IF max_severity <> zif_aff_log=>c_message_type-error.
+        max_severity = zif_aff_log=>c_message_type-warning.
+      ENDIF.
+    ELSEIF type = zif_aff_log=>c_message_type-info.
+      IF max_severity IS INITIAL.
+        max_severity = zif_aff_log=>c_message_type-info.
+      ENDIF.
+    ENDIF.
   ENDMETHOD.
 
 
@@ -96,25 +145,13 @@ CLASS zcl_aff_log IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD add_message_for_exception.
-
-    MESSAGE
-      ID message-msgid
-      TYPE type
-      NUMBER message-msgno
-      WITH message-msgv1 message-msgv2 message-msgv3 message-msgv4
-      INTO DATA(text).
-
-    APPEND VALUE #( component_name = component_name
-                    type           = type
-                    message_text   = text
-                    message        = get_sy_message( ) ) TO me->messages.
+  METHOD zif_aff_log~add_info.
+    add_message( type = zif_aff_log=>c_message_type-info message_text = message_text component_name = component_name ).
   ENDMETHOD.
 
 
-  METHOD zif_aff_log~join.
-    APPEND LINES OF log_to_join->get_messages( ) TO me->messages.
-    set_max_severity( log_to_join->get_max_severity( ) ).
+  METHOD zif_aff_log~add_warning.
+    add_message( type = zif_aff_log=>c_message_type-warning message_text = message_text component_name = component_name ).
   ENDMETHOD.
 
 
@@ -128,21 +165,10 @@ CLASS zcl_aff_log IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_aff_log~has_messages.
-    has_messages = xsdbool( me->messages IS NOT INITIAL ).
+  METHOD zif_aff_log~get_messages.
+    messages = me->messages.
   ENDMETHOD.
 
-
-  METHOD get_sy_message.
-    result = VALUE #(
-      msgid = sy-msgid
-      msgno = sy-msgno
-      msgty = sy-msgty
-      msgv1 = sy-msgv1
-      msgv2 = sy-msgv2
-      msgv3 = sy-msgv3
-      msgv4 = sy-msgv4 ).
-  ENDMETHOD.
 
   METHOD zif_aff_log~get_message_text.
     IF line_exists( message_table[ msgno = msgno ] ).
@@ -155,38 +181,14 @@ CLASS zcl_aff_log IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD set_max_severity.
-    IF type = zif_aff_log=>c_message_type-error.
-      max_severity = zif_aff_log=>c_message_type-error.
-    ELSEIF type = zif_aff_log=>c_message_type-warning.
-      IF max_severity <> zif_aff_log=>c_message_type-error.
-        max_severity = zif_aff_log=>c_message_type-warning.
-      ENDIF.
-    ELSEIF type = zif_aff_log=>c_message_type-info.
-      IF max_severity IS INITIAL.
-        max_severity = zif_aff_log=>c_message_type-info.
-      ENDIF.
-    ENDIF.
+
+  METHOD zif_aff_log~has_messages.
+    has_messages = xsdbool( me->messages IS NOT INITIAL ).
   ENDMETHOD.
 
 
-
-  METHOD constructor.
-    APPEND VALUE #( msgno = 0 ) TO message_table.
-    APPEND VALUE #( msgno = 102 str1 = `The JSON type`  str2 = `is not supported by the XSLT writer` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 103 str1 = `Class/Interface type`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 104 str1 = `Constant`  str2 = `given in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 105 str1 = `Component`  str2 = `of constant` str3 = `in ABAP Doc link doesn't exist` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 107 str1 = `There are several occurrences of annotation`  str2 = `. First valid is used` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 108 str1 = `Annotation`  str2 = `is unknown` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 109 str1 = `Annotation`  str2 = `was used incorrectly` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 110 str1 = `No number was provided for annotation` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 111 str1 = `Link in annotation`  str2 = `is incorrect` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 112 str1 = `If $required is set, $showAlways is redundant` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 117 str1 = `Annotation $default for type`  str2 = `is not supported` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 119 str1 = ``  str2 = `is missing` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 122 str1 = `Type of constant`  str2 = `does not match type of` ) TO message_table ##NO_TEXT.
-    APPEND VALUE #( msgno = 125 str1 = `Description exceeds`  str2 = `characters and might be too long` ) TO message_table ##NO_TEXT.
+  METHOD zif_aff_log~join.
+    APPEND LINES OF log_to_join->get_messages( ) TO me->messages.
+    set_max_severity( log_to_join->get_max_severity( ) ).
   ENDMETHOD.
-
 ENDCLASS.
