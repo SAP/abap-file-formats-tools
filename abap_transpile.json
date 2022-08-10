@@ -18,6 +18,7 @@
     "addFilenames": true,
     "addCommonJS": true,
     "unknownTypes": "runtimeError",
+    "extraSetup": "../setup.mjs",
     "skip": [
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_build_in_type"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_structure", "note": "??"},
