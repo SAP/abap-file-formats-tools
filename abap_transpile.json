@@ -31,7 +31,6 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_element", "note": "Expected table to contain '18' rows , got '7'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "nested_table", "note": "throws cx_sy_itab_line_not_found"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_max_length", "note": ""},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "stack_stores_operations", "note": "??"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_string_like_enum", "note": "enums are not yet supported"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_boolean2", "note": "??"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_element", "note": "casting should throw exception, transpiler todo"},
