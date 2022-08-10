@@ -28,7 +28,6 @@
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_structure", "note": "??"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "date_time_element", "note": "structure_description.get(...).get_components is not a function"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "max_length"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "name_mapping", "note": "casting fails? element_description.get(...).get_ddic_field is not a function"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "nested_table", "note": "throws cx_sy_itab_line_not_found"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "no_formatting", "note": "casting fails? element_description.get(...).get_ddic_field is not a function"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "structure_in_table", "note": "structure_description.get(...).get_components is not a function"},
