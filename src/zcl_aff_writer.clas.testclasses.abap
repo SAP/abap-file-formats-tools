@@ -307,6 +307,12 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     abap_doc_exp = VALUE #( title = 'Enum Type' description = 'Enum type' enumvalues_link = 'zcl_aff_test_types.data:co_class_category' default = '@link zcl_aff_test_types.data:co_class_category.exit_class' ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
 
+    element_name = `MY_STRUCTURE-MY_FIRST_ELEMENT`.
+    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'First Element'
+      act = abap_doc_act-title ).
+
   ENDMETHOD.
 
   METHOD delete_first_of_struc_stack.
