@@ -26,9 +26,9 @@
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_build_in_type", "note": "Expected OPEN_TABLE TABLE_BUILD_IN_TYPE, got OPEN_TABLE"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_in_table"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_structure", "note": "??"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "format_version", "note": "Expected table to contain '25' rows , got '21'"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "hashed_table", "note": "Expected table to contain '31' rows , got '23'"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "nested_nested_structure"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "format_version", "note": "Expected table to contain '25' rows , got '23'"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "hashed_table", "note": "Expected table to contain '31' rows , got '26'"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "nested_nested_structure", "note": "Expected table to contain '70' rows , got '49'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "nested_struc_with_default"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "nested_structure"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "nestes_table_with_ad"},
@@ -38,7 +38,6 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "simple_structure_dollar", "note": "Expected table to contain '28' rows , got '18'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "simple_structure"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "standard_table", "note": "Expected table to contain '15' rows , got '10'"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "string_element", "note": "Expected table to contain '10' rows , got '7'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_different_default"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_no_title_descr"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_default_problem", "note": "cx_sy_itab_line_not_found"},
@@ -52,12 +51,11 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "title_and_desc_escaped", "note": "cx_sy_itab_line_not_found, splitted_prev_name"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "unknown_abap_doc_tag", "note": "escaping?"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "max_length", "note": "cx_sy_itab_line_not_found, splitted_prev_name"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "nested_table", "note": "cx_sy_itab_line_not_found"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_element", "note": "Expected table to contain '18' rows , got '7'"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "nested_table", "note": "cx_sy_itab_line_not_found, splitted_absolute_name"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_element", "note": "Expected table to contain '18' rows , got '8'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_max_length", "note": "Expected table to contain '9' rows , got '8'"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode", "note": "should be split into multiple tests, skip for now"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_boolean2", "note": "??"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_string_like_enum", "note": "enums are not yet supported"},
 
 
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "get_extrema_decfloat16", "note": "??"},
@@ -85,6 +83,7 @@
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "wrong_usage_callback_class"},
 
 
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_string_like_enum", "note": "enums are not yet supported"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "enum_values", "note": "ENUMS out of scope"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "too_many_enum_values", "note": "ENUMS out of scope"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "wrong_usage_enum_values", "note": "ENUMS out of scope"},
