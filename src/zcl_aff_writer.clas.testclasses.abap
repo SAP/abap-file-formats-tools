@@ -59,7 +59,13 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       set_formatting_option FOR TESTING RAISING cx_static_check,
       stack_stores_operations FOR TESTING RAISING cx_static_check,
       append_to_previous_line FOR TESTING RAISING cx_static_check,
-      call_reader_and_decode FOR TESTING RAISING cx_static_check,
+      call_reader_and_decode1 FOR TESTING RAISING cx_static_check,
+      call_reader_and_decode2 FOR TESTING RAISING cx_static_check,
+      call_reader_and_decode3 FOR TESTING RAISING cx_static_check,
+      call_reader_and_decode4 FOR TESTING RAISING cx_static_check,
+      call_reader_and_decode5 FOR TESTING RAISING cx_static_check,
+      call_reader_and_decode6 FOR TESTING RAISING cx_static_check,
+      call_reader_and_decode7 FOR TESTING RAISING cx_static_check,
       delete_first_of_struc_stack FOR TESTING RAISING cx_static_check,
       get_all_path_information FOR TESTING RAISING cx_static_check,
       get_abap_doc_for_absolute_name FOR TESTING RAISING cx_static_check,
@@ -274,45 +280,67 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = 'new line;' act = cut->content[ 2 ] ).
   ENDMETHOD.
 
-  METHOD call_reader_and_decode.
+  METHOD call_reader_and_decode1.
     DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
     DATA(element_name) = `CATEGORY`.
     DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
     DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
     abap_doc_exp = VALUE #( description = `This is an enum` title = `myCategory` enumvalues_link = `zcl_aff_test_types.data:enum_values` ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
+  ENDMETHOD.
 
-    element_name = `AFF_TEST_TYPE-INNER_STRUC`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+  METHOD call_reader_and_decode2.
+    DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
+    DATA(element_name) = `AFF_TEST_TYPE-INNER_STRUC`.
+    DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+    DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
     abap_doc_exp = VALUE #( title = 'Title of inner_struc' description = 'Description of inner_struc' showalways = abap_true ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
+  ENDMETHOD.
 
-    element_name = `AFF_TEST_TYPE-INNER_STRUC-INNER_ELEMENT`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+  METHOD call_reader_and_decode3.
+    DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
+    DATA(element_name) = `AFF_TEST_TYPE-INNER_STRUC-INNER_ELEMENT`.
+    DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+    DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
     abap_doc_exp = VALUE #( required = abap_true title = `Title of inner_element` description = `Description of inner_element` ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
+  ENDMETHOD.
 
-    element_name = `STRUCTURE_WITH_NUMBERS-PACKED_WITH_MULTIPLE`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+  METHOD call_reader_and_decode4.
+    DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
+    DATA(element_name) = `STRUCTURE_WITH_NUMBERS-PACKED_WITH_MULTIPLE`.
+    DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+    DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
     abap_doc_exp = VALUE #( title = 'Packed Number With Given Multiple' description = `Packed number with given multiple` exclusive_minimum = `0` maximum = `99999.90` multiple_of = `0.1` ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
+  ENDMETHOD.
 
-    element_name = `STRUCTURE_DIFFERENT_DEFAULT-FOUR_BYTE_INT`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+  METHOD call_reader_and_decode5.
+    DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
+    DATA(element_name) = `STRUCTURE_DIFFERENT_DEFAULT-FOUR_BYTE_INT`.
+    DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+    DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
     abap_doc_exp = VALUE #( title = 'Four Byte Integer' description = 'Four byte integer'  default = '"5"' ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
+  ENDMETHOD.
 
-    element_name = `STRUCTURE_DIFFERENT_DEFAULT-ENUM_TYPE`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+  METHOD call_reader_and_decode6.
+    DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
+    DATA(element_name) = `STRUCTURE_DIFFERENT_DEFAULT-ENUM_TYPE`.
+    DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+    DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
     abap_doc_exp = VALUE #( title = 'Enum Type' description = 'Enum type' enumvalues_link = 'zcl_aff_test_types.data:co_class_category' default = '@link zcl_aff_test_types.data:co_class_category.exit_class' ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
+  ENDMETHOD.
 
-    element_name = `MY_STRUCTURE-MY_FIRST_ELEMENT`.
-    abap_doc_act = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
+  METHOD call_reader_and_decode7.
+    DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
+    DATA(element_name) = `MY_STRUCTURE-MY_FIRST_ELEMENT`.
+    DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
     cl_abap_unit_assert=>assert_equals(
       exp = 'First Element'
       act = abap_doc_act-title ).
-
   ENDMETHOD.
 
   METHOD delete_first_of_struc_stack.
