@@ -136,6 +136,16 @@ CLASS zcl_aff_test_types DEFINITION
         foo_element  TYPE mystring,
       END OF my_structure_single.
 
+* simple structure, two fields
+    TYPES:
+      "! This is a two field structure
+      BEGIN OF my_structure_two,
+        "! foo1 element
+        foo1 TYPE i,
+        "! foo2 element
+        foo2 TYPE i,
+      END OF my_structure_two.
+
 * simple table:
     TYPES:
     "! <p class="shorttext">A Standard Table</p>
