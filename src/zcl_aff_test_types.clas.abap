@@ -125,6 +125,16 @@ CLASS zcl_aff_test_types DEFINITION
         my_second_element TYPE i,
       END OF my_structure.
 
+* simple structure, single field
+    TYPES:
+      "! <p class="shorttext synchronized" >mySimpleStructure</p>
+      "! This is a simple structure
+      BEGIN OF my_structure_single,
+        "! <p class="shorttext">First Element</p>
+        "! This is the first element
+        "! $minLength 4
+        my_first_element  TYPE mystring,
+      END OF my_structure_single.
 
 * simple table:
     TYPES:
