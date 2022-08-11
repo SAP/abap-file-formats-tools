@@ -26,7 +26,6 @@
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_build_in_type", "note": "Expected OPEN_TABLE TABLE_BUILD_IN_TYPE, got OPEN_TABLE"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_in_table"},
       {"object": "ZCL_AFF_GENERATOR", "class": "ltcl_type_generator", "method": "table_structure", "note": "??"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "description_too_long", "note": "The expected message is not contained in the log"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "format_version", "note": "Expected table to contain '25' rows , got '21'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "hashed_table", "note": "Expected table to contain '31' rows , got '23'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "nested_nested_structure"},
