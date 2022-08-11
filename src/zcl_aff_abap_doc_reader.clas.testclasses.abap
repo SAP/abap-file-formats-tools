@@ -14,6 +14,7 @@ CLASS ltcl_abap_doc_reader DEFINITION FINAL FOR TESTING
     METHODS get_abap_doc_4_elem_wo_adoc FOR TESTING.
     METHODS get_simple FOR TESTING RAISING cx_static_check.
     METHODS get_structure FOR TESTING RAISING cx_static_check.
+    METHODS structure_and_fields FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_abap_doc_reader IMPLEMENTATION.
@@ -153,6 +154,32 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
     result = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'MY_STRUCTURE-MY_SECOND_ELEMENT' ).
     cl_abap_unit_assert=>assert_equals(
       exp = 'l4 l5'
+      act = result ).
+
+  ENDMETHOD.
+
+  METHOD structure_and_fields.
+
+    DATA(source) = VALUE string_table(
+      ( |    TYPES:| )
+      ( |      BEGIN OF structure1,| )
+      ( |        "! text1| )
+      ( |        same_name TYPE i,| )
+      ( |      END OF structure1.| )
+      ( |    TYPES:| )
+      ( |      BEGIN OF structure2,| )
+      ( |        "! text2| )
+      ( |        same_name TYPE i,| )
+      ( |      END OF structure2.| ) ).
+
+    DATA(result) = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'STRUCTURE1-SAME_NAME' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'text1'
+      act = result ).
+
+    result = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'STRUCTURE2-SAME_NAME' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'text2'
       act = result ).
 
   ENDMETHOD.
