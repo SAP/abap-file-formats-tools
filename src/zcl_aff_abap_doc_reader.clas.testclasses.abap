@@ -12,7 +12,8 @@ CLASS ltcl_abap_doc_reader DEFINITION FINAL FOR TESTING
     METHODS get_abap_doc_4_sub_elem_types FOR TESTING RAISING cx_static_check.
     METHODS get_abap_doc_4_wrong_elem_name FOR TESTING.
     METHODS get_abap_doc_4_elem_wo_adoc FOR TESTING.
-    METHODS get_simple FOR TESTING.
+    METHODS get_simple FOR TESTING RAISING cx_static_check.
+    METHODS get_structure FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_abap_doc_reader IMPLEMENTATION.
@@ -120,6 +121,40 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals(
       exp = '$hiddenabc'
       act = result ).
+  ENDMETHOD.
+
+  METHOD get_structure.
+
+    DATA(source) = VALUE string_table(
+      ( |* simple structure| )
+      ( |    TYPES:| )
+      ( |      "! foo| )
+      ( |      "! bar| )
+      ( |      BEGIN OF my_structure,| )
+      ( |        "! l1| )
+      ( |        "! l2| )
+      ( |        "! l3| )
+      ( |        my_first_element  TYPE mystring,| )
+      ( |        "! l4| )
+      ( |        "! l5| )
+      ( |        my_second_element TYPE i,| )
+      ( |      END OF my_structure.| ) ).
+
+    DATA(result) = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'MY_STRUCTURE' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'foo bar'
+      act = result ).
+
+    result = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'MY_STRUCTURE-MY_FIRST_ELEMENT' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'l1 l2 l3'
+      act = result ).
+
+    result = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'MY_STRUCTURE-MY_SECOND_ELEMENT' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = 'l4 l5'
+      act = result ).
+
   ENDMETHOD.
 
 ENDCLASS.
