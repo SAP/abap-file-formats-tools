@@ -44,6 +44,12 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "unknown_abap_doc_tag", "note": "escaping?"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "max_length", "note": "cx_sy_itab_line_not_found, splitted_prev_name"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_max_length", "note": "Expected table to contain '9' rows , got '8'"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode2", "note": "??"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode3", "note": "??"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode4", "note": "??"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode5", "note": "??"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode6", "note": "??"},
+      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "call_reader_and_decode7", "note": "??"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_boolean2", "note": "??"},
 
 
