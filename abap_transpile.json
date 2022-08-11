@@ -28,11 +28,8 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "number_element_default", "note": "cx_sy_create_data_error raised in open-abap RTTI"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "numerical_text_field", "note": "cx_sy_itab_line_not_found, splitted_prev_nam"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "simple_structure_dollar", "note": "Expected table to contain '28' rows , got '25'"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_different_default"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_default_problem", "note": "cx_sy_itab_line_not_found"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_include"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_default_problem", "note": "CREATE DATA, unknown handle type"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_table", "note": "Expected table to contain '46' rows , got '43'"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_tables", "note": "Expected table to contain '65' rows , got '64'"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_wrong_default"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "table_in_nested_stru_with_ad"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "table_no_title_descr", "note": "The expected message is not contained in the log"},
@@ -52,6 +49,8 @@
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_numeric", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "validate_default", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_numbers", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_different_default", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
+      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_include"},
 
 
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "table_with_call_of_struc", "note": "callback stuff"},
