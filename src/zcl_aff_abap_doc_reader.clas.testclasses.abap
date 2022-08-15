@@ -14,6 +14,7 @@ CLASS ltcl_abap_doc_reader DEFINITION FINAL FOR TESTING
     METHODS get_abap_doc_4_elem_wo_adoc FOR TESTING.
     METHODS get_simple FOR TESTING RAISING cx_static_check.
     METHODS get_structure FOR TESTING RAISING cx_static_check.
+    METHODS get_structure_types FOR TESTING RAISING cx_static_check.
     METHODS structure_and_fields FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
@@ -180,6 +181,34 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
     result = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'STRUCTURE2-SAME_NAME' ).
     cl_abap_unit_assert=>assert_equals(
       exp = 'text2'
+      act = result ).
+
+  ENDMETHOD.
+
+  METHOD get_structure_types.
+
+    DATA(source) = VALUE string_table(
+( |  TYPES:| )
+( |    "! <p class="shorttext">Descriptions</p>| )
+( |    "! Descriptions maintained in SE80| )
+( |    BEGIN OF ty_descriptions,| )
+( |      "! <p class="shorttext">Type Descriptions</p>| )
+( |      "! Type descriptions| )
+( |      types      TYPE ty_component_descriptions,| )
+( |      "! <p class="shorttext">Attribute Descriptions</p>| )
+( |      "! Attribute descriptions| )
+( |      attributes TYPE ty_component_descriptions,| )
+( |      "! <p class="shorttext">Event Descriptions</p>| )
+( |      "! Event descriptions| )
+( |      events     TYPE ty_events,| )
+( |      "! <p class="shorttext">Method Descriptions</p>| )
+( |      "! Method descriptions| )
+( |      methods    TYPE ty_methods,| )
+( |    END OF ty_descriptions.| ) ).
+
+    DATA(result) = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'TY_DESCRIPTIONS-TYPES' ).
+    cl_abap_unit_assert=>assert_equals(
+      exp = '<p class="shorttext">Type Descriptions</p> Type descriptions'
       act = result ).
 
   ENDMETHOD.
