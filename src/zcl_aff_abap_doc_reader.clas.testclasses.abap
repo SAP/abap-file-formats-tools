@@ -189,17 +189,14 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
 
     DATA(source) = VALUE string_table(
 ( |  TYPES:| )
-( |    "! <p class="shorttext">Descriptions</p>| )
-( |    "! Descriptions maintained in SE80| )
 ( |    BEGIN OF ty_descriptions,| )
-( |      "! <p class="shorttext">Type Descriptions</p>| )
-( |      "! Type descriptions| )
-( |      types      TYPE ty_component_descriptions,| )
+( |      "! hello| )
+( |      types      TYPE string,| )
 ( |    END OF ty_descriptions.| ) ).
 
     DATA(result) = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'TY_DESCRIPTIONS-TYPES' ).
     cl_abap_unit_assert=>assert_equals(
-      exp = '<p class="shorttext">Type Descriptions</p> Type descriptions'
+      exp = 'hello'
       act = result ).
 
   ENDMETHOD.
