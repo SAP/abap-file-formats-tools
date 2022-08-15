@@ -4,3 +4,4 @@ node_modules
 output
 downport
 abap-file-formats
+out.json
