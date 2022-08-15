@@ -195,15 +195,6 @@ CLASS ltcl_abap_doc_reader IMPLEMENTATION.
 ( |      "! <p class="shorttext">Type Descriptions</p>| )
 ( |      "! Type descriptions| )
 ( |      types      TYPE ty_component_descriptions,| )
-( |      "! <p class="shorttext">Attribute Descriptions</p>| )
-( |      "! Attribute descriptions| )
-( |      attributes TYPE ty_component_descriptions,| )
-( |      "! <p class="shorttext">Event Descriptions</p>| )
-( |      "! Event descriptions| )
-( |      events     TYPE ty_events,| )
-( |      "! <p class="shorttext">Method Descriptions</p>| )
-( |      "! Method descriptions| )
-( |      methods    TYPE ty_methods,| )
 ( |    END OF ty_descriptions.| ) ).
 
     DATA(result) = zcl_aff_abap_doc_reader=>create_instance( source )->get_abap_doc_for_element( 'TY_DESCRIPTIONS-TYPES' ).
