@@ -23,21 +23,23 @@ CLASS zcl_aff_writer DEFINITION
       END OF ty_structure_stack,
       tt_structure_stack TYPE STANDARD TABLE OF ty_structure_stack.
 
+    CONSTANTS:
+      c_indent_number_characters TYPE i VALUE 2.
+
     DATA:
-      output                     TYPE string_table,
-      formatting_option          TYPE string,
-      name_mappings              TYPE zif_aff_writer=>ty_name_mappings,
-      abap_value_mappings        TYPE zif_aff_writer=>ty_abap_value_mappings,
-      content                    TYPE string_table,
-      stack_of_structure         TYPE tt_structure_stack,
-      stack                      TYPE STANDARD TABLE OF ty_stack_entry,
-      indent_level               TYPE i VALUE 0,
-      c_indent_number_characters TYPE i VALUE 2,
-      log                        TYPE REF TO zif_aff_log,
-      abap_doc_parser            TYPE REF TO zcl_aff_abap_doc_parser,
-      ignore_til_indent_level    TYPE i,
-      abap_doc                   TYPE zcl_aff_abap_doc_parser=>abap_doc,
-      fullname_of_type           TYPE string.
+      output                  TYPE string_table,
+      formatting_option       TYPE string,
+      name_mappings           TYPE zif_aff_writer=>ty_name_mappings,
+      abap_value_mappings     TYPE zif_aff_writer=>ty_abap_value_mappings,
+      content                 TYPE string_table,
+      stack_of_structure      TYPE tt_structure_stack,
+      stack                   TYPE STANDARD TABLE OF ty_stack_entry,
+      indent_level            TYPE i VALUE 0,
+      log                     TYPE REF TO zif_aff_log,
+      abap_doc_parser         TYPE REF TO zcl_aff_abap_doc_parser,
+      ignore_til_indent_level TYPE i,
+      abap_doc                TYPE zcl_aff_abap_doc_parser=>abap_doc,
+      fullname_of_type        TYPE string.
 
     METHODS: get_value_mapping_for_element
       IMPORTING abap_element  TYPE string
@@ -741,6 +743,9 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     IF is_valid = abap_false.
       log->add_warning( message_text = zif_aff_log=>co_msg114 component_name = fullname_of_type ).
     ENDIF.
+
+
+
   ENDMETHOD.
 
 
