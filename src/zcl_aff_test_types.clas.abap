@@ -125,6 +125,26 @@ CLASS zcl_aff_test_types DEFINITION
         my_second_element TYPE i,
       END OF my_structure.
 
+* simple structure, single field
+    TYPES:
+      "! <p class="shorttext synchronized" >mySimpleStructure</p>
+      "! This is a simple structure
+      BEGIN OF my_structure_single,
+        "! <p class="shorttext">Foo Element</p>
+        "! This is the first element
+        "! $minLength 4
+        foo_element TYPE mystring,
+      END OF my_structure_single.
+
+* simple structure, two fields
+    TYPES:
+      "! This is a two field structure
+      BEGIN OF my_structure_two,
+        "! foo1 element
+        foo1 TYPE i,
+        "! foo2 element
+        foo2 TYPE i,
+      END OF my_structure_two.
 
 * simple table:
     TYPES:
@@ -605,6 +625,13 @@ CLASS zcl_aff_test_types DEFINITION
         "! $showAlways
         enum_show_always TYPE n LENGTH 2,
       END OF structure_with_default_problem.
+
+    "! <p class="shorttext">Original Language</p>
+    "! Original language of the ABAP object
+    TYPES ty_original_language TYPE sy-langu.
+    TYPES: BEGIN OF ty_header_60_src,
+             original_language TYPE ty_original_language,
+           END OF ty_header_60_src.
 
     TYPES:
       "! <p class="shorttext">Inner Structure</p>
