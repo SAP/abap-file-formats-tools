@@ -434,10 +434,13 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD get_abap_value.
+    DATA abap_value_copy TYPE string.
     CASE element_description->type_kind.
       WHEN cl_abap_typedescr=>typekind_int OR cl_abap_typedescr=>typekind_int1 OR
            cl_abap_typedescr=>typekind_int2 OR cl_abap_typedescr=>typekind_int8.
-        result = |I({ abap_value })|.
+        abap_value_copy = abap_value.
+        CONDENSE abap_value_copy.
+        result = |I({ abap_value_copy })|.
       WHEN cl_abap_typedescr=>typekind_num.
         result = |N('{ abap_value }')|.
       WHEN OTHERS.
@@ -598,9 +601,12 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD get_prefixed_default.
+    DATA value_copy TYPE string.
     CASE element_description->type_kind.
       WHEN cl_abap_typedescr=>typekind_int OR cl_abap_typedescr=>typekind_int1 OR cl_abap_typedescr=>typekind_int2.
-        result = |I({ value })|.
+        value_copy = value.
+        CONDENSE value_copy.
+        result = |I({ value_copy })|.
       WHEN cl_abap_typedescr=>typekind_int8.
         result = |INT8({ value })|.
       WHEN cl_abap_typedescr=>typekind_float.
