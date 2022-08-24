@@ -434,7 +434,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD get_abap_value.
-    DATA  abap_value_copy TYPE string.
+    DATA abap_value_copy TYPE string.
     CASE element_description->type_kind.
       WHEN cl_abap_typedescr=>typekind_int OR cl_abap_typedescr=>typekind_int1 OR
            cl_abap_typedescr=>typekind_int2 OR cl_abap_typedescr=>typekind_int8.
