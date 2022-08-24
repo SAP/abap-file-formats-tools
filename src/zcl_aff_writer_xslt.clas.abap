@@ -434,12 +434,16 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD get_abap_value.
+    DATA  abap_value_copy TYPE string.
+    abap_value_copy = abap_value.
+    CONDENSE abap_value_copy.
     CASE element_description->type_kind.
       WHEN cl_abap_typedescr=>typekind_int OR cl_abap_typedescr=>typekind_int1 OR
            cl_abap_typedescr=>typekind_int2 OR cl_abap_typedescr=>typekind_int8.
-        result = |I({ abap_value })|.
+        CONDENSE result.
+        result = |I({ abap_value_copy })|.
       WHEN cl_abap_typedescr=>typekind_num.
-        result = |N('{ abap_value }')|.
+        result = |N('{ abap_value_copy }')|.
       WHEN OTHERS.
         result = |'{ abap_value }'|.
     ENDCASE.
