@@ -1847,7 +1847,13 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
             ( `        "/>` )
             ( `      </str>` )
             ( `    </tt:cond>` ) ).
-    validate_output( act_output ).
+    validate_output( act = act_output no_log_check = abap_true ).
+    log = cut->zif_aff_writer~get_log( ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log                = log
+      exp_text           = zif_aff_log=>co_msg127
+      exp_type           = zif_aff_log=>c_message_type-warning
+      exp_component_name = `CATEGORY` ).
   ENDMETHOD.
 
   METHOD structure_with_enums.
@@ -1907,9 +1913,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
+        ( `    <tt:assign to-ref="CLASS_CATEGORY" val="N('00')"/>`)
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(HEADER)" frq="?">` )
         ( `        <object name="header" tt:ref="HEADER">` )
+        ( `         <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="C('')"/>`)
         ( `          <tt:group>` )
         ( `            <tt:cond s-check="not-initial(DESCRIPTION)" frq="?">` )
         ( `              <str name="description">` )
@@ -1923,7 +1931,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `                </tt:call-method>` )
         ( `              </str>` )
         ( `            </tt:cond>` )
-        ( `            <tt:cond s-check="not-initial(ABAP_LANGUAGE_VERSION)" frq="?">` )
+        ( `            <tt:cond s-check="ABAP_LANGUAGE_VERSION!=C('')" frq="?">` )
         ( `              <str name="abapLanguageVersion">` )
         ( `                <tt:value ref="ABAP_LANGUAGE_VERSION" map="` )
         ( `                  val('')=xml('standard'),` )
@@ -1945,7 +1953,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `          </tt:group>` )
         ( `        </object>` )
         ( `      </tt:cond>` )
-        ( `      <tt:cond s-check="not-initial(CLASS_CATEGORY)" frq="?">` )
+        ( `      <tt:cond s-check="CLASS_CATEGORY!=N('00')" frq="?">` )
         ( `        <str name="classCategory">` )
         ( `          <tt:value ref="CLASS_CATEGORY" map="` )
         ( `            val(N('00'))=xml('general'),` )
@@ -2177,18 +2185,10 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `          <tt:value ref="FIELD2"/>` )
         ( `        </str>` )
         ( `      </tt:cond>` )
-        ( `      <tt:cond s-check="not-initial(FIELD_WITH_VALUES)" frq="?">` )
-        ( `        <str name="fieldWithValues">` )
-        ( `          <tt:value ref="FIELD_WITH_VALUES" map="` )
-        ( `            val(N('00'))=xml('general'),` )
-        ( `            val(N('01'))=xml('exitClass')` )
-        ( `          "/>` )
-        ( `        </str>` )
-        ( `      </tt:cond>` )
         ( `      <tt:d-cond frq="*">` )
         ( `         <_ tt:lax="on">` )
         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'field1;innerStruc;field2;fieldWithValues;'"/>` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'field1;innerStruc;field2;'"/>` )
         ( `          </tt:call-method>` )
         ( `          <tt:skip/>` )
         ( `        </_>` )
@@ -3115,8 +3115,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
             field1 = 25
             inner_struc = VALUE #(
                 inner_element = 50 )
-            field2 = 'ZZ'
-           field_with_values = '01' ).
+            field2 = 'ZZ' ).
     DATA act_data LIKE test_type.
 
     exp_json = VALUE #(
@@ -3125,8 +3124,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         ( `  "innerStruc": {` )
         ( `    "innerElement":50` )
         ( `  },` )
-        ( ` "field2": "ZZ",` )
-        ( ` "fieldWithValues":"exitClass"` )
+        ( ` "field2": "ZZ"` )
         ( `}` ) ).
 
     do_integration_test(
