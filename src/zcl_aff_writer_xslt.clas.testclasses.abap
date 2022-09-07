@@ -1917,7 +1917,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(HEADER)" frq="?">` )
         ( `        <object name="header" tt:ref="HEADER">` )
-        ( `         <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="C('')"/>`)
+        ( `         <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="C('')"/>` )
         ( `          <tt:group>` )
         ( `            <tt:cond s-check="not-initial(DESCRIPTION)" frq="?">` )
         ( `              <str name="description">` )
