@@ -1913,7 +1913,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
-        ( `    <tt:assign to-ref="CLASS_CATEGORY" val="N('00')"/>`)
+        ( `    <tt:assign to-ref="CLASS_CATEGORY" val="N('00')"/>` )
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(HEADER)" frq="?">` )
         ( `        <object name="header" tt:ref="HEADER">` )

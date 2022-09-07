@@ -1108,7 +1108,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `             "Standard",` )
 ( `             "ABAP cloud development"` )
 ( `           ],` )
-( `           "default": "standard"`)
+( `           "default": "standard"` )
 ( `        }` )
 ( `       },` )
 ( `       "additionalProperties": false` )
