@@ -527,7 +527,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       FIELD-SYMBOLS:
         <attr>    TYPE data,
         <fs_data> TYPE any.
-      DATA(has_initial_component) = abap_false.
       ASSIGN (name_of_source)=>(name_of_constant) TO <attr>.
       LOOP AT structure_of_values->components ASSIGNING FIELD-SYMBOL(<component>).
         DATA(fullname_of_component) = name_of_constant && '-' && <component>-name.
@@ -543,11 +542,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         ENDIF.
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
         INSERT VALUE #( abap = <fs_data>  json = json_name ) INTO TABLE value_mappings-value_mappings.
-        IF <fs_data> IS INITIAL.
-          has_initial_component = abap_true.
-        ENDIF.
       ENDLOOP.
-      IF has_initial_component = abap_false AND abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
+      IF abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
         log->add_warning( message_text = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
       ENDIF.
     ENDIF.
@@ -576,11 +572,15 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         CLEAR default.
         RETURN.
       ENDIF.
-      LOOP AT value_mappings ASSIGNING FIELD-SYMBOL(<found>) WHERE json = default_json.
+      READ TABLE value_mappings INTO DATA(mapping_for_given_default) WITH KEY json = default_json.
+      IF sy-subrc = 0.
         default = get_prefixed_default(
-          value               = <found>-abap
+          value               = mapping_for_given_default-abap
           element_description = element_description ).
-      ENDLOOP.
+      ELSE.
+        CLEAR default.
+        RETURN.
+      ENDIF.
     ELSE.
       IF NOT is_default_value_valid( element_description = element_description default_value = default fullname_of_type = fullname_of_type ).
         CLEAR default.
