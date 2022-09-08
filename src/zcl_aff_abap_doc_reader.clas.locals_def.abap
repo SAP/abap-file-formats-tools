@@ -11,6 +11,6 @@ TYPES:
     hook_relevant_tok_name_add   TYPE stokesx,
     hook_relevant_tok_type_stmnt TYPE stokesx,
     hook_relevant_tok_name_stmnt TYPE stokesx,
-  END OF ty_comment_block .
+  END OF ty_comment_block.
 TYPES:
   ty_comment_blocks TYPE STANDARD TABLE OF ty_comment_block WITH EMPTY KEY.
