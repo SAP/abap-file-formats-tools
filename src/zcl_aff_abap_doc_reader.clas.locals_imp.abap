@@ -8,18 +8,6 @@ CLASS lcl_section_source_comments DEFINITION
       ty_stokesx TYPE STANDARD TABLE OF stokesx .
     TYPES:
       ty_sstmnt TYPE TABLE OF sstmnt .
-    TYPES:
-      BEGIN OF ty_comment_block,
-        tab_comments                 TYPE string_table,
-        column_first_comment         TYPE i,
-        hook_relevant_tok_type       TYPE stokesx,
-        hook_relevant_tok_name       TYPE stokesx,
-        hook_relevant_tok_name_add   TYPE stokesx,
-        hook_relevant_tok_type_stmnt TYPE stokesx,
-        hook_relevant_tok_name_stmnt TYPE stokesx,
-      END OF ty_comment_block .
-    TYPES:
-      ty_comment_blocks TYPE STANDARD TABLE OF ty_comment_block WITH EMPTY KEY.
 
     METHODS scan_code
       IMPORTING
