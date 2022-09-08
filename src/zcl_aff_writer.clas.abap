@@ -434,7 +434,9 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   METHOD call_reader_and_decode.
     DATA(ref) = cl_oo_factory=>create_instance( )->create_clif_source( name_of_source ).
     ref->get_source( IMPORTING source = DATA(source) ).
-    DATA(reader) = zcl_aff_abap_doc_reader=>create_instance( source ).
+    DATA(reader) = zcl_aff_abap_doc_reader=>create_instance(
+      name   = name_of_source
+      source = source ).
     TRY.
         DATA(result) = reader->get_abap_doc_for_element( element_name ).
 
@@ -743,6 +745,9 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     IF is_valid = abap_false.
       log->add_warning( message_text = zif_aff_log=>co_msg114 component_name = fullname_of_type ).
     ENDIF.
+
+
+
   ENDMETHOD.
 
 
