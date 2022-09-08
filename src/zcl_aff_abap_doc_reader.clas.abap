@@ -5,12 +5,12 @@ CLASS zcl_aff_abap_doc_reader DEFINITION
 
   PUBLIC SECTION.
 
-    CLASS-METHODS:
-      create_instance
-        IMPORTING
-          source        TYPE string_table
-        RETURNING
-          VALUE(result) TYPE REF TO zcl_aff_abap_doc_reader.
+    CLASS-METHODS create_instance
+      IMPORTING
+        !source       TYPE string_table
+        !name         TYPE string OPTIONAL
+      RETURNING
+        VALUE(result) TYPE REF TO zcl_aff_abap_doc_reader .
     METHODS get_abap_doc_for_element
       IMPORTING
         element_name  TYPE string
