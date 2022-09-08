@@ -269,6 +269,7 @@ CLASS zcl_aff_test_types DEFINITION
     "! <p class="shorttext"> ABAP Language Version </p>
     "! ABAP language version
     "! $values {@link zcl_aff_test_types.data:co_abap_language_version}
+    "! $default {@link zcl_aff_test_types.data:co_abap_language_version.standard}
     TYPES language_version TYPE c LENGTH 1.
 
     CONSTANTS:
@@ -307,6 +308,7 @@ CLASS zcl_aff_test_types DEFINITION
         "! <p class="shorttext"> Class Category </p>
         "! Class category
         "! $values {@link zcl_aff_test_types.data:co_class_category}
+        "! $default {@link zcl_aff_test_types.data:co_class_category.general}
         class_category TYPE n LENGTH 2,
       END OF ty_class_properties.
 
@@ -411,10 +413,6 @@ CLASS zcl_aff_test_types DEFINITION
         "! Description of field2
         "! $required
         field2            TYPE c LENGTH 2,
-        "! <p class="shorttext">Title of field_with_values</p>
-        "! Description of field_with_values
-        "! $values {@link zcl_aff_test_types.data:co_class_category}
-        field_with_values TYPE n LENGTH 2,
       END OF aff_test_type.
 
 
