@@ -15,19 +15,21 @@
   "rules": {
     "downport": true,
 
-    "begin_end_names": true,
-    "check_ddic": true,
-    "check_include": true,
     "check_syntax": true,
-    "global_class": true,
-    "implement_methods": true,
     "definitions_top": true,
-    "method_implemented_twice": true,
     "parser_error": true,
-    "parser_missing_space": true,
-    "superclass_final": true,
-    "unknown_types": true,
-    "xml_consistency": true,
+
+    // disabled,
+    "check_include": false,
+    "begin_end_names": false,
+    "check_ddic": false,
+    "global_class": false,
+    "implement_methods": false,
+    "method_implemented_twice": false,
+    "parser_missing_space": false,
+    "superclass_final": false,
+    "unknown_types": false,
+    "xml_consistency": false,
 
     // stylistic rules
     "whitespace_end": true,
