@@ -745,9 +745,6 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     IF is_valid = abap_false.
       log->add_warning( message_text = zif_aff_log=>co_msg114 component_name = fullname_of_type ).
     ENDIF.
-
-
-
   ENDMETHOD.
 
 
