@@ -1,8 +1,13 @@
 CLASS cl_run DEFINITION PUBLIC FINAL CREATE PUBLIC.
   PUBLIC SECTION.
+    TYPES: BEGIN OF ty_row,
+             filename TYPE string,
+             contents TYPE string,
+           END OF ty_row.
+    TYPES ty_tab TYPE STANDARD TABLE OF ty_row WITH DEFAULT KEY.
     CLASS-METHODS run
       RETURNING
-        VALUE(result) TYPE string.
+        VALUE(tab) TYPE ty_tab.
 ENDCLASS.
 
 CLASS cl_run IMPLEMENTATION.
@@ -12,6 +17,7 @@ CLASS cl_run IMPLEMENTATION.
     DATA generator  TYPE REF TO zcl_aff_generator.
     DATA intf       TYPE zif_aff_intf_v1=>ty_main.
     DATA string_tab TYPE string_table.
+    DATA row        LIKE LINE OF tab.
 
     CREATE OBJECT writer
       EXPORTING
@@ -22,6 +28,8 @@ CLASS cl_run IMPLEMENTATION.
     string_tab = generator->generate_type( intf ).
     log = generator->get_log( ).
 
-    CONCATENATE LINES OF string_tab INTO result SEPARATED BY |\n|.
+    row-filename = 'intf.json'.
+    CONCATENATE LINES OF string_tab INTO row-contents SEPARATED BY |\n|.
+    APPEND row TO tab.
   ENDMETHOD.
 ENDCLASS.
