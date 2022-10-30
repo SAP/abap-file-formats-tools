@@ -10,6 +10,8 @@ CLASS cl_run DEFINITION PUBLIC FINAL CREATE PUBLIC.
         VALUE(tab) TYPE ty_tab.
   PRIVATE SECTION.
     CLASS-METHODS run_intf
+      IMPORTING
+        object_type   TYPE string
       RETURNING
         VALUE(result) TYPE string.
 ENDCLASS.
@@ -18,20 +20,25 @@ CLASS cl_run IMPLEMENTATION.
   METHOD run_intf.
     DATA writer     TYPE REF TO zcl_aff_writer_json_schema.
     DATA generator  TYPE REF TO zcl_aff_generator.
-    DATA intf       TYPE zif_aff_intf_v1=>ty_main.
     DATA string_tab TYPE string_table.
-
-* TODO
+    DATA type_name  TYPE string.
+    DATA schema_id  TYPE string.
     DATA ref TYPE REF TO data.
-    CREATE DATA ref TYPE zif_aff_intf_v1=>ty_main.
+
+    schema_id = to_lower( |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type }/{ object_type }-v1.json| ).
+    type_name = to_upper( |ZIF_AFF_{ object_type }_V1=>TY_MAIN| ).
+
+    CREATE DATA ref TYPE (type_name).
 
     CREATE OBJECT writer
       EXPORTING
-        schema_id = 'https://github.com/SAP/abap-file-formats/blob/main/file-formats/intf/intf-v1.json'.
+        schema_id = schema_id.
+
     CREATE OBJECT generator
       EXPORTING
         writer = writer.
-    string_tab = generator->generate_type( intf ).
+
+    string_tab = generator->generate_type( ref->* ).
     CONCATENATE LINES OF string_tab INTO result SEPARATED BY |\n|.
   ENDMETHOD.
 
@@ -39,7 +46,7 @@ CLASS cl_run IMPLEMENTATION.
     DATA str TYPE string.
     DATA row LIKE LINE OF tab.
 
-    str = run_intf( ).
+    str = run_intf( 'INTF' ).
 
     row-filename = 'intf.json'.
     row-contents = str.
