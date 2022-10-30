@@ -21,6 +21,10 @@ CLASS cl_run IMPLEMENTATION.
     DATA intf       TYPE zif_aff_intf_v1=>ty_main.
     DATA string_tab TYPE string_table.
 
+* TODO
+    DATA ref TYPE REF TO data.
+    CREATE DATA ref TYPE zif_aff_intf_v1=>ty_main.
+
     CREATE OBJECT writer
       EXPORTING
         schema_id = 'https://github.com/SAP/abap-file-formats/blob/main/file-formats/intf/intf-v1.json'.

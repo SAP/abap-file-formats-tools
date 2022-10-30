@@ -5,19 +5,20 @@
   "description": "test",
   "scripts": {
     "lint": "abaplint",
-    "unit": "rm -rf output && abap_transpile test/abap_transpile.json && echo RUNNING && node output/index.mjs",
+    "build": "rm -rf output && abap_transpile test/abap_transpile.json",
+    "unit": "npm run build && echo RUNNING && node output/index.mjs",
     "test": "npm run lint && npm run downport && npm run unit",
     "downport": "rm -rf downport && cp -r src downport && cp deps/* downport && rm downport/*.prog.* && rm downport/zcl_aff_writer_xslt.clas.testclasses.abap && abaplint --fix abaplint-downport.jsonc",
     "merge": "rm -f src/z_generate_json_schema.prog.abap && abapmerge -f src/z_generate_repo.prog.abap -c saff_generate_repo > saff_generate_repo.prog.abap",
-    "aff": "npm test && rm -rf abap-file-formats && git clone https://github.com/SAP/abap-file-formats && cp abap-file-formats/file-formats/*.abap downport && cp abap-file-formats/file-formats/*/type/*.abap downport && cp test/cl_run.clas.abap downport && abap_transpile test/abap_transpile.json && node test/aff.mjs",
+    "aff": "npm run downport && rm -rf abap-file-formats && git clone https://github.com/SAP/abap-file-formats && cp abap-file-formats/file-formats/*.abap downport && cp abap-file-formats/file-formats/*/type/*.abap downport && cp test/cl_run.clas.abap downport && abap_transpile test/abap_transpile.json && node test/aff.mjs",
     "cutUnitTests": "sed -i '/CLASS\\ ltc_generator\\ I/,/ENDCLASS./d' saff_generate_repo.prog.abap && sed -i '/CLASS\\ ltc_generator\\ D/,/ENDCLASS./d' saff_generate_repo.prog.abap"
   },
   "license": "MIT",
   "dependencies": {
     "@abaplint/cli": "^2.93.57",
-    "@abaplint/runtime": "^2.3.23",
+    "@abaplint/runtime": "^2.3.24",
     "@abaplint/database-sqlite": "^2.3.21",
-    "@abaplint/transpiler-cli": "^2.3.23",
+    "@abaplint/transpiler-cli": "^2.3.24",
     "abapmerge": "^0.14.8"
   }
 }
