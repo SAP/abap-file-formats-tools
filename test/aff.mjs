@@ -20,9 +20,6 @@ async function run() {
     if (type === "ENHO") {
       console.log("\tskip, https://github.com/SAP/abap-file-formats/issues/409");
       continue;
-    } else if (type === "NROB") {
-      console.log("\tskip, fails in get_extrema()");
-      continue;
     }
 
     const result = await abap.Classes["CL_RUN"].run({object_type: new abap.types.String().set(type)});
