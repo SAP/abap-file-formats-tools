@@ -17,7 +17,7 @@ CLASS cl_run IMPLEMENTATION.
     DATA schema_id  TYPE string.
     DATA ref        TYPE REF TO data.
 
-    schema_id = to_lower( |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type }/{ object_type }-v1.json| ).
+    schema_id = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( object_type ) }/{ to_lower( object_type ) }-v1.json|.
     type_name = to_upper( |ZIF_AFF_{ object_type }_V1=>TY_MAIN| ).
 
     CREATE DATA ref TYPE (type_name).
