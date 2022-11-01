@@ -18,6 +18,6 @@
     "@abaplint/runtime": "^2.1.88",
     "@abaplint/database-sqlite": "^2.1.74",
     "@abaplint/transpiler-cli": "^2.1.88",
-    "abapmerge": "^0.14.7"
+    "abapmerge": "^0.14.8"
   }
 }
