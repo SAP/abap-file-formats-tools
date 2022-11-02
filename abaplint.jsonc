@@ -10,7 +10,7 @@
   },
   "dependencies": [
     {
-      "url": "https://github.com/open-abap/open-abap",
+      "url": "https://github.com/open-abap/open-abap-core",
       "folder": "/open-abap",
       "files": "/src/**/*.*"
     },
