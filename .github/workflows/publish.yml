@@ -1,0 +1,33 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v3
+    - uses: Homebrew/actions/setup-homebrew@master
+    - uses: actions/setup-node@v3
+    - name: Downport and Unit Tests
+      run: |
+        npm install
+        npm test
+    - name: Push ORAS container to registry
+      run: |
+        brew install oras
+        oras version
+        echo ${{ github.token }} | oras login ghcr.io -u ${{ github.actor }} --password-stdin
+        REPOSITORY=$(echo ${{ github.repository }} | tr '[A-Z]' '[a-z]')
+        oras push ghcr.io/$REPOSITORY/${{ github.event.repository.name }}:latest --config /dev/null:application/vnd.abapgit.abap ./downport/:application/vnd.abapgit.abap+tar
