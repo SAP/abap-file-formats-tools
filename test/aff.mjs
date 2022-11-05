@@ -28,9 +28,13 @@ async function run() {
     fs.writeFileSync(filename, result.get());
 
     const command = `diff --strip-trailing-cr generated/${type.toLowerCase()}-v1.json abap-file-formats/file-formats/${type.toLowerCase()}/${type.toLowerCase()}-v1.json`;
-    console.log(command);
     const output = child_process.execSync(`${command} || true`);
-    console.log(output.toString());
+    if (output.toString().length > 0) {
+      console.log(command);
+      console.log(output.toString());
+    } else {
+      console.log("\tOK\n");
+    }
   }
 
   // only run for INTF,
