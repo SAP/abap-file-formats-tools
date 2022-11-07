@@ -862,8 +862,8 @@ CLASS zcl_aff_test_types DEFINITION
       BEGIN OF struc_with_own_enum_values,
         "! <p class="shorttext">Enum Component</p>
         "! Enum component
-        "! $required
         "! $values  {@link zcl_aff_test_types.data:co_overwritten_values }
+        "! $default {@link zcl_aff_test_types.data:co_overwritten_values.first_value }
         enum_component TYPE c LENGTH 2,
       END OF struc_with_own_enum_values.
 

@@ -52,6 +52,15 @@ CLASS zcl_aff_writer_xslt DEFINITION
 
       tt_components_with_default TYPE STANDARD TABLE OF ty_components_with_default.
 
+    TYPES:
+      BEGIN OF ty_enum_value,
+        abap_value             TYPE string,
+        json_value             TYPE string,
+        overwritten_json_value TYPE string,
+      END OF ty_enum_value.
+
+    TYPES: tt_enum_values TYPE STANDARD TABLE OF ty_enum_value WITH DEFAULT KEY.
+
 
     DATA:
       st_root_name                  TYPE string,
@@ -77,12 +86,12 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RAISING
           zcx_aff_tools,
 
-      write_value_mappings
+      write_enum_value_mappings
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           json_type           TYPE string
           element_name        TYPE string
-          value_mapping       TYPE zif_aff_writer=>ty_abap_value_mapping
+          enum_values         TYPE tt_enum_values
         RAISING
           zcx_aff_tools,
 
@@ -123,24 +132,24 @@ CLASS zcl_aff_writer_xslt DEFINITION
           element_name        TYPE string
           element_description TYPE REF TO cl_abap_elemdescr
           type                TYPE string
-          value_mappings      TYPE zif_aff_writer=>ty_value_mappings
+          enum_values         TYPE tt_enum_values
         RETURNING
           VALUE(condition)    TYPE string
         RAISING
           zcx_aff_tools,
 
-      get_value_mapping_via_enum
+      get_enum_values
         IMPORTING
-          enum_type             TYPE abap_typekind
+          enum_type     TYPE abap_typekind
         RETURNING
-          VALUE(value_mappings) TYPE zif_aff_writer=>ty_abap_value_mapping
+          VALUE(result) TYPE tt_enum_values
         RAISING
           zcx_aff_tools,
 
 
       get_default_value_from_default
         IMPORTING
-          value_mappings      TYPE zif_aff_writer=>ty_value_mappings
+          enum_values         TYPE tt_enum_values
           type                TYPE string
           element_description TYPE REF TO cl_abap_elemdescr
         RETURNING
@@ -175,7 +184,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
       get_default
         IMPORTING
           structure_name      TYPE string
-          value_mappings      TYPE zif_aff_writer=>ty_value_mappings
+          enum_values         TYPE tt_enum_values
           element_description TYPE REF TO cl_abap_elemdescr
           type                TYPE string
         RETURNING
@@ -287,15 +296,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     set_abapdoc_fullname_element( element_description = element_description element_name = element_name ).
 
     IF abap_doc-enumvalues_link IS NOT INITIAL.
-      DATA(abap_value_mapping) = get_value_mapping_via_enum( element_description->type_kind ).
-      IF abap_value_mapping IS NOT INITIAL.
-        abap_value_mapping-target_type = zif_aff_writer=>type_info-string.
-      ENDIF.
-    ELSE.
-      abap_value_mapping = get_value_mapping_for_element( element_name ).
+      DATA(enum_values) = get_enum_values( element_description->type_kind ).
     ENDIF.
-
-    DATA(type) = COND #( WHEN abap_value_mapping IS NOT INITIAL THEN abap_value_mapping-target_type
+    DATA(type) = COND #( WHEN enum_values IS NOT INITIAL THEN zif_aff_writer=>type_info-string
                          ELSE get_json_type_from_description( element_description ) ).
 
     DATA(tag) = get_tag_from_type( type ).
@@ -305,14 +308,14 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDIF.
 
 
-    write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description value_mappings = abap_value_mapping-value_mappings type = type ) }>| ).
+    write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description enum_values = enum_values type = type ) }>| ).
     write_open_tag( |<{ tag }{ get_name( name = element_name ) }>| ).
     IF ( is_sy_langu( element_description = element_description ) ).
       write_iso_language_callback( element_name = element_name ).
-    ELSEIF abap_value_mapping IS INITIAL.
+    ELSEIF enum_values IS INITIAL.
       write_tag( |<tt:value{ get_ref( element_name ) }{ get_option( json_type = type element_description = element_description ) }/>| ).
     ELSE.
-      write_value_mappings( element_description = element_description json_type = type element_name = element_name value_mapping = abap_value_mapping ).
+      write_enum_value_mappings( element_description = element_description json_type = type element_name = element_name enum_values = enum_values ).
     ENDIF.
     write_closing_tag( |</{ tag }>| ).
     write_closing_tag( `</tt:cond>` ).
@@ -412,20 +415,24 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD write_value_mappings.
-    DATA(value_mappings) = value_mapping-value_mappings.
-    IF lines( value_mappings ) = 0.
+  METHOD write_enum_value_mappings.
+    IF lines( enum_values ) = 0.
       RETURN.
     ENDIF.
     write_tag( |<tt:value{ get_ref( element_name ) } { get_option( json_type = json_type element_description = element_description ) }map="| ) ##NO_TEXT.
 
     DATA(index) = 1.
-    LOOP AT value_mappings ASSIGNING FIELD-SYMBOL(<value_mapping>).
-      DATA(abap_value) = get_abap_value( abap_value = <value_mapping>-abap element_description = element_description ).
-      IF index < lines( value_mappings ).
-        write_tag( |  val({ abap_value })=xml('{ <value_mapping>-json }'),| ) ##NO_TEXT.
+    LOOP AT enum_values ASSIGNING FIELD-SYMBOL(<enum_value>).
+      DATA(abap_value) = get_abap_value( abap_value = <enum_value>-abap_value element_description = element_description ).
+      IF <enum_value>-overwritten_json_value IS INITIAL.
+        DATA(xml_value) = <enum_value>-json_value.
       ELSE.
-        write_tag( |  val({ abap_value })=xml('{ <value_mapping>-json }')| ) ##NO_TEXT.
+        xml_value = <enum_value>-overwritten_json_value.
+      ENDIF.
+      IF index < lines( enum_values ).
+        write_tag( |  val({ abap_value })=xml('{ xml_value }'),| ) ##NO_TEXT.
+      ELSE.
+        write_tag( |  val({ abap_value })=xml('{ xml_value }')| ) ##NO_TEXT.
         write_tag( `"/>` ).
       ENDIF.
       index += 1.
@@ -486,7 +493,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDIF.
 
     IF abap_doc-default IS NOT INITIAL AND abap_doc-required = abap_false.
-      DATA(default) = get_default( value_mappings = value_mappings structure_name = element_name element_description = element_description type = type ).
+      DATA(default) = get_default( enum_values = enum_values structure_name = element_name element_description = element_description type = type ).
     ENDIF.
 
     IF abap_doc-required = abap_false AND abap_doc-showalways = abap_false.
@@ -502,7 +509,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_default.
     default = get_default_value_from_default(
-      value_mappings      = value_mappings
+      enum_values         = enum_values
       element_description = element_description
       type                = type ).
     IF default IS NOT INITIAL.
@@ -513,7 +520,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_value_mapping_via_enum.
+  METHOD get_enum_values.
     get_structure_of_enum_values(
       EXPORTING
         link_to_values      = abap_doc-enumvalues_link
@@ -535,13 +542,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
           DATA(msg) = log->get_message_text( msgno = 122 msgv1 = CONV #( name_of_constant ) msgv2 = CONV #( fullname_of_type ) ).
           RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
         ENDIF.
-        IF abap_doc_of_component-enum_value IS INITIAL.
-          DATA(json_name) = map_and_format_name( CONV #( <component>-name ) ).
-        ELSE.
-          json_name = abap_doc_of_component-enum_value.
-        ENDIF.
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
-        INSERT VALUE #( abap = <fs_data>  json = json_name ) INTO TABLE value_mappings-value_mappings.
+        INSERT VALUE #( abap_value = <fs_data>  json_value = map_and_format_name( CONV #( <component>-name ) ) overwritten_json_value = abap_doc_of_component-enum_value ) INTO TABLE result.
       ENDLOOP.
       IF abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
         log->add_warning( message_text = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
@@ -572,10 +574,10 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         CLEAR default.
         RETURN.
       ENDIF.
-      READ TABLE value_mappings INTO DATA(mapping_for_given_default) WITH KEY json = default_json.
+      READ TABLE enum_values INTO DATA(mapping_for_given_default) WITH KEY json_value = default_json.
       IF sy-subrc = 0.
         default = get_prefixed_default(
-          value               = mapping_for_given_default-abap
+          value               = mapping_for_given_default-abap_value
           element_description = element_description ).
       ELSE.
         CLEAR default.
