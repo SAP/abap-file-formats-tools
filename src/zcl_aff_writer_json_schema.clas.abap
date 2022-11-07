@@ -44,6 +44,20 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       END OF ty_buffer,
       tt_buffer TYPE STANDARD TABLE OF ty_buffer.
 
+    TYPES:
+      BEGIN OF ty_enum_value,
+        value             TYPE string,
+        overwritten_value TYPE string,
+      END OF ty_enum_value.
+
+    TYPES:
+      BEGIN OF ty_enum_properties,
+        values       TYPE STANDARD TABLE OF ty_enum_value WITH DEFAULT KEY,
+        titles       TYPE string_table,
+        descriptions TYPE string_table,
+      END OF ty_enum_properties.
+
+
     CONSTANTS:
       c_format_version            TYPE string VALUE 'FORMAT_VERSION',
       c_max_length_of_description TYPE i VALUE 253.
@@ -53,9 +67,6 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       structure_buffer       TYPE tt_buffer,
       table_buffer           TYPE tt_buffer,
       ignore_next_elements   TYPE abap_boolean,
-      enum_values            TYPE string_table,
-      enum_titles            TYPE string_table,
-      enum_descriptions      TYPE string_table,
       stack_of_required_tabs TYPE STANDARD TABLE OF string_table,
       format_version         TYPE i.
 
@@ -84,16 +95,17 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING type_description TYPE REF TO cl_abap_typedescr OPTIONAL
         RETURNING VALUE(result)    TYPE string,
 
-      get_enum_values
+      get_enum_properties
         IMPORTING element_name        TYPE string
                   element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING VALUE(result)       TYPE string_table
+        RETURNING VALUE(result)       TYPE ty_enum_properties
         RAISING
                   zcx_aff_tools,
 
       get_enum_descriptions
         IMPORTING element_name        TYPE string
                   element_description TYPE REF TO cl_abap_elemdescr
+                  enum_properties     TYPE ty_enum_properties
         RETURNING VALUE(result)       TYPE string_table,
 
       type_is_integer
@@ -102,11 +114,12 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         RETURNING
           VALUE(result)       TYPE abap_bool,
 
-      set_enum_properties
+      get_properties_from_structure
         IMPORTING
-          enum_type TYPE abap_typekind
+                  enum_type     TYPE abap_typekind
+        RETURNING VALUE(result) TYPE ty_enum_properties
         RAISING
-          zcx_aff_tools,
+                  zcx_aff_tools,
 
       add_required_table_to_stack,
 
@@ -131,6 +144,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           json_type           TYPE string
+          enum_properties     TYPE ty_enum_properties
         RAISING
           zcx_aff_tools,
 
@@ -149,7 +163,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           element_name        TYPE string
-          enums               TYPE string_table,
+          enum_properties               TYPE ty_enum_properties,
 
       write_subschema
         IMPORTING
@@ -208,9 +222,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     clear_type_specifics( ).
-    CLEAR enum_titles.
-    CLEAR enum_descriptions.
-    CLEAR enum_values.
 
     append_comma_to_prev_line( ).
     DATA(json_type) = get_json_type_from_description( element_description ).
@@ -245,8 +256,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_open_tag( |"{ mapped_and_formatted_name }": \{| ).
     ENDIF.
 
-    DATA(enums) = get_enum_values( element_name = element_name element_description = element_description ).
-    IF enums IS NOT INITIAL.
+    DATA(enum_properties) = get_enum_properties( element_name = element_name element_description = element_description ).
+    IF enum_properties IS NOT INITIAL.
       json_type = zif_aff_writer=>type_info-string.
     ENDIF.
 
@@ -268,8 +279,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         write_tag( |"format": "{ format }",| ).
       ENDIF.
 
-      IF enums IS NOT INITIAL.
-        handle_enums( element_description = element_description element_name = element_name enums = enums ).
+      IF enum_properties IS NOT INITIAL.
+        handle_enums( element_description = element_description element_name = element_name enum_properties = enum_properties ).
       ELSE. "non- enum
         IF json_type = zif_aff_writer=>type_info-numeric.
           handle_extrema( element_description = element_description element_name = element_name ).
@@ -284,7 +295,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ENDIF.
 
       IF abap_doc-default IS NOT INITIAL.
-        handle_default( element_description = element_description json_type = json_type ).
+        handle_default( element_description = element_description json_type = json_type enum_properties = enum_properties ).
       ENDIF.
     ENDIF.
 
@@ -316,15 +327,24 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD handle_enums.
+    DATA enum_values TYPE string_table.
     write_tag( `"enum": [` ).
-    write_enum_properties( enums ).
 
-    IF enum_titles IS NOT INITIAL.
+    LOOP AT enum_properties-values ASSIGNING FIELD-SYMBOL(<enum_value>).
+      IF <enum_value>-overwritten_value IS INITIAL.
+        INSERT <enum_value>-value INTO TABLE enum_values.
+      ELSE.
+        INSERT <enum_value>-overwritten_value INTO TABLE enum_values.
+      ENDIF.
+    ENDLOOP.
+    write_enum_properties( enum_values ).
+
+    IF enum_properties-titles IS NOT INITIAL.
       write_tag( `"enumTitles": [` ).
-      write_enum_properties( enum_titles ).
+      write_enum_properties( enum_properties-titles ).
     ENDIF.
 
-    DATA(enum_descr) = get_enum_descriptions( element_name = element_name element_description = element_description ).
+    DATA(enum_descr) = get_enum_descriptions( element_name = element_name element_description = element_description enum_properties = enum_properties ).
     write_tag( `"enumDescriptions": [` ).
     write_enum_properties( enum_descr ).
   ENDMETHOD.
@@ -420,6 +440,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       default = get_default_from_link( link = abap_doc-default fullname_of_type = fullname_of_type element_type = element_description->type_kind ).
       IF default IS INITIAL.
         RETURN.
+      ENDIF.
+      READ TABLE enum_properties-values WITH KEY value = default ASSIGNING FIELD-SYMBOL(<entry>).
+      IF <entry>-overwritten_value IS NOT INITIAL.
+        default = <entry>-overwritten_value.
       ENDIF.
       default = |"{ default }"|.
     ELSEIF is_default_value_valid( element_description = element_description default_value = default fullname_of_type = fullname_of_type ).
@@ -754,15 +778,14 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_enum_values.
+  METHOD get_enum_properties.
     DATA(value_mapping) = get_value_mapping_for_element( element_name ).
     IF value_mapping IS NOT INITIAL.
       LOOP AT value_mapping-value_mappings ASSIGNING FIELD-SYMBOL(<mapping>).
-        APPEND <mapping>-json  TO result.
+        INSERT VALUE #( value = <mapping>-json ) INTO TABLE result-values.
       ENDLOOP.
     ELSEIF abap_doc-enumvalues_link IS NOT INITIAL.
-      set_enum_properties( element_description->type_kind ).
-      result = enum_values.
+      result = get_properties_from_structure( element_description->type_kind ).
     ELSE.
       IF get_json_type_from_description( element_description ) = zif_aff_writer=>type_info-boolean.
         RETURN.
@@ -779,7 +802,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         DATA text TYPE string.
         text = <value>-ddtext.
         REPLACE ALL OCCURRENCES OF REGEX '\s' IN text WITH '_'  ##REGEX_POSIX.
-        APPEND apply_formatting( text ) TO result.
+        INSERT VALUE #( value = apply_formatting( text ) ) INTO TABLE result-values.
       ENDLOOP.
     ENDIF.
   ENDMETHOD.
@@ -792,7 +815,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         APPEND <mapping>-json TO result.
       ENDLOOP.
     ELSEIF abap_doc-enumvalues_link IS NOT INITIAL.
-      result = enum_descriptions.
+      result = enum_properties-descriptions.
     ELSE.
       element_description->get_ddic_fixed_values(
         RECEIVING
@@ -819,7 +842,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD set_enum_properties.
+  METHOD get_properties_from_structure.
     get_structure_of_enum_values(
       EXPORTING
         link_to_values      = abap_doc-enumvalues_link
@@ -838,15 +861,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
         DATA(fullname_of_value) = name_of_constant && '-' && <component>-name.
         DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name = fullname_of_value ).
-        IF abap_doc_of_component-enum_value IS INITIAL.
-          DATA(enum_value) = apply_formatting( CONV #( <component>-name ) ).
-        ELSE.
-          enum_value = abap_doc_of_component-enum_value.
-        ENDIF.
 
-        APPEND enum_value TO enum_values.
-        APPEND abap_doc_of_component-description TO enum_descriptions.
-        APPEND abap_doc_of_component-title TO enum_titles.
+        APPEND VALUE ty_enum_value( value = apply_formatting( CONV #( <component>-name ) )  overwritten_value = abap_doc_of_component-enum_value ) TO result-values.
+        APPEND abap_doc_of_component-description TO result-descriptions.
+        APPEND abap_doc_of_component-title TO result-titles.
 
         check_title_and_description( abap_doc_to_check = abap_doc_of_component fullname_of_checked_type = fullname_of_value ).
       ENDLOOP.
