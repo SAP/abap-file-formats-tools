@@ -1,9 +1,6 @@
 INTERFACE lif_test_types.
   TYPES:
-    element      TYPE string,
-    element_numc TYPE n LENGTH 2,
-    element_i    TYPE int8,
-    element_char TYPE c LENGTH 2.
+    element      TYPE string.
 
   TYPES:
     BEGIN OF structure,
@@ -98,7 +95,6 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
       table_in_table FOR TESTING RAISING cx_static_check,
       struc_tab_struc_tab FOR TESTING RAISING cx_static_check,
       type_timestamp FOR TESTING RAISING cx_static_check,
-      value_mappings FOR TESTING RAISING cx_static_check,
       name_mappings_structure FOR TESTING RAISING cx_static_check,
       name_mappings_table FOR TESTING RAISING cx_static_check,
       type_boolean FOR TESTING RAISING cx_static_check,
@@ -106,9 +102,6 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
       type_string FOR TESTING RAISING cx_static_check,
       open_unsupported_node FOR TESTING RAISING cx_static_check,
       close_unsupported_node FOR TESTING RAISING cx_static_check,
-      numc_to_string FOR TESTING RAISING cx_static_check,
-      int_to_bool FOR TESTING RAISING cx_static_check,
-      char_to_string FOR TESTING RAISING cx_static_check,
       date_time_element FOR TESTING RAISING cx_static_check,
       structure_with_language FOR TESTING RAISING cx_static_check,
       validate_valid_xslt FOR TESTING RAISING cx_static_check,
@@ -487,97 +480,6 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     validate_output( act_output ).
   ENDMETHOD.
 
-  METHOD value_mappings.
-    DATA test_type TYPE lif_test_types=>element.
-    cut->zif_aff_writer~set_abap_value_mappings( abap_value_mappings = VALUE #( (
-                                                   abap_element   = 'ELEMENT'
-                                                   target_type    = zif_aff_writer=>type_info-string
-                                                   value_mappings = VALUE #(
-                                                       ( abap = 'X' json = 'true' )
-                                                       ( abap = '' json = 'false' ) ) ) ) ).
-
-    DATA(act_output) = test_generator->generate_type( test_type ).
-
-    me->exp_transformation = VALUE #(
-        ( `<tt:cond>` )
-        ( `    <str>` )
-        ( `        <tt:value map="` )
-        ( `          val('X')=xml('true'),` )
-        ( `          val('')=xml('false')` )
-        ( `        "/>` )
-        ( `    </str>` )
-        ( `</tt:cond>` ) ).
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD numc_to_string.
-    DATA test_type TYPE lif_test_types=>element_numc.
-    cut->zif_aff_writer~set_abap_value_mappings( abap_value_mappings = VALUE #( (
-                                                 abap_element   = 'ELEMENT_NUMC'
-                                                 target_type    = zif_aff_writer=>type_info-string
-                                                 value_mappings = VALUE #(
-                                                     ( abap = '01' json = 'first' )
-                                                     ( abap = '02' json = 'second' ) ) ) ) ).
-
-    DATA(act_output) = test_generator->generate_type( test_type ).
-
-    me->exp_transformation = VALUE #(
-        ( `<tt:cond>` )
-        ( `    <str>` )
-        ( `        <tt:value map="` )
-        ( `          val(N('01'))=xml('first'),` )
-        ( `          val(N('02'))=xml('second')` )
-        ( `        "/>` )
-        ( `    </str>` )
-        ( `</tt:cond>` ) ).
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD char_to_string.
-    DATA test_type TYPE lif_test_types=>element_char.
-    cut->zif_aff_writer~set_abap_value_mappings( abap_value_mappings = VALUE #( (
-                                                 abap_element   = 'element_char'
-                                                 target_type    = zif_aff_writer=>type_info-string
-                                                 value_mappings = VALUE #(
-                                                     ( abap = 'aA' json = 'oneTest' )
-                                                     ( abap = 'Bb' json = 'twoTest' ) ) ) ) ).
-
-    DATA(act_output) = test_generator->generate_type( test_type ).
-
-    me->exp_transformation = VALUE #(
-        ( `<tt:cond>` )
-        ( `    <str>` )
-        ( `        <tt:value map="` )
-        ( `          val('aA')=xml('oneTest'),` )
-        ( `          val('Bb')=xml('twoTest')` )
-        ( `        "/>` )
-        ( `    </str>` )
-        ( `</tt:cond>` ) ).
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD int_to_bool.
-    DATA test_type TYPE lif_test_types=>element_i.
-    cut->zif_aff_writer~set_abap_value_mappings( abap_value_mappings = VALUE #( (
-                                                 abap_element   = 'ELEMENT_I'
-                                                 target_type    = zif_aff_writer=>type_info-boolean
-                                                 value_mappings = VALUE #(
-                                                     ( abap = '1' json = 'true' )
-                                                     ( abap = '0' json = 'false' ) ) ) ) ).
-
-    DATA(act_output) = test_generator->generate_type( test_type ).
-
-    me->exp_transformation = VALUE #(
-        ( `<tt:cond>` )
-        ( `    <bool>` )
-        ( `        <tt:value option="format(boolean)" map="` )
-        ( `          val(I(1))=xml('true'),` )
-        ( `          val(I(0))=xml('false')` )
-        ( `        "/>` )
-        ( `    </bool>` )
-        ( `</tt:cond>` ) ).
-    validate_output( act_output ).
-  ENDMETHOD.
 
   METHOD name_mappings_structure.
     DATA test_type TYPE lif_test_types=>structure_in_structure.
@@ -874,12 +776,8 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
       type_boolean FOR TESTING RAISING cx_static_check,
       type_numeric FOR TESTING RAISING cx_static_check,
       type_string FOR TESTING RAISING cx_static_check,
-      value_mappings FOR TESTING RAISING cx_static_check,
       name_mappings_structure FOR TESTING RAISING cx_static_check,
       name_mappings_table FOR TESTING RAISING cx_static_check,
-      numc_to_string FOR TESTING RAISING cx_static_check,
-      char_to_string FOR TESTING RAISING cx_static_check,
-      int_to_bool FOR TESTING RAISING cx_static_check,
       structure_with_language FOR TESTING RAISING cx_static_check,
       from_json_to_abap
         IMPORTING
@@ -1326,41 +1224,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       exp = test_type ).
   ENDMETHOD.
 
-  METHOD value_mappings.
-    DATA test_type TYPE lif_test_types=>element.
-    test_type = 'X'.
-
-
-    from_abap_to_json(
-      EXPORTING
-        test_type      = test_type
-        value_mappings = VALUE #(
-                            ( abap_element   = 'ELEMENT'
-                              target_type    = zif_aff_writer=>type_info-string
-                              value_mappings = VALUE #(
-                                  ( abap = 'X' json = 'true' )
-                                  ( abap = '' json = 'false' ) ) ) )
-      IMPORTING
-        result         = DATA(act_json)
-        json           = DATA(json_xstring) ).
-
-
-    exp_json = VALUE #(
-        ( `"true"` ) ).
-
-    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
-
-    DATA act_data LIKE test_type.
-    from_json_to_abap(
-      EXPORTING
-        json   = json_xstring
-      IMPORTING
-        result = act_data ).
-
-    cl_abap_unit_assert=>assert_equals(
-      act = act_data
-      exp = test_type ).
-  ENDMETHOD.
 
   METHOD name_mappings_structure.
     DATA test_type TYPE lif_test_types=>structure.
@@ -1444,109 +1307,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       exp = test_type ).
   ENDMETHOD.
 
-  METHOD numc_to_string.
-    DATA test_type TYPE lif_test_types=>element_numc.
-    test_type = '01'.
-
-
-    from_abap_to_json(
-      EXPORTING
-        test_type      = test_type
-        value_mappings = VALUE #(
-                            ( abap_element = 'ELEMENT_NUMC'
-                              target_type = zif_aff_writer=>type_info-string
-                              value_mappings = VALUE #(
-                                    ( abap = '01' json = 'first' )
-                                    ( abap = '02' json = 'second' ) ) ) )
-      IMPORTING
-        result         = DATA(act_json)
-        json           = DATA(json_xstring) ).
-
-    exp_json = VALUE #(
-        ( `"first"` ) ).
-
-    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
-
-    DATA act_data LIKE test_type.
-    from_json_to_abap(
-      EXPORTING
-        json   = json_xstring
-      IMPORTING
-        result = act_data ).
-
-    cl_abap_unit_assert=>assert_equals(
-      act = act_data
-      exp = test_type ).
-  ENDMETHOD.
-
-  METHOD char_to_string.
-    DATA test_type TYPE lif_test_types=>element_char.
-    test_type = 'Bb'.
-
-    from_abap_to_json(
-      EXPORTING
-        test_type      = test_type
-        value_mappings = VALUE #(
-                            ( abap_element = 'eLemEnt_CHAR'
-        target_type = zif_aff_writer=>type_info-string
-        value_mappings = VALUE #(
-                ( abap = 'aA' json = 'oneTest' )
-                ( abap = 'Bb' json = 'twoTest' ) ) ) )
-      IMPORTING
-        result         = DATA(act_json)
-        json           = DATA(json_xstring) ).
-
-    exp_json = VALUE #(
-        ( `"twoTest"` ) ).
-
-    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
-
-    DATA act_data LIKE test_type.
-    from_json_to_abap(
-      EXPORTING
-        json   = json_xstring
-      IMPORTING
-        result = act_data ).
-
-    cl_abap_unit_assert=>assert_equals(
-      act = act_data
-      exp = test_type ).
-  ENDMETHOD.
-
-  METHOD int_to_bool.
-    DATA test_type TYPE lif_test_types=>element_i.
-    test_type = '1'.
-
-    from_abap_to_json(
-      EXPORTING
-        test_type      = test_type
-        value_mappings = VALUE #(
-                            ( abap_element = 'ELEMENT_I'
-        target_type = zif_aff_writer=>type_info-boolean
-        value_mappings = VALUE #(
-                ( abap = '1' json = 'true' )
-                ( abap = '0' json = 'false' ) ) ) )
-      IMPORTING
-        result         = DATA(act_json)
-        json           = DATA(json_xstring) ).
-
-
-    exp_json = VALUE #(
-        ( `true` ) ).
-
-    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
-
-    DATA act_data LIKE test_type.
-    from_json_to_abap(
-      EXPORTING
-        json   = json_xstring
-      IMPORTING
-        result = act_data ).
-
-    cl_abap_unit_assert=>assert_equals(
-      act = act_data
-      exp = test_type ).
-  ENDMETHOD.
 
   METHOD structure_with_language.
     DATA test_type TYPE lif_test_types=>structure_with_language.
@@ -2772,8 +2532,9 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
         ( `  <object>` )
+        ( `    <tt:assign to-ref="ENUM_COMPONENT" val="C('AA')"/>` )
         ( `    <tt:group>` )
-        ( `      <tt:cond frq="?">` )
+        ( `      <tt:cond s-check="ENUM_COMPONENT!=C('AA')" frq="?">` )
         ( `        <str name="enumComponent">` )
         ( `          <tt:value ref="ENUM_COMPONENT" map="` )
         ( `            val('AA')=xml('AAAA'),` )
@@ -3433,10 +3194,19 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 
   METHOD struc_with_own_enum_values.
     DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
+    test_type = VALUE #( enum_component = 'BB' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "enumComponent": "BBBB"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
     test_type = VALUE #( enum_component = 'AA' ).
     exp_json = VALUE #(
         ( `{` )
-        ( `    "enumComponent": "AAAA"` )
         ( `}` ) ).
     do_integration_test(
       EXPORTING
