@@ -163,7 +163,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           element_name        TYPE string
-          enum_properties               TYPE ty_enum_properties,
+          enum_properties     TYPE ty_enum_properties,
 
       write_subschema
         IMPORTING
