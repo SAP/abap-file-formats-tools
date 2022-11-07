@@ -442,9 +442,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         RETURN.
       ENDIF.
       READ TABLE enum_properties-values WITH KEY value = default ASSIGNING FIELD-SYMBOL(<entry>).
-      IF <entry>-overwritten_value IS NOT INITIAL.
+      IF sy-subrc = 0 and <entry>-overwritten_value IS NOT INITIAL.
         default = <entry>-overwritten_value.
       ENDIF.
+
       default = |"{ default }"|.
     ELSEIF is_default_value_valid( element_description = element_description default_value = default fullname_of_type = fullname_of_type ).
       IF json_type = zif_aff_writer=>type_info-numeric OR json_type = zif_aff_writer=>type_info-boolean.
