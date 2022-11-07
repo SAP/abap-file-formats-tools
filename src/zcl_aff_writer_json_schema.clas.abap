@@ -442,7 +442,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         RETURN.
       ENDIF.
       READ TABLE enum_properties-values WITH KEY value = default ASSIGNING FIELD-SYMBOL(<entry>).
-      IF sy-subrc = 0 and <entry>-overwritten_value IS NOT INITIAL.
+      IF sy-subrc = 0 AND <entry>-overwritten_value IS NOT INITIAL.
         default = <entry>-overwritten_value.
       ENDIF.
 
