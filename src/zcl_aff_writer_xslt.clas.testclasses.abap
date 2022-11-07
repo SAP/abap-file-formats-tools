@@ -3204,6 +3204,15 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         test_type = test_type
       CHANGING
         act_data  = test_type ).
+    test_type = VALUE #( enum_component = 'AA' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
   ENDMETHOD.
 
   METHOD do_integration_test.
