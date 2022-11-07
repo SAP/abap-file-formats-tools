@@ -1,9 +1,6 @@
 INTERFACE lif_test_types.
   TYPES:
-    element      TYPE string,
-    element_numc TYPE n LENGTH 2,
-    element_i    TYPE int8,
-    element_char TYPE c LENGTH 2.
+    element      TYPE string.
 
   TYPES:
     BEGIN OF structure,
