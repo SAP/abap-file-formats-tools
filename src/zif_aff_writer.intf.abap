@@ -7,19 +7,19 @@ INTERFACE zif_aff_writer
              END OF formatting_option.
 
   CONSTANTS: BEGIN OF  type_info,
-               string TYPE string VALUE 'string',
-               numeric TYPE string VALUE 'numeric',
-               boolean TYPE string VALUE 'boolean',
+               string    TYPE string VALUE 'string',
+               numeric   TYPE string VALUE 'numeric',
+               boolean   TYPE string VALUE 'boolean',
                date_time TYPE string VALUE 'date_time',
              END OF type_info.
 
   CONSTANTS: BEGIN OF operation,
-               initial TYPE string VALUE 'initial',
-               write_element TYPE string VALUE 'write_element',
-               open_structure TYPE string VALUE 'open_structure',
+               initial         TYPE string VALUE 'initial',
+               write_element   TYPE string VALUE 'write_element',
+               open_structure  TYPE string VALUE 'open_structure',
                close_structure TYPE string VALUE 'close_structure',
-               open_table TYPE string VALUE 'open_table',
-               close_table TYPE string VALUE 'close_table',
+               open_table      TYPE string VALUE 'open_table',
+               close_table     TYPE string VALUE 'close_table',
              END OF operation.
 
   TYPES:
@@ -29,29 +29,11 @@ INTERFACE zif_aff_writer
     END OF ty_name_mapping,
     ty_name_mappings TYPE HASHED TABLE OF ty_name_mapping WITH UNIQUE KEY abap.
 
-  TYPES:
-    BEGIN OF ty_value_mapping,
-      abap TYPE string,
-      json TYPE string,
-    END OF ty_value_mapping,
-    ty_value_mappings TYPE HASHED TABLE OF ty_value_mapping WITH UNIQUE KEY abap.
-
-  TYPES:
-    BEGIN OF ty_abap_value_mapping,
-      abap_element   TYPE abap_compname,
-      target_type    TYPE string,
-      value_mappings TYPE ty_value_mappings,
-    END OF ty_abap_value_mapping,
-    ty_abap_value_mappings TYPE HASHED TABLE OF ty_abap_value_mapping WITH UNIQUE KEY abap_element.
 
   METHODS:
     set_name_mappings
       IMPORTING
         name_mappings TYPE ty_name_mappings,
-
-    set_abap_value_mappings
-      IMPORTING
-        abap_value_mappings TYPE ty_abap_value_mappings,
 
     set_formatting_option
       IMPORTING

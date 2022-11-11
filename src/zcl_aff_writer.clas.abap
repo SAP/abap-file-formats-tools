@@ -30,7 +30,6 @@ CLASS zcl_aff_writer DEFINITION
       output                  TYPE string_table,
       formatting_option       TYPE string,
       name_mappings           TYPE zif_aff_writer=>ty_name_mappings,
-      abap_value_mappings     TYPE zif_aff_writer=>ty_abap_value_mappings,
       content                 TYPE string_table,
       stack_of_structure      TYPE tt_structure_stack,
       stack                   TYPE STANDARD TABLE OF ty_stack_entry,
@@ -41,12 +40,9 @@ CLASS zcl_aff_writer DEFINITION
       abap_doc                TYPE zcl_aff_abap_doc_parser=>abap_doc,
       fullname_of_type        TYPE string.
 
-    METHODS: get_value_mapping_for_element
-      IMPORTING abap_element  TYPE string
-      RETURNING VALUE(result) TYPE zif_aff_writer=>ty_abap_value_mapping,
-      map_and_format_name
-        IMPORTING name          TYPE string
-        RETURNING VALUE(result) TYPE string,
+    METHODS: map_and_format_name
+      IMPORTING name          TYPE string
+      RETURNING VALUE(result) TYPE string,
       get_json_type_from_description
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
         RETURNING VALUE(result)       TYPE string
@@ -244,11 +240,6 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_aff_writer~set_abap_value_mappings.
-    me->abap_value_mappings = abap_value_mappings.
-  ENDMETHOD.
-
-
   METHOD zif_aff_writer~set_name_mappings.
     me->name_mappings = name_mappings.
   ENDMETHOD.
@@ -256,18 +247,6 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD zif_aff_writer~set_formatting_option.
     me->formatting_option = formatting_option.
-  ENDMETHOD.
-
-
-  METHOD get_value_mapping_for_element.
-    DATA(abap_element_upper) = to_upper( abap_element ).
-    DATA(abap_value_mappings_upper) = VALUE zif_aff_writer=>ty_abap_value_mappings(
-      FOR abap_value_mapping IN me->abap_value_mappings (
-        abap_element   = to_upper( abap_value_mapping-abap_element )
-        target_type    = abap_value_mapping-target_type
-        value_mappings = abap_value_mapping-value_mappings
-      ) ).
-    result = VALUE #( abap_value_mappings_upper[ abap_element = abap_element_upper ] OPTIONAL ) ##WARN_OK.
   ENDMETHOD.
 
 

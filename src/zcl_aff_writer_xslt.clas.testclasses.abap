@@ -790,13 +790,12 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
 
       from_abap_to_json
         IMPORTING
-          test_type      TYPE data
-          name_mappings  TYPE zif_aff_writer=>ty_name_mappings OPTIONAL
-          value_mappings TYPE zif_aff_writer=>ty_abap_value_mappings OPTIONAL
-          formatting     TYPE string DEFAULT zif_aff_writer=>formatting_option-no_formatting
+          test_type     TYPE data
+          name_mappings TYPE zif_aff_writer=>ty_name_mappings OPTIONAL
+          formatting    TYPE string DEFAULT zif_aff_writer=>formatting_option-no_formatting
         EXPORTING
-          VALUE(result)  TYPE string_table
-          VALUE(json)    TYPE xstring
+          VALUE(result) TYPE string_table
+          VALUE(json)   TYPE xstring
         RAISING
           cx_static_check
           cx_sxml_illegal_argument_error,
@@ -820,7 +819,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
     cut->zif_aff_writer~set_formatting_option( formatting ).
     cut->zif_aff_writer~set_name_mappings( name_mappings ).
-    cut->zif_aff_writer~set_abap_value_mappings( value_mappings ).
 
     DATA(test_generator) = NEW zcl_aff_generator( cut ).
     DATA(st_content) = test_generator->generate_type( test_type ).
@@ -2093,7 +2091,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
-      exp_text          = `Annotation $default for type UTCLONG is not supported`
+      exp_text           = `Annotation $default for type UTCLONG is not supported`
       exp_component_name = `STRUCTURE_DIFFERENT_DEFAULT-DATE_TIME_FIELD`
       exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.

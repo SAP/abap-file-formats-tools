@@ -45,8 +45,6 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       name_mapping_not_found FOR TESTING RAISING cx_static_check,
       name_mapping_and_camel_case FOR TESTING RAISING cx_static_check,
       get_output FOR TESTING RAISING cx_static_check,
-      value_mapping_found FOR TESTING RAISING cx_static_check,
-      value_mapping_not_found FOR TESTING RAISING cx_static_check,
       get_type_info_string_like FOR TESTING RAISING cx_static_check,
       get_type_info_string_like_enum FOR TESTING RAISING cx_static_check,
       get_type_info_boolean1 FOR TESTING RAISING cx_static_check,
@@ -55,7 +53,6 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       get_type_info_numeric FOR TESTING RAISING cx_static_check,
       get_type_info_date_time FOR TESTING RAISING cx_static_check,
       set_name_mappings FOR TESTING RAISING cx_static_check,
-      set_abap_value_mappings FOR TESTING RAISING cx_static_check,
       set_formatting_option FOR TESTING RAISING cx_static_check,
       stack_stores_operations FOR TESTING RAISING cx_static_check,
       append_to_previous_line FOR TESTING RAISING cx_static_check,
@@ -99,14 +96,6 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = name_mappings act = cut->name_mappings ).
   ENDMETHOD.
 
-  METHOD set_abap_value_mappings.
-    DATA(abap_value_mappings) = VALUE zif_aff_writer=>ty_abap_value_mappings(
-      ( abap_element = 'ABAP_ELEMENT' value_mappings = VALUE #( ( abap = '1' json = '2' ) ) ) ).
-
-    cut->zif_aff_writer~set_abap_value_mappings( abap_value_mappings ).
-
-    cl_abap_unit_assert=>assert_equals( exp = abap_value_mappings act = cut->abap_value_mappings ).
-  ENDMETHOD.
 
   METHOD set_formatting_option.
     cut->zif_aff_writer~set_formatting_option( zif_aff_writer=>formatting_option-camel_case ).
@@ -164,32 +153,6 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     DATA(act_name) = cut->map_and_format_name( 'MY_TEST_NAME_ABAP' ).
 
     cl_abap_unit_assert=>assert_equals( act = act_name exp = 'my_test_name_json' msg = |Actual was { act_name }, but expected is 'my_test_name_json'| ).
-  ENDMETHOD.
-
-  METHOD value_mapping_found.
-    DATA(value_mappings) = VALUE zif_aff_writer=>ty_value_mappings( ( abap = 'X' json = 'true' ) ( abap = ' ' json = 'false' ) ).
-    DATA(abap_value_mapping_1) = VALUE zif_aff_writer=>ty_abap_value_mapping(
-      abap_element   = 'MY_TEST_ELEMENT_1'
-      target_type    = zif_aff_writer=>type_info-boolean
-      value_mappings = value_mappings ).
-    DATA(abap_value_mapping_2) = VALUE zif_aff_writer=>ty_abap_value_mapping(
-      abap_element   = 'my_test_element_2'
-      target_type    = zif_aff_writer=>type_info-string ).
-
-    cut->abap_value_mappings = VALUE #( ( abap_value_mapping_1 ) ( abap_value_mapping_2 ) ).
-
-    DATA(act_abap_value_mapping) = cut->get_value_mapping_for_element( 'MY_TEST_element_1' ).
-
-    cl_abap_unit_assert=>assert_equals( exp = abap_value_mapping_1 act = act_abap_value_mapping ).
-  ENDMETHOD.
-
-  METHOD value_mapping_not_found.
-    DATA(exp_value_mappings) = VALUE zif_aff_writer=>ty_value_mappings( ( abap = 'X' json = 'true' ) ( abap = ' ' json = 'false' ) ).
-    cut->abap_value_mappings = VALUE #( ( abap_element = 'MY_TEST_ELEMENT_2' value_mappings = exp_value_mappings ) ).
-
-    DATA(act_value_mappings) = cut->get_value_mapping_for_element( 'MY_TEST_ELEMENT' ).
-
-    cl_abap_unit_assert=>assert_initial( act_value_mappings ).
   ENDMETHOD.
 
   METHOD get_type_info_string_like_enum.

@@ -73,8 +73,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
     METHODS: append_comma_to_prev_line,
 
       get_json_schema_type
-        IMPORTING element_name        TYPE string
-                  element_description TYPE REF TO cl_abap_elemdescr
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
                   json_type           TYPE string
         RETURNING VALUE(result)       TYPE string
         RAISING   zcx_aff_tools,
@@ -96,15 +95,13 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         RETURNING VALUE(result)    TYPE string,
 
       get_enum_properties
-        IMPORTING element_name        TYPE string
-                  element_description TYPE REF TO cl_abap_elemdescr
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
         RETURNING VALUE(result)       TYPE ty_enum_properties
         RAISING
                   zcx_aff_tools,
 
       get_enum_descriptions
-        IMPORTING element_name        TYPE string
-                  element_description TYPE REF TO cl_abap_elemdescr
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
                   enum_properties     TYPE ty_enum_properties
         RETURNING VALUE(result)       TYPE string_table,
 
@@ -150,8 +147,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
 
       handle_extrema
         IMPORTING
-          element_description TYPE REF TO cl_abap_elemdescr
-          element_name        TYPE string,
+          element_description TYPE REF TO cl_abap_elemdescr,
 
       handle_string
         IMPORTING
@@ -162,7 +158,6 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       handle_enums
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
-          element_name        TYPE string
           enum_properties     TYPE ty_enum_properties,
 
       write_subschema
@@ -256,7 +251,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_open_tag( |"{ mapped_and_formatted_name }": \{| ).
     ENDIF.
 
-    DATA(enum_properties) = get_enum_properties( element_name = element_name element_description = element_description ).
+    DATA(enum_properties) = get_enum_properties( element_description ).
     IF enum_properties IS NOT INITIAL.
       json_type = zif_aff_writer=>type_info-string.
     ENDIF.
@@ -273,17 +268,17 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_tag( `"type": "string",` ).
       write_tag( |"const": "{ format_version }",| ).
     ELSE.
-      write_tag( |"type": "{ get_json_schema_type( element_name = element_name element_description = element_description json_type = json_type ) }",| ).
+      write_tag( |"type": "{ get_json_schema_type( element_description = element_description json_type = json_type ) }",| ).
       DATA(format) = get_format( element_description ).
       IF format IS NOT INITIAL.
         write_tag( |"format": "{ format }",| ).
       ENDIF.
 
       IF enum_properties IS NOT INITIAL.
-        handle_enums( element_description = element_description element_name = element_name enum_properties = enum_properties ).
+        handle_enums( element_description = element_description enum_properties = enum_properties ).
       ELSE. "non- enum
         IF json_type = zif_aff_writer=>type_info-numeric.
-          handle_extrema( element_description = element_description element_name = element_name ).
+          handle_extrema( element_description ).
         ELSEIF json_type = zif_aff_writer=>type_info-string AND NOT ( element_description->type_kind = cl_abap_typedescr=>typekind_date OR element_description->type_kind = cl_abap_typedescr=>typekind_time OR
              element_description->type_kind = cl_abap_typedescr=>typekind_utclong ).
           IF is_sy_langu( element_description ).
@@ -344,7 +339,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_enum_properties( enum_properties-titles ).
     ENDIF.
 
-    DATA(enum_descr) = get_enum_descriptions( element_name = element_name element_description = element_description enum_properties = enum_properties ).
+    DATA(enum_descr) = get_enum_descriptions( element_description = element_description enum_properties = enum_properties ).
     write_tag( `"enumDescriptions": [` ).
     write_enum_properties( enum_descr ).
   ENDMETHOD.
@@ -383,14 +378,12 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD handle_extrema.
-    IF get_value_mapping_for_element( element_name ) IS INITIAL.
-      get_extrema(
-        EXPORTING
-          element_description = element_description
-        IMPORTING
-          max                 = DATA(max_value)
-          min                 = DATA(min_value) ).
-    ENDIF.
+    get_extrema(
+      EXPORTING
+        element_description = element_description
+      IMPORTING
+        max                 = DATA(max_value)
+        min                 = DATA(min_value) ).
     DATA(multiple_of) = abap_doc-multiple_of.
 
     IF multiple_of IS INITIAL AND element_description->type_kind = cl_abap_typedescr=>typekind_packed.
@@ -657,21 +650,15 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_json_schema_type.
-    DATA(value_mapping) = get_value_mapping_for_element( element_name ).
-    IF value_mapping IS NOT INITIAL.
-      DATA(type) = value_mapping-target_type.
-    ELSE.
-      type = json_type.
-    ENDIF.
-    IF type = zif_aff_writer=>type_info-numeric.
+    IF json_type = zif_aff_writer=>type_info-numeric.
       result = 'number' ##NO_TEXT.
       IF type_is_integer( element_description ) = abap_true.
         result = 'integer'  ##NO_TEXT.
       ENDIF.
-    ELSEIF type = zif_aff_writer=>type_info-date_time.
+    ELSEIF json_type = zif_aff_writer=>type_info-date_time.
       result = 'string' ##NO_TEXT.
     ELSE.
-      result = to_lower( type ).
+      result = to_lower( json_type ).
     ENDIF.
   ENDMETHOD.
 
@@ -780,12 +767,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_enum_properties.
-    DATA(value_mapping) = get_value_mapping_for_element( element_name ).
-    IF value_mapping IS NOT INITIAL.
-      LOOP AT value_mapping-value_mappings ASSIGNING FIELD-SYMBOL(<mapping>).
-        INSERT VALUE #( value = <mapping>-json ) INTO TABLE result-values.
-      ENDLOOP.
-    ELSEIF abap_doc-enumvalues_link IS NOT INITIAL.
+    IF abap_doc-enumvalues_link IS NOT INITIAL.
       result = get_properties_from_structure( element_description->type_kind ).
     ELSE.
       IF get_json_type_from_description( element_description ) = zif_aff_writer=>type_info-boolean.
@@ -810,12 +792,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_enum_descriptions.
-    DATA(value_mapping) = get_value_mapping_for_element( element_name ).
-    IF value_mapping IS NOT INITIAL.
-      LOOP AT value_mapping-value_mappings ASSIGNING FIELD-SYMBOL(<mapping>).
-        APPEND <mapping>-json TO result.
-      ENDLOOP.
-    ELSEIF abap_doc-enumvalues_link IS NOT INITIAL.
+    IF abap_doc-enumvalues_link IS NOT INITIAL.
       result = enum_properties-descriptions.
     ELSE.
       element_description->get_ddic_fixed_values(
