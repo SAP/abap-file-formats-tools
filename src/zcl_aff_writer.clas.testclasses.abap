@@ -41,9 +41,6 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
 
     METHODS: camel_case FOR TESTING RAISING cx_static_check,
       no_formatting_option FOR TESTING RAISING cx_static_check,
-      name_mapping_found FOR TESTING RAISING cx_static_check,
-      name_mapping_not_found FOR TESTING RAISING cx_static_check,
-      name_mapping_and_camel_case FOR TESTING RAISING cx_static_check,
       get_output FOR TESTING RAISING cx_static_check,
       get_type_info_string_like FOR TESTING RAISING cx_static_check,
       get_type_info_string_like_enum FOR TESTING RAISING cx_static_check,
@@ -52,7 +49,6 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       get_type_info_boolean3 FOR TESTING RAISING cx_static_check,
       get_type_info_numeric FOR TESTING RAISING cx_static_check,
       get_type_info_date_time FOR TESTING RAISING cx_static_check,
-      set_name_mappings FOR TESTING RAISING cx_static_check,
       set_formatting_option FOR TESTING RAISING cx_static_check,
       stack_stores_operations FOR TESTING RAISING cx_static_check,
       append_to_previous_line FOR TESTING RAISING cx_static_check,
@@ -87,16 +83,6 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cut = NEW ltcl_writer_testable( ).
   ENDMETHOD.
 
-  METHOD set_name_mappings.
-    DATA(name_mappings) = VALUE zif_aff_writer=>ty_name_mappings(
-      ( abap = 'ABAP_ELEMENT' json = 'JSON_ELEMENT' ) ).
-
-    cut->zif_aff_writer~set_name_mappings( name_mappings ).
-
-    cl_abap_unit_assert=>assert_equals( exp = name_mappings act = cut->name_mappings ).
-  ENDMETHOD.
-
-
   METHOD set_formatting_option.
     cut->zif_aff_writer~set_formatting_option( zif_aff_writer=>formatting_option-camel_case ).
 
@@ -115,7 +101,7 @@ CLASS ltcl_type_writer IMPLEMENTATION.
   METHOD camel_case.
     cut->formatting_option = zif_aff_writer=>formatting_option-camel_case.
 
-    DATA(act_name) = cut->map_and_format_name( 'MY_TEst_nAmE' ).
+    DATA(act_name) = cut->format_name( 'MY_TEst_nAmE' ).
 
     cl_abap_unit_assert=>assert_equals( act = act_name exp = 'myTestName' msg = |Actual was { act_name }, but expected is 'myTestName'| ).
   ENDMETHOD.
@@ -123,36 +109,9 @@ CLASS ltcl_type_writer IMPLEMENTATION.
   METHOD no_formatting_option.
     cut->formatting_option = zif_aff_writer=>formatting_option-no_formatting.
 
-    DATA(act_name) = cut->map_and_format_name( 'MY_TEst_nAmE' ).
+    DATA(act_name) = cut->format_name( 'MY_TEst_nAmE' ).
 
     cl_abap_unit_assert=>assert_equals( act = act_name exp = 'MY_TEst_nAmE' msg = |Actual was { act_name }, but expected is 'MY_TEst_nAmE'| ).
-  ENDMETHOD.
-
-  METHOD name_mapping_found.
-    cut->name_mappings = VALUE #(
-      ( abap = 'my_test_name_abap'   json = 'myTestNameJson' )
-      ( abap = 'MY_TEST_NAME_2_ABAP' json = 'myTestName2Json' ) ).
-
-    DATA(act_name) = cut->map_and_format_name( 'MY_TEST_NAME_abap' ).
-
-    cl_abap_unit_assert=>assert_equals( act = act_name exp = 'myTestNameJson' msg = |Actual was { act_name }, but expected is 'myTestNameJson'| ).
-  ENDMETHOD.
-
-  METHOD name_mapping_not_found.
-    cut->name_mappings = VALUE #( ( abap = 'MY_TEST_NAME_ABAP'   json = 'myTestNameJson' ) ).
-
-    DATA(act_name) = cut->map_and_format_name( 'NON_EXISTING_IN_MAPPING' ).
-
-    cl_abap_unit_assert=>assert_equals( act = act_name exp = 'NON_EXISTING_IN_MAPPING' msg = |Actual was { act_name }, but expected is 'NON_EXISTING_IN_MAPPING'| ).
-  ENDMETHOD.
-
-  METHOD name_mapping_and_camel_case.
-    cut->formatting_option = zif_aff_writer=>formatting_option-camel_case.
-    cut->name_mappings = VALUE #( ( abap = 'MY_TEST_NAME_ABAP' json = 'my_test_name_json' ) ).
-
-    DATA(act_name) = cut->map_and_format_name( 'MY_TEST_NAME_ABAP' ).
-
-    cl_abap_unit_assert=>assert_equals( act = act_name exp = 'my_test_name_json' msg = |Actual was { act_name }, but expected is 'my_test_name_json'| ).
   ENDMETHOD.
 
   METHOD get_type_info_string_like_enum.

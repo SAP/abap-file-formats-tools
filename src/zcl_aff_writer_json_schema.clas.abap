@@ -207,7 +207,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     me->formatting_option = zif_aff_writer=>formatting_option-camel_case.
     me->schema_id = schema_id.
     me->format_version = format_version.
-    zif_aff_writer~set_name_mappings( VALUE #( ( abap = 'schema' json = '$schema' ) ) ) ##NO_TEXT.
   ENDMETHOD.
 
 
@@ -220,7 +219,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     append_comma_to_prev_line( ).
     DATA(json_type) = get_json_type_from_description( element_description ).
-    DATA(mapped_and_formatted_name) = map_and_format_name( element_name ).
+    DATA(formatted_name) = format_name( element_name ).
 
     DATA(splitted_prev_name) = get_splitted_absolute_name( element_description->absolute_name ).
     set_abapdoc_fullname_element( element_description = element_description element_name = element_name splitted_prev_name = splitted_prev_name ).
@@ -228,7 +227,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     IF abap_doc-required = abap_true AND lines( stack_of_required_tabs ) >= 1.
       FIELD-SYMBOLS <table1> TYPE string_table.
       ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
-      APPEND mapped_and_formatted_name TO <table1>.
+      APPEND formatted_name TO <table1>.
     ENDIF.
 
     DATA(callback_class) = to_upper( abap_doc-callback_class ).
@@ -248,7 +247,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     IF last_operation( ) = zif_aff_writer=>operation-initial.
       open_json_schema_for_element( ).
     ELSEIF last_operation( ) <> zif_aff_writer=>operation-open_table.
-      write_open_tag( |"{ mapped_and_formatted_name }": \{| ).
+      write_open_tag( |"{ formatted_name }": \{| ).
     ENDIF.
 
     DATA(enum_properties) = get_enum_properties( element_description ).
@@ -477,7 +476,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     append_comma_to_prev_line( ).
 
-    DATA(mapped_and_formatted_name) = map_and_format_name( structure_name ).
+    DATA(formatted_name) = format_name( structure_name ).
 
     set_abapdoc_fullname_struc_tab( type_description = structure_description type_name = structure_name ).
 
@@ -489,7 +488,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     INSERT VALUE #( name = structure_name absolute_name = structure_description->absolute_name ) INTO me->stack_of_structure INDEX 1.
 
     IF last_operation( ) <> zif_aff_writer=>operation-open_table.
-      write_open_tag( |"{ mapped_and_formatted_name }": \{| ).
+      write_open_tag( |"{ formatted_name }": \{| ).
       INSERT VALUE #( name = structure_name number_brackets = 2 ) INTO me->structure_buffer INDEX 1.
     ELSE.
       INSERT VALUE #( name = structure_name number_brackets = 1 ) INTO me->structure_buffer INDEX 1.
@@ -500,7 +499,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     IF abap_doc-required = abap_true.
       FIELD-SYMBOLS <table1> TYPE string_table.
       ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
-      APPEND mapped_and_formatted_name TO <table1>.
+      APPEND formatted_name TO <table1>.
     ENDIF.
     write_tag( `"type": "object",` ).
     write_open_tag( `"properties": {` ).
@@ -532,14 +531,14 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       RETURN.
     ENDIF.
     append_comma_to_prev_line( ).
-    DATA(mapped_and_formatted_name) = map_and_format_name( table_name ).
+    DATA(formatted_name) = format_name( table_name ).
 
     set_abapdoc_fullname_struc_tab( type_description = table_description type_name = table_name ).
 
     IF abap_doc-required = abap_true AND lines( stack_of_required_tabs ) >= 1.
       FIELD-SYMBOLS <table1> TYPE string_table.
       ASSIGN stack_of_required_tabs[ 1 ] TO <table1>.
-      APPEND mapped_and_formatted_name TO <table1>.
+      APPEND formatted_name TO <table1>.
     ENDIF.
 
     DATA(callback_class) = to_upper( abap_doc-callback_class ).
@@ -548,7 +547,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     IF last_operation( ) <> zif_aff_writer=>operation-open_table.
-      write_open_tag( |"{ mapped_and_formatted_name }": \{| ).
+      write_open_tag( |"{ formatted_name }": \{| ).
       INSERT VALUE #( name = table_name number_brackets = 2 ) INTO TABLE me->table_buffer.
     ELSE.
       INSERT VALUE #( name = table_name number_brackets = 1 ) INTO TABLE me->table_buffer.
