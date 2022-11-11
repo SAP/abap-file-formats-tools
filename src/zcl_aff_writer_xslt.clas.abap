@@ -211,7 +211,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     me->st_root_name = st_root_name.
     next_tag_without_name_and_ref = abap_true.
     me->formatting_option = zif_aff_writer=>formatting_option-camel_case.
-    zif_aff_writer~set_name_mappings( VALUE #( ( abap = 'schema' json = '$schema' ) ) ).
   ENDMETHOD.
 
 
