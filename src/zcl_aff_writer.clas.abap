@@ -28,7 +28,6 @@ CLASS zcl_aff_writer DEFINITION
 
     DATA:
       output                  TYPE string_table,
-      formatting_option       TYPE string,
       content                 TYPE string_table,
       stack_of_structure      TYPE tt_structure_stack,
       stack                   TYPE STANDARD TABLE OF ty_stack_entry,
