@@ -29,7 +29,6 @@ CLASS zcl_aff_writer DEFINITION
     DATA:
       output                  TYPE string_table,
       formatting_option       TYPE string,
-      name_mappings           TYPE zif_aff_writer=>ty_name_mappings,
       content                 TYPE string_table,
       stack_of_structure      TYPE tt_structure_stack,
       stack                   TYPE STANDARD TABLE OF ty_stack_entry,
@@ -40,7 +39,7 @@ CLASS zcl_aff_writer DEFINITION
       abap_doc                TYPE zcl_aff_abap_doc_parser=>abap_doc,
       fullname_of_type        TYPE string.
 
-    METHODS: map_and_format_name
+    METHODS: format_name
       IMPORTING name          TYPE string
       RETURNING VALUE(result) TYPE string,
       get_json_type_from_description
@@ -192,12 +191,7 @@ CLASS zcl_aff_writer DEFINITION
       END OF c_abap_types.
 
 
-    METHODS:
-      get_mapped_name
-        IMPORTING name          TYPE string
-        RETURNING VALUE(result) TYPE string,
-
-      is_type_timestamp
+    METHODS: is_type_timestamp
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
         RETURNING VALUE(result)       TYPE abap_boolean,
 
@@ -240,34 +234,13 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_aff_writer~set_name_mappings.
-    me->name_mappings = name_mappings.
-  ENDMETHOD.
-
-
   METHOD zif_aff_writer~set_formatting_option.
     me->formatting_option = formatting_option.
   ENDMETHOD.
 
 
-  METHOD map_and_format_name.
-    DATA(mapped_name) = me->get_mapped_name( name ).
-    IF mapped_name IS NOT INITIAL.
-      result = mapped_name.
-    ELSE.
-      result = me->apply_formatting( name ).
-    ENDIF.
-  ENDMETHOD.
-
-
-  METHOD get_mapped_name.
-    DATA(name_upper) = to_upper( name ).
-    DATA(name_mappings_upper) = VALUE zif_aff_writer=>ty_name_mappings(
-      FOR name_mapping IN me->name_mappings (
-        abap = to_upper( name_mapping-abap )
-        json = name_mapping-json
-      ) ).
-    result = VALUE #( name_mappings_upper[ abap = name_upper ]-json OPTIONAL ) ##WARN_OK.
+  METHOD format_name.
+    result = me->apply_formatting( name ).
   ENDMETHOD.
 
 

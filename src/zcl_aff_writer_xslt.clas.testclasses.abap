@@ -33,12 +33,6 @@ INTERFACE lif_test_types.
   TYPES END OF structure_include_in_include.
 
   TYPES:
-    BEGIN OF structure_in_structure,
-      structure TYPE structure,
-      element   TYPE element,
-    END OF structure_in_structure.
-
-  TYPES:
     table_structure TYPE STANDARD TABLE OF structure WITH DEFAULT KEY.
 
   TYPES:
@@ -95,8 +89,6 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
       table_in_table FOR TESTING RAISING cx_static_check,
       struc_tab_struc_tab FOR TESTING RAISING cx_static_check,
       type_timestamp FOR TESTING RAISING cx_static_check,
-      name_mappings_structure FOR TESTING RAISING cx_static_check,
-      name_mappings_table FOR TESTING RAISING cx_static_check,
       type_boolean FOR TESTING RAISING cx_static_check,
       type_numeric FOR TESTING RAISING cx_static_check,
       type_string FOR TESTING RAISING cx_static_check,
@@ -481,129 +473,6 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD name_mappings_structure.
-    DATA test_type TYPE lif_test_types=>structure_in_structure.
-    cut->zif_aff_writer~set_name_mappings( name_mappings = VALUE #(
-                                           ( abap = 'ELEMENT_1' json = 'MAPPED_ELEMENT1' ) ( abap = 'STRUCTURE' json = 'MAPPED_STRUCTURE' ) ) ).
-
-    DATA(act_output) = test_generator->generate_type( test_type ).
-
-    me->exp_transformation = VALUE #(
-        ( `<tt:cond>` )
-        ( `  <object>` )
-        ( `    <tt:group>` )
-        ( `      <tt:cond s-check="not-initial(STRUCTURE)" frq="?">` )
-        ( `        <object name="MAPPED_STRUCTURE" tt:ref="STRUCTURE">` )
-        ( `          <tt:group>` )
-        ( `            <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` )
-        ( `              <num name="MAPPED_ELEMENT1">` )
-        ( `                <tt:value ref="ELEMENT_1" option="format(alpha)"/>` )
-        ( `              </num>` )
-        ( `            </tt:cond>` )
-        ( `            <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` )
-        ( `              <str name="ELEMENT_2">` )
-        ( `                <tt:value ref="ELEMENT_2"/>` )
-        ( `              </str>` )
-        ( `            </tt:cond>` )
-        ( `            <tt:d-cond frq="*">` )
-        ( `               <_ tt:lax="on">` )
-        ( `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `                  <tt:with-parameter name="MEMBERS" val="'MAPPED_ELEMENT1;ELEMENT_2;'"/>` )
-        ( `                </tt:call-method>` )
-        ( `                <tt:skip/>` )
-        ( `              </_>` )
-        ( `            </tt:d-cond>` )
-        ( `            <tt:d-cond frq="?">` )
-        ( `              <__/>` )
-        ( `            </tt:d-cond>` )
-        ( `          </tt:group>` )
-        ( `        </object>` )
-        ( `      </tt:cond>` )
-        ( `      <tt:cond s-check="not-initial(ELEMENT)" frq="?">` )
-        ( `        <str name="ELEMENT">` )
-        ( `          <tt:value ref="ELEMENT"/>` )
-        ( `        </str>` )
-        ( `      </tt:cond>` )
-        ( `      <tt:d-cond frq="*">` )
-        ( `         <_ tt:lax="on">` )
-        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'MAPPED_STRUCTURE;ELEMENT;'"/>` )
-        ( `          </tt:call-method>` )
-        ( `          <tt:skip/>` )
-        ( `        </_>` )
-        ( `      </tt:d-cond>` )
-        ( `      <tt:d-cond frq="?">` )
-        ( `        <__/>` )
-        ( `      </tt:d-cond>` )
-        ( `    </tt:group>` )
-        ( `  </object>` )
-        ( `</tt:cond>` ) ).
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD name_mappings_table.
-    DATA test_type TYPE lif_test_types=>structure_with_table.
-    cut->zif_aff_writer~set_name_mappings( name_mappings = VALUE #(
-                                           ( abap = 'ELEMENT_1' json = 'MAPPED_ELEMENT1' ) ( abap = 'TABLE' json = 'MAPPED_TABLE' ) ) ).
-
-    DATA(act_output) = test_generator->generate_type( test_type ).
-
-    me->exp_transformation = VALUE #(
-        ( `<tt:cond>` )
-        ( `  <object>` )
-        ( `    <tt:group>` )
-        ( `      <tt:cond s-check="not-initial(TABLE)" frq="?">` )
-        ( `        <array name="MAPPED_TABLE">` )
-        ( `          <tt:loop ref="TABLE">` )
-        ( `            <tt:group>` )
-        ( `              <tt:cond>` )
-        ( `                <object>` )
-        ( `                  <tt:group>` )
-        ( `                    <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` )
-        ( `                      <num name="MAPPED_ELEMENT1">` )
-        ( `                        <tt:value ref="ELEMENT_1" option="format(alpha)"/>` )
-        ( `                      </num>` )
-        ( `                    </tt:cond>` )
-        ( `                    <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` )
-        ( `                      <str name="ELEMENT_2">` )
-        ( `                        <tt:value ref="ELEMENT_2"/>` )
-        ( `                      </str>` )
-        ( `                    </tt:cond>` )
-        ( `                    <tt:d-cond frq="*">` )
-        ( `                       <_ tt:lax="on">` )
-        ( `                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `                          <tt:with-parameter name="MEMBERS" val="'MAPPED_ELEMENT1;ELEMENT_2;'"/>` )
-        ( `                        </tt:call-method>` )
-        ( `                        <tt:skip/>` )
-        ( `                      </_>` )
-        ( `                    </tt:d-cond>` )
-        ( `                    <tt:d-cond frq="?">` )
-        ( `                      <__/>` )
-        ( `                    </tt:d-cond>` )
-        ( `                  </tt:group>` )
-        ( `                </object>` )
-        ( `              </tt:cond>` )
-        ( `            </tt:group>` )
-        ( `          </tt:loop>` )
-        ( `        </array>` )
-        ( `      </tt:cond>` )
-        ( `      <tt:d-cond frq="*">` )
-        ( `         <_ tt:lax="on">` )
-        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'MAPPED_TABLE;'"/>` )
-        ( `          </tt:call-method>` )
-        ( `          <tt:skip/>` )
-        ( `        </_>` )
-        ( `      </tt:d-cond>` )
-        ( `      <tt:d-cond frq="?">` )
-        ( `        <__/>` )
-        ( `      </tt:d-cond>` )
-        ( `    </tt:group>` )
-        ( `  </object>` )
-        ( `</tt:cond>` ) ).
-    validate_output( act_output ).
-  ENDMETHOD.
-
   METHOD structure_with_language.
     DATA test_type TYPE lif_test_types=>structure_with_language.
     DATA(act_output) = test_generator->generate_type( test_type ).
@@ -776,8 +645,6 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
       type_boolean FOR TESTING RAISING cx_static_check,
       type_numeric FOR TESTING RAISING cx_static_check,
       type_string FOR TESTING RAISING cx_static_check,
-      name_mappings_structure FOR TESTING RAISING cx_static_check,
-      name_mappings_table FOR TESTING RAISING cx_static_check,
       structure_with_language FOR TESTING RAISING cx_static_check,
       from_json_to_abap
         IMPORTING
@@ -791,7 +658,6 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
       from_abap_to_json
         IMPORTING
           test_type     TYPE data
-          name_mappings TYPE zif_aff_writer=>ty_name_mappings OPTIONAL
           formatting    TYPE string DEFAULT zif_aff_writer=>formatting_option-no_formatting
         EXPORTING
           VALUE(result) TYPE string_table
@@ -818,7 +684,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
 
     cut->zif_aff_writer~set_formatting_option( formatting ).
-    cut->zif_aff_writer~set_name_mappings( name_mappings ).
 
     DATA(test_generator) = NEW zcl_aff_generator( cut ).
     DATA(st_content) = test_generator->generate_type( test_type ).
@@ -1207,89 +1072,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
     exp_json = VALUE #(
             ( `"0123abcdef"` ) ).
-
-    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
-
-    DATA act_data LIKE test_type.
-    from_json_to_abap(
-      EXPORTING
-        json   = json_xstring
-      IMPORTING
-        result = act_data ).
-
-    cl_abap_unit_assert=>assert_equals(
-      act = act_data
-      exp = test_type ).
-  ENDMETHOD.
-
-
-  METHOD name_mappings_structure.
-    DATA test_type TYPE lif_test_types=>structure.
-    test_type-element_1 = 1.
-    test_type-element_2 = 'element2_value'.
-
-    from_abap_to_json(
-      EXPORTING
-        test_type     = test_type
-        name_mappings = VALUE #(
-                                ( abap = 'ELEMENT_1' json = 'MAPPED_ELEMENT1' )
-                                ( abap = 'STRUCTURE' json = 'MAPPED_STRUCTURE' ) )
-      IMPORTING
-        result        = DATA(act_json)
-        json          = DATA(json_xstring) ).
-
-    exp_json = VALUE #(
-        ( `{` )
-        ( ` "MAPPED_ELEMENT1":1,` )
-        ( ` "ELEMENT_2":"element2_value"` )
-        ( `}` ) ).
-
-    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
-
-    DATA act_data LIKE test_type.
-    from_json_to_abap(
-      EXPORTING
-        json   = json_xstring
-      IMPORTING
-        result = act_data ).
-
-    cl_abap_unit_assert=>assert_equals(
-      act = act_data
-      exp = test_type ).
-  ENDMETHOD.
-
-  METHOD name_mappings_table.
-    DATA test_type TYPE lif_test_types=>structure_with_table.
-
-    test_type-table = VALUE #(
-        ( element_1 = 1 element_2 = 'obj1_element2' )
-        ( element_1 = 2 element_2 = 'obj2_element2' ) ).
-
-    from_abap_to_json(
-      EXPORTING
-        test_type     = test_type
-        name_mappings = VALUE #(
-                                ( abap = 'ELEMENT_1' json = 'MAPPED_ELEMENT1' )
-                                ( abap = 'TABLE' json = 'MAPPED_TABLE' ) )
-      IMPORTING
-        result        = DATA(act_json)
-        json          = DATA(json_xstring) ).
-
-
-    exp_json = VALUE #(
-            ( `{` )
-            ( ` "MAPPED_TABLE":` )
-            ( ` [` )
-            ( `  {` )
-            ( `   "MAPPED_ELEMENT1":1,` )
-            ( `   "ELEMENT_2":"obj1_element2"` )
-            ( `  },` )
-            ( `  {` )
-            ( `   "MAPPED_ELEMENT1":2,` )
-            ( `   "ELEMENT_2":"obj2_element2"` )
-            ( `  }` )
-            ( ` ]` )
-            ( `}` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 

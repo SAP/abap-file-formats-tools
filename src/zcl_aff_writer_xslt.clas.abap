@@ -211,7 +211,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     me->st_root_name = st_root_name.
     next_tag_without_name_and_ref = abap_true.
     me->formatting_option = zif_aff_writer=>formatting_option-camel_case.
-    zif_aff_writer~set_name_mappings( VALUE #( ( abap = 'schema' json = '$schema' ) ) ).
   ENDMETHOD.
 
 
@@ -458,7 +457,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_name.
     IF next_tag_without_name_and_ref = abap_false.
-      result = | name="{ map_and_format_name( name ) }"| ##NO_TEXT.
+      result = | name="{ format_name( name ) }"| ##NO_TEXT.
     ENDIF.
   ENDMETHOD.
 
@@ -543,7 +542,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
           RAISE EXCEPTION NEW zcx_aff_tools( message = msg ).
         ENDIF.
         ASSIGN COMPONENT <component>-name OF STRUCTURE <attr> TO <fs_data>.
-        INSERT VALUE #( abap_value = <fs_data>  json_value = map_and_format_name( CONV #( <component>-name ) ) overwritten_json_value = abap_doc_of_component-enum_value ) INTO TABLE result.
+        INSERT VALUE #( abap_value = <fs_data>  json_value = format_name( CONV #( <component>-name ) ) overwritten_json_value = abap_doc_of_component-enum_value ) INTO TABLE result.
       ENDLOOP.
       IF abap_doc-required = abap_false AND abap_doc-default IS INITIAL.
         log->add_warning( message_text = zif_aff_log=>co_msg127 component_name = fullname_of_type ).
@@ -738,7 +737,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     DATA(components) = structure_description->get_components( ).
     DATA str_comp TYPE string.
     LOOP AT components INTO DATA(component).
-      DATA(formatted_name) = map_and_format_name( name = component-name ).
+      DATA(formatted_name) = format_name( name = component-name ).
       IF component-as_include IS NOT INITIAL.
         CONTINUE.
       ENDIF.

@@ -22,18 +22,8 @@ INTERFACE zif_aff_writer
                close_table     TYPE string VALUE 'close_table',
              END OF operation.
 
-  TYPES:
-    BEGIN OF ty_name_mapping,
-      abap TYPE abap_compname,
-      json TYPE string,
-    END OF ty_name_mapping,
-    ty_name_mappings TYPE HASHED TABLE OF ty_name_mapping WITH UNIQUE KEY abap.
-
 
   METHODS:
-    set_name_mappings
-      IMPORTING
-        name_mappings TYPE ty_name_mappings,
 
     set_formatting_option
       IMPORTING
