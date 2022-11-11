@@ -210,7 +210,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     super->constructor( ).
     me->st_root_name = st_root_name.
     next_tag_without_name_and_ref = abap_true.
-    me->formatting_option = zif_aff_writer=>formatting_option-camel_case.
   ENDMETHOD.
 
 

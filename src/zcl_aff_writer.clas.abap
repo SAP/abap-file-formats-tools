@@ -98,7 +98,7 @@ CLASS zcl_aff_writer DEFINITION
                   table_description TYPE REF TO cl_abap_typedescr
         RAISING   zcx_aff_tools ##NEEDED,
 
-      apply_formatting
+      format_to_camel_case
         IMPORTING name          TYPE string
         RETURNING VALUE(result) TYPE string,
 
@@ -192,8 +192,8 @@ CLASS zcl_aff_writer DEFINITION
 
 
     METHODS: is_type_timestamp
-        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
-        RETURNING VALUE(result)       TYPE abap_boolean,
+      IMPORTING element_description TYPE REF TO cl_abap_elemdescr
+      RETURNING VALUE(result)       TYPE abap_boolean,
 
       is_type_boolean
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
@@ -234,24 +234,14 @@ CLASS zcl_aff_writer IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_aff_writer~set_formatting_option.
-    me->formatting_option = formatting_option.
-  ENDMETHOD.
-
-
   METHOD format_name.
-    result = me->apply_formatting( name ).
+    result = me->format_to_camel_case( name ).
   ENDMETHOD.
 
 
-  METHOD apply_formatting.
-    CASE me->formatting_option.
-      WHEN zif_aff_writer=>formatting_option-camel_case.
-        DATA(lower_name) = to_lower( name ).
-        result = to_mixed( lower_name ).
-      WHEN OTHERS.
-        result = name.
-    ENDCASE.
+  METHOD format_to_camel_case.
+    DATA(lower_name) = to_lower( name ).
+    result = to_mixed( lower_name ).
   ENDMETHOD.
 
 
@@ -582,7 +572,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     SPLIT link_to_work_on AT '.' INTO TABLE DATA(splitted).
     IF validate_default_link( splitted_link = splitted fullname_of_type = fullname_of_type element_type = element_type ) = abap_true.
       DATA(default_abap) = splitted[ lines( splitted ) ].
-      default_value = apply_formatting( default_abap ).
+      default_value = format_to_camel_case( default_abap ).
     ENDIF.
   ENDMETHOD.
 

@@ -40,7 +40,6 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       cut TYPE REF TO ltcl_writer_testable.
 
     METHODS: camel_case FOR TESTING RAISING cx_static_check,
-      no_formatting_option FOR TESTING RAISING cx_static_check,
       get_output FOR TESTING RAISING cx_static_check,
       get_type_info_string_like FOR TESTING RAISING cx_static_check,
       get_type_info_string_like_enum FOR TESTING RAISING cx_static_check,
@@ -49,7 +48,6 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       get_type_info_boolean3 FOR TESTING RAISING cx_static_check,
       get_type_info_numeric FOR TESTING RAISING cx_static_check,
       get_type_info_date_time FOR TESTING RAISING cx_static_check,
-      set_formatting_option FOR TESTING RAISING cx_static_check,
       stack_stores_operations FOR TESTING RAISING cx_static_check,
       append_to_previous_line FOR TESTING RAISING cx_static_check,
       call_reader_and_decode1 FOR TESTING RAISING cx_static_check,
@@ -83,11 +81,6 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cut = NEW ltcl_writer_testable( ).
   ENDMETHOD.
 
-  METHOD set_formatting_option.
-    cut->zif_aff_writer~set_formatting_option( zif_aff_writer=>formatting_option-camel_case ).
-
-    cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>formatting_option-camel_case act = cut->formatting_option ).
-  ENDMETHOD.
 
   METHOD get_output.
     DATA(exp_output) = VALUE string_table( ( `line1` ) ( `line2` ) ).
@@ -99,20 +92,11 @@ CLASS ltcl_type_writer IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD camel_case.
-    cut->formatting_option = zif_aff_writer=>formatting_option-camel_case.
-
     DATA(act_name) = cut->format_name( 'MY_TEst_nAmE' ).
 
     cl_abap_unit_assert=>assert_equals( act = act_name exp = 'myTestName' msg = |Actual was { act_name }, but expected is 'myTestName'| ).
   ENDMETHOD.
 
-  METHOD no_formatting_option.
-    cut->formatting_option = zif_aff_writer=>formatting_option-no_formatting.
-
-    DATA(act_name) = cut->format_name( 'MY_TEst_nAmE' ).
-
-    cl_abap_unit_assert=>assert_equals( act = act_name exp = 'MY_TEst_nAmE' msg = |Actual was { act_name }, but expected is 'MY_TEst_nAmE'| ).
-  ENDMETHOD.
 
   METHOD get_type_info_string_like_enum.
     TYPES:
