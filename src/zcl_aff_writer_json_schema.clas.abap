@@ -73,8 +73,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
     METHODS: append_comma_to_prev_line,
 
       get_json_schema_type
-        IMPORTING element_name        TYPE string
-                  element_description TYPE REF TO cl_abap_elemdescr
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
                   json_type           TYPE string
         RETURNING VALUE(result)       TYPE string
         RAISING   zcx_aff_tools,
@@ -96,15 +95,13 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         RETURNING VALUE(result)    TYPE string,
 
       get_enum_properties
-        IMPORTING element_name        TYPE string
-                  element_description TYPE REF TO cl_abap_elemdescr
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
         RETURNING VALUE(result)       TYPE ty_enum_properties
         RAISING
                   zcx_aff_tools,
 
       get_enum_descriptions
-        IMPORTING element_name        TYPE string
-                  element_description TYPE REF TO cl_abap_elemdescr
+        IMPORTING element_description TYPE REF TO cl_abap_elemdescr
                   enum_properties     TYPE ty_enum_properties
         RETURNING VALUE(result)       TYPE string_table,
 
@@ -150,8 +147,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
 
       handle_extrema
         IMPORTING
-          element_description TYPE REF TO cl_abap_elemdescr
-          element_name        TYPE string,
+          element_description TYPE REF TO cl_abap_elemdescr,
 
       handle_string
         IMPORTING
@@ -162,7 +158,6 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       handle_enums
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
-          element_name        TYPE string
           enum_properties     TYPE ty_enum_properties,
 
       write_subschema
@@ -256,7 +251,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_open_tag( |"{ mapped_and_formatted_name }": \{| ).
     ENDIF.
 
-    DATA(enum_properties) = get_enum_properties( element_name = element_name element_description = element_description ).
+    DATA(enum_properties) = get_enum_properties( element_description ).
     IF enum_properties IS NOT INITIAL.
       json_type = zif_aff_writer=>type_info-string.
     ENDIF.
@@ -273,17 +268,17 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_tag( `"type": "string",` ).
       write_tag( |"const": "{ format_version }",| ).
     ELSE.
-      write_tag( |"type": "{ get_json_schema_type( element_name = element_name element_description = element_description json_type = json_type ) }",| ).
+      write_tag( |"type": "{ get_json_schema_type( element_description = element_description json_type = json_type ) }",| ).
       DATA(format) = get_format( element_description ).
       IF format IS NOT INITIAL.
         write_tag( |"format": "{ format }",| ).
       ENDIF.
 
       IF enum_properties IS NOT INITIAL.
-        handle_enums( element_description = element_description element_name = element_name enum_properties = enum_properties ).
+        handle_enums( element_description = element_description enum_properties = enum_properties ).
       ELSE. "non- enum
         IF json_type = zif_aff_writer=>type_info-numeric.
-          handle_extrema( element_description = element_description element_name = element_name ).
+          handle_extrema( element_description ).
         ELSEIF json_type = zif_aff_writer=>type_info-string AND NOT ( element_description->type_kind = cl_abap_typedescr=>typekind_date OR element_description->type_kind = cl_abap_typedescr=>typekind_time OR
              element_description->type_kind = cl_abap_typedescr=>typekind_utclong ).
           IF is_sy_langu( element_description ).
@@ -344,7 +339,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_enum_properties( enum_properties-titles ).
     ENDIF.
 
-    DATA(enum_descr) = get_enum_descriptions( element_name = element_name element_description = element_description enum_properties = enum_properties ).
+    DATA(enum_descr) = get_enum_descriptions( element_description = element_description enum_properties = enum_properties ).
     write_tag( `"enumDescriptions": [` ).
     write_enum_properties( enum_descr ).
   ENDMETHOD.
