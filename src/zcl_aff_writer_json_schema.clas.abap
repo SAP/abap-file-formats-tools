@@ -383,14 +383,12 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD handle_extrema.
-    IF get_value_mapping_for_element( element_name ) IS INITIAL.
-      get_extrema(
-        EXPORTING
-          element_description = element_description
-        IMPORTING
-          max                 = DATA(max_value)
-          min                 = DATA(min_value) ).
-    ENDIF.
+    get_extrema(
+      EXPORTING
+        element_description = element_description
+      IMPORTING
+        max                 = DATA(max_value)
+        min                 = DATA(min_value) ).
     DATA(multiple_of) = abap_doc-multiple_of.
 
     IF multiple_of IS INITIAL AND element_description->type_kind = cl_abap_typedescr=>typekind_packed.
@@ -657,21 +655,15 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_json_schema_type.
-    DATA(value_mapping) = get_value_mapping_for_element( element_name ).
-    IF value_mapping IS NOT INITIAL.
-      DATA(type) = value_mapping-target_type.
-    ELSE.
-      type = json_type.
-    ENDIF.
-    IF type = zif_aff_writer=>type_info-numeric.
+    IF json_type = zif_aff_writer=>type_info-numeric.
       result = 'number' ##NO_TEXT.
       IF type_is_integer( element_description ) = abap_true.
         result = 'integer'  ##NO_TEXT.
       ENDIF.
-    ELSEIF type = zif_aff_writer=>type_info-date_time.
+    ELSEIF json_type = zif_aff_writer=>type_info-date_time.
       result = 'string' ##NO_TEXT.
     ELSE.
-      result = to_lower( type ).
+      result = to_lower( json_type ).
     ENDIF.
   ENDMETHOD.
 
@@ -780,12 +772,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_enum_properties.
-    DATA(value_mapping) = get_value_mapping_for_element( element_name ).
-    IF value_mapping IS NOT INITIAL.
-      LOOP AT value_mapping-value_mappings ASSIGNING FIELD-SYMBOL(<mapping>).
-        INSERT VALUE #( value = <mapping>-json ) INTO TABLE result-values.
-      ENDLOOP.
-    ELSEIF abap_doc-enumvalues_link IS NOT INITIAL.
+    IF abap_doc-enumvalues_link IS NOT INITIAL.
       result = get_properties_from_structure( element_description->type_kind ).
     ELSE.
       IF get_json_type_from_description( element_description ) = zif_aff_writer=>type_info-boolean.
@@ -810,12 +797,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_enum_descriptions.
-    DATA(value_mapping) = get_value_mapping_for_element( element_name ).
-    IF value_mapping IS NOT INITIAL.
-      LOOP AT value_mapping-value_mappings ASSIGNING FIELD-SYMBOL(<mapping>).
-        APPEND <mapping>-json TO result.
-      ENDLOOP.
-    ELSEIF abap_doc-enumvalues_link IS NOT INITIAL.
+    IF abap_doc-enumvalues_link IS NOT INITIAL.
       result = enum_properties-descriptions.
     ELSE.
       element_description->get_ddic_fixed_values(
