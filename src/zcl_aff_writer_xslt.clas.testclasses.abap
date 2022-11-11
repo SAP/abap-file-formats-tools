@@ -33,12 +33,6 @@ INTERFACE lif_test_types.
   TYPES END OF structure_include_in_include.
 
   TYPES:
-    BEGIN OF structure_in_structure,
-      structure TYPE structure,
-      element   TYPE element,
-    END OF structure_in_structure.
-
-  TYPES:
     table_structure TYPE STANDARD TABLE OF structure WITH DEFAULT KEY.
 
   TYPES:
