@@ -204,7 +204,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   METHOD constructor.
     super->constructor( ).
-    me->formatting_option = zif_aff_writer=>formatting_option-camel_case.
     me->schema_id = schema_id.
     me->format_version = format_version.
   ENDMETHOD.
@@ -784,7 +783,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         DATA text TYPE string.
         text = <value>-ddtext.
         REPLACE ALL OCCURRENCES OF REGEX '\s' IN text WITH '_'  ##REGEX_POSIX.
-        INSERT VALUE #( value = apply_formatting( text ) ) INTO TABLE result-values.
+        INSERT VALUE #( value = format_to_camel_case( text ) ) INTO TABLE result-values.
       ENDLOOP.
     ENDIF.
   ENDMETHOD.
@@ -839,7 +838,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         DATA(fullname_of_value) = name_of_constant && '-' && <component>-name.
         DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name = fullname_of_value ).
 
-        APPEND VALUE ty_enum_value( value = apply_formatting( CONV #( <component>-name ) )  overwritten_value = abap_doc_of_component-enum_value ) TO result-values.
+        APPEND VALUE ty_enum_value( value = format_to_camel_case( CONV #( <component>-name ) )  overwritten_value = abap_doc_of_component-enum_value ) TO result-values.
         APPEND abap_doc_of_component-description TO result-descriptions.
         APPEND abap_doc_of_component-title TO result-titles.
 

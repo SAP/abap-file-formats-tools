@@ -112,7 +112,6 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
 
   METHOD setup.
     cut = NEW zcl_aff_writer_xslt( me->st_root_name ).
-    cut->formatting_option = zif_aff_writer=>formatting_option-no_formatting.
     test_generator = NEW zcl_aff_generator( cut ).
   ENDMETHOD.
 
@@ -137,29 +136,29 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `  <object>` )
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">` )
-        ( `        <str name="INCLUDE_ELEMENT_1">` )
+        ( `        <str name="includeElement1">` )
         ( `          <tt:value ref="INCLUDE_ELEMENT_1"/>` )
         ( `        </str>` )
         ( `      </tt:cond>` )
         ( `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_2)" frq="?">` )
-        ( `        <num name="INCLUDE_ELEMENT_2">` )
+        ( `        <num name="includeElement2">` )
         ( `          <tt:value ref="INCLUDE_ELEMENT_2" option="format(alpha)"/>` )
         ( `        </num>` )
         ( `      </tt:cond>` )
         ( `      <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` )
-        ( `        <num name="ELEMENT_1">` )
+        ( `        <num name="element1">` )
         ( `          <tt:value ref="ELEMENT_1" option="format(alpha)"/>` )
         ( `        </num>` )
         ( `      </tt:cond>` )
         ( `      <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` )
-        ( `        <str name="ELEMENT_2">` )
+        ( `        <str name="element2">` )
         ( `          <tt:value ref="ELEMENT_2"/>` )
         ( `        </str>` )
         ( `      </tt:cond>` )
         ( `      <tt:d-cond frq="*">` )
         ( `         <_ tt:lax="on">` )
         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'element1;element2;'"/>` )
         ( `          </tt:call-method>` )
         ( `          <tt:skip/>` )
         ( `        </_>` )
@@ -183,24 +182,24 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `  <object>` )
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">` )
-        ( `        <str name="INCLUDE_ELEMENT_1">` )
+        ( `        <str name="includeElement1">` )
         ( `          <tt:value ref="INCLUDE_ELEMENT_1"/>` )
         ( `        </str>` )
         ( `      </tt:cond>` )
         ( `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_2)" frq="?">` )
-        ( `        <num name="INCLUDE_ELEMENT_2">` )
+        ( `        <num name="includeElement2">` )
         ( `          <tt:value ref="INCLUDE_ELEMENT_2" option="format(alpha)"/>` )
         ( `        </num>` )
         ( `      </tt:cond>` )
         ( `      <tt:cond s-check="not-initial(ELEMENT)" frq="?">` )
-        ( `        <str name="ELEMENT">` )
+        ( `        <str name="element">` )
         ( `          <tt:value ref="ELEMENT"/>` )
         ( `        </str>` )
         ( `      </tt:cond>` )
         ( `      <tt:d-cond frq="*">` )
         ( `         <_ tt:lax="on">` )
         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'ELEMENT;'"/>` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'element;'"/>` )
         ( `          </tt:call-method>` )
         ( `          <tt:skip/>` )
         ( `        </_>` )
@@ -224,26 +223,26 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `  <object>` )
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(TABLE)" frq="?">` )
-        ( `        <array name="TABLE">` )
+        ( `        <array name="table">` )
         ( `          <tt:loop ref="TABLE">` )
         ( `            <tt:group>` )
         ( `              <tt:cond>` )
         ( `                <object>` )
         ( `                  <tt:group>` )
         ( `                    <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` )
-        ( `                      <num name="ELEMENT_1">` )
+        ( `                      <num name="element1">` )
         ( `                        <tt:value ref="ELEMENT_1" option="format(alpha)"/>` )
         ( `                      </num>` )
         ( `                    </tt:cond>` )
         ( `                    <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` )
-        ( `                      <str name="ELEMENT_2">` )
+        ( `                      <str name="element2">` )
         ( `                        <tt:value ref="ELEMENT_2"/>` )
         ( `                      </str>` )
         ( `                    </tt:cond>` )
         ( `                    <tt:d-cond frq="*">` )
         ( `                       <_ tt:lax="on">` )
         ( `                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `                          <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>` )
+        ( `                          <tt:with-parameter name="MEMBERS" val="'element1;element2;'"/>` )
         ( `                        </tt:call-method>` )
         ( `                        <tt:skip/>` )
         ( `                      </_>` )
@@ -259,14 +258,14 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `        </array>` )
         ( `      </tt:cond>` )
         ( `      <tt:cond s-check="not-initial(INCLUDE_ELEMENT_1)" frq="?">` )
-        ( `        <num name="INCLUDE_ELEMENT_1">` )
+        ( `        <num name="includeElement1">` )
         ( `          <tt:value ref="INCLUDE_ELEMENT_1" option="format(alpha)"/>` )
         ( `        </num>` )
         ( `      </tt:cond>` )
         ( `      <tt:d-cond frq="*">` )
         ( `         <_ tt:lax="on">` )
         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'INCLUDE_ELEMENT_1;'"/>` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'includeElement1;'"/>` )
         ( `          </tt:call-method>` )
         ( `          <tt:skip/>` )
         ( `        </_>` )
@@ -290,14 +289,14 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `  <object>` )
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(FIRST_TABLE)" frq="?">` )
-        ( `        <array name="FIRST_TABLE">` )
+        ( `        <array name="firstTable">` )
         ( `          <tt:loop ref="FIRST_TABLE">` )
         ( `            <tt:group>` )
         ( `              <tt:cond>` )
         ( `                <object>` )
         ( `                  <tt:group>` )
         ( `                    <tt:cond s-check="not-initial(SECOND_TABLE)" frq="?">` )
-        ( `                      <array name="SECOND_TABLE">` )
+        ( `                      <array name="secondTable">` )
         ( `                        <tt:loop ref="SECOND_TABLE"> ` )
         ( `                          <tt:group>` )
         ( `                            <tt:cond>` )
@@ -312,7 +311,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `                    <tt:d-cond frq="*">` )
         ( `                       <_ tt:lax="on">` )
         ( `                        <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `                          <tt:with-parameter name="MEMBERS" val="'SECOND_TABLE;'"/>` )
+        ( `                          <tt:with-parameter name="MEMBERS" val="'secondTable;'"/>` )
         ( `                        </tt:call-method>` )
         ( `                        <tt:skip/>` )
         ( `                      </_>` )
@@ -330,7 +329,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `      <tt:d-cond frq="*">` )
         ( `         <_ tt:lax="on">` )
         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'FIRST_TABLE;'"/>` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'firstTable;'"/>` )
         ( `          </tt:call-method>` )
         ( `          <tt:skip/>` )
         ( `        </_>` )
@@ -388,19 +387,19 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `                    <object>` )
         ( `                        <tt:group>` )
         ( `                            <tt:cond s-check="not-initial(ELEMENT_1)" frq="?">` )
-        ( `                                <num name="ELEMENT_1">` )
+        ( `                                <num name="element1">` )
         ( `                                    <tt:value ref="ELEMENT_1" option="format(alpha)"/>` )
         ( `                                </num>` )
         ( `                            </tt:cond>` )
         ( `                            <tt:cond s-check="not-initial(ELEMENT_2)" frq="?">` )
-        ( `                                <str name="ELEMENT_2">` )
+        ( `                                <str name="element2">` )
         ( `                                    <tt:value ref="ELEMENT_2"/>` )
         ( `                                </str>` )
         ( `                            </tt:cond>` )
         ( `              <tt:d-cond frq="*">` )
         ( `                 <_ tt:lax="on">` )
         ( `                  <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `                    <tt:with-parameter name="MEMBERS" val="'ELEMENT_1;ELEMENT_2;'"/>` )
+        ( `                    <tt:with-parameter name="MEMBERS" val="'element1;element2;'"/>` )
         ( `                  </tt:call-method>` )
         ( `                  <tt:skip/>` )
         ( `                </_>` )
@@ -481,14 +480,14 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `  <object>` )
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(LANGUAGE)" frq="?">` )
-        ( `        <str name="LANGUAGE">` )
+        ( `        <str name="language">` )
         ( `          <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
         ( `            <tt:with-parameter name="language" ref="LANGUAGE"/>` )
         ( `          </tt:call-method>` )
         ( `        </str>` )
         ( `      </tt:cond>` )
         ( `      <tt:cond s-check="not-initial(LANGUAGE2)" frq="?">` )
-        ( `        <str name="LANGUAGE2">` )
+        ( `        <str name="language2">` )
         ( `          <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
         ( `            <tt:with-parameter name="language" ref="LANGUAGE2"/>` )
         ( `          </tt:call-method>` )
@@ -497,7 +496,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `      <tt:d-cond frq="*">` )
         ( `         <_ tt:lax="on">` )
         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'LANGUAGE;LANGUAGE2;'"/>` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'language;language2;'"/>` )
         ( `          </tt:call-method>` )
         ( `          <tt:skip/>` )
         ( `        </_>` )
@@ -525,12 +524,12 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
               ( `  <object>` )
               ( `    <tt:group>` )
               ( `      <tt:cond s-check="not-initial(LANGUAGE)">` )
-              ( `        <str name="LANGUAGE">` )
+              ( `        <str name="language">` )
               ( `          <tt:value ref="LANGUAGE" option="format(language)"/>` )
               ( `        </str>` )
               ( `      </tt:cond>` )
               ( `      <tt:cond s-check="not-initial(LANGUAGE2)">` )
-              ( `        <str name="LANGUAGE2">` )
+              ( `        <str name="language2">` )
               ( `          <tt:value ref="LANGUAGE2" option="format(language)"/>` )
               ( `        </str>` )
               ( `      </tt:cond>` )
@@ -658,7 +657,6 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
       from_abap_to_json
         IMPORTING
           test_type     TYPE data
-          formatting    TYPE string DEFAULT zif_aff_writer=>formatting_option-no_formatting
         EXPORTING
           VALUE(result) TYPE string_table
           VALUE(json)   TYPE xstring
@@ -682,8 +680,6 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
   METHOD from_abap_to_json.
     DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
-
-    cut->zif_aff_writer~set_formatting_option( formatting ).
 
     DATA(test_generator) = NEW zcl_aff_generator( cut ).
     DATA(st_content) = test_generator->generate_type( test_type ).
@@ -752,12 +748,12 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     exp_json = VALUE #(
         ( `[` )
         ( ` {` )
-        ( `  "ELEMENT_1":1,` )
-        ( `  "ELEMENT_2":"first_element"` )
+        ( `  "element1":1,` )
+        ( `  "element2":"first_element"` )
         ( ` },` )
         ( ` {` )
-        ( `  "ELEMENT_1":2,` )
-        ( `  "ELEMENT_2":"second_element"` )
+        ( `  "element1":2,` )
+        ( `  "element2":"second_element"` )
         ( ` }` )
         ( `]` ) ).
 
@@ -793,18 +789,18 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `{` )
-        ( ` "TABLE":` )
+        ( ` "table":` )
         ( ` [` )
         ( `  {` )
-        ( `   "ELEMENT_1":1,` )
-        ( `   "ELEMENT_2":"obj1_element_2_value"` )
+        ( `   "element1":1,` )
+        ( `   "element2":"obj1_element_2_value"` )
         ( `  },` )
         ( `  {` )
-        ( `   "ELEMENT_1":2,` )
-        ( `   "ELEMENT_2":"obj2_element_2_value"` )
+        ( `   "element1":2,` )
+        ( `   "element2":"obj2_element_2_value"` )
         ( `  }` )
         ( ` ],` )
-        ( ` "INCLUDE_ELEMENT_1":1` )
+        ( ` "includeElement1":1` )
         ( `}` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -835,9 +831,9 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `{` )
-        ( ` "INCLUDE_ELEMENT_1":"element1_value",` )
-        ( ` "INCLUDE_ELEMENT_2":2,` )
-        ( ` "ELEMENT":"element_value"` )
+        ( ` "includeElement1":"element1_value",` )
+        ( ` "includeElement2":2,` )
+        ( ` "element":"element_value"` )
         ( `}` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -869,10 +865,10 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `{` )
-        ( ` "INCLUDE_ELEMENT_1":"value of incl element1",` )
-        ( ` "INCLUDE_ELEMENT_2":1,` )
-        ( ` "ELEMENT_1":2,` )
-        ( ` "ELEMENT_2":"value of element2"` )
+        ( ` "includeElement1":"value of incl element1",` )
+        ( ` "includeElement2":1,` )
+        ( ` "element1":2,` )
+        ( ` "element2":"value of element2"` )
         ( `}` ) ).
 
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
@@ -906,17 +902,17 @@ CLASS ltcl_integration_test IMPLEMENTATION.
         json      = DATA(json_xstring) ).
     exp_json = VALUE #(
         ( `{` )
-        ( ` "FIRST_TABLE":` )
+        ( ` "firstTable":` )
         ( ` [` )
         ( `  {` )
-        ( `   "SECOND_TABLE":` )
+        ( `   "secondTable":` )
         ( `   [` )
         ( `    "table_1_line_1",` )
         ( `    "table_1_line_2"` )
         ( `   ]` )
         ( `  },` )
         ( `  {` )
-        ( `   "SECOND_TABLE":` )
+        ( `   "secondTable":` )
         ( `   [` )
         ( `    "table_2_line_1",` )
         ( `    "table_2_line_2"` )
@@ -1101,8 +1097,8 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
     exp_json = VALUE #(
         ( `{` )
-        ( `"LANGUAGE":"en",` )
-        ( `"LANGUAGE2":"de"` )
+        ( `"language":"en",` )
+        ( `"language2":"de"` )
         ( `}` ) ).
     assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
 

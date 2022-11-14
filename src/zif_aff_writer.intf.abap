@@ -1,11 +1,6 @@
 INTERFACE zif_aff_writer
   PUBLIC.
 
-  CONSTANTS: BEGIN OF formatting_option,
-               no_formatting TYPE string VALUE 'no_formatting',
-               camel_case    TYPE string VALUE 'camel_case',
-             END OF formatting_option.
-
   CONSTANTS: BEGIN OF  type_info,
                string    TYPE string VALUE 'string',
                numeric   TYPE string VALUE 'numeric',
@@ -24,10 +19,6 @@ INTERFACE zif_aff_writer
 
 
   METHODS:
-
-    set_formatting_option
-      IMPORTING
-        formatting_option TYPE string,
 
     write_element
       IMPORTING
