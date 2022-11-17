@@ -16,7 +16,7 @@ Detailed information including third-party components and their licensing/copyri
 
 ## Download & Installation
 Pull the source code with [abapGit](https://github.com/abapGit/abapGit/) into your ABAP system.
-The latest abapGit build can be downloaded [here](https://raw.githubusercontent.com/abapGit/build/main/zabapgit.abap).
+The latest abapGit build can be downloaded [here](https://raw.githubusercontent.com/abapGit/build/main/zabapgit_standalone.prog.abap).
 
 The reports and their purpose
 * `z_generate_json_schema` generates the ABAP file formats JSON Schema (minimal requirement is v7.54)
