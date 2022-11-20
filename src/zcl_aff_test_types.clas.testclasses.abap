@@ -1,0 +1,14 @@
+
+CLASS ltcl_sanity DEFINITION FOR TESTING DURATION SHORT RISK LEVEL HARMLESS FINAL.
+  PRIVATE SECTION.
+    METHODS test FOR TESTING.
+ENDCLASS.
+
+
+CLASS ltcl_sanity IMPLEMENTATION.
+
+  METHOD test.
+*    descr = cl_abap_typedescr=>describe_by_name( '' ).
+  ENDMETHOD.
+
+ENDCLASS.
