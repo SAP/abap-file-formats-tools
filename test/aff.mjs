@@ -45,12 +45,17 @@ async function run() {
     }
   }
   console.log(JSON.stringify(status));
+}
 
-  // only run for INTF,
-  /*
+async function runINTF() {
+  if (fs.existsSync("generated") === false) {
+    fs.mkdirSync("generated");
+  }
   const result = await abap.Classes["CL_RUN"].run({object_type: new abap.types.String().set("INTF")});
-  fs.writeFileSync("generated" + path.sep + "intf-v1.json", result.get());
-  */
+  const filename = "generated" + path.sep + "intf-v1.json";
+  fs.writeFileSync(filename, result.get());
+  console.log(filename);
 }
 
 run();
+//runINTF();
