@@ -8,24 +8,24 @@ ENDCLASS.
 CLASS ltcl_sanity IMPLEMENTATION.
 
   METHOD test1.
-    DATA foo TYPE zcl_aff_test_types=>ty_format_version.
+    DATA foo TYPE zcl_aff_test_types=>struc_with_num_text.
 
     DATA(descr) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( foo ) ).
 
     cl_abap_unit_assert=>assert_equals(
       act = descr->get_relative_name( )
-      exp = 'TY_FORMAT_VERSION' ).
+      exp = 'STRUC_WITH_NUM_TEXT' ).
     cl_abap_unit_assert=>assert_equals(
       act = descr->absolute_name
-      exp = '\CLASS=ZCL_AFF_TEST_TYPES\TYPE=TY_FORMAT_VERSION' ).
+      exp = '\CLASS=ZCL_AFF_TEST_TYPES\TYPE=STRUC_WITH_NUM_TEXT' ).
 
-    DATA(field) = descr->get_component_type( 'FORMAT_VERSION' ).
+    DATA(field) = descr->get_component_type( 'NUMERICAL_TEXT1' ).
     cl_abap_unit_assert=>assert_equals(
       act = field->get_relative_name( )
-      exp = 'STRING' ).
+      exp = 'NUM_TEXT' ).
     cl_abap_unit_assert=>assert_equals(
       act = field->absolute_name
-      exp = '\TYPE=STRING' ).
+      exp = '\CLASS=ZCL_AFF_TEST_TYPES\TYPE=NUM_TEXT' ).
   ENDMETHOD.
 
 ENDCLASS.
