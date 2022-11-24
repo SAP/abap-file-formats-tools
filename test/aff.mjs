@@ -16,10 +16,16 @@ async function run() {
     }
   }
 
+  const status = {
+    skipped: 0,
+    ok: 0,
+    diffs: 0,
+  };
   for (const type of types) {
     console.log(type);
     if (type === "ENHO") {
       console.log("\tskip, https://github.com/SAP/abap-file-formats/issues/409");
+      status.skipped += 1;
       continue;
     }
 
@@ -30,18 +36,26 @@ async function run() {
     const command = `diff --strip-trailing-cr generated/${type.toLowerCase()}-v1.json abap-file-formats/file-formats/${type.toLowerCase()}/${type.toLowerCase()}-v1.json`;
     const output = child_process.execSync(`${command} || true`);
     if (output.toString().length > 0) {
+      status.diffs += 1;
       console.log(command);
       console.log(output.toString());
     } else {
+      status.ok += 1;
       console.log("\tOK\n");
     }
   }
+  console.log(JSON.stringify(status));
+}
 
-  // only run for INTF,
-  /*
+async function runINTF() {
+  if (fs.existsSync("generated") === false) {
+    fs.mkdirSync("generated");
+  }
   const result = await abap.Classes["CL_RUN"].run({object_type: new abap.types.String().set("INTF")});
-  fs.writeFileSync("generated" + path.sep + "intf-v1.json", result.get());
-  */
+  const filename = "generated" + path.sep + "intf-v1.json";
+  fs.writeFileSync(filename, result.get());
+  console.log(filename);
 }
 
 run();
+//runINTF();
