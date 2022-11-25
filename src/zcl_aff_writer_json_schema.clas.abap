@@ -980,8 +980,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_max_length.
-    DATA(length) = element_description->output_length.
-    IF length > 0.
+    IF element_description->output_length > 0.
+      DATA(length) = COND i( WHEN ( element_description->length / cl_abap_char_utilities=>charsize ) > element_description->output_length THEN element_description->length / cl_abap_char_utilities=>charsize ELSE element_description->output_length ).
       DATA length_as_string TYPE string.
       length_as_string = length.
       remove_leading_trailing_spaces( CHANGING string_to_work_on = length_as_string ).
