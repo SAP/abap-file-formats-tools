@@ -1298,7 +1298,11 @@ CLASS ltc_generator IMPLEMENTATION.
       ELSEIF <object>-obj_name = c_intf_w_namespace.
         file_name = |(NAMESP)IF_AFF_INTF_V1.{ <object>-obj_type }.json|.
       ENDIF.
-      DATA(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
+      TRY.
+          data(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
+        CATCH cx_aff_root.
+          cl_abap_unit_assert=>fail( ).
+      ENDTRY.
       files = VALUE #(
           object_to_file_name = VALUE #(
               ( object = <object> file_name = file_name )
@@ -1311,7 +1315,11 @@ CLASS ltc_generator IMPLEMENTATION.
     ENDLOOP.
 
     file_name = `file_of_reps_func_fugr.json`.
-    file_content = text_handler->if_aff_content_handler~serialize( `File of REPS, FUNC, FUGR` ).
+    TRY.
+        file_content = text_handler->if_aff_content_handler~serialize( `File of REPS, FUNC, FUGR` ).
+      CATCH cx_aff_root.
+        cl_abap_unit_assert=>fail( ).
+    ENDTRY.
     files = VALUE #(
         object_to_file_name = VALUE #(
             ( object = <object> file_name = file_name )
@@ -1327,7 +1335,11 @@ CLASS ltc_generator IMPLEMENTATION.
                                             )
                                             log     = NEW cl_aff_log( ) ).
     file_name = `file_of_indx_tabl.json`.
-    file_content = text_handler->if_aff_content_handler~serialize( `File of INDX, TABL` ).
+    TRY.
+        file_content = text_handler->if_aff_content_handler~serialize( `File of INDX, TABL` ).
+      CATCH cx_aff_root.
+        cl_abap_unit_assert=>fail( ).
+    ENDTRY.
     files = VALUE #(
         object_to_file_name = VALUE #(
             ( object = <object> file_name = file_name )
