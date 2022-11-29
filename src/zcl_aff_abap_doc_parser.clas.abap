@@ -462,7 +462,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       RETURN.
     ENDIF.
     DATA(regex_of_letter) = NEW cl_abap_regex( pattern     = `[a-zA-Z]`
-                                               ignore_case = abap_false ) ##REGEX_POSIX.
+                                               ignore_case = abap_false ) ##NO_TEXT ##REGEX_POSIX.
     DO.
       next_char = text_to_check+current_offset(1).
       current_offset += 1.
