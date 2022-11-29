@@ -153,7 +153,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
     exp_abap_doc = VALUE #( title = `Title`  description = `This is the description` showalways = abap_true minimum = `2` default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
-                                                              exp_text           = |There are several occurrences of annotation 'Title' . First valid is used|
+                                                              exp_text           = `There are several occurrences of annotation 'Title' . First valid is used`
                                                               exp_type           = zif_aff_log=>c_message_type-info
                                                               exp_component_name = `Component Name` ).
 
