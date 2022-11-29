@@ -1126,8 +1126,7 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
     METHODS configure_file_handler
       IMPORTING objects TYPE if_aff_object_file_handler=>tt_objects
       RAISING
-                zcx_aff_tools
-                .
+                zcx_aff_tools.
 
     METHODS insert_objects_into_tadir IMPORTING objects TYPE if_aff_object_file_handler=>tt_objects.
 
