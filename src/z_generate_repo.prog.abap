@@ -1,8 +1,3 @@
-*&---------------------------------------------------------------------*
-*& Report z_generate_repo
-*&---------------------------------------------------------------------*
-*&
-*&---------------------------------------------------------------------*
 REPORT z_generate_repo.
 CLASS lcl_generator DEFINITION DEFERRED.
 DATA helper TYPE REF TO lcl_generator ##NEEDED.
