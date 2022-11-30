@@ -361,6 +361,16 @@ CLASS zcl_aff_test_types DEFINITION
         field3 TYPE c LENGTH 2,
       END OF list.
 
+* deep nested structure, simple
+    TYPES:
+      BEGIN OF nsimple,
+        BEGIN OF list1,
+          "! <p class="shorttext">Inner Element</p>
+          "! sdfsdf
+          "! $required
+          element TYPE string,
+        END OF list1,
+      END OF nsimple.
 
 * nested structure with table
     TYPES:
