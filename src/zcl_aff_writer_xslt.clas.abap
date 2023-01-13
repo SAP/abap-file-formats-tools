@@ -803,7 +803,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ENDIF.
       IF index < lines( enum_values ).
         write_open_tag( |<tt:cond-var check="VARIABLE='{ xml_value }'">| ).
-        
         write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ abap_value }"/>| ).
         write_closing_tag( `</tt:cond-var>` ).
       ELSE.
