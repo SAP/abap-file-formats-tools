@@ -792,7 +792,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD write_enum_map_ext_compatible.
     write_tag( line = |<tt:read type="C" var="VARIABLE"/>| ).
-    DATA  index TYPE i.
+    DATA index TYPE i.
     LOOP AT enum_values ASSIGNING FIELD-SYMBOL(<enum_value>).
       DATA(abap_value) = get_abap_value( abap_value = <enum_value>-abap_value element_description = element_description ).
       IF <enum_value>-overwritten_json_value IS INITIAL.
