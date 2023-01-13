@@ -89,7 +89,6 @@ CLASS zcl_aff_writer_xslt DEFINITION
       write_enum_value_mappings
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
-          json_type           TYPE string
           element_name        TYPE string
           enum_values         TYPE tt_enum_values
         RAISING
@@ -327,7 +326,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         element_name        = element_name
         enum_values         = enum_values ).
       write_open_tag( |<tt:serialize>| ).
-      write_enum_value_mappings( element_description = element_description json_type = type element_name = element_name enum_values = enum_values ).
+      write_enum_value_mappings( element_description = element_description element_name = element_name enum_values = enum_values ).
       write_closing_tag( `</tt:serialize>` ).
 
     ENDIF.
@@ -793,7 +792,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_open_tag( line = |<tt:deserialize>| ).
     write_tag( line = |<tt:read type="C" var="VARIABLE"/>| ).
 
-    DATA index TYPE i.
+    DATA  index TYPE i.
     LOOP AT enum_values ASSIGNING FIELD-SYMBOL(<enum_value>).
       DATA(abap_value) = get_abap_value( abap_value = <enum_value>-abap_value element_description = element_description ).
       IF <enum_value>-overwritten_json_value IS INITIAL.
@@ -803,6 +802,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ENDIF.
       IF index < lines( enum_values ).
         write_open_tag( |<tt:cond-var check="VARIABLE='{ xml_value }'">| ).
+        DATA list_of_applies LIKE content.
         write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ abap_value }"/>| ).
         write_closing_tag( `</tt:cond-var>` ).
       ELSE.
