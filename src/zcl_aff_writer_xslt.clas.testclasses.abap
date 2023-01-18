@@ -24,7 +24,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-  TYPES END OF include_in_include.
+TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -1376,25 +1376,15 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
     me->exp_transformation = VALUE #(
-            ( `<tt:cond>` )
-            ( `      <str>` )
-            ( `          <tt:deserialize>` )
-            ( `              <tt:read type="C" var="VARIABLE"/>` )
-            ( `              <tt:cond-var check="VARIABLE='general'">` )
-            ( `               <tt:assign val="N('00')"/>` )
-            ( `           </tt:cond-var>` )
-            ( `                <tt:cond-var check="VARIABLE='classicBadi'">` )
-            ( `                <tt:assign val="N('01')"/>` )
-            ( `           </tt:cond-var>` )
-            ( `          </tt:deserialize>` )
-            ( `          <tt:serialize>` )
-            ( `             <tt:value map="` )
-            ( `              val(N('00'))=xml('general'),` )
-            ( `              val(N('01'))=xml('classicBadi')"` )
-            ( `          />` )
-            ( `          </tt:serialize>` )
-            ( `      </str>` )
-            ( `    </tt:cond>` ) ).
+( `<tt:cond>` )
+( `  <str>` )
+( `    <tt:value map="` )
+( `      val(N('00'))=xml('general'),` )
+( `      val(N('01'))=xml('classicBadi')"` )
+( `    />` )
+( `  </str>` )
+( `</tt:cond>` )
+ ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
@@ -2138,12 +2128,12 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 ( `          <tt:deserialize>` )
 ( `            <tt:read type="C" var="VARIABLE"/>` )
 ( `            <tt:cond-var check="VARIABLE='general'">` )
-( `              <tt:assign to-ref="ELEMENT_ONE" val="N('00')"/>` )
+( `              <tt:assign  to-ref="ELEMENT_ONE" val="N('00')"/>` )
 ( `            </tt:cond-var>` )
 ( `            <tt:cond-var check="VARIABLE='classicBadi'">` )
-( `              <tt:assign to-ref="ELEMENT_ONE" val="N('01')"/>` )
+( `              <tt:assign  to-ref="ELEMENT_ONE" val="N('01')"/>` )
 ( `            </tt:cond-var>` )
-( `           </tt:deserialize>` )
+( `          </tt:deserialize>` )
 ( `          <tt:serialize>` )
 ( `            <tt:value ref="ELEMENT_ONE" map="` )
 ( `              val(N('00'))=xml('general'),` )
@@ -2154,21 +2144,10 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 ( `      </tt:cond>` )
 ( `      <tt:cond s-check="not-initial(ELEMENT_TWO)" frq="?">` )
 ( `        <str name="elementTwo">` )
-( `          <tt:deserialize>` )
-( `            <tt:read type="C" var="VARIABLE"/>` )
-( `            <tt:cond-var check="VARIABLE='general'">` )
-( `              <tt:assign to-ref="ELEMENT_TWO" val="N('00')"/>` )
-( `            </tt:cond-var>` )
-( `            <tt:cond-var check="VARIABLE='classicBadi'">` )
-( `              <tt:assign to-ref="ELEMENT_TWO" val="N('01')"/>` )
-( `            </tt:cond-var>` )
-( `           </tt:deserialize>` )
-( `          <tt:serialize>` )
-( `            <tt:value ref="ELEMENT_TWO" map="` )
-( `              val(N('00'))=xml('general'),` )
-( `              val(N('01'))=xml('classicBadi')"` )
-( `            />` )
-( `          </tt:serialize>` )
+( `          <tt:value ref="ELEMENT_TWO" map="` )
+( `            val(N('00'))=xml('general'),` )
+( `            val(N('01'))=xml('classicBadi')"` )
+( `          />` )
 ( `        </str>` )
 ( `      </tt:cond>` )
 ( `      <tt:d-cond frq="*">` )
@@ -2184,7 +2163,8 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 ( `      </tt:d-cond>` )
 ( `    </tt:group>` )
 ( `  </object>` )
-( `</tt:cond>` ) ).
+( `</tt:cond>` )
+ ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log

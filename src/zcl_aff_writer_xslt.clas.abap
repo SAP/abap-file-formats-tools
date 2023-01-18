@@ -320,7 +320,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       write_iso_language_callback( element_name = element_name ).
     ELSEIF enum_values IS INITIAL.
       write_tag( |<tt:value{ get_ref( element_name ) }{ get_option( json_type = type element_description = element_description ) }/>| ).
-    ELSEIF  abap_doc-default IS NOT INITIAL.
+    ELSEIF abap_doc-default IS NOT INITIAL.
       write_open_tag( line = |<tt:deserialize>| ).
       write_enum_map_ext_compatible(
         element_description = element_description
