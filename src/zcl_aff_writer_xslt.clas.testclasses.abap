@@ -1383,8 +1383,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 ( `      val(N('01'))=xml('classicBadi')"` )
 ( `    />` )
 ( `  </str>` )
-( `</tt:cond>` )
- ).
+( `</tt:cond>` ) ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
@@ -2163,8 +2162,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 ( `      </tt:d-cond>` )
 ( `    </tt:group>` )
 ( `  </object>` )
-( `</tt:cond>` )
- ).
+( `</tt:cond>` ) ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
