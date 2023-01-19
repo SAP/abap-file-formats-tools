@@ -89,7 +89,6 @@ CLASS zcl_aff_writer_xslt DEFINITION
       write_enum_value_mappings
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
-          json_type           TYPE string
           element_name        TYPE string
           enum_values         TYPE tt_enum_values
         RAISING
@@ -198,7 +197,17 @@ CLASS zcl_aff_writer_xslt DEFINITION
       set_abapdoc_fullname_element
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
-          element_name        TYPE string.
+          element_name        TYPE string,
+      write_enum_map_ext_compatible
+        IMPORTING
+          element_description TYPE REF TO cl_abap_elemdescr
+          element_name        TYPE string
+          enum_values         TYPE zcl_aff_writer_xslt=>tt_enum_values,
+      get_to_ref
+        IMPORTING
+                  name          TYPE string
+        RETURNING VALUE(result) TYPE string.
+
 
 ENDCLASS.
 
@@ -275,6 +284,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO output.
     APPEND LINES OF st_template_imports TO output.
     APPEND |<tt:root name="{ st_root_name }"/>| TO output.
+    APPEND |<tt:variable name="VARIABLE"/>| TO output.
     APPEND `<tt:template>` TO output.
     APPEND |<tt:ref name="{ st_root_name }">| TO output.
   ENDMETHOD.
@@ -304,17 +314,26 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
       write_callback_template( element_name = element_name description = element_description tag = tag ).
     ENDIF.
-
-
     write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description enum_values = enum_values type = type ) }>| ).
     write_open_tag( |<{ tag }{ get_name( name = element_name ) }>| ).
     IF ( is_sy_langu( element_description = element_description ) ).
       write_iso_language_callback( element_name = element_name ).
     ELSEIF enum_values IS INITIAL.
       write_tag( |<tt:value{ get_ref( element_name ) }{ get_option( json_type = type element_description = element_description ) }/>| ).
+    ELSEIF abap_doc-default IS NOT INITIAL.
+      write_open_tag( line = |<tt:deserialize>| ).
+      write_enum_map_ext_compatible(
+        element_description = element_description
+        element_name        = element_name
+        enum_values         = enum_values ).
+      write_closing_tag( `</tt:deserialize>` ).
+      write_open_tag( |<tt:serialize>| ).
+      write_enum_value_mappings( element_description = element_description element_name = element_name enum_values = enum_values ).
+      write_closing_tag( `</tt:serialize>` ).
     ELSE.
-      write_enum_value_mappings( element_description = element_description json_type = type element_name = element_name enum_values = enum_values ).
+      write_enum_value_mappings( element_description = element_description element_name = element_name enum_values = enum_values ).
     ENDIF.
+
     write_closing_tag( |</{ tag }>| ).
     write_closing_tag( `</tt:cond>` ).
     reset_indent_level_tag( ).
@@ -417,7 +436,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF lines( enum_values ) = 0.
       RETURN.
     ENDIF.
-    write_tag( |<tt:value{ get_ref( element_name ) } { get_option( json_type = json_type element_description = element_description ) }map="| ) ##NO_TEXT.
+    write_tag( |<tt:value{ get_ref( element_name ) } map="| ) ##NO_TEXT.
 
     DATA(index) = 1.
     LOOP AT enum_values ASSIGNING FIELD-SYMBOL(<enum_value>).
@@ -430,8 +449,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       IF index < lines( enum_values ).
         write_tag( |  val({ abap_value })=xml('{ xml_value }'),| ) ##NO_TEXT.
       ELSE.
-        write_tag( |  val({ abap_value })=xml('{ xml_value }')| ) ##NO_TEXT.
-        write_tag( `"/>` ).
+        write_tag( |  val({ abap_value })=xml('{ xml_value }')"| ) ##NO_TEXT.
+        write_tag( `/>` ).
       ENDIF.
       index += 1.
     ENDLOOP.
@@ -464,6 +483,12 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   METHOD get_ref.
     IF next_tag_without_name_and_ref = abap_false.
       result = | ref="{ name }"| ##NO_TEXT.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD get_to_ref.
+    IF next_tag_without_name_and_ref = abap_false.
+      result = | to-ref="{ name }"| ##NO_TEXT.
     ENDIF.
   ENDMETHOD.
 
@@ -763,6 +788,22 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_tag( `<__/>` ).
     write_closing_tag( `</tt:d-cond>` ).
 
+  ENDMETHOD.
+
+
+  METHOD write_enum_map_ext_compatible.
+    write_tag( line = |<tt:read type="C" var="VARIABLE"/>| ).
+    LOOP AT enum_values ASSIGNING FIELD-SYMBOL(<enum_value>).
+      DATA(abap_value) = get_abap_value( abap_value = <enum_value>-abap_value element_description = element_description ).
+      IF <enum_value>-overwritten_json_value IS INITIAL.
+        DATA(xml_value) = <enum_value>-json_value.
+      ELSE.
+        xml_value = <enum_value>-overwritten_json_value.
+      ENDIF.
+      write_open_tag( |<tt:cond-var check="VARIABLE='{ xml_value }'">| ).
+      write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ abap_value }"/>| ).
+      write_closing_tag( `</tt:cond-var>` ).
+    ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.
