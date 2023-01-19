@@ -720,7 +720,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       log->add_info( message_text = msg component_name = fullname_of_type ).
     ENDIF.
 
-    IF abap_doc-enumvalues_link is initial and abap_doc-required = abap_true AND abap_doc-default IS NOT INITIAL.
+    IF abap_doc-enumvalues_link IS INITIAL AND abap_doc-required = abap_true AND abap_doc-default IS NOT INITIAL.
       log->add_warning( message_text = zif_aff_log=>co_msg126 component_name = fullname_of_type ).
     ENDIF.
   ENDMETHOD.

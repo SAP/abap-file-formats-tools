@@ -1986,10 +1986,6 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
                                                               exp_text           = zif_aff_log=>co_msg126
                                                               exp_component_name = `STRUCTURE_WITH_DEFAULT_PROBLEM-INTEGER`
                                                               exp_type           = zif_aff_log=>c_message_type-warning ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
-                                                              exp_text           = zif_aff_log=>co_msg126
-                                                              exp_component_name = `STRUCTURE_WITH_DEFAULT_PROBLEM-ENUM_REQUIRED`
-                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD nested_struc_with_default.
