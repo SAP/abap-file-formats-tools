@@ -28,7 +28,7 @@ async function run() {
       status.skipped += 1;
       continue;
     } else if (type === "SMBC") {
-      console.log("\tskip, https://github.com/SAP/abap-file-formats-tools/issues/195");
+      console.log("\tskip, https://github.com/SAP/abap-file-formats-tools/issues/195, https://github.com/SAP/abap-file-formats-tools/pull/210");
       status.skipped += 1;
       continue;
     }
