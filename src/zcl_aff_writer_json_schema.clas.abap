@@ -338,8 +338,12 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     DATA(enum_descr) = get_enum_descriptions( element_description = element_description enum_properties = enum_properties ).
-    write_tag( `"enumDescriptions": [` ).
-    write_enum_properties( enum_descr ).
+    DATA(lt_copy) = enum_descr.
+    DELETE lt_copy WHERE table_line = ''.
+    IF lines( lt_copy ) > 0.
+      write_tag( `"enumDescriptions": [` ).
+      write_enum_properties( enum_descr ).
+    ENDIF.
   ENDMETHOD.
 
 
