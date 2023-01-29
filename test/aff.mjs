@@ -46,7 +46,7 @@ async function run() {
   }
   console.log(JSON.stringify(status));
 
-  if (status-diff !== 0) {
+  if (status-diffs !== 0) {
     throw "diffs";
   }
 }
