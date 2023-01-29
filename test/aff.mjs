@@ -45,6 +45,10 @@ async function run() {
     }
   }
   console.log(JSON.stringify(status));
+
+  if (status-diff !== 0) {
+    throw "diffs";
+  }
 }
 
 async function runINTF() {
