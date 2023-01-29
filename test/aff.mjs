@@ -27,10 +27,6 @@ async function run() {
       console.log("\tskip, https://github.com/SAP/abap-file-formats/issues/409");
       status.skipped += 1;
       continue;
-    } else if (type === "SMBC") {
-      console.log("\tskip, https://github.com/SAP/abap-file-formats-tools/issues/195, https://github.com/SAP/abap-file-formats-tools/pull/210");
-      status.skipped += 1;
-      continue;
     }
 
     const result = await abap.Classes["CL_RUN"].run({object_type: new abap.types.String().set(type)});
