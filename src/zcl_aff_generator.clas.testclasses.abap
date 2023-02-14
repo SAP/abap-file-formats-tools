@@ -127,7 +127,7 @@ INTERFACE lif_test_types.
       header           TYPE ty_header,
       simple_component TYPE i,
       struc_component  TYPE ty_component,
-      tabl_component   Type table_structure,
+      tabl_component   TYPE table_structure,
     END OF ty_simple_component.
   TYPES:
     BEGIN OF ty_abap_type_no_header,
