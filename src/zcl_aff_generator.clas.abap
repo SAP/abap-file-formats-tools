@@ -65,6 +65,9 @@ CLASS zcl_aff_generator DEFINITION
           zcx_aff_tools,
       check_mandatory_fields
         IMPORTING
+          structure_description TYPE REF TO cl_abap_structdescr,
+      check_top_level_fields
+        IMPORTING
           structure_description TYPE REF TO cl_abap_structdescr.
 
 ENDCLASS.
@@ -89,6 +92,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
     TRY.
         DATA(structure_description) = CAST cl_abap_structdescr( type_description ).
         check_mandatory_fields( structure_description ).
+        check_top_level_fields( structure_description ).
       CATCH cx_sy_move_cast_error.
         log->add_warning( message_text = zif_aff_log=>co_msg123 component_name = type_description->get_relative_name( ) ).
     ENDTRY.
@@ -100,6 +104,15 @@ CLASS zcl_aff_generator IMPLEMENTATION.
     IF NOT ( line_exists( components[ name = 'HEADER' ] ) AND line_exists( components[ name = 'FORMAT_VERSION' ] ) ).
       log->add_warning( message_text = zif_aff_log=>co_msg124 component_name = structure_description->get_relative_name( ) ).
     ENDIF.
+  ENDMETHOD.
+
+  METHOD check_top_level_fields.
+    LOOP AT structure_description->get_components( ) ASSIGNING FIELD-SYMBOL(<component>).
+      IF <component>-name <> 'FORMAT_VERSION' AND <component>-type->kind <> cl_abap_typedescr=>kind_struct AND <component>-type->kind <> cl_abap_typedescr=>kind_table.
+        log->add_warning( message_text = zif_aff_log=>co_msg128 component_name = structure_description->get_relative_name( ) ).
+        EXIT.
+      ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD process_type_description.
