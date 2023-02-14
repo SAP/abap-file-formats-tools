@@ -24,7 +24,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-  TYPES END OF include_in_include.
+TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -107,23 +107,37 @@ INTERFACE lif_test_types.
       fixpt          TYPE c LENGTH 1,
       msg_id         TYPE c LENGTH 20.
       INCLUDE TYPE ty_clif_properties.
-  TYPES END OF ty_class_properties.
+TYPES END OF ty_class_properties.
 
   TYPES:
-    BEGIN OF ty_abap_type,
+    BEGIN OF ty_abap_type_structure,
       format_version  TYPE string,
       header          TYPE ty_header,
-      other_component TYPE i,
-    END OF ty_abap_type.
+      other_component TYPE ty_component,
+    END OF ty_abap_type_structure.
+  TYPES:
+    BEGIN OF ty_abap_type_table,
+      format_version  TYPE string,
+      header          TYPE ty_header,
+      other_component TYPE table_structure,
+    END OF ty_abap_type_table.
+  TYPES:
+    BEGIN OF ty_simple_component,
+      format_version   TYPE string,
+      header           TYPE ty_header,
+      simple_component TYPE i,
+      struc_component  TYPE ty_component,
+      tabl_component   Type table_structure,
+    END OF ty_simple_component.
   TYPES:
     BEGIN OF ty_abap_type_no_header,
       format_version  TYPE string,
-      other_component TYPE i,
+      other_component TYPE ty_component,
     END OF ty_abap_type_no_header.
   TYPES:
     BEGIN OF ty_abap_type_no_format,
       header          TYPE ty_header,
-      other_component TYPE i,
+      other_component TYPE ty_component,
     END OF ty_abap_type_no_format.
 
 ENDINTERFACE.
@@ -204,10 +218,12 @@ CLASS ltcl_type_generator DEFINITION FINAL FOR TESTING
       struc_tab_struc_tab FOR TESTING RAISING cx_static_check,
       unsupported_type FOR TESTING RAISING cx_static_check,
       complex_structure_aff_class FOR TESTING RAISING cx_static_check,
-      mandatory_fields FOR TESTING RAISING cx_static_check,
+      simple_component_on_top_level FOR TESTING RAISING cx_static_check,
       no_header FOR TESTING RAISING cx_static_check,
       no_format_version FOR TESTING RAISING cx_static_check,
       no_structure FOR TESTING RAISING cx_static_check,
+    structure_on_top_level FOR TESTING RAISING cx_static_check,
+    table_on_top_level FOR TESTING RAISING cx_static_check,
       setup,
       assert_output_equals
         IMPORTING
@@ -451,11 +467,28 @@ CLASS ltcl_type_generator IMPLEMENTATION.
     assert_output_equals( exp = exp_result act = act_result ).
   ENDMETHOD.
 
-  METHOD mandatory_fields.
-    DATA abap_type TYPE lif_test_types=>ty_abap_type.
+  METHOD structure_on_top_level.
+    DATA abap_type TYPE lif_test_types=>ty_abap_type_structure.
     cut->generate_type( abap_type ).
     DATA(log) = cut->get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log ).
+  ENDMETHOD.
+
+  METHOD table_on_top_level.
+    DATA abap_type TYPE lif_test_types=>ty_abap_type_table.
+    cut->generate_type( abap_type ).
+    DATA(log) = cut->get_log( ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log ).
+  ENDMETHOD.
+
+  METHOD simple_component_on_top_level.
+    DATA abap_type TYPE lif_test_types=>ty_simple_component.
+    cut->generate_type( abap_type ).
+    DATA(log) = cut->get_log( ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = zif_aff_log=>co_msg128
+                                                              exp_component_name = `TY_SIMPLE_COMPONENT`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD no_header.
