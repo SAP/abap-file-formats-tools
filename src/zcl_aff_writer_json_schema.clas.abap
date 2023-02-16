@@ -551,9 +551,9 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     IF last_operation( ) <> zif_aff_writer=>operation-open_table.
       write_open_tag( |"{ formatted_name }": \{| ).
-      INSERT VALUE #( name = table_name number_brackets = 2 ) INTO TABLE me->table_buffer.
+      INSERT VALUE #( name = table_name number_brackets = 2 ) INTO me->table_buffer INDEX 1.
     ELSE.
-      INSERT VALUE #( name = table_name number_brackets = 1 ) INTO TABLE me->table_buffer.
+      INSERT VALUE #( name = table_name number_brackets = 1 ) INTO me->table_buffer INDEX 1.
     ENDIF.
 
     write_title_and_description( table_description ).
@@ -570,7 +570,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     DO me->table_buffer[ name = table_name ]-number_brackets TIMES.
       write_closing_tag( `}` ).
     ENDDO.
-    DELETE me->table_buffer WHERE name = table_name.
+    DELETE me->table_buffer INDEX line_index( me->table_buffer[ name = table_name ] ).
     reset_indent_level_tag( ).
   ENDMETHOD.
 
