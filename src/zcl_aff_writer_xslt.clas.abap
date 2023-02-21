@@ -515,7 +515,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    IF abap_doc-default IS NOT INITIAL AND abap_doc-required = abap_false.
+    IF abap_doc-default IS NOT INITIAL AND ( abap_doc-required = abap_false or abap_doc-enumvalues_link is not initial ).
       DATA(default) = get_default( enum_values = enum_values structure_name = element_name element_description = element_description type = type ).
     ENDIF.
 
