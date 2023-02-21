@@ -131,6 +131,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
           element_name        TYPE string
           element_description TYPE REF TO cl_abap_elemdescr
           type                TYPE string
+          default_value       TYPE string
           enum_values         TYPE tt_enum_values
         RETURNING
           VALUE(condition)    TYPE string
@@ -314,7 +315,13 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
       write_callback_template( element_name = element_name description = element_description tag = tag ).
     ENDIF.
-    write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description enum_values = enum_values type = type ) }>| ).
+
+
+    IF abap_doc-default IS NOT INITIAL AND ( abap_doc-required = abap_false OR abap_doc-enumvalues_link IS NOT INITIAL ).
+      DATA(default) = get_default( enum_values = enum_values structure_name = element_name element_description = element_description type = type ).
+    ENDIF.
+
+    write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description default_value = default enum_values = enum_values type = type ) }>| ).
     write_open_tag( |<{ tag }{ get_name( name = element_name ) }>| ).
     IF ( is_sy_langu( element_description = element_description ) ).
       write_iso_language_callback( element_name = element_name ).
@@ -515,13 +522,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    IF abap_doc-default IS NOT INITIAL AND ( abap_doc-required = abap_false OR abap_doc-enumvalues_link IS NOT INITIAL ).
-      DATA(default) = get_default( enum_values = enum_values structure_name = element_name element_description = element_description type = type ).
-    ENDIF.
-
     IF abap_doc-required = abap_false AND abap_doc-showalways = abap_false.
-      IF default IS NOT INITIAL.
-        condition = | s-check="{ element_name }!={ default }"| ##NO_TEXT.
+      IF default_value IS NOT INITIAL.
+        condition = | s-check="{ element_name }!={ default_value }"| ##NO_TEXT.
       ELSE.
         condition = | s-check="not-initial({ element_name })"| ##NO_TEXT.
       ENDIF.
