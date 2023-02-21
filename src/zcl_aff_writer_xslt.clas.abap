@@ -129,10 +129,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
       get_condition_for_element
         IMPORTING
           element_name        TYPE string
-          element_description TYPE REF TO cl_abap_elemdescr
-          type                TYPE string
           default_value       TYPE string
-          enum_values         TYPE tt_enum_values
         RETURNING
           VALUE(condition)    TYPE string
         RAISING
@@ -321,7 +318,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       DATA(default) = get_default( enum_values = enum_values structure_name = element_name element_description = element_description type = type ).
     ENDIF.
 
-    write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description default_value = default enum_values = enum_values type = type ) }>| ).
+    write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name default_value = default ) }>| ).
     write_open_tag( |<{ tag }{ get_name( name = element_name ) }>| ).
     IF ( is_sy_langu( element_description = element_description ) ).
       write_iso_language_callback( element_name = element_name ).
