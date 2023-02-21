@@ -1916,6 +1916,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 ( `<tt:cond>` )
 ( `  <object>` )
 ( `    <tt:assign to-ref="STRING_ELEMENT" val="C('DefaultString')"/>` )
+( `    <tt:assign to-ref="ENUM_REQUIRED" val="N('01')"/>` )
 ( `    <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('01')"/>` )
 ( `    <tt:group>` )
 ( `      <tt:cond frq="?">` )
