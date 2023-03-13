@@ -242,7 +242,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-
     IF last_operation( ) = zif_aff_writer=>operation-initial.
       open_json_schema_for_element( ).
     ELSEIF last_operation( ) <> zif_aff_writer=>operation-open_table.
