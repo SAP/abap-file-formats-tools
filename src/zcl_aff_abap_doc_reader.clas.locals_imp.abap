@@ -237,7 +237,7 @@ CLASS lcl_section_source_comments IMPLEMENTATION.
 
         DATA(l_line_code_condensed) = l_line_code.
         CONDENSE l_line_code_condensed.
-        IF l_line_code_condensed(2) = '"!'.           " filter only ABAP Doc comments
+        IF strlen( l_line_code_condensed ) >= 2 AND l_line_code_condensed(2) = '"!'.           " filter only ABAP Doc comments
           APPEND l_line_code TO tab_comments_to_save.
         ENDIF.
       ENDLOOP.
