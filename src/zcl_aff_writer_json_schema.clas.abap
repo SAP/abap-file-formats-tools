@@ -198,7 +198,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
                   VALUE(min)          TYPE string,
       is_content_encoding_valid
         IMPORTING content_encoding TYPE string
-        RETURNING value(result) TYPE abap_boolean,
+        RETURNING VALUE(result) TYPE abap_boolean,
       write_content_encoding
                    IMPORTING
                      json_type TYPE string,
