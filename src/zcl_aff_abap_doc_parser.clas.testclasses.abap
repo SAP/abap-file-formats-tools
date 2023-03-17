@@ -33,6 +33,10 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS title_at_wrong_position FOR TESTING RAISING cx_static_check.
     METHODS overwriting_enum_value FOR TESTING RAISING cx_static_check.
     METHODS too_many_enum_values FOR TESTING RAISING cx_static_check.
+    METHODS content_media_type FOR TESTING RAISING cx_static_check.
+
+    METHODS content_encoding FOR TESTING RAISING cx_static_check.
+
 
 
 ENDCLASS.
@@ -123,6 +127,33 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
       CHANGING
         log            = log ).
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` callback_class = `cl_aff_test_types_for_writer` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD content_media_type.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description.$contentMediaType     'text/html' `.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` content_media_type = `text/html` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+
+  METHOD content_encoding.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $contentEncoding     'base64' `.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` content_encoding = `base64` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
