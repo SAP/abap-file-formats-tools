@@ -38,8 +38,8 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
         min_length        TYPE string,
         max_length        TYPE string,
         callback_class    TYPE string,
-        content_media_type type string,
-        content_encoding type string,
+        content_media_type TYPE string,
+        content_encoding TYPE string,
         enum_value        TYPE string,
       END OF abap_doc.
 
