@@ -197,8 +197,8 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         EXPORTING VALUE(max)          TYPE string
                   VALUE(min)          TYPE string,
       is_content_encoding_valid
-        IMPORTING content_encoding type string
-        RETURNING value(result) type abap_boolean,
+        IMPORTING content_encoding TYPE string
+        RETURNING value(result) TYPE abap_boolean,
       write_content_encoding
                    IMPORTING
                      json_type TYPE string,
