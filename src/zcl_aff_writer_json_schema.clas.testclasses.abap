@@ -454,8 +454,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
                                          ( `      "description": "Integer with maximum",` )
                                          ( `      "type": "integer",` )
                                          ( `      "minimum": -2147483648,` )
-                                         ( `      "maximum": 10,` )
-                                         ( `      "multipleOf": 0.1` )
+                                         ( `      "maximum": 10` )
                                          ( `    },` )
                                          ( `    "float": {` )
                                          ( `      "title": "Float With Minimum And Exclusive Maximum",` )
@@ -488,7 +487,15 @@ CLASS ltcl_json_writer IMPLEMENTATION.
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log      = log
       exp_text = zif_aff_log=>co_msg129
-      exp_type = zif_aff_log=>c_message_type-warning ).
+      exp_type = zif_aff_log=>c_message_type-warning
+      exp_component_name = 'STRUCTURE_MULTIPLE_OF_WARNING-FLOAT' ).
+
+          zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
+      log      = log
+      exp_text = zif_aff_log=>co_msg129
+      exp_type = zif_aff_log=>c_message_type-warning
+      exp_component_name = 'STRUCTURE_MULTIPLE_OF_WARNING-PACKED_WIT_MULTIPLE' ).
+
 
   ENDMETHOD.
 

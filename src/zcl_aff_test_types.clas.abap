@@ -536,7 +536,6 @@ CLASS zcl_aff_test_types DEFINITION
         "! <p class="shorttext">Integer With Maximum </p>
         "! Integer with maximum
         "! $maximum: 10
-        "! $multipleOf: 0.1
         integer                 TYPE i,
         "! <p class="shorttext">Float With Minimum And Exclusive Maximum </p>
         "! Float with minimum and exclusive maximum
@@ -553,7 +552,7 @@ CLASS zcl_aff_test_types DEFINITION
         "! <p class="shorttext">Packed Number With Multiple</p>
         "! Packed number with given multiple
         "! $exclusiveMinimum: 0
-        "! multipleOf: 0.1
+        "! $multipleOf: 0.1
         packed_wit_multiple TYPE p LENGTH 4 DECIMALS 1,
       END OF structure_multiple_of_warning.
 
