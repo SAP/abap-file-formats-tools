@@ -356,7 +356,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     DATA(match) = content_encoding_occurrences-submatches.
     IF lines( match ) >= 1.
       DATA(first_match) = match[ 1 ].
-      decoded_abap_doc-content_encoding = abap_doc_string+first_match-offset(first_match-length) .
+      decoded_abap_doc-content_encoding = abap_doc_string+first_match-offset(first_match-length).
     ENDIF.
   ENDMETHOD.
 
@@ -373,7 +373,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     DATA(match) = content_media_type_occurrences-submatches.
     IF lines( match ) >= 1.
       DATA(first_match) = match[ 1 ].
-      decoded_abap_doc-content_media_type = abap_doc_string+first_match-offset(first_match-length) .
+      decoded_abap_doc-content_media_type = abap_doc_string+first_match-offset(first_match-length).
     ENDIF.
   ENDMETHOD.
 
