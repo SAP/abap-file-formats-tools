@@ -351,13 +351,13 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     FIND ALL OCCURRENCES OF abap_doc_annotation-content_encoding IN abap_doc_string RESULTS DATA(result_table).
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-content_encoding ).
 
-    REPLACE First OCCURRENCE OF REGEX `\$contentEncoding[\s]*'` IN abap_doc_string WITH `\$contentEncoding'` ##REGEX_POSIX.
-    FIND First OCCURRENCE OF REGEX `\$contentEncoding'([^']*)'` IN abap_doc_string RESULTS DATA(content_encoding_occurrences) ##REGEX_POSIX.
-    data(match) = content_encoding_occurrences-submatches.
-    if lines( match ) >= 1.
-        data(first_match) = match[ 1 ].
-        decoded_abap_doc-content_encoding = abap_doc_string+first_match-offset(first_match-length) .
-    endif.
+    REPLACE FIRST OCCURRENCE OF REGEX `\$contentEncoding[\s]*'` IN abap_doc_string WITH `\$contentEncoding'` ##REGEX_POSIX.
+    FIND FIRST OCCURRENCE OF REGEX `\$contentEncoding'([^']*)'` IN abap_doc_string RESULTS DATA(content_encoding_occurrences) ##REGEX_POSIX.
+    DATA(match) = content_encoding_occurrences-submatches.
+    IF lines( match ) >= 1.
+      DATA(first_match) = match[ 1 ].
+      decoded_abap_doc-content_encoding = abap_doc_string+first_match-offset(first_match-length) .
+    ENDIF.
   ENDMETHOD.
 
 
@@ -368,13 +368,13 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     FIND ALL OCCURRENCES OF abap_doc_annotation-content_media_type IN abap_doc_string RESULTS DATA(result_table).
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-content_encoding ).
 
-    REPLACE First OCCURRENCE OF REGEX `\$contentMediaType[\s]*'` IN abap_doc_string WITH `\$contentMediaType'` ##REGEX_POSIX.
-    FIND First OCCURRENCE OF REGEX `\$contentMediaType'([^']*)'` IN abap_doc_string RESULTS DATA(content_media_type_occurrences) ##REGEX_POSIX.
-    data(match) = content_media_type_occurrences-submatches.
-    if lines( match ) >= 1.
-        data(first_match) = match[ 1 ].
-        decoded_abap_doc-content_media_type = abap_doc_string+first_match-offset(first_match-length) .
-    endif.
+    REPLACE FIRST OCCURRENCE OF REGEX `\$contentMediaType[\s]*'` IN abap_doc_string WITH `\$contentMediaType'` ##REGEX_POSIX.
+    FIND FIRST OCCURRENCE OF REGEX `\$contentMediaType'([^']*)'` IN abap_doc_string RESULTS DATA(content_media_type_occurrences) ##REGEX_POSIX.
+    DATA(match) = content_media_type_occurrences-submatches.
+    IF lines( match ) >= 1.
+      DATA(first_match) = match[ 1 ].
+      decoded_abap_doc-content_media_type = abap_doc_string+first_match-offset(first_match-length) .
+    ENDIF.
   ENDMETHOD.
 
 
