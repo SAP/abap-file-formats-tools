@@ -174,16 +174,17 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING abap_doc_to_check        TYPE zcl_aff_abap_doc_parser=>abap_doc
                   fullname_of_checked_type TYPE string,
 
-
       write_title_and_description
         IMPORTING
           type_description TYPE REF TO cl_abap_typedescr
           check_not_needed TYPE abap_boolean DEFAULT abap_false,
+
       set_abapdoc_fullname_element
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           element_name        TYPE string
           splitted_prev_name  TYPE string_table,
+
       set_abapdoc_fullname_struc_tab
         IMPORTING
           type_description TYPE REF TO cl_abap_typedescr
@@ -192,19 +193,21 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       get_max_length
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
         RETURNING VALUE(result)       TYPE string,
+
       get_extrema
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
         EXPORTING VALUE(max)          TYPE string
                   VALUE(min)          TYPE string,
+
       is_content_encoding_valid
         IMPORTING content_encoding TYPE string
-        RETURNING VALUE(result) TYPE abap_boolean,
+        RETURNING VALUE(result)    TYPE abap_boolean,
+
       write_content_encoding
-                   IMPORTING
-                     json_type TYPE string,
+        IMPORTING json_type TYPE string,
+
       write_content_media_type
-                   IMPORTING
-                     json_type TYPE string.
+        IMPORTING json_type TYPE string.
 ENDCLASS.
 
 
@@ -316,34 +319,35 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD write_content_encoding.
-
-    IF abap_doc-content_encoding IS NOT INITIAL.
-      IF json_type = zif_aff_writer=>type_info-string.
-        IF is_content_encoding_valid( abap_doc-content_encoding ).
-          write_tag( |"contentEncoding": "{ abap_doc-content_encoding }",| ).
-        ELSE.
-          log->add_warning( message_text = zif_aff_log=>co_msg130 component_name = fullname_of_type ).
-        ENDIF.
-      ELSE.
-        log->add_warning( message_text = zif_aff_log=>co_msg129 component_name = fullname_of_type ).
-      ENDIF.
+    IF abap_doc-content_encoding IS INITIAL.
+      RETURN.
     ENDIF.
 
+    IF json_type <> zif_aff_writer=>type_info-string.
+      log->add_warning( message_text = zif_aff_log=>co_msg129 component_name = fullname_of_type ).
+      RETURN.
+    ENDIF.
+
+    IF NOT is_content_encoding_valid( abap_doc-content_encoding ).
+      log->add_warning( message_text = zif_aff_log=>co_msg130 component_name = fullname_of_type ).
+      RETURN.
+    ENDIF.
+
+    write_tag( |"contentEncoding": "{ abap_doc-content_encoding }",| ).
   ENDMETHOD.
 
   METHOD write_content_media_type.
-
-    IF abap_doc-content_media_type IS NOT INITIAL.
-      IF json_type = zif_aff_writer=>type_info-string.
-        write_tag( |"contentMediaType": "{ abap_doc-content_media_type }",| ).
-      ELSE.
-        log->add_warning( message_text = zif_aff_log=>co_msg129 component_name = fullname_of_type ).
-      ENDIF.
+    IF abap_doc-content_media_type IS INITIAL.
+      RETURN.
     ENDIF.
 
+    IF json_type <> zif_aff_writer=>type_info-string.
+      log->add_warning( message_text = zif_aff_log=>co_msg129 component_name = fullname_of_type ).
+      RETURN.
+    ENDIF.
+
+    write_tag( |"contentMediaType": "{ abap_doc-content_media_type }",| ).
   ENDMETHOD.
-
-
 
   METHOD is_content_encoding_valid.
     IF content_encoding = '7bit' OR

@@ -505,11 +505,11 @@ CLASS ltcl_json_writer_abap_doc DEFINITION FINAL FOR TESTING
       calculate_max_length FOR TESTING RAISING cx_static_check,
       original_description FOR TESTING RAISING cx_static_check,
       struc_with_own_enum_values FOR TESTING RAISING cx_static_check,
-    content_encoded_integer FOR TESTING RAISING cx_static_check,
-    content_encoding_unknown FOR TESTING RAISING cx_static_check,
-    content_encoding FOR TESTING RAISING cx_static_check,
-    content_media_type_integer FOR TESTING RAISING cx_static_check,
-    content_media_type_string FOR TESTING RAISING cx_static_check.
+      content_encoded_integer FOR TESTING RAISING cx_static_check,
+      content_encoding_unknown FOR TESTING RAISING cx_static_check,
+      content_encoding FOR TESTING RAISING cx_static_check,
+      content_media_type_integer FOR TESTING RAISING cx_static_check,
+      content_media_type_string FOR TESTING RAISING cx_static_check.
 
 ENDCLASS.
 

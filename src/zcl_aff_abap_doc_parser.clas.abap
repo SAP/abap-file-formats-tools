@@ -5,42 +5,42 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
 
   PUBLIC SECTION.
     CONSTANTS: BEGIN OF abap_doc_annotation,
-                 callback_class    TYPE string VALUE `$callbackClass`,
-                 default           TYPE string VALUE `$default`,
-                 values            TYPE string VALUE `$values`,
-                 required          TYPE string VALUE `$required`,
-                 show_always       TYPE string VALUE `$showAlways`,
-                 minimum           TYPE string VALUE `$minimum`,
-                 maximum           TYPE string VALUE `$maximum`,
-                 exclusive_minimum TYPE string VALUE `$exclusiveMinimum`,
-                 exclusive_maximum TYPE string VALUE `$exclusiveMaximum`,
-                 max_length        TYPE string VALUE `$maxLength`,
-                 min_length        TYPE string VALUE `$minLength`,
-                 multiple_of       TYPE string VALUE `$multipleOf`,
-                 content_media_type       TYPE string VALUE `$contentMediaType`,
-                 content_encoding       TYPE string VALUE `$contentEncoding`,
-                 enum_value        TYPE string VALUE `$enumValue`,
+                 callback_class     TYPE string VALUE `$callbackClass`,
+                 default            TYPE string VALUE `$default`,
+                 values             TYPE string VALUE `$values`,
+                 required           TYPE string VALUE `$required`,
+                 show_always        TYPE string VALUE `$showAlways`,
+                 minimum            TYPE string VALUE `$minimum`,
+                 maximum            TYPE string VALUE `$maximum`,
+                 exclusive_minimum  TYPE string VALUE `$exclusiveMinimum`,
+                 exclusive_maximum  TYPE string VALUE `$exclusiveMaximum`,
+                 max_length         TYPE string VALUE `$maxLength`,
+                 min_length         TYPE string VALUE `$minLength`,
+                 multiple_of        TYPE string VALUE `$multipleOf`,
+                 content_media_type TYPE string VALUE `$contentMediaType`,
+                 content_encoding   TYPE string VALUE `$contentEncoding`,
+                 enum_value         TYPE string VALUE `$enumValue`,
                END OF abap_doc_annotation.
 
     TYPES:
       BEGIN OF abap_doc,
-        required          TYPE abap_bool,
-        showalways        TYPE abap_bool,
-        title             TYPE string,
-        description       TYPE string,
-        enumvalues_link   TYPE string,
-        minimum           TYPE string,
-        maximum           TYPE string,
-        exclusive_minimum TYPE string,
-        exclusive_maximum TYPE string,
-        multiple_of       TYPE string,
-        default           TYPE string,
-        min_length        TYPE string,
-        max_length        TYPE string,
-        callback_class    TYPE string,
+        required           TYPE abap_bool,
+        showalways         TYPE abap_bool,
+        title              TYPE string,
+        description        TYPE string,
+        enumvalues_link    TYPE string,
+        minimum            TYPE string,
+        maximum            TYPE string,
+        exclusive_minimum  TYPE string,
+        exclusive_maximum  TYPE string,
+        multiple_of        TYPE string,
+        default            TYPE string,
+        min_length         TYPE string,
+        max_length         TYPE string,
+        callback_class     TYPE string,
         content_media_type TYPE string,
-        content_encoding TYPE string,
-        enum_value        TYPE string,
+        content_encoding   TYPE string,
+        enum_value         TYPE string,
       END OF abap_doc.
 
     METHODS: parse
@@ -357,6 +357,9 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     IF lines( match ) >= 1.
       DATA(first_match) = match[ 1 ].
       decoded_abap_doc-content_encoding = abap_doc_string+first_match-offset(first_match-length).
+    ELSE.
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-content_encoding ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
@@ -374,6 +377,9 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     IF lines( match ) >= 1.
       DATA(first_match) = match[ 1 ].
       decoded_abap_doc-content_media_type = abap_doc_string+first_match-offset(first_match-length).
+    ELSE.
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-content_media_type ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
     ENDIF.
   ENDMETHOD.
 
