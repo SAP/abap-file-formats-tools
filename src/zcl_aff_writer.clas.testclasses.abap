@@ -215,10 +215,10 @@ CLASS ltcl_type_writer IMPLEMENTATION.
 
   METHOD call_reader_and_decode4.
     DATA(name_of_source) = `ZCL_AFF_TEST_TYPES`.
-    DATA(element_name) = `STRUCTURE_WITH_NUMBERS-PACKED_WITH_MULTIPLE`.
+    DATA(element_name) = `STRUCTURE_WITH_NUMBERS-INTEGER_WITH_MULTIPLE`.
     DATA(abap_doc_act) = cut->call_reader_and_decode( name_of_source = name_of_source element_name = element_name ).
     DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
-    abap_doc_exp = VALUE #( title = 'Packed Number With Given Multiple' description = `Packed number with given multiple` exclusive_minimum = `0` maximum = `99999.90` multiple_of = `0.1` ).
+    abap_doc_exp = VALUE #( title = 'Integer With Given Multiple' description = `Integer with given multiple` exclusive_minimum = `0` maximum = `99999` multiple_of = `1` ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
   ENDMETHOD.
 
