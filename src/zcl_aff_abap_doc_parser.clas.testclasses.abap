@@ -169,7 +169,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.`  ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
                                                               exp_text           = `Annotation $contentMediaType was used incorrectly`
@@ -215,7 +215,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.`  ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
                                                               exp_text           = `Annotation $contentEncoding was used incorrectly`
