@@ -471,7 +471,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
                                          ( `      "maximum": 99999,` )
                                          ( `      "multipleOf": 1` )
                                          ( `    },` )
-                                         ( `    "packedWitMultiple": {` )
+                                         ( `    "packedWithMultiple": {` )
                                          ( `      "title": "Packed Number With Multiple",` )
                                          ( `      "description": "Packed number with given multiple",` )
                                          ( `      "type": "number",` )
@@ -494,7 +494,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
       log                = log
       exp_text           = zif_aff_log=>co_msg129
       exp_type           = zif_aff_log=>c_message_type-warning
-      exp_component_name = 'STRUCTURE_MULTIPLE_OF_WARNING-PACKED_WIT_MULTIPLE' ).
+      exp_component_name = 'STRUCTURE_MULTIPLE_OF_WARNING-PACKED_WITH_MULTIPLE' ).
 
 
   ENDMETHOD.

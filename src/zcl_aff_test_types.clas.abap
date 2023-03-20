@@ -553,7 +553,7 @@ CLASS zcl_aff_test_types DEFINITION
         "! Packed number with given multiple
         "! $exclusiveMinimum: 0
         "! $multipleOf: 0.1
-        packed_wit_multiple TYPE p LENGTH 4 DECIMALS 1,
+        packed_with_multiple TYPE p LENGTH 4 DECIMALS 1,
       END OF structure_multiple_of_warning.
 
 
