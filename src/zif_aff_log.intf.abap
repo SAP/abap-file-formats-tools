@@ -18,7 +18,8 @@ INTERFACE zif_aff_log
     co_msg124 TYPE string VALUE `Given structure must have mandatory fields format_version and header` ##NO_TEXT,
     co_msg126 TYPE string VALUE `For required fields, a default handling is not possible` ##NO_TEXT,
     co_msg127 TYPE string VALUE `Elements of type enum should be required or have a default` ##NO_TEXT,
-    co_msg128 TYPE string VALUE `Components on top level (except format_version) should be structures or tables` ##NO_TEXT.
+    co_msg128 TYPE string VALUE `Components on top level (except format_version) should be structures or tables` ##NO_TEXT,
+    co_msg129 TYPE string VALUE `Fields of a different type than integer should not use the annototation $multipleOf` ##NO_TEXT.
 
   TYPES:
     "! A single message entry in the log

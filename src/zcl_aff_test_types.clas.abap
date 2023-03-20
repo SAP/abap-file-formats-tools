@@ -509,12 +509,12 @@ CLASS zcl_aff_test_types DEFINITION
         "! $exclusiveMaximum:100.9
         "! $minimum: -0.42
         float                   TYPE decfloat16,
-        "! <p class="shorttext">Packed Number With Given Multiple</p>
-        "! Packed number with given multiple
-        "! $multipleOf: 0.1
+        "! <p class="shorttext">Integer With Given Multiple</p>
+        "! Integer with given multiple
         "! $exclusiveMinimum: 0
-        "! $maximum: 99999.90
-        packed_with_multiple    TYPE p LENGTH 4 DECIMALS 2,
+        "! $maximum: 99999
+        "! $multipleOf: 1
+        integer_with_multiple    TYPE i,
         "! <p class="shorttext">Packed Number With No Given Multiple</p>
         "! Packed number with no given multiple
         "! $exclusiveMinimum: 0
@@ -527,6 +527,28 @@ CLASS zcl_aff_test_types DEFINITION
         "! $maximum: 42
         integer_out_with_doc    TYPE integer_outside,
       END OF structure_with_numbers.
+
+
+    TYPES:
+      "! <p class="shorttext">Structure With Multiple Of Warning</p>
+      "! This is a structure with not allowed multiple of value
+      BEGIN OF structure_multiple_of_warning,
+        "! <p class="shorttext">Integer With Maximum </p>
+        "! Integer with maximum
+        "! $maximum: 10
+        integer                 TYPE i,
+        "! <p class="shorttext">Integer With Given Multiple</p>
+        "! Integer with given multiple
+        "! $exclusiveMinimum: 0
+        "! $maximum: 99999
+        "! $multipleOf: 1
+        integer_with_multiple    TYPE i,
+        "! <p class="shorttext">Packed Number With Multiple</p>
+        "! Packed number with given multiple
+        "! $exclusiveMinimum: 0
+        "! $multipleOf: 0.1
+        packed_with_multiple TYPE p LENGTH 4 DECIMALS 1,
+      END OF structure_multiple_of_warning.
 
 
 * Types for default annotations
