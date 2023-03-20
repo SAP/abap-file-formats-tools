@@ -345,18 +345,19 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_content_encoding.
+    DATA(abap_doc) = abap_doc_string.
     IF decoded_abap_doc-content_encoding IS NOT INITIAL.
       RETURN.
     ENDIF.
     FIND ALL OCCURRENCES OF abap_doc_annotation-content_encoding IN abap_doc_string RESULTS DATA(result_table).
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-content_encoding ).
 
-    REPLACE FIRST OCCURRENCE OF REGEX `\$contentEncoding[\s]*'` IN abap_doc_string WITH `\$contentEncoding'` ##REGEX_POSIX.
-    FIND FIRST OCCURRENCE OF REGEX `\$contentEncoding'([^']*)'` IN abap_doc_string RESULTS DATA(content_encoding_occurrences) ##REGEX_POSIX.
+    REPLACE FIRST OCCURRENCE OF REGEX `\$contentEncoding[\s]*'` IN abap_doc WITH `\$contentEncoding'` ##REGEX_POSIX.
+    FIND FIRST OCCURRENCE OF REGEX `\$contentEncoding'([^']*)'` IN abap_doc RESULTS DATA(content_encoding_occurrences) ##REGEX_POSIX.
     DATA(match) = content_encoding_occurrences-submatches.
     IF lines( match ) >= 1.
       DATA(first_match) = match[ 1 ].
-      decoded_abap_doc-content_encoding = abap_doc_string+first_match-offset(first_match-length).
+      decoded_abap_doc-content_encoding = abap_doc+first_match-offset(first_match-length).
     ELSE.
       DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-content_encoding ) ).
       parser_log->add_warning( message_text = msg component_name = component_name ).
@@ -365,18 +366,19 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_content_media_type.
+    DATA(abap_doc) = abap_doc_string.
     IF decoded_abap_doc-content_media_type IS NOT INITIAL.
       RETURN.
     ENDIF.
-    FIND ALL OCCURRENCES OF abap_doc_annotation-content_media_type IN abap_doc_string RESULTS DATA(result_table).
-    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-content_encoding ).
+    FIND ALL OCCURRENCES OF abap_doc_annotation-content_media_type IN abap_doc RESULTS DATA(result_table).
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-content_media_type ).
 
-    REPLACE FIRST OCCURRENCE OF REGEX `\$contentMediaType[\s]*'` IN abap_doc_string WITH `\$contentMediaType'` ##REGEX_POSIX.
-    FIND FIRST OCCURRENCE OF REGEX `\$contentMediaType'([^']*)'` IN abap_doc_string RESULTS DATA(content_media_type_occurrences) ##REGEX_POSIX.
+    REPLACE FIRST OCCURRENCE OF REGEX `\$contentMediaType[\s]*'` IN abap_doc WITH `\$contentMediaType'` ##REGEX_POSIX.
+    FIND FIRST OCCURRENCE OF REGEX `\$contentMediaType'([^']*)'` IN abap_doc RESULTS DATA(content_media_type_occurrences) ##REGEX_POSIX.
     DATA(match) = content_media_type_occurrences-submatches.
     IF lines( match ) >= 1.
       DATA(first_match) = match[ 1 ].
-      decoded_abap_doc-content_media_type = abap_doc_string+first_match-offset(first_match-length).
+      decoded_abap_doc-content_media_type = abap_doc+first_match-offset(first_match-length).
     ELSE.
       DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-content_media_type ) ).
       parser_log->add_warning( message_text = msg component_name = component_name ).

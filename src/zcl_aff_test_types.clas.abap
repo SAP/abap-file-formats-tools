@@ -30,6 +30,17 @@ CLASS zcl_aff_test_types DEFINITION
       content_media_type_integer TYPE i.
 
     TYPES:
+       "! $contentMediaType 'text/html'
+       "! $contentEncoding 'base64'
+      media_type_content_ecoding TYPE string.
+
+    TYPES:
+      BEGIN OF struc_with_type_encoding,
+        " Component with content encoding and media type
+        component TYPE media_type_content_ecoding,
+      END OF struc_with_type_encoding.
+
+    TYPES:
       "! <p class="shorttext">title</p>
       "! description
       "! <p class="shorttext2">Title</p>

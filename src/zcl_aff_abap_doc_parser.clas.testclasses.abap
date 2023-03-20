@@ -40,6 +40,7 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS content_media_type_used_wrong FOR TESTING RAISING cx_static_check.
     METHODS content_encoding_used_wrong FOR TESTING RAISING cx_static_check.
 
+
 ENDCLASS.
 
 CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
