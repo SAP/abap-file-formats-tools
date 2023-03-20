@@ -1,4 +1,4 @@
-name: unit-test
+name: JSON Schema
 
 on:
   pull_request:
@@ -9,6 +9,7 @@ permissions:
 jobs:
   unit-test:
     runs-on: ubuntu-latest
+    name: Diff generated schema
     timeout-minutes: 20
     steps:
     - uses: actions/checkout@v3
@@ -16,4 +17,4 @@ jobs:
       with:
         node-version: '16'
     - run: npm ci
-    - run: npm test
+    - run: npm run aff
