@@ -537,12 +537,6 @@ CLASS zcl_aff_test_types DEFINITION
         "! Integer with maximum
         "! $maximum: 10
         integer                 TYPE i,
-        "! <p class="shorttext">Float With Minimum And Exclusive Maximum </p>
-        "! Float with minimum and exclusive maximum
-        "! $exclusiveMaximum:100.9
-        "! $minimum: -0.42
-        "! $multipleOf: 0.1
-        float                   TYPE decfloat16,
         "! <p class="shorttext">Integer With Given Multiple</p>
         "! Integer with given multiple
         "! $exclusiveMinimum: 0
