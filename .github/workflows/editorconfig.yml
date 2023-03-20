@@ -15,10 +15,10 @@ name: EditorConfig
 # Start the job on all push #
 #############################
 on:
-  push:
-    branches-ignore: [main]
   pull_request:
-    branches: [main]
+
+permissions:
+  contents: read
 
 ###############
 # Set the Job #
@@ -26,7 +26,7 @@ on:
 jobs:
   lint-editorconfig:
     runs-on: ubuntu-latest
-    name: Lint for editorconfig violations
+    name: Check indentation, EOL, EOF, ... 
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
