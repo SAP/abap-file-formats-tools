@@ -208,7 +208,6 @@ CLASS zcl_aff_writer_json_schema DEFINITION
 
       write_content_media_type
         IMPORTING json_type TYPE string,
-        
       is_element_descr_kind_int
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
