@@ -207,7 +207,13 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING json_type TYPE string,
 
       write_content_media_type
-        IMPORTING json_type TYPE string.
+        IMPORTING json_type TYPE string,
+        
+      is_element_descr_kind_int
+        IMPORTING
+          element_description TYPE REF TO cl_abap_elemdescr
+        RETURNING
+          VALUE(result)       TYPE abap_bool.
 ENDCLASS.
 
 
@@ -253,6 +259,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       CLEAR ignore_til_indent_level.
       RETURN.
     ENDIF.
+
 
     IF last_operation( ) = zif_aff_writer=>operation-initial.
       open_json_schema_for_element( ).
@@ -446,11 +453,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         min                 = DATA(min_value) ).
     DATA(multiple_of) = abap_doc-multiple_of.
 
-    IF multiple_of IS INITIAL AND element_description->type_kind = cl_abap_typedescr=>typekind_packed.
-      DATA(decimals) = element_description->decimals.
-      IF decimals > 0.
-        multiple_of = |0.{ repeat( val = `0`  occ = decimals - 1 ) }1|.
-      ENDIF.
+    IF multiple_of IS NOT INITIAL AND is_element_descr_kind_int( element_description ) = abap_false.
+      log->add_warning( message_text = zif_aff_log=>co_msg129 component_name = fullname_of_type ).
     ENDIF.
 
     DATA(exclusive_minimum) = abap_doc-exclusive_minimum.
@@ -481,11 +485,15 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_tag( |"exclusiveMaximum": { exclusive_maximum },| ).
     ENDIF.
 
-    IF multiple_of IS NOT INITIAL.
+    IF multiple_of IS NOT INITIAL AND is_element_descr_kind_int( element_description ) = abap_true.
       write_tag( |"multipleOf": { multiple_of },| ).
     ENDIF.
   ENDMETHOD.
 
+  METHOD is_element_descr_kind_int.
+    result = xsdbool( element_description->type_kind = cl_abap_typedescr=>typekind_int OR element_description->type_kind = cl_abap_typedescr=>typekind_int1 OR
+    element_description->type_kind = cl_abap_typedescr=>typekind_int2 OR element_description->type_kind = cl_abap_typedescr=>typekind_int8 ).
+  ENDMETHOD.
 
   METHOD handle_default.
     DATA(default) = abap_doc-default.
