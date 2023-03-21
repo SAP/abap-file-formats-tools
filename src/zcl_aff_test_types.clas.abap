@@ -36,7 +36,6 @@ CLASS zcl_aff_test_types DEFINITION
 
     TYPES:
       BEGIN OF struc_with_type_encoding,
-        " Component with content encoding and media type
         component TYPE media_type_content_ecoding,
       END OF struc_with_type_encoding.
 
