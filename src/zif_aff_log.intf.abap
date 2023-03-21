@@ -19,8 +19,8 @@ INTERFACE zif_aff_log
     co_msg126 TYPE string VALUE `For required fields, a default handling is not possible` ##NO_TEXT,
     co_msg127 TYPE string VALUE `Elements of type enum should be required or have a default` ##NO_TEXT,
     co_msg128 TYPE string VALUE `Components on top level (except format_version) should be structures or tables` ##NO_TEXT,
-    co_msg129 TYPE string VALUE `Only elements of character-like type can have annotation $contentEncoding or $contentMediaType` ##NO_TEXT,
-    co_msg130 TYPE string VALUE `The content encoding is unknown` ##NO_TEXT.
+    co_msg132 TYPE string VALUE `Only elements of character-like type can have annotation $contentEncoding or $contentMediaType` ##NO_TEXT,
+    co_msg133 TYPE string VALUE `The content encoding is unknown` ##NO_TEXT.
 
   TYPES:
     "! A single message entry in the log

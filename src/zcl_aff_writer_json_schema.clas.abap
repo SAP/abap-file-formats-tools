@@ -324,12 +324,12 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     IF json_type <> zif_aff_writer=>type_info-string.
-      log->add_warning( message_text = zif_aff_log=>co_msg129 component_name = fullname_of_type ).
+      log->add_warning( message_text = zif_aff_log=>co_msg132 component_name = fullname_of_type ).
       RETURN.
     ENDIF.
 
     IF NOT is_content_encoding_valid( abap_doc-content_encoding ).
-      log->add_warning( message_text = zif_aff_log=>co_msg130 component_name = fullname_of_type ).
+      log->add_warning( message_text = zif_aff_log=>co_msg133 component_name = fullname_of_type ).
       RETURN.
     ENDIF.
 
@@ -342,7 +342,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     IF json_type <> zif_aff_writer=>type_info-string.
-      log->add_warning( message_text = zif_aff_log=>co_msg129 component_name = fullname_of_type ).
+      log->add_warning( message_text = zif_aff_log=>co_msg132 component_name = fullname_of_type ).
       RETURN.
     ENDIF.
 
@@ -352,7 +352,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   METHOD is_content_encoding_valid.
     IF content_encoding = '7bit' OR
       content_encoding = '8bit' OR
-      content_encoding = 'binary,' OR
+      content_encoding = 'binary' OR
       content_encoding = 'quoted-printable' OR
       content_encoding = 'base16' OR
       content_encoding = 'base32' OR
