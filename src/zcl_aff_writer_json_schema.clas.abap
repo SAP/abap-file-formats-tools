@@ -174,16 +174,17 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING abap_doc_to_check        TYPE zcl_aff_abap_doc_parser=>abap_doc
                   fullname_of_checked_type TYPE string,
 
-
       write_title_and_description
         IMPORTING
           type_description TYPE REF TO cl_abap_typedescr
           check_not_needed TYPE abap_boolean DEFAULT abap_false,
+
       set_abapdoc_fullname_element
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
           element_name        TYPE string
           splitted_prev_name  TYPE string_table,
+
       set_abapdoc_fullname_struc_tab
         IMPORTING
           type_description TYPE REF TO cl_abap_typedescr
@@ -192,10 +193,21 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       get_max_length
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
         RETURNING VALUE(result)       TYPE string,
+
       get_extrema
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
         EXPORTING VALUE(max)          TYPE string
                   VALUE(min)          TYPE string,
+
+      is_content_encoding_valid
+        IMPORTING content_encoding TYPE string
+        RETURNING VALUE(result)    TYPE abap_boolean,
+
+      write_content_encoding
+        IMPORTING json_type TYPE string,
+
+      write_content_media_type
+        IMPORTING json_type TYPE string,
       is_element_descr_kind_int
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
@@ -280,6 +292,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       IF enum_properties IS NOT INITIAL.
         handle_enums( element_description = element_description enum_properties = enum_properties ).
       ELSE. "non- enum
+
+        write_content_encoding( json_type ).
+        write_content_media_type( json_type ).
+
         IF json_type = zif_aff_writer=>type_info-numeric.
           handle_extrema( element_description ).
         ELSEIF json_type = zif_aff_writer=>type_info-string AND NOT ( element_description->type_kind = cl_abap_typedescr=>typekind_date OR element_description->type_kind = cl_abap_typedescr=>typekind_time OR
@@ -305,6 +321,49 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     IF last_operation( ) <> zif_aff_writer=>operation-open_table.
       write_closing_tag( `}` ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD write_content_encoding.
+    IF abap_doc-content_encoding IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    IF json_type <> zif_aff_writer=>type_info-string.
+      log->add_warning( message_text = zif_aff_log=>co_msg132 component_name = fullname_of_type ).
+      RETURN.
+    ENDIF.
+
+    IF NOT is_content_encoding_valid( abap_doc-content_encoding ).
+      log->add_warning( message_text = zif_aff_log=>co_msg133 component_name = fullname_of_type ).
+      RETURN.
+    ENDIF.
+
+    write_tag( |"contentEncoding": "{ abap_doc-content_encoding }",| ).
+  ENDMETHOD.
+
+  METHOD write_content_media_type.
+    IF abap_doc-content_media_type IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    IF json_type <> zif_aff_writer=>type_info-string.
+      log->add_warning( message_text = zif_aff_log=>co_msg132 component_name = fullname_of_type ).
+      RETURN.
+    ENDIF.
+
+    write_tag( |"contentMediaType": "{ abap_doc-content_media_type }",| ).
+  ENDMETHOD.
+
+  METHOD is_content_encoding_valid.
+    IF content_encoding = '7bit' OR
+      content_encoding = '8bit' OR
+      content_encoding = 'binary' OR
+      content_encoding = 'quoted-printable' OR
+      content_encoding = 'base16' OR
+      content_encoding = 'base32' OR
+      content_encoding = 'base64'.
+      result = abap_true.
     ENDIF.
   ENDMETHOD.
 

@@ -10,6 +10,36 @@ CLASS zcl_aff_test_types DEFINITION
       unknown_annotation TYPE string.
 
     TYPES:
+      "! $contentEncoding 'base64'
+      content_encoded_string TYPE string.
+
+    TYPES:
+      "! $contentEncoding 'unknown'
+      unknown_content_encoded_string TYPE string.
+
+    TYPES:
+      "! $contentEncoding 'base64'
+      content_encoded_integer TYPE i.
+
+    TYPES:
+      "! $contentMediaType 'text/html'
+      content_media_type_string TYPE string.
+
+    TYPES:
+      "! $contentMediaType 'text/html'
+      content_media_type_integer TYPE i.
+
+    TYPES:
+       "! $contentMediaType 'text/html'
+       "! $contentEncoding 'base64'
+      media_type_content_ecoding TYPE string.
+
+    TYPES:
+      BEGIN OF struc_with_type_encoding,
+        component TYPE media_type_content_ecoding,
+      END OF struc_with_type_encoding.
+
+    TYPES:
       "! <p class="shorttext">title</p>
       "! description
       "! <p class="shorttext2">Title</p>

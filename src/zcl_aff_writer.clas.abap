@@ -561,6 +561,12 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     IF abap_doc_base-callback_class IS INITIAL.
       abap_doc_base-callback_class = abap_doc_additional-callback_class.
     ENDIF.
+    IF abap_doc_base-content_encoding IS INITIAL.
+      abap_doc_base-content_encoding = abap_doc_additional-content_encoding.
+    ENDIF.
+    IF abap_doc_base-content_media_type IS INITIAL.
+      abap_doc_base-content_media_type = abap_doc_additional-content_media_type.
+    ENDIF.
   ENDMETHOD.
 
 
