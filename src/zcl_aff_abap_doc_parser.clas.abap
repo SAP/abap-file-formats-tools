@@ -5,38 +5,42 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
 
   PUBLIC SECTION.
     CONSTANTS: BEGIN OF abap_doc_annotation,
-                 callback_class    TYPE string VALUE `$callbackClass`,
-                 default           TYPE string VALUE `$default`,
-                 values            TYPE string VALUE `$values`,
-                 required          TYPE string VALUE `$required`,
-                 show_always       TYPE string VALUE `$showAlways`,
-                 minimum           TYPE string VALUE `$minimum`,
-                 maximum           TYPE string VALUE `$maximum`,
-                 exclusive_minimum TYPE string VALUE `$exclusiveMinimum`,
-                 exclusive_maximum TYPE string VALUE `$exclusiveMaximum`,
-                 max_length        TYPE string VALUE `$maxLength`,
-                 min_length        TYPE string VALUE `$minLength`,
-                 multiple_of       TYPE string VALUE `$multipleOf`,
-                 enum_value        TYPE string VALUE `$enumValue`,
+                 callback_class     TYPE string VALUE `$callbackClass`,
+                 default            TYPE string VALUE `$default`,
+                 values             TYPE string VALUE `$values`,
+                 required           TYPE string VALUE `$required`,
+                 show_always        TYPE string VALUE `$showAlways`,
+                 minimum            TYPE string VALUE `$minimum`,
+                 maximum            TYPE string VALUE `$maximum`,
+                 exclusive_minimum  TYPE string VALUE `$exclusiveMinimum`,
+                 exclusive_maximum  TYPE string VALUE `$exclusiveMaximum`,
+                 max_length         TYPE string VALUE `$maxLength`,
+                 min_length         TYPE string VALUE `$minLength`,
+                 multiple_of        TYPE string VALUE `$multipleOf`,
+                 content_media_type TYPE string VALUE `$contentMediaType`,
+                 content_encoding   TYPE string VALUE `$contentEncoding`,
+                 enum_value         TYPE string VALUE `$enumValue`,
                END OF abap_doc_annotation.
 
     TYPES:
       BEGIN OF abap_doc,
-        required          TYPE abap_bool,
-        showalways        TYPE abap_bool,
-        title             TYPE string,
-        description       TYPE string,
-        enumvalues_link   TYPE string,
-        minimum           TYPE string,
-        maximum           TYPE string,
-        exclusive_minimum TYPE string,
-        exclusive_maximum TYPE string,
-        multiple_of       TYPE string,
-        default           TYPE string,
-        min_length        TYPE string,
-        max_length        TYPE string,
-        callback_class    TYPE string,
-        enum_value        TYPE string,
+        required           TYPE abap_bool,
+        showalways         TYPE abap_bool,
+        title              TYPE string,
+        description        TYPE string,
+        enumvalues_link    TYPE string,
+        minimum            TYPE string,
+        maximum            TYPE string,
+        exclusive_minimum  TYPE string,
+        exclusive_maximum  TYPE string,
+        multiple_of        TYPE string,
+        default            TYPE string,
+        min_length         TYPE string,
+        max_length         TYPE string,
+        callback_class     TYPE string,
+        content_media_type TYPE string,
+        content_encoding   TYPE string,
+        enum_value         TYPE string,
       END OF abap_doc.
 
     METHODS: parse
@@ -84,6 +88,8 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
       parse_default,
       parse_enum_values,
       parse_required,
+      parse_content_encoding,
+      parse_content_media_type,
       parse_show_always,
       parse_number_annotations
         IMPORTING
@@ -158,7 +164,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD parse_description.
-    FIND FIRST OCCURRENCE OF REGEX `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$enumValue)`
+    FIND FIRST OCCURRENCE OF REGEX `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$enumValue|\$contentMediaType|\$contentEncoding)`
       IN abap_doc_string MATCH OFFSET DATA(offset) ##REGEX_POSIX.
     IF sy-subrc = 0.
       DATA(description) = abap_doc_string+0(offset).
@@ -194,6 +200,10 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
           parse_number_annotations( key_word = key_word ).
         WHEN abap_doc_annotation-enum_value.
           parse_enum_value( ).
+        WHEN abap_doc_annotation-content_encoding.
+          parse_content_encoding( ).
+        WHEN abap_doc_annotation-content_media_type.
+          parse_content_media_type( ).
         WHEN OTHERS.
           REPLACE key_word IN modified_abap_doc_string WITH ''.
           DATA(msg) = parser_log->get_message_text( msgno = 108 msgv1 = CONV #( key_word ) ).
@@ -331,6 +341,48 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       check_next_word( offset = <entry>-offset + <entry>-length text_to_check = abap_doc_string ).
     ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD parse_content_encoding.
+    DATA(abap_doc) = abap_doc_string.
+    IF decoded_abap_doc-content_encoding IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    FIND ALL OCCURRENCES OF abap_doc_annotation-content_encoding IN abap_doc_string RESULTS DATA(result_table).
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-content_encoding ).
+
+    REPLACE FIRST OCCURRENCE OF REGEX `\$contentEncoding[\s]*'` IN abap_doc WITH `\$contentEncoding'` ##REGEX_POSIX.
+    FIND FIRST OCCURRENCE OF REGEX `\$contentEncoding'([^']*)'` IN abap_doc RESULTS DATA(content_encoding_occurrences) ##REGEX_POSIX.
+    DATA(match) = content_encoding_occurrences-submatches.
+    IF lines( match ) >= 1.
+      DATA(first_match) = match[ 1 ].
+      decoded_abap_doc-content_encoding = abap_doc+first_match-offset(first_match-length).
+    ELSE.
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-content_encoding ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD parse_content_media_type.
+    DATA(abap_doc) = abap_doc_string.
+    IF decoded_abap_doc-content_media_type IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+    FIND ALL OCCURRENCES OF abap_doc_annotation-content_media_type IN abap_doc RESULTS DATA(result_table).
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-content_media_type ).
+
+    REPLACE FIRST OCCURRENCE OF REGEX `\$contentMediaType[\s]*'` IN abap_doc WITH `\$contentMediaType'` ##REGEX_POSIX.
+    FIND FIRST OCCURRENCE OF REGEX `\$contentMediaType'([^']*)'` IN abap_doc RESULTS DATA(content_media_type_occurrences) ##REGEX_POSIX.
+    DATA(match) = content_media_type_occurrences-submatches.
+    IF lines( match ) >= 1.
+      DATA(first_match) = match[ 1 ].
+      decoded_abap_doc-content_media_type = abap_doc+first_match-offset(first_match-length).
+    ELSE.
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-content_media_type ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
+    ENDIF.
   ENDMETHOD.
 
 
