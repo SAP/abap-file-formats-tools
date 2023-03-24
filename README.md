@@ -29,7 +29,7 @@ This repository mainly consists of two programs:
 To add more information to the JSON Schema than that provided by the ABAP type, ABAP Doc is parsed.
 Different possibilities on adding more information via annotations are listed [here](https://github.com/SAP/abap-file-formats/blob/main/docs/json.md#writing-JSON-schema-with-ABAP-types).
 
-Additionally to the AFF-related annotation, one can also use the following:
+Additionally to the ABAP-file-formats-related annotations, one can also use the following:
 ### Content Media Type
  To specify the content media type of the content of a string field, the annotation
  ```abap
