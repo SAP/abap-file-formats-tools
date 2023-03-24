@@ -45,7 +45,7 @@ Additionally to the AFF-related annotation, one can also use the following:
  ```
  followed by the encoding surrounded by single quotation marks.
  Possible values for the encoding are `7bit`, `8bit`, `binary`, `quoted-printable`, `base16`, `base32` and `base64`.
- This annotation can also only be used for character like ABAP types, i.e., types that are mapped to JSON type `string`. 
+ This annotation can also only be used for character like ABAP types, i.e., types that are mapped to JSON type `string`.
 
 ## How to Obtain Support
 Feel free to raise issues to ask questions or report bugs.
