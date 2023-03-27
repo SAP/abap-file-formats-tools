@@ -39,7 +39,7 @@ Additionally to the ABAP-file-formats-related annotations, one can also use the 
  This annotation can only be used for characters like ABAP types, i.e., types that are mapped to JSON type `string`.
 
 ### Content Encoding
- The encoding used to store the content of a string field can be specifed with the annotation
+ The encoding used to store the content of a string field can be specified with the annotation
  ```abap
  "! $contentEncoding 'encoding'
  ```
