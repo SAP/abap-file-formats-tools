@@ -24,7 +24,7 @@ Coding policies are stated and verified by [abaplint](https://github.com/marketp
 ## How to Use
 This repository mainly consists of two programs:
 * `z_generate_json_schema` generates JSON Schemas (minimal requirement is v7.54) from ABAP types
-* `z_generate_repo` generates files and folder hierarchy for upload and maintain the [abap-file-formats](https://github.com/SAP/abap-file-formats) repository (requires ABAP file format framework)
+* `z_generate_repo` generates files and folder hierarchy for uploading and maintaining the [abap-file-formats](https://github.com/SAP/abap-file-formats) repository (requires ABAP file format framework)
 
 To add more information to the JSON Schema than that provided by the ABAP type, ABAP Doc is parsed.
 Different possibilities on adding more information via annotations are listed [here](https://github.com/SAP/abap-file-formats/blob/main/docs/json.md#writing-JSON-schema-with-ABAP-types).
