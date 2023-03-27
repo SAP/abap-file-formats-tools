@@ -36,7 +36,7 @@ Additionally to the ABAP-file-formats-related annotations, one can also use the 
  "! $contentMediaType 'mediaType'
  ```
  followed by the media type surrounded by single quotation marks is used.
- This annotation can only be used for character like ABAP types, i.e., types that are mapped to JSON type `string`.
+ This annotation can only be used for characters like ABAP types, i.e., types that are mapped to JSON type `string`.
 
 ### Content Encoding
  The encoding used to store the content of a string field can be specifed with the annotation
