@@ -27,7 +27,7 @@ This repository mainly consists of two programs:
 * `z_generate_repo` generates files and folder hierarchy for uploading and maintaining the [abap-file-formats](https://github.com/SAP/abap-file-formats) repository (requires ABAP file format framework)
 
 To add more information to the JSON Schema than that provided by the ABAP type, ABAP Doc is parsed.
-Different possibilities on adding more information via annotations are listed [here](https://github.com/SAP/abap-file-formats/blob/main/docs/json.md#writing-JSON-schema-with-ABAP-types).
+Different possibilities for adding more information via annotations are listed [here](https://github.com/SAP/abap-file-formats/blob/main/docs/json.md#writing-JSON-schema-with-ABAP-types).
 
 Additionally to the ABAP-file-formats-related annotations, one can also use the following:
 ### Content Media Type
