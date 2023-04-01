@@ -18,7 +18,7 @@
     "@abaplint/cli": "^2.95.44",
     "@abaplint/runtime": "^2.5.40",
     "@abaplint/database-sqlite": "^2.5.39",
-    "@abaplint/transpiler-cli": "^2.5.40",
+    "@abaplint/transpiler-cli": "^2.5.71",
     "abapmerge": "^0.15.0"
   }
 }
