@@ -276,33 +276,6 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
 
-*  the example names which need to be replaced. (example objects need to begin with z)
-    LOOP AT example_files-object_to_file_name ASSIGNING FIELD-SYMBOL(<object>).
-      DATA(name_of_example_obj) = to_lower( <object>-object-obj_name ).
-      IF NOT name_of_example_obj CP `z*`.
-        INSERT VALUE #( to_be_replaced = name_of_example_obj replace_with = get_objname_wo_namspace_with_z( name_of_example_obj ) ) INTO TABLE replacing_table_string.
-        IF name_of_example_obj CP `*/*`.
-          REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_obj WITH'('.
-          REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_obj WITH')'.
-          INSERT VALUE #( to_be_replaced = name_of_example_obj replace_with = get_objname_wo_namspace_with_z( to_lower( <object>-object-obj_name  ) ) ) INTO TABLE replacing_table_string.
-        ENDIF.
-      ENDIF.
-
-      IF <object>-object-sub_name IS NOT INITIAL.
-        DATA(name_of_example_subobj) = to_lower( <object>-object-sub_name ).
-        IF NOT name_of_example_subobj CP `z*`.
-          IF ( <object>-object-obj_type = 'FUGR' AND <object>-object-sub_type = 'FUNC' ) OR
-            ( <object>-object-obj_type = 'TABL' AND <object>-object-sub_type = 'INDX' ) .
-            INSERT VALUE #( to_be_replaced = name_of_example_subobj replace_with = get_objname_wo_namspace_with_z( name_of_example_subobj ) ) INTO TABLE replacing_table_string.
-            IF <object>-object-sub_name CP `*/*`.
-              REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_subobj WITH'('.
-              REPLACE FIRST OCCURRENCE OF '/' IN name_of_example_subobj WITH')'.
-              INSERT VALUE #( to_be_replaced = name_of_example_subobj replace_with = get_objname_wo_namspace_with_z( CONV #( <object>-object-sub_name ) ) ) INTO TABLE replacing_table_string.
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ENDIF.
-    ENDLOOP.
     INSERT VALUE #( to_be_replaced = `if_aff_types_v1` replace_with = get_objname_wo_namspace_with_z( `zif_aff_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
     INSERT VALUE #( to_be_replaced =  `if_aff_oo_types_v1` replace_with = get_objname_wo_namspace_with_z(  `zif_aff_oo_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
 
@@ -1557,14 +1530,14 @@ CLASS ltc_generator IMPLEMENTATION.
     "Then
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 4 ).
-    cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 1 ]-name exp = `intf/examples/zaff_example_intf.intf.json` ).
+    cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 1 ]-name exp = `intf/examples/aff_example_intf.intf.json` ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 2 ]-name exp = `intf/type/zif_aff_intf_v1.intf.json` ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 3 ]-name exp = `intf/intf-v1.json` ).
 
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of zaff_example_intf` ).
+    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of AFF_EXAMPLE_INTF` ).
 
-    cut->zip->get(  EXPORTING name  = `intf/examples/zaff_example_intf.intf.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get(  EXPORTING name  = `intf/examples/aff_example_intf.intf.json` IMPORTING content  = DATA(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_content = text_handler->if_aff_content_handler~serialize( `File of zif_aff_intf_v1` ).
@@ -1593,14 +1566,14 @@ CLASS ltc_generator IMPLEMENTATION.
     "Then
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 4 ).
-    cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 1 ]-name exp = `intf/examples/zaff_example_intf.intf.json` ).
+    cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 1 ]-name exp = `intf/examples/(namespace)aff_example_intf.intf.json` ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 2 ]-name exp = `intf/type/zif_aff_intf_v1.intf.json` ).
     cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 3 ]-name exp = `intf/intf-v1.json` ).
 
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
-    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of zaff_example_intf` ).
+    DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of /NAMESPACE/AFF_EXAMPLE_INTF` ).
 
-    cut->zip->get(  EXPORTING name  = `intf/examples/zaff_example_intf.intf.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get(  EXPORTING name  = `intf/examples/(namespace)aff_example_intf.intf.json` IMPORTING content  = DATA(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_content = text_handler->if_aff_content_handler~serialize( `File of zif_aff_intf_v1` ).
