@@ -25,6 +25,18 @@
     "globalConstants": ["srext_ext_xslt_source"]
   },
   "rules": {
+    "cds_comment_style": true,
+    "cds_legacy_view": true,
+    "change_if_to_case": false,
+    "classic_exceptions_overlap": true,
+    "expand_macros": true,
+    "fully_type_itabs": false,
+    "no_external_form_calls": true,
+    "no_inline_in_optional_branches": false,
+    "select_single_full_key": true,
+    "strict_sql": true,
+    "superfluous_value": false,
+    "unnecessary_return": true,
     "align_parameters": false,
     "cds_parser_error": true,
     "constant_classes": true,
