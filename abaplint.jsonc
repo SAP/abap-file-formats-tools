@@ -21,8 +21,7 @@
   ],
   "syntax": {
     "version": "v754",
-    "errorNamespace": ".",
-    "globalConstants": ["srext_ext_xslt_source"]
+    "errorNamespace": "."
   },
   "rules": {
     "cds_comment_style": true,
