@@ -249,6 +249,8 @@ CLASS lcl_section_source_comments IMPLEMENTATION.
 
 *     consider data and types typtype 4
       LOOP AT tab_statements ASSIGNING <fs_stmnt_prev> TO current_statement WHERE ( type <> 'P' AND type <> 'S' AND type <> 'G' ).
+*       find the last match
+        CONTINUE.
       ENDLOOP.
 
       " is_within_.._begin_of sets the required me->depth value
