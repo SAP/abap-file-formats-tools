@@ -1020,7 +1020,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD output.
     IF xslt_schema_content IS NOT INITIAL. "show it in the console
-      cl_demo_output=>write( xslt_schema_content ).
+      cl_demo_output=>write( data = xslt_schema_content name = ` ` ).
       cl_demo_output=>display( ).
     ELSEIF zip IS NOT INITIAL. "write it to disk
       DATA(zip_archive) = zip->save( ).
