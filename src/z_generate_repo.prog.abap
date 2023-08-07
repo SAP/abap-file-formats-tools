@@ -411,11 +411,6 @@ CLASS lcl_generator IMPLEMENTATION.
       add_file_to_zip( i_stringtab_content = readme
                        i_file_name         = |{ object_type_folder_name }/README.md|
                        i_error_text        = |The readme for object { object-object_type } could not be created. Error when transforming readme content from string to xstring| ) ##NO_TEXT.
-
-
-
-
-
     ENDIF.
 
   ENDMETHOD.
