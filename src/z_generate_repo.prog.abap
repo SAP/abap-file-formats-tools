@@ -147,8 +147,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
           filename               TYPE string
           replacing_table_string TYPE replacing_tab,
       generate_repo_folder
-        IMPORTING objects          TYPE aff_objects_table
-                  whole_aff_folder TYPE boolean DEFAULT abap_false,
+        IMPORTING object           TYPE aff_object,
       create_the_variable_dynamicaly
         IMPORTING absolute_typename TYPE string
         RETURNING VALUE(variable)   TYPE REF TO data
@@ -306,139 +305,120 @@ CLASS lcl_generator IMPLEMENTATION.
     " generate zip folder
     me->zip = NEW cl_abap_zip( ).
 
-    LOOP AT objects ASSIGNING FIELD-SYMBOL(<object>).
-      DATA(object_type_folder_name) = to_lower( <object>-object_type ).
+    DATA(object_type_folder_name) = to_lower( object-object_type ).
 
-      IF <object>-example IS NOT INITIAL.
-        SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @<object>-example AND object = @<object>-object_type INTO @DATA(example_obj_devclass).
-        DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass = example_obj_devclass obj_type = <object>-object_type obj_name = <object>-example ).
-        IF aff_factory IS NOT INITIAL.
-          DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
-        ELSE.
-          file_handler = cl_aff_factory=>get_object_file_handler( ).
-        ENDIF.
-        DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = aff_framework_log ).
-
-        get_replacing_table_and_intfs(
-          EXPORTING
-            name_of_intf_of_mainobj = CONV #( <object>-interface )
-            example_files           = example_files
-          IMPORTING
-            interfaces              = DATA(interfaces)
-        ).
-        "adding the example files
-        add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
+    IF object-example IS NOT INITIAL.
+      SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @object-example AND object = @object-object_type INTO @DATA(example_obj_devclass).
+      DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass = example_obj_devclass obj_type = object-object_type obj_name = object-example ).
+      IF aff_factory IS NOT INITIAL.
+        DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
+      ELSE.
+        file_handler = cl_aff_factory=>get_object_file_handler( ).
       ENDIF.
-      DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
-      CLEAR intf_objects.
+      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = aff_framework_log ).
 
-      "generate type folder with all serialized interfaces (main and subobjects)
-      LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
-        DATA(upper_intf) = to_upper( <interface> ).
-        SELECT SINGLE devclass FROM tadir WHERE obj_name = @upper_intf AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass) .
-        IF intf_obj_devclass IS INITIAL.
-          INSERT |{ upper_intf } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
-        ENDIF.
-        APPEND VALUE #( devclass  = intf_obj_devclass obj_type  = 'INTF' obj_name = upper_intf ) TO intf_objects.
-      ENDLOOP.
+      get_replacing_table_and_intfs(
+        EXPORTING
+          name_of_intf_of_mainobj = CONV #( object-interface )
+          example_files           = example_files
+        IMPORTING
+          interfaces              = DATA(interfaces)
+      ).
+      "adding the example files
+      add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
+    ENDIF.
+    DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
+    CLEAR intf_objects.
 
-      DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = aff_framework_log ).
+    "generate type folder with all serialized interfaces (main and subobjects)
+    LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
+      DATA(upper_intf) = to_upper( <interface> ).
+      SELECT SINGLE devclass FROM tadir WHERE obj_name = @upper_intf AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass) .
+      IF intf_obj_devclass IS INITIAL.
+        INSERT |{ upper_intf } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
+      ENDIF.
+      APPEND VALUE #( devclass  = intf_obj_devclass obj_type  = 'INTF' obj_name = upper_intf ) TO intf_objects.
+    ENDLOOP.
 
-      add_aff_files_to_zip( files = intf_files filename = |{ object_type_folder_name }/type/| replacing_table_string = replacing_table_string ).
+    DATA(intf_files) = file_handler->serialize_objects( objects = intf_objects log = aff_framework_log ).
 
-      "generate the schema(s) of the mainobject and all of its subobjects
-      "add it to the zip folder
-      LOOP AT interfaces ASSIGNING <interface>.
-        DATA(intfname) = <interface>.
-        SPLIT intfname AT `_` INTO TABLE DATA(splitted_intfname).
-        IF lines( splitted_intfname ) < 4.
-          INSERT |The schema for interface { <interface> } could not be created. Objecttype could not be derived from intfname.| INTO TABLE report_log ##NO_TEXT.
-          CONTINUE.
-        ENDIF.
-        DATA(objecttype) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
+    add_aff_files_to_zip( files = intf_files filename = |{ object_type_folder_name }/type/| replacing_table_string = replacing_table_string ).
 
-        DATA(found) = abap_false.
-        SELECT SINGLE @abap_true FROM tadir WHERE obj_name = @<interface> INTO @found. "#EC CI_GENBUFF
-        IF found = abap_false.
-          INSERT |The schema for interface { <interface> } could not be created.| INTO TABLE report_log ##NO_TEXT.
-          CONTINUE.
-        ENDIF.
+    "generate the schema(s) of the mainobject and all of its subobjects
+    "add it to the zip folder
+    LOOP AT interfaces ASSIGNING <interface>.
+      DATA(intfname) = <interface>.
+      SPLIT intfname AT `_` INTO TABLE DATA(splitted_intfname).
+      IF lines( splitted_intfname ) < 4.
+        INSERT |The schema for interface { <interface> } could not be created. Objecttype could not be derived from intfname.| INTO TABLE report_log ##NO_TEXT.
+        CONTINUE.
+      ENDIF.
+      DATA(objecttype) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
 
-        DATA(mainobjtype) = objecttype.
-        IF objecttype = `FUNC` OR objecttype = `REPS`.
-          mainobjtype = `FUGR`.
-        ELSEIF objecttype = `INDX`.
-          mainobjtype = `TABL`.
-        ENDIF.
+      DATA(found) = abap_false.
+      SELECT SINGLE @abap_true FROM tadir WHERE obj_name = @<interface> INTO @found. "#EC CI_GENBUFF
+      IF found = abap_false.
+        INSERT |The schema for interface { <interface> } could not be created.| INTO TABLE report_log ##NO_TEXT.
+        CONTINUE.
+      ENDIF.
 
-        DATA(format_version) = get_format_version_of_intfname( CONV #( intfname ) ).
-        DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
-        IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
-          writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
-        ENDIF.
-        IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper. "in testcase we use ltc_generator
-          generator = NEW lcl_generator_helper( writer ).
-        ENDIF.
-        DATA(schema_content) = get_content( absolute_typename = |\\INTERFACE={ to_upper( intfname ) }\\TYPE=TY_MAIN| ).
-        IF schema_test_content IS NOT INITIAL."in test case sometimes a test schema content is injected
-          schema_content = schema_test_content.
-        ENDIF.
-        IF schema_content IS INITIAL.
-          INSERT |The schema for interface { intfname } could not be created.| INTO TABLE report_log ##NO_TEXT.
-        ELSE.
-          add_file_to_zip( i_stringtab_content = schema_content
-                           i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
-                           i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ##NO_TEXT
-                           ).
-        ENDIF.
-      ENDLOOP.
-      IF p_readm = abap_true.
-        DATA(interfacename) = replace_names_in_string( content_as_string = to_lower( intfname ) replacing_table_string = replacing_table_string ).
-        IF <object>-example  IS NOT INITIAL.
-          DATA(examplename) = replace_names_in_string( content_as_string = to_lower( <object>-example ) replacing_table_string = replacing_table_string ).
-          DATA(readme) = VALUE rswsourcet(
-              ( |# { <object>-object_type } File Format| )
-              ( `` )
-              ( `File | Cardinality | Definition | Schema | Example` )
-              ( `:--- | :---  | :--- | :--- | :---` )
-              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
-                | \| [`{ examplename }.{ object_type_folder_name }.json`](./examples/{ examplename }.{ object_type_folder_name }.json)| )
-              ( `` )
-          ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
+      DATA(mainobjtype) = objecttype.
+      IF objecttype = `FUNC` OR objecttype = `REPS`.
+        mainobjtype = `FUGR`.
+      ELSEIF objecttype = `INDX`.
+        mainobjtype = `TABL`.
+      ENDIF.
 
-        ELSE.
-          readme = VALUE rswsourcet(
-              ( |# { <object>-object_type } File Format| )
-              ( `` )
-              ( `File | Cardinality | Definition | Schema | Example` )
-              ( `:--- | :---  | :--- | :--- | :---` )
-              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
-                | \| | )
-              ( `` )
-          ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
-        ENDIF.
-        add_file_to_zip( i_stringtab_content = readme
-                         i_file_name         = |{ object_type_folder_name }/README.md|
-                         i_error_text        = |The readme for object { <object>-object_type } could not be created. Error when transforming readme content from string to xstring| ) ##NO_TEXT.
+      DATA(format_version) = get_format_version_of_intfname( CONV #( intfname ) ).
+      DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
+      IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
+        writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
+      ENDIF.
+      IF generator IS INITIAL OR generator IS INSTANCE OF lcl_generator_helper. "in testcase we use ltc_generator
+        generator = NEW lcl_generator_helper( writer ).
+      ENDIF.
+      DATA(schema_content) = get_content( absolute_typename = |\\INTERFACE={ to_upper( intfname ) }\\TYPE=TY_MAIN| ).
+      IF schema_test_content IS NOT INITIAL."in test case sometimes a test schema content is injected
+        schema_content = schema_test_content.
+      ENDIF.
+      IF schema_content IS INITIAL.
+        INSERT |The schema for interface { intfname } could not be created.| INTO TABLE report_log ##NO_TEXT.
+      ELSE.
+        add_file_to_zip( i_stringtab_content = schema_content
+                         i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
+                         i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ##NO_TEXT
+                         ).
       ENDIF.
     ENDLOOP.
 
-    IF whole_aff_folder = abap_true.
-      "also serialize the two interfaces: if_aff_types_v1 and if_aff_oo_types_v1
-      DATA two_interfaces TYPE if_aff_object_file_handler=>tt_objects .
-      APPEND VALUE #( devclass = 'SAFF_CORE' obj_name = 'IF_AFF_TYPES_V1' obj_type = 'INTF' ) TO two_interfaces.
-      APPEND VALUE #( devclass = 'SEO_AFF' obj_name = 'IF_AFF_OO_TYPES_V1' obj_type = 'INTF' ) TO two_interfaces.
+    IF p_readm = abap_true.
+      DATA(interfacename) = replace_names_in_string( content_as_string = to_lower( intfname ) replacing_table_string = replacing_table_string ).
+      IF object-example  IS NOT INITIAL.
+        DATA(examplename) = replace_names_in_string( content_as_string = to_lower( object-example ) replacing_table_string = replacing_table_string ).
+        DATA(readme) = VALUE rswsourcet(
+            ( |# { object-object_type } File Format| )
+            ( `` )
+            ( `File | Cardinality | Definition | Schema | Example` )
+            ( `:--- | :---  | :--- | :--- | :---` )
+            ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
+              | \| [`{ examplename }.{ object_type_folder_name }.json`](./examples/{ examplename }.{ object_type_folder_name }.json)| )
+            ( `` )
+        ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
 
-      DATA replacing_names TYPE replacing_tab.
-      replacing_names = VALUE #(
-       ( to_be_replaced = `if_aff_types_v1`    replace_with = `zif_aff_types_v1` )
-       ( to_be_replaced = `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` )
-      ) ##NO_TEXT ##NO_TEXT.
-
-      LOOP AT two_interfaces ASSIGNING FIELD-SYMBOL(<interf>).
-        DATA(intf_files2) = file_handler->serialize_objects( objects = VALUE #( ( <interf> ) ) log = aff_framework_log ).
-        add_aff_files_to_zip( files = intf_files2 filename = `` replacing_table_string = replacing_names ).
-      ENDLOOP.
+      ELSE.
+        readme = VALUE rswsourcet(
+            ( |# { object-object_type } File Format| )
+            ( `` )
+            ( `File | Cardinality | Definition | Schema | Example` )
+            ( `:--- | :---  | :--- | :--- | :---` )
+            ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
+              | \| | )
+            ( `` )
+        ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
+      ENDIF.
+      add_file_to_zip( i_stringtab_content = readme
+                       i_file_name         = |{ object_type_folder_name }/README.md|
+                       i_error_text        = |The readme for object { object-object_type } could not be created. Error when transforming readme content from string to xstring| ) ##NO_TEXT.
     ENDIF.
 
   ENDMETHOD.
@@ -825,7 +805,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
     ELSEIF p_repo = abap_true.
       "serialize one repo folder
-      generate_repo_folder( VALUE #( ( object_type  = p_objtyp interface =  p_intf example =  p_examp ) ) ).
+      generate_repo_folder( VALUE #( object_type  = p_objtyp interface =  p_intf example =  p_examp ) ).
     ENDIF.
 
   ENDMETHOD.
