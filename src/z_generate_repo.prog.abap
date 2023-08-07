@@ -298,8 +298,8 @@ CLASS lcl_generator IMPLEMENTATION.
   METHOD generate_repo_folder.
     IF p_repo = abap_true.
       "serialize only one repo folder
-      IF p_objtyp IS INITIAL OR p_intf IS INITIAL OR p_examp IS INITIAL.
-        INSERT `Please fill out all fields (objecttype, interfacename, examplename)` INTO TABLE report_log ##NO_TEXT.
+      IF p_objtyp IS INITIAL OR p_intf IS INITIAL.
+        INSERT `Please fill out at least the fields objecttype and interfacename` INTO TABLE report_log ##NO_TEXT.
         RETURN.
       ENDIF.
     ENDIF.
@@ -309,22 +309,26 @@ CLASS lcl_generator IMPLEMENTATION.
     LOOP AT objects ASSIGNING FIELD-SYMBOL(<object>).
       DATA(object_type_folder_name) = to_lower( <object>-object_type ).
 
-      SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @<object>-example AND object = @<object>-object_type INTO @DATA(example_obj_devclass).
-      DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass  = example_obj_devclass obj_type = <object>-object_type obj_name = <object>-example ).
-      IF aff_factory IS NOT INITIAL.
-        DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
-      ELSE.
-        file_handler = cl_aff_factory=>get_object_file_handler( ).
+      IF <object>-example IS NOT INITIAL.
+        SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @<object>-example AND object = @<object>-object_type INTO @DATA(example_obj_devclass).
+        DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass = example_obj_devclass obj_type = <object>-object_type obj_name = <object>-example ).
+        IF aff_factory IS NOT INITIAL.
+          DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
+        ELSE.
+          file_handler = cl_aff_factory=>get_object_file_handler( ).
+        ENDIF.
+        DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = aff_framework_log ).
+
+        get_replacing_table_and_intfs(
+          EXPORTING
+            name_of_intf_of_mainobj = CONV #( <object>-interface )
+            example_files           = example_files
+          IMPORTING
+            interfaces              = DATA(interfaces)
+        ).
+        "adding the example files
+        add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
       ENDIF.
-      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = aff_framework_log ).
-
-      get_replacing_table_and_intfs(
-        EXPORTING name_of_intf_of_mainobj = CONV #( <object>-interface ) example_files = example_files
-        IMPORTING interfaces = DATA(interfaces)
-      ).
-      "adding the example files
-      add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
-
       DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
       CLEAR intf_objects.
 
@@ -382,27 +386,40 @@ CLASS lcl_generator IMPLEMENTATION.
         IF schema_content IS INITIAL.
           INSERT |The schema for interface { intfname } could not be created.| INTO TABLE report_log ##NO_TEXT.
         ELSE.
-          add_file_to_zip(  i_stringtab_content = schema_content
-            i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
-            i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ##NO_TEXT
-          ).
+          add_file_to_zip( i_stringtab_content = schema_content
+                           i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
+                           i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ##NO_TEXT
+                           ).
         ENDIF.
       ENDLOOP.
       IF p_readm = abap_true.
-        DATA(interfacename) = replace_names_in_string( content_as_string  = to_lower( intfname ) replacing_table_string = replacing_table_string ).
-        DATA(examplename) = replace_names_in_string( content_as_string  = to_lower( <object>-example ) replacing_table_string = replacing_table_string ).
-        DATA(readme) = VALUE rswsourcet(
-  ( |# { <object>-object_type } File Format| ) ##NO_TEXT
-  ( `` )
-  ( `File | Cardinality | Definition | Schema | Example`) ##NO_TEXT
-  ( `:--- | :---  | :--- | :--- | :---` ) ##NO_TEXT
-  ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
-  | \| [`{ examplename }.{ object_type_folder_name }.json`](./examples/{ examplename }.{ object_type_folder_name }.json)| )
-   ( `` ) ##NO_TEXT
-   ) ##NO_TEXT.
+        DATA(interfacename) = replace_names_in_string( content_as_string = to_lower( intfname ) replacing_table_string = replacing_table_string ).
+        IF <object>-example  IS NOT INITIAL.
+          DATA(examplename) = replace_names_in_string( content_as_string = to_lower( <object>-example ) replacing_table_string = replacing_table_string ).
+          DATA(readme) = VALUE rswsourcet(
+              ( |# { <object>-object_type } File Format| )
+              ( `` )
+              ( `File | Cardinality | Definition | Schema | Example` )
+              ( `:--- | :---  | :--- | :--- | :---` )
+              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
+                | \| [`{ examplename }.{ object_type_folder_name }.json`](./examples/{ examplename }.{ object_type_folder_name }.json)| )
+              ( `` )
+          ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
+
+        ELSE.
+          readme = VALUE rswsourcet(
+              ( |# { <object>-object_type } File Format| )
+              ( `` )
+              ( `File | Cardinality | Definition | Schema | Example` )
+              ( `:--- | :---  | :--- | :--- | :---` )
+              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
+                | \| | )
+              ( `` )
+          ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
+        ENDIF.
         add_file_to_zip( i_stringtab_content = readme
-                        i_file_name  = |{ object_type_folder_name }/README.md|
- i_error_text = |The readme for object { <object>-object_type } could not be created. Error when transforming readme content from string to xstring| ) ##NO_TEXT.
+                         i_file_name         = |{ object_type_folder_name }/README.md|
+                         i_error_text        = |The readme for object { <object>-object_type } could not be created. Error when transforming readme content from string to xstring| ) ##NO_TEXT.
       ENDIF.
     ENDLOOP.
 
@@ -414,9 +431,9 @@ CLASS lcl_generator IMPLEMENTATION.
 
       DATA replacing_names TYPE replacing_tab.
       replacing_names = VALUE #(
-       ( to_be_replaced = `if_aff_types_v1` replace_with = `zif_aff_types_v1` ) ##NO_TEXT
-       ( to_be_replaced = `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` ) ##NO_TEXT
-      ) .
+       ( to_be_replaced = `if_aff_types_v1`    replace_with = `zif_aff_types_v1` )
+       ( to_be_replaced = `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` )
+      ) ##NO_TEXT ##NO_TEXT.
 
       LOOP AT two_interfaces ASSIGNING FIELD-SYMBOL(<interf>).
         DATA(intf_files2) = file_handler->serialize_objects( objects = VALUE #( ( <interf> ) ) log = aff_framework_log ).
@@ -436,7 +453,7 @@ CLASS lcl_generator IMPLEMENTATION.
         RETURN.
     ENDTRY.
     me->zip->add( name    = i_file_name
-                content = xstring_content ).
+                  content = xstring_content ).
   ENDMETHOD.
 
   METHOD add_aff_files_to_zip.
@@ -646,10 +663,10 @@ CLASS lcl_generator IMPLEMENTATION.
   METHOD create_the_variable_dynamicaly.
     DATA r_typedescr TYPE REF TO cl_abap_typedescr.
     DATA r_elemdescr TYPE REF TO cl_abap_structdescr.
-    cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = absolute_typename RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
+    cl_abap_typedescr=>describe_by_name( EXPORTING p_name = absolute_typename RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
     IF sy-subrc = 1.
       DATA(class_typename) = replace( val = absolute_typename sub = '\INTERFACE=' with = '\CLASS=' ).
-      cl_abap_typedescr=>describe_by_name( EXPORTING  p_name = class_typename RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
+      cl_abap_typedescr=>describe_by_name( EXPORTING p_name = class_typename RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
       IF sy-subrc = 1.
         INSERT |Type { absolute_typename } was not found. Either interface or type doesnt exist.| INTO TABLE report_log ##NO_TEXT.
         RAISE EXCEPTION TYPE zcx_aff_tools.
@@ -773,8 +790,8 @@ CLASS lcl_generator IMPLEMENTATION.
     IF lines( generator_log->get_messages( ) ) > 0.
       SKIP 1.
       WRITE: / `Messages schema/ST Generator:` ##NO_TEXT.
-      LOOP AT generator_log->get_messages( ) ASSIGNING FIELD-SYMBOL(<WRITER_log_message>).
-        WRITE: / |{ <WRITER_log_message>-type } { <WRITER_log_message>-component_name WIDTH = 40 ALIGN = LEFT PAD = ' ' } { <WRITER_log_message>-message_text }|.
+      LOOP AT generator_log->get_messages( ) ASSIGNING FIELD-SYMBOL(<writer_log_message>).
+        WRITE: / |{ <writer_log_message>-type } { <writer_log_message>-component_name WIDTH = 40 ALIGN = LEFT PAD = ' ' } { <writer_log_message>-message_text }|.
       ENDLOOP.
     ENDIF.
 
@@ -814,11 +831,11 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD on_value_request_for_type.
-    DATA(typename_value) = get_dynpro_value( fieldname  = 'P_TYPE' ).
-    typename_value = to_upper( typename_value ) .
+    DATA(typename_value) = get_dynpro_value( fieldname = 'P_TYPE' ).
+    typename_value = to_upper( typename_value ).
 
-    DATA(intfname_value) = get_dynpro_value( fieldname  = 'P_INTF' ).
-    intfname_value = to_upper( intfname_value ) .
+    DATA(intfname_value) = get_dynpro_value( fieldname = 'P_INTF' ).
+    intfname_value = to_upper( intfname_value ).
 
     IF typename_value IS INITIAL AND intfname_value IS INITIAL.
       RETURN.
@@ -836,11 +853,11 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD on_value_request_for_example.
-    DATA(example_value) = get_dynpro_value( fieldname  =  `P_EXAMP` ).
-    example_value = to_upper( example_value ) .
+    DATA(example_value) = get_dynpro_value( fieldname = `P_EXAMP` ).
+    example_value = to_upper( example_value ).
 
-    DATA(objtype_value) = get_dynpro_value( fieldname  = 'P_OBJTYP' ).
-    objtype_value = to_upper( objtype_value ) .
+    DATA(objtype_value) = get_dynpro_value( fieldname = 'P_OBJTYP' ).
+    objtype_value = to_upper( objtype_value ).
 
     IF example_value IS INITIAL AND objtype_value IS NOT INITIAL.
       SELECT obj_name FROM tadir WHERE object = @objtype_value AND devclass = 'TEST_AFF_EXAMPLES' INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
@@ -906,8 +923,8 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD on_value_request_for_objtype.
-    DATA(objtype_value) = get_dynpro_value( fieldname  =  `P_OBJTYP` ).
-    objtype_value = to_upper( objtype_value ) .
+    DATA(objtype_value) = get_dynpro_value( fieldname = `P_OBJTYP` ).
+    objtype_value = to_upper( objtype_value ).
     IF objtype_value IS INITIAL.
 *  put all Types into the value help
       SELECT DISTINCT object FROM e071 INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ORDER BY object ##NUMBER_OK. "#EC CI_NOWHERE
@@ -920,7 +937,7 @@ CLASS lcl_generator IMPLEMENTATION.
       SELECT DISTINCT object FROM e071 INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER WHERE object LIKE @objtype_with_percent ##NUMBER_OK. "#EC CI_NOORDER "#EC CI_NOFIELD
     ENDIF.
 
-    DATA(objtype) = set_value_help_result_to_field(  fieldname = `P_OBJTYP` value_help_result_table = value_help_result_table ).
+    DATA(objtype) = set_value_help_result_to_field( fieldname = `P_OBJTYP` value_help_result_table = value_help_result_table ).
 
     IF objtype IS NOT INITIAL.
       DATA(object_infos) = get_object_infos_by_objtype( objtype ).
@@ -933,11 +950,11 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD on_value_request_for_intfname.
-    DATA(intfname_value) = get_dynpro_value( fieldname  =  `P_INTF` ).
-    intfname_value = to_upper( intfname_value ) .
+    DATA(intfname_value) = get_dynpro_value( fieldname = `P_INTF` ).
+    intfname_value = to_upper( intfname_value ).
 
-    DATA(objtype_value) = get_dynpro_value( fieldname  =  `P_OBJTYP` ).
-    objtype_value = to_upper( objtype_value ) .
+    DATA(objtype_value) = get_dynpro_value( fieldname = `P_OBJTYP` ).
+    objtype_value = to_upper( objtype_value ).
 
     IF intfname_value IS INITIAL.
       DATA search_pattern TYPE string.
@@ -1149,8 +1166,8 @@ CLASS ltc_generator IMPLEMENTATION.
     function_test_environment = cl_function_test_environment=>create( VALUE #( ( 'DYNP_VALUES_UPDATE' )
                                                                                ( 'DYNP_VALUES_READ' )
                                                                                ( 'F4IF_INT_TABLE_VALUE_REQUEST' )
-                                                                               ) ).
-    environment = cl_osql_test_environment=>create(  VALUE #( ( 'TADIR' ) ) ).
+                                                                             ) ).
+    environment = cl_osql_test_environment=>create( VALUE #( ( 'TADIR' ) ) ).
 
   ENDMETHOD.
 
@@ -1173,39 +1190,39 @@ CLASS ltc_generator IMPLEMENTATION.
 
     DATA objects TYPE if_aff_object_file_handler=>tt_objects.
     objects = VALUE #(
-        ( obj_name = 'IF_AFF_TYPES_V1' devclass = 'SAFF_CORE' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_OO_TYPES_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = c_intf  devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = c_intf_w_namespace  devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_CHKC_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_CHKO_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_CHKV_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_CLAS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_DDLS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_DDLX_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'ZIF_AFF_DOMA_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_ENHO_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_ENHS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_FUGR_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_FUNC_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_REPS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_NROB_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_TABL_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = 'IF_AFF_INDX_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-        ( obj_name = c_aff_example_intf devclass  = c_example_intf_package obj_type = 'INTF' )
-        ( obj_name = c_aff_example_intf_nspace devclass  = c_example_intf_package obj_type = 'INTF' )
-        ( obj_name = 'Z_AFF_EXAMPLE_INTF' devclass = c_example_intf_package obj_type = 'INTF' )
-        ( obj_name = 'Z_AFF_EXAMPLE_CHKC' devclass = c_example_intf_package obj_type = 'CHKC' )
-        ( obj_name = 'Z_AFF_EXAMPLE_CHKO' devclass = c_example_intf_package obj_type = 'CHKO' )
-        ( obj_name = 'Z_AFF_EXAMPLE_CHKV' devclass = c_example_intf_package obj_type = 'CHKV' )
-        ( obj_name = 'Z_AFF_EXAMPLE_CLAS' devclass = c_example_intf_package obj_type = 'CLAS' )
-        ( obj_name = 'Z_AFF_EXAMPLE_DDLS' devclass = c_example_intf_package obj_type = 'DDLS' )
-        ( obj_name = 'Z_AFF_EXAMPLE_DDLX' devclass = c_example_intf_package obj_type = 'DDLX' )
-        ( obj_name = 'Z_AFF_EXAMPLE_DOMA' devclass = c_example_intf_package obj_type = 'DOMA' )
-        ( obj_name = 'Z_AFF_EXAMPLE_ENHO' devclass = c_example_intf_package obj_type = 'ENHO' )
-        ( obj_name = 'Z_AFF_EXAMPLE_ENHS' devclass = c_example_intf_package obj_type = 'ENHS' )
-        ( obj_name = 'Z_AFF_EXAMPLE_FUGR' devclass = c_example_intf_package obj_type = 'FUGR' )
-        ( obj_name = 'Z_AFF_NR' devclass = c_example_intf_package obj_type = 'NROB' )
+        ( obj_name = 'IF_AFF_TYPES_V1'         devclass = 'SAFF_CORE'            obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_OO_TYPES_V1'      devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = c_intf                    devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = c_intf_w_namespace        devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_CHKC_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_CHKO_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_CHKV_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_CLAS_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_DDLS_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_DDLX_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'ZIF_AFF_DOMA_V1'         devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_ENHO_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_ENHS_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_FUGR_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_FUNC_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_REPS_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_NROB_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_TABL_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = 'IF_AFF_INDX_V1'          devclass = 'SEO_AFF'              obj_type = 'INTF' )
+        ( obj_name = c_aff_example_intf        devclass = c_example_intf_package obj_type = 'INTF' )
+        ( obj_name = c_aff_example_intf_nspace devclass = c_example_intf_package obj_type = 'INTF' )
+        ( obj_name = 'Z_AFF_EXAMPLE_INTF'      devclass = c_example_intf_package obj_type = 'INTF' )
+        ( obj_name = 'Z_AFF_EXAMPLE_CHKC'      devclass = c_example_intf_package obj_type = 'CHKC' )
+        ( obj_name = 'Z_AFF_EXAMPLE_CHKO'      devclass = c_example_intf_package obj_type = 'CHKO' )
+        ( obj_name = 'Z_AFF_EXAMPLE_CHKV'      devclass = c_example_intf_package obj_type = 'CHKV' )
+        ( obj_name = 'Z_AFF_EXAMPLE_CLAS'      devclass = c_example_intf_package obj_type = 'CLAS' )
+        ( obj_name = 'Z_AFF_EXAMPLE_DDLS'      devclass = c_example_intf_package obj_type = 'DDLS' )
+        ( obj_name = 'Z_AFF_EXAMPLE_DDLX'      devclass = c_example_intf_package obj_type = 'DDLX' )
+        ( obj_name = 'Z_AFF_EXAMPLE_DOMA'      devclass = c_example_intf_package obj_type = 'DOMA' )
+        ( obj_name = 'Z_AFF_EXAMPLE_ENHO'      devclass = c_example_intf_package obj_type = 'ENHO' )
+        ( obj_name = 'Z_AFF_EXAMPLE_ENHS'      devclass = c_example_intf_package obj_type = 'ENHS' )
+        ( obj_name = 'Z_AFF_EXAMPLE_FUGR'      devclass = c_example_intf_package obj_type = 'FUGR' )
+        ( obj_name = 'Z_AFF_NR'                devclass = c_example_intf_package obj_type = 'NROB' )
     ).
     TRY.
         configure_file_handler( objects ).
@@ -1229,9 +1246,9 @@ CLASS ltc_generator IMPLEMENTATION.
     generator_double = NEW ltc_generator_double( generator_log ).
 
     cut = NEW lcl_generator(
-      aff_factory    = aff_factory_double
-      generator      = generator_double
-      writer         = writer_double
+      aff_factory = aff_factory_double
+      generator   = generator_double
+      writer      = writer_double
     ).
 
     INSERT LINES OF generator_double->get_log( )->get_messages( ) INTO TABLE expected_log_messages.
@@ -1272,17 +1289,17 @@ CLASS ltc_generator IMPLEMENTATION.
         file_name = |(NAMESP)IF_AFF_INTF_V1.{ <object>-obj_type }.json|.
       ENDIF.
       TRY.
-          data(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
+          DATA(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
         CATCH cx_aff_root.
           cl_abap_unit_assert=>fail( ).
       ENDTRY.
       files = VALUE #(
           object_to_file_name = VALUE #(
-              ( object = <object> file_name = file_name )
-          )
-        files = VALUE #(
-         ( obj_type = <object>-obj_type obj_name = <object>-obj_name file_name = file_name content = file_content )
-        ) )  .
+                                         ( object   = <object>          file_name = file_name )
+                                         )
+          files               = VALUE #(
+                                         ( obj_type = <object>-obj_type obj_name  = <object>-obj_name file_name = file_name content = file_content )
+                           ) ).
       cl_abap_testdouble=>configure_call( file_handler_double )->returning( files )->ignore_parameter( name = 'LOG' ).
       file_handler_double->serialize_objects( objects =  VALUE #( ( <object> ) ) log = NEW cl_aff_log( )  ).
     ENDLOOP.
@@ -1295,17 +1312,17 @@ CLASS ltc_generator IMPLEMENTATION.
     ENDTRY.
     files = VALUE #(
         object_to_file_name = VALUE #(
-            ( object = <object> file_name = file_name )
-        )
-      files = VALUE #(
-       ( obj_type = <object>-obj_type obj_name = <object>-obj_name file_name = file_name content = file_content )
-      ) )  .
+                                       ( object   = <object>          file_name = file_name )
+                                       )
+        files               = VALUE #(
+                                       ( obj_type = <object>-obj_type obj_name  = <object>-obj_name file_name = file_name content = file_content )
+                         ) ).
     cl_abap_testdouble=>configure_call( file_handler_double )->returning( files )->ignore_parameter( name = 'LOG' ).
     file_handler_double->serialize_objects( objects = VALUE #(
                                             ( obj_name = 'IF_AFF_FUGR_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_FUNC_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_REPS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-                                            )
+    )
                                             log     = NEW cl_aff_log( ) ).
     file_name = `file_of_indx_tabl.json`.
     TRY.
@@ -1315,16 +1332,16 @@ CLASS ltc_generator IMPLEMENTATION.
     ENDTRY.
     files = VALUE #(
         object_to_file_name = VALUE #(
-            ( object = <object> file_name = file_name )
-        )
-      files = VALUE #(
-       ( obj_type = <object>-obj_type obj_name = <object>-obj_name file_name = file_name content = file_content )
-      ) )  .
+                                       ( object   = <object>          file_name = file_name )
+                                       )
+        files               = VALUE #(
+                                       ( obj_type = <object>-obj_type obj_name  = <object>-obj_name file_name = file_name content = file_content )
+                         ) ).
     cl_abap_testdouble=>configure_call( file_handler_double )->returning( files )->ignore_parameter( name = 'LOG' ).
     file_handler_double->serialize_objects( objects = VALUE #(
                                             ( obj_name = 'IF_AFF_TABL_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_INDX_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-                                            )
+    )
                                             log     = NEW cl_aff_log( ) ).
   ENDMETHOD.
 
@@ -1537,14 +1554,14 @@ CLASS ltc_generator IMPLEMENTATION.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
     DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of AFF_EXAMPLE_INTF` ).
 
-    cut->zip->get(  EXPORTING name  = `intf/examples/aff_example_intf.intf.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get( EXPORTING name = `intf/examples/aff_example_intf.intf.json` IMPORTING content = DATA(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_content = text_handler->if_aff_content_handler~serialize( `File of zif_aff_intf_v1` ).
-    cut->zip->get(  EXPORTING name  = `intf/type/zif_aff_intf_v1.intf.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `intf/type/zif_aff_intf_v1.intf.json` IMPORTING content = act_content ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    cut->zip->get(  EXPORTING name  = `intf/intf-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `intf/intf-v1.json` IMPORTING content = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
     assert_logs_and_file_handler( ).
@@ -1573,14 +1590,14 @@ CLASS ltc_generator IMPLEMENTATION.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
     DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of /NAMESPACE/AFF_EXAMPLE_INTF` ).
 
-    cut->zip->get(  EXPORTING name  = `intf/examples/(namespace)aff_example_intf.intf.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get( EXPORTING name = `intf/examples/(namespace)aff_example_intf.intf.json` IMPORTING content = DATA(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_content = text_handler->if_aff_content_handler~serialize( `File of zif_aff_intf_v1` ).
-    cut->zip->get(  EXPORTING name  = `intf/type/zif_aff_intf_v1.intf.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `intf/type/zif_aff_intf_v1.intf.json` IMPORTING content = act_content ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    cut->zip->get(  EXPORTING name  = `intf/intf-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `intf/intf-v1.json` IMPORTING content = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `TEST ABC` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
     expected_report_log = VALUE #(
@@ -1609,20 +1626,20 @@ CLASS ltc_generator IMPLEMENTATION.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
     DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of Z_AFF_EXAMPLE_FUGR` ).
 
-    cut->zip->get(  EXPORTING name  = `fugr/examples/z_aff_example_fugr.fugr.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get( EXPORTING name = `fugr/examples/z_aff_example_fugr.fugr.json` IMPORTING content = DATA(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
     expected_content = text_handler->if_aff_content_handler~serialize( `File of REPS, FUNC, FUGR` ).
-    cut->zip->get(  EXPORTING name  = `fugr/type/file_of_reps_func_fugr.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `fugr/type/file_of_reps_func_fugr.json` IMPORTING content = act_content ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    cut->zip->get(  EXPORTING name  = `fugr/fugr-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `fugr/fugr-v1.json` IMPORTING content = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for FUGR` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    cut->zip->get(  EXPORTING name  = `fugr/func-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `fugr/func-v1.json` IMPORTING content = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for FUNC` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
-    cut->zip->get(  EXPORTING name  = `fugr/reps-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `fugr/reps-v1.json` IMPORTING content = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for REPS` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
@@ -1630,7 +1647,7 @@ CLASS ltc_generator IMPLEMENTATION.
   ( type = 'I' message_text = `Generator Log` )
   ( type = 'I' message_text = `Generator Log` )
   ( type = 'I' message_text = `Generator Log` )
-   ).
+    ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
@@ -1652,10 +1669,10 @@ CLASS ltc_generator IMPLEMENTATION.
 
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
     DATA(expected_content) = text_handler->if_aff_content_handler~serialize( `File of INDX, TABL` ).
-    cut->zip->get(  EXPORTING name  = `tabl/type/file_of_indx_tabl.json` IMPORTING content  = DATA(act_content) ).
+    cut->zip->get( EXPORTING name = `tabl/type/file_of_indx_tabl.json` IMPORTING content = DATA(act_content) ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
-    cut->zip->get(  EXPORTING name  = `tabl/indx-v1.json` IMPORTING content  = act_content ).
+    cut->zip->get( EXPORTING name = `tabl/indx-v1.json` IMPORTING content = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INDX` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
 
@@ -1766,7 +1783,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_consol = abap_true ).
 
     expected_report_log = VALUE #(
-  ( `Please fill out all fields (objecttype, interfacename, examplename)` ) ).
+  ( `Please fill out at least the fields objecttype and interfacename` ) ).
 
     " repo folder for one object
     create_new_cut_with_new_params(
@@ -1785,13 +1802,6 @@ CLASS ltc_generator IMPLEMENTATION.
       i_examp  = CONV #( c_aff_example_intf )
       i_consol = abap_true ).
 
-    create_new_cut_with_new_params(
-      i_repo   = abap_true
-      i_objtyp = 'INTF'
-      i_intf   = CONV #( c_intf )
-      i_type   = 'TY_MAIN'
-*     i_examp  = conv #( c_aff_example_intf )   examplename not supplied
-      i_consol = abap_true ).
 
   ENDMETHOD.
 
