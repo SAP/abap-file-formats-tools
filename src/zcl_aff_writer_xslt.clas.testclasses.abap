@@ -1087,7 +1087,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
   METHOD structure_with_language.
     DATA test_type TYPE lif_test_types=>structure_with_language.
-    test_type = VALUE #( language = 'E' language2 = 'D').
+    test_type = VALUE #( language = 'E' language2 = 'D' ).
 
     from_abap_to_json(
       EXPORTING
@@ -2585,7 +2585,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   METHOD structure_in_structure.
     DATA test_type TYPE zcl_aff_test_types=>my_structure3.
     test_type = VALUE #(
-      nested_struc = VALUE #( my_element = 'Nested Element')
+      nested_struc = VALUE #( my_element = 'Nested Element' )
       my_element = 'Not nested Element' ).
     DATA act_data LIKE test_type.
     exp_json = VALUE #(

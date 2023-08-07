@@ -352,7 +352,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( description = `Here are too many callbackclass links.` callback_class = `cl_aff_test_types_for_writer` minimum = '4').
+    exp_abap_doc = VALUE #( description = `Here are too many callbackclass links.` callback_class = `cl_aff_test_types_for_writer` minimum = '4' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
                                                               exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class } . First valid is used|
@@ -368,7 +368,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( description = `Here are too many required annotations.` required = abap_true min_length = '5' max_length = '10').
+    exp_abap_doc = VALUE #( description = `Here are too many required annotations.` required = abap_true min_length = '5' max_length = '10' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
                                                               exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-required } . First valid is used|
@@ -401,7 +401,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( description = `Wrong usage of callbackClass annotation.` default = '"4"').
+    exp_abap_doc = VALUE #( description = `Wrong usage of callbackClass annotation.` default = '"4"' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
