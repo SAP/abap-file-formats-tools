@@ -64,8 +64,7 @@ TYPES: BEGIN OF aff_object,
          interface      TYPE sobj_name,
          example        TYPE sobj_name,
          format_version TYPE i,
-       END OF aff_object,
-       aff_objects_table TYPE STANDARD TABLE OF aff_object.
+       END OF aff_object.
 
 
 CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
@@ -134,7 +133,6 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
 
     METHODS: get_replacing_table_and_intfs
       IMPORTING name_of_intf_of_mainobj TYPE string
-                example_files           TYPE if_aff_object_file_handler=>ty_object_files
       EXPORTING interfaces              TYPE clsname_tab,
       replace_names_in_string
         IMPORTING
@@ -147,7 +145,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
           filename               TYPE string
           replacing_table_string TYPE replacing_tab,
       generate_repo_folder
-        IMPORTING object           TYPE aff_object,
+        IMPORTING object TYPE aff_object,
       create_the_variable_dynamicaly
         IMPORTING absolute_typename TYPE string
         RETURNING VALUE(variable)   TYPE REF TO data
@@ -307,26 +305,26 @@ CLASS lcl_generator IMPLEMENTATION.
 
     DATA(object_type_folder_name) = to_lower( object-object_type ).
 
+    IF aff_factory IS NOT INITIAL.
+      DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
+    ELSE.
+      file_handler = cl_aff_factory=>get_object_file_handler( ).
+    ENDIF.
+
     IF object-example IS NOT INITIAL.
       SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @object-example AND object = @object-object_type INTO @DATA(example_obj_devclass).
       DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass = example_obj_devclass obj_type = object-object_type obj_name = object-example ).
-      IF aff_factory IS NOT INITIAL.
-        DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
-      ELSE.
-        file_handler = cl_aff_factory=>get_object_file_handler( ).
-      ENDIF.
       DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = aff_framework_log ).
 
-      get_replacing_table_and_intfs(
-        EXPORTING
-          name_of_intf_of_mainobj = CONV #( object-interface )
-          example_files           = example_files
-        IMPORTING
-          interfaces              = DATA(interfaces)
-      ).
       "adding the example files
       add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
     ENDIF.
+    get_replacing_table_and_intfs(
+      EXPORTING
+        name_of_intf_of_mainobj = CONV #( object-interface )
+      IMPORTING
+        interfaces              = DATA(interfaces)
+    ).
     DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
     CLEAR intf_objects.
 
@@ -393,32 +391,31 @@ CLASS lcl_generator IMPLEMENTATION.
 
     IF p_readm = abap_true.
       DATA(interfacename) = replace_names_in_string( content_as_string = to_lower( intfname ) replacing_table_string = replacing_table_string ).
+      DATA example_part TYPE string.
       IF object-example  IS NOT INITIAL.
         DATA(examplename) = replace_names_in_string( content_as_string = to_lower( object-example ) replacing_table_string = replacing_table_string ).
-        DATA(readme) = VALUE rswsourcet(
-            ( |# { object-object_type } File Format| )
-            ( `` )
-            ( `File | Cardinality | Definition | Schema | Example` )
-            ( `:--- | :---  | :--- | :--- | :---` )
-            ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
-              | \| [`{ examplename }.{ object_type_folder_name }.json`](./examples/{ examplename }.{ object_type_folder_name }.json)| )
-            ( `` )
-        ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
-
-      ELSE.
-        readme = VALUE rswsourcet(
-            ( |# { object-object_type } File Format| )
-            ( `` )
-            ( `File | Cardinality | Definition | Schema | Example` )
-            ( `:--- | :---  | :--- | :--- | :---` )
-            ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
-              | \| | )
-            ( `` )
-        ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
+        example_part = | \| [{ examplename }.{ object_type_folder_name }.json](./examples/{ examplename }.{ object_type_folder_name }.json)| .
       ENDIF.
+
+      DATA(readme) = VALUE rswsourcet(
+              ( |# { object-object_type } File Format| )
+              ( `` )
+              ( `File | Cardinality | Definition | Schema | Example` )
+              ( `:--- | :--- | :--- | :--- | :---` )
+              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
+                 example_part )
+              ( `` )
+      ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
+
+
       add_file_to_zip( i_stringtab_content = readme
                        i_file_name         = |{ object_type_folder_name }/README.md|
                        i_error_text        = |The readme for object { object-object_type } could not be created. Error when transforming readme content from string to xstring| ) ##NO_TEXT.
+
+
+
+
+
     ENDIF.
 
   ENDMETHOD.
@@ -1131,6 +1128,7 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
     METHODS repo_zip_fugr FOR TESTING RAISING cx_static_check.
     METHODS repo_zip_intf_w_namespace FOR TESTING RAISING cx_static_check.
     METHODS repo_zip_tabl FOR TESTING RAISING cx_static_check.
+    METHODS repo_zip_intf_no_ex FOR TESTING RAISING cx_static_check.
     CLASS-DATA function_test_environment TYPE REF TO if_function_test_environment.
     CLASS-DATA environment TYPE REF TO if_osql_test_environment.
     CLASS-METHODS class_setup.
@@ -1544,6 +1542,26 @@ CLASS ltc_generator IMPLEMENTATION.
     cut->zip->get( EXPORTING name = `intf/intf-v1.json` IMPORTING content = act_content ).
     expected_content = text_handler->if_aff_content_handler~serialize( `Test ST/Schema for INTF` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
+    assert_logs_and_file_handler( ).
+  ENDMETHOD.
+
+    METHOD repo_zip_intf_no_ex.
+    cut->set_parameters(
+      i_repo   = abap_true
+      i_objtyp = 'INTF'
+      i_intf   = CONV #( c_intf )
+      i_type   = 'TY_MAIN'
+      i_examp  = ''
+      i_disk   = abap_true
+    ).
+    "When
+    cut->start_of_selection( ).
+    "Then
+    cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
+    cl_abap_unit_assert=>assert_equals( act = lines( cut->zip->files ) exp = 3 ).
+    cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 1 ]-name exp = `intf/type/zif_aff_intf_v1.intf.json` ).
+    cl_abap_unit_assert=>assert_equals( act = cut->zip->files[ 2 ]-name exp = `intf/intf-v1.json` ).
+
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
