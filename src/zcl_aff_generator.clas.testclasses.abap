@@ -24,7 +24,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-  TYPES END OF include_in_include.
+TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -107,7 +107,7 @@ INTERFACE lif_test_types.
       fixpt          TYPE c LENGTH 1,
       msg_id         TYPE c LENGTH 20.
       INCLUDE TYPE ty_clif_properties.
-  TYPES END OF ty_class_properties.
+TYPES END OF ty_class_properties.
 
   TYPES:
     BEGIN OF ty_abap_type_structure,
@@ -201,7 +201,7 @@ CLASS ltcl_type_generator DEFINITION FINAL FOR TESTING
 
   PRIVATE SECTION.
     DATA:
-      cut        TYPE REF TO zcl_aff_generator,
+      cut        TYPE REF TO zif_aff_generator,
       exp_result TYPE string_table.
 
     METHODS:
@@ -222,8 +222,8 @@ CLASS ltcl_type_generator DEFINITION FINAL FOR TESTING
       no_header FOR TESTING RAISING cx_static_check,
       no_format_version FOR TESTING RAISING cx_static_check,
       no_structure FOR TESTING RAISING cx_static_check,
-    structure_on_top_level FOR TESTING RAISING cx_static_check,
-    table_on_top_level FOR TESTING RAISING cx_static_check,
+      structure_on_top_level FOR TESTING RAISING cx_static_check,
+      table_on_top_level FOR TESTING RAISING cx_static_check,
       setup,
       assert_output_equals
         IMPORTING
