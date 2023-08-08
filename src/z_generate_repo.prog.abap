@@ -1540,7 +1540,7 @@ CLASS ltc_generator IMPLEMENTATION.
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
-    METHOD repo_zip_intf_no_ex.
+  METHOD repo_zip_intf_no_ex.
     cut->set_parameters(
       i_repo   = abap_true
       i_objtyp = 'INTF'
