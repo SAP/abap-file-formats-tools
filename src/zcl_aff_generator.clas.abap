@@ -9,14 +9,6 @@ CLASS zcl_aff_generator DEFINITION
       IMPORTING
         writer TYPE REF TO zif_aff_writer.
 
-    METHODS generate_type
-      IMPORTING
-        data          TYPE data
-      RETURNING
-        VALUE(result) TYPE string_table
-      RAISING
-        zcx_aff_tools.
-
   PRIVATE SECTION.
     DATA:
       writer TYPE REF TO zif_aff_writer,
@@ -186,10 +178,6 @@ CLASS zcl_aff_generator IMPLEMENTATION.
 
   METHOD zif_aff_generator~get_log.
     log = me->log.
-  ENDMETHOD.
-
-  METHOD generate_type.
-    result = zif_aff_generator~generate_type( data ).
   ENDMETHOD.
 
 ENDCLASS.

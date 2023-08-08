@@ -58,7 +58,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( description = `This is the description.` title = `Title`).
+    exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
@@ -72,7 +72,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` minimum = `12` default = `"20"`).
+    exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` minimum = `12` default = `"20"` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
@@ -509,7 +509,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( title = `Title` minimum = `12` default = `"20"`).
+    exp_abap_doc = VALUE #( title = `Title` minimum = `12` default = `"20"` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
                                                               exp_text           = zif_aff_log=>co_msg115
@@ -525,7 +525,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( description = `Here is text between annotation` title = `Title` required = abap_true default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi`).
+    exp_abap_doc = VALUE #( description = `Here is text between annotation` title = `Title` required = abap_true default = `@link cl_aff_test_types_for_writer.data:enum_values.classic_badi` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
                                                               exp_text           = zif_aff_log=>co_msg116
