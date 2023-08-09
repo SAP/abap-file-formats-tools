@@ -201,7 +201,7 @@ CLASS ltcl_type_generator DEFINITION FINAL FOR TESTING
 
   PRIVATE SECTION.
     DATA:
-      cut        TYPE REF TO zcl_aff_generator,
+      cut        TYPE REF TO zif_aff_generator,
       exp_result TYPE string_table.
 
     METHODS:
@@ -222,8 +222,8 @@ CLASS ltcl_type_generator DEFINITION FINAL FOR TESTING
       no_header FOR TESTING RAISING cx_static_check,
       no_format_version FOR TESTING RAISING cx_static_check,
       no_structure FOR TESTING RAISING cx_static_check,
-    structure_on_top_level FOR TESTING RAISING cx_static_check,
-    table_on_top_level FOR TESTING RAISING cx_static_check,
+      structure_on_top_level FOR TESTING RAISING cx_static_check,
+      table_on_top_level FOR TESTING RAISING cx_static_check,
       setup,
       assert_output_equals
         IMPORTING

@@ -79,7 +79,7 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
     DATA:
       exp_transformation TYPE string_table,
       cut                TYPE REF TO zcl_aff_writer_xslt,
-      test_generator     TYPE REF TO zcl_aff_generator,
+      test_generator     TYPE REF TO zif_aff_generator,
       st_root_name       TYPE string VALUE 'root' ##NO_TEXT.
 
     METHODS: structure_with_incl FOR TESTING RAISING cx_static_check,
@@ -515,30 +515,30 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA transformation TYPE string_table.
     DATA(log) = NEW zcl_aff_log( ).
     transformation = VALUE #(
-              ( `<?sap.transform simple?>` )
-              ( `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` )
-              ( `<tt:root name="root"/>` )
-              ( `<tt:template>` )
-              ( `<tt:ref name="root">` )
-              ( `<tt:cond>` )
-              ( `  <object>` )
-              ( `    <tt:group>` )
-              ( `      <tt:cond s-check="not-initial(LANGUAGE)">` )
-              ( `        <str name="language">` )
-              ( `          <tt:value ref="LANGUAGE" option="format(language)"/>` )
-              ( `        </str>` )
-              ( `      </tt:cond>` )
-              ( `      <tt:cond s-check="not-initial(LANGUAGE2)">` )
-              ( `        <str name="language2">` )
-              ( `          <tt:value ref="LANGUAGE2" option="format(language)"/>` )
-              ( `        </str>` )
-              ( `      </tt:cond>` )
-              ( `    </tt:group>` )
-              ( `  </object>` )
-              ( `</tt:cond>` )
-              ( `</tt:ref>` )
-              ( `</tt:template>` )
-              ( `</tt:transform>` ) ).
+        ( `<?sap.transform simple?>` )
+        ( `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` )
+        ( `<tt:root name="root"/>` )
+        ( `<tt:template>` )
+        ( `<tt:ref name="root">` )
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond s-check="not-initial(LANGUAGE)">` )
+        ( `        <str name="language">` )
+        ( `          <tt:value ref="LANGUAGE" option="format(language)"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="not-initial(LANGUAGE2)">` )
+        ( `        <str name="language2">` )
+        ( `          <tt:value ref="LANGUAGE2" option="format(language)"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` )
+        ( `</tt:ref>` )
+        ( `</tt:template>` )
+        ( `</tt:transform>` ) ).
 
     DATA(is_valid) = cut->zif_aff_writer~validate( source = transformation log = log ).
 
@@ -550,30 +550,30 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     DATA transformation TYPE string_table.
     DATA(log) = NEW zcl_aff_log( ).
     transformation = VALUE #(
-              ( `<?sap.transform simple?>` )
-              ( `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` )
-              ( `<tt:root name="root"/>` )
-              ( `<tt:template>` )
-              ( `<tt:ref name="root">` )
-              ( `<tt:cond>` )
-              ( `  <object>` )
-              ( `    <tt:group>` )
-              ( `      <tt:cond s-check="not-initial(LANGUAGE)">` )
-              ( `        <str name="LANGUAGE">` )
-              ( `          <tt:value ref="LANGUAGE" option="format(language)"` ) "<-  missing closing tag />
-              ( `        </str>` )
-              ( `      </tt:cond>` )
-              ( `      <tt:cond s-check="not-initial(LANGUAGE2)">` )
-              ( `        <str name="LANGUAGE2">` )
-              ( `          <tt:value ref="LANGUAGE2" option="format(language)"/>` )
-              ( `        </str>` )
-              ( `      </tt:cond>` )
-              ( `    </tt:group>` )
-              ( `  </object>` )
-              ( `</tt:cond>` )
-              ( `</tt:ref>` )
-              ( `</tt:template>` )
-              ( `</tt:transform>` ) ).
+        ( `<?sap.transform simple?>` )
+        ( `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` )
+        ( `<tt:root name="root"/>` )
+        ( `<tt:template>` )
+        ( `<tt:ref name="root">` )
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond s-check="not-initial(LANGUAGE)">` )
+        ( `        <str name="LANGUAGE">` )
+        ( `          <tt:value ref="LANGUAGE" option="format(language)"` )       "<-  missing closing tag />
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="not-initial(LANGUAGE2)">` )
+        ( `        <str name="LANGUAGE2">` )
+        ( `          <tt:value ref="LANGUAGE2" option="format(language)"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` )
+        ( `</tt:ref>` )
+        ( `</tt:template>` )
+        ( `</tt:transform>` ) ).
 
     DATA(is_valid) = cut->zif_aff_writer~validate( source = transformation log = log ).
 
@@ -683,7 +683,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
     DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
 
     DATA(test_generator) = NEW zcl_aff_generator( cut ).
-    DATA(st_content) = test_generator->generate_type( test_type ).
+    DATA(st_content) = test_generator->zif_aff_generator~generate_type( test_type ).
 
     DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
     st_name = |{ st_name WIDTH = 30 PAD = '=' }{ c_ext_xslt_source }|.
@@ -776,10 +776,10 @@ CLASS ltcl_integration_test IMPLEMENTATION.
   METHOD include_table.
     DATA test_type TYPE lif_test_types=>include_table.
     test_type = VALUE #(
-        table = VALUE #(
-            ( element_1 = 1 element_2 = 'obj1_element_2_value' )
-            ( element_1 = 2 element_2 = 'obj2_element_2_value' )
-        )
+        table             = VALUE #(
+                         ( element_1 = 1 element_2 = 'obj1_element_2_value' )
+                         ( element_1 = 2 element_2 = 'obj2_element_2_value' )
+                         )
         include_element_1 = 1 ).
 
     from_abap_to_json(
@@ -1135,7 +1135,7 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
     DATA:
       exp_transformation TYPE string_table,
       cut                TYPE REF TO zcl_aff_writer_xslt,
-      test_generator     TYPE REF TO zcl_aff_generator,
+      test_generator     TYPE REF TO zif_aff_generator,
       st_root_name       TYPE string VALUE 'root' ##NO_TEXT,
       log                TYPE REF TO zif_aff_log.
 
@@ -1225,7 +1225,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
     me->exp_transformation = VALUE #(
-            ( `<tt:cond>` )
+        ( `<tt:cond>` )
         ( `  <object>` )
         ( `    <tt:group>` )
         ( `      <tt:cond s-check="not-initial(MY_FIRST_ELEMENT)" frq="?">` )
@@ -1376,14 +1376,14 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
     me->exp_transformation = VALUE #(
-( `<tt:cond>` )
-( `  <str>` )
-( `    <tt:value map="` )
-( `      val(N('00'))=xml('general'),` )
-( `      val(N('01'))=xml('classicBadi')"` )
-( `    />` )
-( `  </str>` )
-( `</tt:cond>` ) ).
+        ( `<tt:cond>` )
+        ( `  <str>` )
+        ( `    <tt:value map="` )
+        ( `      val(N('00'))=xml('general'),` )
+        ( `      val(N('01'))=xml('classicBadi')"` )
+        ( `    />` )
+        ( `  </str>` )
+        ( `</tt:cond>` ) ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
@@ -1448,92 +1448,92 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>ty_class_properties.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
-( `<tt:cond>` )
-( `  <object>` )
-( `    <tt:assign to-ref="CLASS_CATEGORY" val="N('00')"/>` )
-( `    <tt:group>` )
-( `      <tt:cond s-check="not-initial(HEADER)" frq="?">` )
-( `        <object name="header" tt:ref="HEADER">` )
-( `          <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="C('')"/>` )
-( `          <tt:group>` )
-( `            <tt:cond s-check="not-initial(DESCRIPTION)" frq="?">` )
-( `              <str name="description">` )
-( `                <tt:value ref="DESCRIPTION"/>` )
-( `              </str>` )
-( `            </tt:cond>` )
-( `            <tt:cond s-check="not-initial(ORIGINAL_LANGUAGE)" frq="?">` )
-( `              <str name="originalLanguage">` )
-( `                <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-( `                  <tt:with-parameter name="language" ref="ORIGINAL_LANGUAGE"/>` )
-( `                </tt:call-method>` )
-( `              </str>` )
-( `            </tt:cond>` )
-( `            <tt:cond s-check="ABAP_LANGUAGE_VERSION!=C('')" frq="?">` )
-( `              <str name="abapLanguageVersion">` )
-( `                <tt:deserialize>` )
-( `                  <tt:read type="C" var="VARIABLE"/>` )
-( `                  <tt:cond-var check="VARIABLE='standard'">` )
-( `                    <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="''"/>` )
-( `                  </tt:cond-var>` )
-( `                  <tt:cond-var check="VARIABLE='cloudDevelopment'">` )
-( `                    <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="'5'"/>` )
-( `                  </tt:cond-var>` )
-( `                 </tt:deserialize>` )
-( `                <tt:serialize>` )
-( `                  <tt:value ref="ABAP_LANGUAGE_VERSION" map="` )
-( `                    val('')=xml('standard'),` )
-( `                    val('5')=xml('cloudDevelopment')"` )
-( `                  />` )
-( `                </tt:serialize>` )
-( `              </str>` )
-( `            </tt:cond>` )
-( `            <tt:d-cond frq="*">` )
-( `               <_ tt:lax="on">` )
-( `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-( `                  <tt:with-parameter name="MEMBERS" val="'description;originalLanguage;abapLanguageVersion;'"/>` )
-( `                </tt:call-method>` )
-( `                <tt:skip/>` )
-( `              </_>` )
-( `            </tt:d-cond>` )
-( `            <tt:d-cond frq="?">` )
-( `              <__/>` )
-( `            </tt:d-cond>` )
-( `          </tt:group>` )
-( `        </object>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="CLASS_CATEGORY!=N('00')" frq="?">` )
-( `        <str name="classCategory">` )
-( `          <tt:deserialize>` )
-( `            <tt:read type="C" var="VARIABLE"/>` )
-( `            <tt:cond-var check="VARIABLE='general'">` )
-( `              <tt:assign to-ref="CLASS_CATEGORY" val="N('00')"/>` )
-( `            </tt:cond-var>` )
-( `            <tt:cond-var check="VARIABLE='exitClass'">` )
-( `              <tt:assign to-ref="CLASS_CATEGORY" val="N('01')"/>` )
-( `            </tt:cond-var>` )
-( `           </tt:deserialize>` )
-( `          <tt:serialize>` )
-( `            <tt:value ref="CLASS_CATEGORY" map="` )
-( `              val(N('00'))=xml('general'),` )
-( `              val(N('01'))=xml('exitClass')"` )
-( `            />` )
-( `          </tt:serialize>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:d-cond frq="*">` )
-( `         <_ tt:lax="on">` )
-( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-( `            <tt:with-parameter name="MEMBERS" val="'header;classCategory;'"/>` )
-( `          </tt:call-method>` )
-( `          <tt:skip/>` )
-( `        </_>` )
-( `      </tt:d-cond>` )
-( `      <tt:d-cond frq="?">` )
-( `        <__/>` )
-( `      </tt:d-cond>` )
-( `    </tt:group>` )
-( `  </object>` )
-( `</tt:cond>` ) ).
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:assign to-ref="CLASS_CATEGORY" val="N('00')"/>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond s-check="not-initial(HEADER)" frq="?">` )
+        ( `        <object name="header" tt:ref="HEADER">` )
+        ( `          <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="C('')"/>` )
+        ( `          <tt:group>` )
+        ( `            <tt:cond s-check="not-initial(DESCRIPTION)" frq="?">` )
+        ( `              <str name="description">` )
+        ( `                <tt:value ref="DESCRIPTION"/>` )
+        ( `              </str>` )
+        ( `            </tt:cond>` )
+        ( `            <tt:cond s-check="not-initial(ORIGINAL_LANGUAGE)" frq="?">` )
+        ( `              <str name="originalLanguage">` )
+        ( `                <tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
+        ( `                  <tt:with-parameter name="language" ref="ORIGINAL_LANGUAGE"/>` )
+        ( `                </tt:call-method>` )
+        ( `              </str>` )
+        ( `            </tt:cond>` )
+        ( `            <tt:cond s-check="ABAP_LANGUAGE_VERSION!=C('')" frq="?">` )
+        ( `              <str name="abapLanguageVersion">` )
+        ( `                <tt:deserialize>` )
+        ( `                  <tt:read type="C" var="VARIABLE"/>` )
+        ( `                  <tt:cond-var check="VARIABLE='standard'">` )
+        ( `                    <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="''"/>` )
+        ( `                  </tt:cond-var>` )
+        ( `                  <tt:cond-var check="VARIABLE='cloudDevelopment'">` )
+        ( `                    <tt:assign to-ref="ABAP_LANGUAGE_VERSION" val="'5'"/>` )
+        ( `                  </tt:cond-var>` )
+        ( `                 </tt:deserialize>` )
+        ( `                <tt:serialize>` )
+        ( `                  <tt:value ref="ABAP_LANGUAGE_VERSION" map="` )
+        ( `                    val('')=xml('standard'),` )
+        ( `                    val('5')=xml('cloudDevelopment')"` )
+        ( `                  />` )
+        ( `                </tt:serialize>` )
+        ( `              </str>` )
+        ( `            </tt:cond>` )
+        ( `            <tt:d-cond frq="*">` )
+        ( `               <_ tt:lax="on">` )
+        ( `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+        ( `                  <tt:with-parameter name="MEMBERS" val="'description;originalLanguage;abapLanguageVersion;'"/>` )
+        ( `                </tt:call-method>` )
+        ( `                <tt:skip/>` )
+        ( `              </_>` )
+        ( `            </tt:d-cond>` )
+        ( `            <tt:d-cond frq="?">` )
+        ( `              <__/>` )
+        ( `            </tt:d-cond>` )
+        ( `          </tt:group>` )
+        ( `        </object>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="CLASS_CATEGORY!=N('00')" frq="?">` )
+        ( `        <str name="classCategory">` )
+        ( `          <tt:deserialize>` )
+        ( `            <tt:read type="C" var="VARIABLE"/>` )
+        ( `            <tt:cond-var check="VARIABLE='general'">` )
+        ( `              <tt:assign to-ref="CLASS_CATEGORY" val="N('00')"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='exitClass'">` )
+        ( `              <tt:assign to-ref="CLASS_CATEGORY" val="N('01')"/>` )
+        ( `            </tt:cond-var>` )
+        ( `           </tt:deserialize>` )
+        ( `          <tt:serialize>` )
+        ( `            <tt:value ref="CLASS_CATEGORY" map="` )
+        ( `              val(N('00'))=xml('general'),` )
+        ( `              val(N('01'))=xml('exitClass')"` )
+        ( `            />` )
+        ( `          </tt:serialize>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:d-cond frq="*">` )
+        ( `         <_ tt:lax="on">` )
+        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'header;classCategory;'"/>` )
+        ( `          </tt:call-method>` )
+        ( `          <tt:skip/>` )
+        ( `        </_>` )
+        ( `      </tt:d-cond>` )
+        ( `      <tt:d-cond frq="?">` )
+        ( `        <__/>` )
+        ( `      </tt:d-cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` ) ).
     validate_output( act = act_output ).
   ENDMETHOD.
 
@@ -1766,139 +1766,140 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
-( `<tt:cond>` )
-( `  <object>` )
-( `    <tt:assign to-ref="FOUR_BYTE_INT" val="I(5)"/>` )
-( `    <tt:assign to-ref="EIGHT_BYTE_INT" val="INT8(55)"/>` )
-( `    <tt:assign to-ref="BIN_FLOAT" val="F('4.3')"/>` )
-( `    <tt:assign to-ref="BYTE_LIKE" val="X('FFFF')"/>` )
-( `    <tt:assign to-ref="BYTE_LIKE2" val="X('FF00FF')"/>` )
-( `    <tt:assign to-ref="DECIMAL_FLOAT_16" val="DECFLOAT16('25.26')"/>` )
-( `    <tt:assign to-ref="DECIMAL_FLOAT_34" val="DECFLOAT34('123.05')"/>` )
-( `    <tt:assign to-ref="PACKED_NUMBER" val="P(123.45)"/>` )
-( `    <tt:assign to-ref="NUMERIC_TEXT" val="N('1067')"/>` )
-( `    <tt:assign to-ref="CHARACTER_TEXT" val="C('abcde')"/>` )
-( `    <tt:assign to-ref="STRING_TEXT" val="C('Default text')"/>` )
-( `    <tt:assign to-ref="DATE_FIELD" val="D('19720401')"/>` )
-( `    <tt:assign to-ref="TIME_FIELD" val="T('201500')"/>` )
-( `    <tt:assign to-ref="BOOL_TRUE" val="C('X')"/>` )
-( `    <tt:assign to-ref="BOOL_FALSE" val="C('')"/>` )
-( `    <tt:assign to-ref="ENUM_TYPE" val="N('01')"/>` )
-( `    <tt:group>` )
-( `      <tt:cond s-check="FOUR_BYTE_INT!=I(5)" frq="?">` )
-( `        <num name="fourByteInt">` )
-( `          <tt:value ref="FOUR_BYTE_INT" option="format(alpha)"/>` )
-( `        </num>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="EIGHT_BYTE_INT!=INT8(55)" frq="?">` )
-( `        <num name="eightByteInt">` )
-( `          <tt:value ref="EIGHT_BYTE_INT" option="format(alpha)"/>` )
-( `        </num>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="BIN_FLOAT!=F('4.3')" frq="?">` )
-( `        <num name="binFloat">` )
-( `          <tt:value ref="BIN_FLOAT" option="format(alpha)"/>` )
-( `        </num>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="BYTE_LIKE!=X('FFFF')" frq="?">` )
-( `        <str name="byteLike">` )
-( `          <tt:value ref="BYTE_LIKE"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="BYTE_LIKE2!=X('FF00FF')" frq="?">` )
-( `        <str name="byteLike2">` )
-( `          <tt:value ref="BYTE_LIKE2"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="DECIMAL_FLOAT_16!=DECFLOAT16('25.26')" frq="?">` )
-( `        <num name="decimalFloat16">` )
-( `          <tt:value ref="DECIMAL_FLOAT_16" option="format(alpha)"/>` )
-( `        </num>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="DECIMAL_FLOAT_34!=DECFLOAT34('123.05')" frq="?">` )
-( `        <num name="decimalFloat34">` )
-( `          <tt:value ref="DECIMAL_FLOAT_34" option="format(alpha)"/>` )
-( `        </num>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="PACKED_NUMBER!=P(123.45)" frq="?">` )
-( `        <num name="packedNumber">` )
-( `          <tt:value ref="PACKED_NUMBER" option="format(alpha)"/>` )
-( `        </num>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="NUMERIC_TEXT!=N('1067')" frq="?">` )
-( `        <str name="numericText">` )
-( `          <tt:value ref="NUMERIC_TEXT"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="CHARACTER_TEXT!=C('abcde')" frq="?">` )
-( `        <str name="characterText">` )
-( `          <tt:value ref="CHARACTER_TEXT"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="STRING_TEXT!=C('Default text')" frq="?">` )
-( `        <str name="stringText">` )
-( `          <tt:value ref="STRING_TEXT"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="DATE_FIELD!=D('19720401')" frq="?">` )
-( `        <str name="dateField">` )
-( `          <tt:value ref="DATE_FIELD" option="format(dateTimeOffset)"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="TIME_FIELD!=T('201500')" frq="?">` )
-( `        <str name="timeField">` )
-( `          <tt:value ref="TIME_FIELD" option="format(dateTimeOffset)"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="not-initial(DATE_TIME_FIELD)" frq="?">` )
-( `        <str name="dateTimeField">` )
-( `          <tt:value ref="DATE_TIME_FIELD" option="format(dateTimeOffset)"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="BOOL_TRUE!=C('X')" frq="?">` )
-( `        <bool name="boolTrue">` )
-( `          <tt:value ref="BOOL_TRUE" option="format(boolean)"/>` )
-( `        </bool>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="BOOL_FALSE!=C('')" frq="?">` )
-( `        <bool name="boolFalse">` )
-( `          <tt:value ref="BOOL_FALSE" option="format(boolean)"/>` )
-( `        </bool>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="ENUM_TYPE!=N('01')" frq="?">` )
-( `        <str name="enumType">` )
-( `          <tt:deserialize>` )
-( `            <tt:read type="C" var="VARIABLE"/>` )
-( `            <tt:cond-var check="VARIABLE='general'">` )
-( `              <tt:assign to-ref="ENUM_TYPE" val="N('00')"/>` )
-( `            </tt:cond-var>` )
-( `            <tt:cond-var check="VARIABLE='exitClass'">` )
-( `              <tt:assign to-ref="ENUM_TYPE" val="N('01')"/>` )
-( `            </tt:cond-var>` )
-( `           </tt:deserialize>` )
-( `          <tt:serialize>` )
-( `            <tt:value ref="ENUM_TYPE" map="` )
-( `              val(N('00'))=xml('general'),` )
-( `              val(N('01'))=xml('exitClass')"` )
-( `            />` )
-( `          </tt:serialize>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:d-cond frq="*">` )
-( `         <_ tt:lax="on">` )
-( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-( `            <tt:with-parameter name="MEMBERS" val="'fourByteInt;eightByteInt;binFloat;byteLike;byteLike2;decimalFloat16;decimalFloat34;packedNumber;numericText;characterText;stringText;dateField;timeField;dateTimeField;boolTrue;boolFalse;enumType` &&
-`;'"/>` )
-( `          </tt:call-method>` )
-( `          <tt:skip/>` )
-( `        </_>` )
-( `      </tt:d-cond>` )
-( `      <tt:d-cond frq="?">` )
-( `        <__/>` )
-( `      </tt:d-cond>` )
-( `    </tt:group>` )
-( `  </object>` )
-( `</tt:cond>` ) ).
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:assign to-ref="FOUR_BYTE_INT" val="I(5)"/>` )
+        ( `    <tt:assign to-ref="EIGHT_BYTE_INT" val="INT8(55)"/>` )
+        ( `    <tt:assign to-ref="BIN_FLOAT" val="F('4.3')"/>` )
+        ( `    <tt:assign to-ref="BYTE_LIKE" val="X('FFFF')"/>` )
+        ( `    <tt:assign to-ref="BYTE_LIKE2" val="X('FF00FF')"/>` )
+        ( `    <tt:assign to-ref="DECIMAL_FLOAT_16" val="DECFLOAT16('25.26')"/>` )
+        ( `    <tt:assign to-ref="DECIMAL_FLOAT_34" val="DECFLOAT34('123.05')"/>` )
+        ( `    <tt:assign to-ref="PACKED_NUMBER" val="P(123.45)"/>` )
+        ( `    <tt:assign to-ref="NUMERIC_TEXT" val="N('1067')"/>` )
+        ( `    <tt:assign to-ref="CHARACTER_TEXT" val="C('abcde')"/>` )
+        ( `    <tt:assign to-ref="STRING_TEXT" val="C('Default text')"/>` )
+        ( `    <tt:assign to-ref="DATE_FIELD" val="D('19720401')"/>` )
+        ( `    <tt:assign to-ref="TIME_FIELD" val="T('201500')"/>` )
+        ( `    <tt:assign to-ref="BOOL_TRUE" val="C('X')"/>` )
+        ( `    <tt:assign to-ref="BOOL_FALSE" val="C('')"/>` )
+        ( `    <tt:assign to-ref="ENUM_TYPE" val="N('01')"/>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond s-check="FOUR_BYTE_INT!=I(5)" frq="?">` )
+        ( `        <num name="fourByteInt">` )
+        ( `          <tt:value ref="FOUR_BYTE_INT" option="format(alpha)"/>` )
+        ( `        </num>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="EIGHT_BYTE_INT!=INT8(55)" frq="?">` )
+        ( `        <num name="eightByteInt">` )
+        ( `          <tt:value ref="EIGHT_BYTE_INT" option="format(alpha)"/>` )
+        ( `        </num>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="BIN_FLOAT!=F('4.3')" frq="?">` )
+        ( `        <num name="binFloat">` )
+        ( `          <tt:value ref="BIN_FLOAT" option="format(alpha)"/>` )
+        ( `        </num>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="BYTE_LIKE!=X('FFFF')" frq="?">` )
+        ( `        <str name="byteLike">` )
+        ( `          <tt:value ref="BYTE_LIKE"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="BYTE_LIKE2!=X('FF00FF')" frq="?">` )
+        ( `        <str name="byteLike2">` )
+        ( `          <tt:value ref="BYTE_LIKE2"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="DECIMAL_FLOAT_16!=DECFLOAT16('25.26')" frq="?">` )
+        ( `        <num name="decimalFloat16">` )
+        ( `          <tt:value ref="DECIMAL_FLOAT_16" option="format(alpha)"/>` )
+        ( `        </num>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="DECIMAL_FLOAT_34!=DECFLOAT34('123.05')" frq="?">` )
+        ( `        <num name="decimalFloat34">` )
+        ( `          <tt:value ref="DECIMAL_FLOAT_34" option="format(alpha)"/>` )
+        ( `        </num>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="PACKED_NUMBER!=P(123.45)" frq="?">` )
+        ( `        <num name="packedNumber">` )
+        ( `          <tt:value ref="PACKED_NUMBER" option="format(alpha)"/>` )
+        ( `        </num>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="NUMERIC_TEXT!=N('1067')" frq="?">` )
+        ( `        <str name="numericText">` )
+        ( `          <tt:value ref="NUMERIC_TEXT"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="CHARACTER_TEXT!=C('abcde')" frq="?">` )
+        ( `        <str name="characterText">` )
+        ( `          <tt:value ref="CHARACTER_TEXT"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="STRING_TEXT!=C('Default text')" frq="?">` )
+        ( `        <str name="stringText">` )
+        ( `          <tt:value ref="STRING_TEXT"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="DATE_FIELD!=D('19720401')" frq="?">` )
+        ( `        <str name="dateField">` )
+        ( `          <tt:value ref="DATE_FIELD" option="format(dateTimeOffset)"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="TIME_FIELD!=T('201500')" frq="?">` )
+        ( `        <str name="timeField">` )
+        ( `          <tt:value ref="TIME_FIELD" option="format(dateTimeOffset)"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="not-initial(DATE_TIME_FIELD)" frq="?">` )
+        ( `        <str name="dateTimeField">` )
+        ( `          <tt:value ref="DATE_TIME_FIELD" option="format(dateTimeOffset)"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="BOOL_TRUE!=C('X')" frq="?">` )
+        ( `        <bool name="boolTrue">` )
+        ( `          <tt:value ref="BOOL_TRUE" option="format(boolean)"/>` )
+        ( `        </bool>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="BOOL_FALSE!=C('')" frq="?">` )
+        ( `        <bool name="boolFalse">` )
+        ( `          <tt:value ref="BOOL_FALSE" option="format(boolean)"/>` )
+        ( `        </bool>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond s-check="ENUM_TYPE!=N('01')" frq="?">` )
+        ( `        <str name="enumType">` )
+        ( `          <tt:deserialize>` )
+        ( `            <tt:read type="C" var="VARIABLE"/>` )
+        ( `            <tt:cond-var check="VARIABLE='general'">` )
+        ( `              <tt:assign to-ref="ENUM_TYPE" val="N('00')"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='exitClass'">` )
+        ( `              <tt:assign to-ref="ENUM_TYPE" val="N('01')"/>` )
+        ( `            </tt:cond-var>` )
+        ( `           </tt:deserialize>` )
+        ( `          <tt:serialize>` )
+        ( `            <tt:value ref="ENUM_TYPE" map="` )
+        ( `              val(N('00'))=xml('general'),` )
+        ( `              val(N('01'))=xml('exitClass')"` )
+        ( `            />` )
+        ( `          </tt:serialize>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:d-cond frq="*">` )
+        ( `         <_ tt:lax="on">` )
+        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+        (
+`            <tt:with-parameter name="MEMBERS" val="'fourByteInt;eightByteInt;binFloat;byteLike;byteLike2;decimalFloat16;decimalFloat34;packedNumber;numericText;characterText;stringText;dateField;timeField;dateTimeField;boolTrue;boolFalse;enumType` &&
+                       `;'"/>` )
+        ( `          </tt:call-method>` )
+        ( `          <tt:skip/>` )
+        ( `        </_>` )
+        ( `      </tt:d-cond>` )
+        ( `      <tt:d-cond frq="?">` )
+        ( `        <__/>` )
+        ( `      </tt:d-cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` ) ).
 
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
@@ -1913,74 +1914,74 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
-( `<tt:cond>` )
-( `  <object>` )
-( `    <tt:assign to-ref="STRING_ELEMENT" val="C('DefaultString')"/>` )
-( `    <tt:assign to-ref="ENUM_REQUIRED" val="N('01')"/>` )
-( `    <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('01')"/>` )
-( `    <tt:group>` )
-( `      <tt:cond frq="?">` )
-( `        <num name="integer">` )
-( `          <tt:value ref="INTEGER" option="format(alpha)"/>` )
-( `        </num>` )
-( `      </tt:cond>` )
-( `      <tt:cond frq="?">` )
-( `        <str name="stringElement">` )
-( `          <tt:value ref="STRING_ELEMENT"/>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond frq="?">` )
-( `        <str name="enumRequired">` )
-( `          <tt:deserialize>` )
-( `            <tt:read type="C" var="VARIABLE"/>` )
-( `            <tt:cond-var check="VARIABLE='general'">` )
-( `              <tt:assign to-ref="ENUM_REQUIRED" val="N('00')"/>` )
-( `            </tt:cond-var>` )
-( `            <tt:cond-var check="VARIABLE='exitClass'">` )
-( `              <tt:assign to-ref="ENUM_REQUIRED" val="N('01')"/>` )
-( `            </tt:cond-var>` )
-( `           </tt:deserialize>` )
-( `          <tt:serialize>` )
-( `            <tt:value ref="ENUM_REQUIRED" map="` )
-( `              val(N('00'))=xml('general'),` )
-( `              val(N('01'))=xml('exitClass')"` )
-( `            />` )
-( `          </tt:serialize>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond frq="?">` )
-( `        <str name="enumShowAlways">` )
-( `          <tt:deserialize>` )
-( `            <tt:read type="C" var="VARIABLE"/>` )
-( `            <tt:cond-var check="VARIABLE='general'">` )
-( `              <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('00')"/>` )
-( `            </tt:cond-var>` )
-( `            <tt:cond-var check="VARIABLE='exitClass'">` )
-( `              <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('01')"/>` )
-( `            </tt:cond-var>` )
-( `           </tt:deserialize>` )
-( `          <tt:serialize>` )
-( `            <tt:value ref="ENUM_SHOW_ALWAYS" map="` )
-( `              val(N('00'))=xml('general'),` )
-( `              val(N('01'))=xml('exitClass')"` )
-( `            />` )
-( `          </tt:serialize>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:d-cond frq="*">` )
-( `         <_ tt:lax="on">` )
-( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-( `            <tt:with-parameter name="MEMBERS" val="'integer;stringElement;enumRequired;enumShowAlways;'"/>` )
-( `          </tt:call-method>` )
-( `          <tt:skip/>` )
-( `        </_>` )
-( `      </tt:d-cond>` )
-( `      <tt:d-cond frq="?">` )
-( `        <__/>` )
-( `      </tt:d-cond>` )
-( `    </tt:group>` )
-( `  </object>` )
-( `</tt:cond>` ) ).
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:assign to-ref="STRING_ELEMENT" val="C('DefaultString')"/>` )
+        ( `    <tt:assign to-ref="ENUM_REQUIRED" val="N('01')"/>` )
+        ( `    <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('01')"/>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond frq="?">` )
+        ( `        <num name="integer">` )
+        ( `          <tt:value ref="INTEGER" option="format(alpha)"/>` )
+        ( `        </num>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond frq="?">` )
+        ( `        <str name="stringElement">` )
+        ( `          <tt:value ref="STRING_ELEMENT"/>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond frq="?">` )
+        ( `        <str name="enumRequired">` )
+        ( `          <tt:deserialize>` )
+        ( `            <tt:read type="C" var="VARIABLE"/>` )
+        ( `            <tt:cond-var check="VARIABLE='general'">` )
+        ( `              <tt:assign to-ref="ENUM_REQUIRED" val="N('00')"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='exitClass'">` )
+        ( `              <tt:assign to-ref="ENUM_REQUIRED" val="N('01')"/>` )
+        ( `            </tt:cond-var>` )
+        ( `           </tt:deserialize>` )
+        ( `          <tt:serialize>` )
+        ( `            <tt:value ref="ENUM_REQUIRED" map="` )
+        ( `              val(N('00'))=xml('general'),` )
+        ( `              val(N('01'))=xml('exitClass')"` )
+        ( `            />` )
+        ( `          </tt:serialize>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:cond frq="?">` )
+        ( `        <str name="enumShowAlways">` )
+        ( `          <tt:deserialize>` )
+        ( `            <tt:read type="C" var="VARIABLE"/>` )
+        ( `            <tt:cond-var check="VARIABLE='general'">` )
+        ( `              <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('00')"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='exitClass'">` )
+        ( `              <tt:assign to-ref="ENUM_SHOW_ALWAYS" val="N('01')"/>` )
+        ( `            </tt:cond-var>` )
+        ( `           </tt:deserialize>` )
+        ( `          <tt:serialize>` )
+        ( `            <tt:value ref="ENUM_SHOW_ALWAYS" map="` )
+        ( `              val(N('00'))=xml('general'),` )
+        ( `              val(N('01'))=xml('exitClass')"` )
+        ( `            />` )
+        ( `          </tt:serialize>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:d-cond frq="*">` )
+        ( `         <_ tt:lax="on">` )
+        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'integer;stringElement;enumRequired;enumShowAlways;'"/>` )
+        ( `          </tt:call-method>` )
+        ( `          <tt:skip/>` )
+        ( `        </_>` )
+        ( `      </tt:d-cond>` )
+        ( `      <tt:d-cond frq="?">` )
+        ( `        <__/>` )
+        ( `      </tt:d-cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` ) ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
@@ -1994,74 +1995,74 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
            ( `<tt:cond>` )
-        ( `  <object>` )
-        ( `    <tt:assign to-ref="OUTER_COMPONENT" val="I(10)"/>` )
-        ( `    <tt:group>` )
-        ( `      <tt:cond s-check="OUTER_COMPONENT!=I(10)" frq="?">` )
-        ( `        <num name="outerComponent">` )
-        ( `          <tt:value ref="OUTER_COMPONENT" option="format(alpha)"/>` )
-        ( `        </num>` )
-        ( `      </tt:cond>` )
-        ( `      <tt:cond s-check="not-initial(MIDDLE_STRUC)" frq="?">` )
-        ( `        <object name="middleStruc" tt:ref="MIDDLE_STRUC">` )
-        ( `          <tt:assign to-ref="MIDDLE_COMPONENT" val="C('abcd')"/>` )
-        ( `          <tt:group>` )
-        ( `            <tt:cond s-check="MIDDLE_COMPONENT!=C('abcd')" frq="?">` )
-        ( `              <str name="middleComponent">` )
-        ( `                <tt:value ref="MIDDLE_COMPONENT"/>` )
-        ( `              </str>` )
-        ( `            </tt:cond>` )
-        ( `            <tt:cond s-check="not-initial(INNER_STRUC)" frq="?">` )
-        ( `              <object name="innerStruc" tt:ref="INNER_STRUC">` )
-        ( `                <tt:assign to-ref="INNER_COMPONENT" val="C('Default Value')"/>` )
-        ( `                <tt:group>` )
-        ( `                  <tt:cond s-check="INNER_COMPONENT!=C('Default Value')" frq="?">` )
-        ( `                    <str name="innerComponent">` )
-        ( `                      <tt:value ref="INNER_COMPONENT"/>` )
-        ( `                    </str>` )
-        ( `                  </tt:cond>` )
-        ( `                  <tt:d-cond frq="*">` )
-        ( `                     <_ tt:lax="on">` )
-        ( `                      <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `                        <tt:with-parameter name="MEMBERS" val="'innerComponent;'"/>` )
-        ( `                      </tt:call-method>` )
-        ( `                      <tt:skip/>` )
-        ( `                    </_>` )
-        ( `                  </tt:d-cond>` )
-        ( `                  <tt:d-cond frq="?">` )
-        ( `                    <__/>` )
-        ( `                  </tt:d-cond>` )
-        ( `                </tt:group>` )
-        ( `              </object>` )
-        ( `            </tt:cond>` )
-        ( `            <tt:d-cond frq="*">` )
-        ( `               <_ tt:lax="on">` )
-        ( `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `                  <tt:with-parameter name="MEMBERS" val="'middleComponent;innerStruc;'"/>` )
-        ( `                </tt:call-method>` )
-        ( `                <tt:skip/>` )
-        ( `              </_>` )
-        ( `            </tt:d-cond>` )
-        ( `            <tt:d-cond frq="?">` )
-        ( `              <__/>` )
-        ( `            </tt:d-cond>` )
-        ( `          </tt:group>` )
-        ( `        </object>` )
-        ( `      </tt:cond>` )
-        ( `      <tt:d-cond frq="*">` )
-        ( `         <_ tt:lax="on">` )
-        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'outerComponent;middleStruc;'"/>` )
-        ( `          </tt:call-method>` )
-        ( `          <tt:skip/>` )
-        ( `        </_>` )
-        ( `      </tt:d-cond>` )
-        ( `      <tt:d-cond frq="?">` )
-        ( `        <__/>` )
-        ( `      </tt:d-cond>` )
-        ( `    </tt:group>` )
-        ( `  </object>` )
-        ( `</tt:cond>` ) ).
+           ( `  <object>` )
+           ( `    <tt:assign to-ref="OUTER_COMPONENT" val="I(10)"/>` )
+           ( `    <tt:group>` )
+           ( `      <tt:cond s-check="OUTER_COMPONENT!=I(10)" frq="?">` )
+           ( `        <num name="outerComponent">` )
+           ( `          <tt:value ref="OUTER_COMPONENT" option="format(alpha)"/>` )
+           ( `        </num>` )
+           ( `      </tt:cond>` )
+           ( `      <tt:cond s-check="not-initial(MIDDLE_STRUC)" frq="?">` )
+           ( `        <object name="middleStruc" tt:ref="MIDDLE_STRUC">` )
+           ( `          <tt:assign to-ref="MIDDLE_COMPONENT" val="C('abcd')"/>` )
+           ( `          <tt:group>` )
+           ( `            <tt:cond s-check="MIDDLE_COMPONENT!=C('abcd')" frq="?">` )
+           ( `              <str name="middleComponent">` )
+           ( `                <tt:value ref="MIDDLE_COMPONENT"/>` )
+           ( `              </str>` )
+           ( `            </tt:cond>` )
+           ( `            <tt:cond s-check="not-initial(INNER_STRUC)" frq="?">` )
+           ( `              <object name="innerStruc" tt:ref="INNER_STRUC">` )
+           ( `                <tt:assign to-ref="INNER_COMPONENT" val="C('Default Value')"/>` )
+           ( `                <tt:group>` )
+           ( `                  <tt:cond s-check="INNER_COMPONENT!=C('Default Value')" frq="?">` )
+           ( `                    <str name="innerComponent">` )
+           ( `                      <tt:value ref="INNER_COMPONENT"/>` )
+           ( `                    </str>` )
+           ( `                  </tt:cond>` )
+           ( `                  <tt:d-cond frq="*">` )
+           ( `                     <_ tt:lax="on">` )
+           ( `                      <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+           ( `                        <tt:with-parameter name="MEMBERS" val="'innerComponent;'"/>` )
+           ( `                      </tt:call-method>` )
+           ( `                      <tt:skip/>` )
+           ( `                    </_>` )
+           ( `                  </tt:d-cond>` )
+           ( `                  <tt:d-cond frq="?">` )
+           ( `                    <__/>` )
+           ( `                  </tt:d-cond>` )
+           ( `                </tt:group>` )
+           ( `              </object>` )
+           ( `            </tt:cond>` )
+           ( `            <tt:d-cond frq="*">` )
+           ( `               <_ tt:lax="on">` )
+           ( `                <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+           ( `                  <tt:with-parameter name="MEMBERS" val="'middleComponent;innerStruc;'"/>` )
+           ( `                </tt:call-method>` )
+           ( `                <tt:skip/>` )
+           ( `              </_>` )
+           ( `            </tt:d-cond>` )
+           ( `            <tt:d-cond frq="?">` )
+           ( `              <__/>` )
+           ( `            </tt:d-cond>` )
+           ( `          </tt:group>` )
+           ( `        </object>` )
+           ( `      </tt:cond>` )
+           ( `      <tt:d-cond frq="*">` )
+           ( `         <_ tt:lax="on">` )
+           ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+           ( `            <tt:with-parameter name="MEMBERS" val="'outerComponent;middleStruc;'"/>` )
+           ( `          </tt:call-method>` )
+           ( `          <tt:skip/>` )
+           ( `        </_>` )
+           ( `      </tt:d-cond>` )
+           ( `      <tt:d-cond frq="?">` )
+           ( `        <__/>` )
+           ( `      </tt:d-cond>` )
+           ( `    </tt:group>` )
+           ( `  </object>` )
+           ( `</tt:cond>` ) ).
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -2115,51 +2116,50 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_wrong_default.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
-
-( `<tt:cond>` )
-( `  <object>` )
-( `    <tt:group>` )
-( `      <tt:cond s-check="not-initial(ELEMENT_ONE)" frq="?">` )
-( `        <str name="elementOne">` )
-( `          <tt:deserialize>` )
-( `            <tt:read type="C" var="VARIABLE"/>` )
-( `            <tt:cond-var check="VARIABLE='general'">` )
-( `              <tt:assign  to-ref="ELEMENT_ONE" val="N('00')"/>` )
-( `            </tt:cond-var>` )
-( `            <tt:cond-var check="VARIABLE='classicBadi'">` )
-( `              <tt:assign  to-ref="ELEMENT_ONE" val="N('01')"/>` )
-( `            </tt:cond-var>` )
-( `          </tt:deserialize>` )
-( `          <tt:serialize>` )
-( `            <tt:value ref="ELEMENT_ONE" map="` )
-( `              val(N('00'))=xml('general'),` )
-( `              val(N('01'))=xml('classicBadi')"` )
-( `            />` )
-( `          </tt:serialize>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:cond s-check="not-initial(ELEMENT_TWO)" frq="?">` )
-( `        <str name="elementTwo">` )
-( `          <tt:value ref="ELEMENT_TWO" map="` )
-( `            val(N('00'))=xml('general'),` )
-( `            val(N('01'))=xml('classicBadi')"` )
-( `          />` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:d-cond frq="*">` )
-( `         <_ tt:lax="on">` )
-( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-( `            <tt:with-parameter name="MEMBERS" val="'elementOne;elementTwo;'"/>` )
-( `          </tt:call-method>` )
-( `          <tt:skip/>` )
-( `        </_>` )
-( `      </tt:d-cond>` )
-( `      <tt:d-cond frq="?">` )
-( `        <__/>` )
-( `      </tt:d-cond>` )
-( `    </tt:group>` )
-( `  </object>` )
-( `</tt:cond>` ) ).
+         ( `<tt:cond>` )
+         ( `  <object>` )
+         ( `    <tt:group>` )
+         ( `      <tt:cond s-check="not-initial(ELEMENT_ONE)" frq="?">` )
+         ( `        <str name="elementOne">` )
+         ( `          <tt:deserialize>` )
+         ( `            <tt:read type="C" var="VARIABLE"/>` )
+         ( `            <tt:cond-var check="VARIABLE='general'">` )
+         ( `              <tt:assign  to-ref="ELEMENT_ONE" val="N('00')"/>` )
+         ( `            </tt:cond-var>` )
+         ( `            <tt:cond-var check="VARIABLE='classicBadi'">` )
+         ( `              <tt:assign  to-ref="ELEMENT_ONE" val="N('01')"/>` )
+         ( `            </tt:cond-var>` )
+         ( `          </tt:deserialize>` )
+         ( `          <tt:serialize>` )
+         ( `            <tt:value ref="ELEMENT_ONE" map="` )
+         ( `              val(N('00'))=xml('general'),` )
+         ( `              val(N('01'))=xml('classicBadi')"` )
+         ( `            />` )
+         ( `          </tt:serialize>` )
+         ( `        </str>` )
+         ( `      </tt:cond>` )
+         ( `      <tt:cond s-check="not-initial(ELEMENT_TWO)" frq="?">` )
+         ( `        <str name="elementTwo">` )
+         ( `          <tt:value ref="ELEMENT_TWO" map="` )
+         ( `            val(N('00'))=xml('general'),` )
+         ( `            val(N('01'))=xml('classicBadi')"` )
+         ( `          />` )
+         ( `        </str>` )
+         ( `      </tt:cond>` )
+         ( `      <tt:d-cond frq="*">` )
+         ( `         <_ tt:lax="on">` )
+         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+         ( `            <tt:with-parameter name="MEMBERS" val="'elementOne;elementTwo;'"/>` )
+         ( `          </tt:call-method>` )
+         ( `          <tt:skip/>` )
+         ( `        </_>` )
+         ( `      </tt:d-cond>` )
+         ( `      <tt:d-cond frq="?">` )
+         ( `        <__/>` )
+         ( `      </tt:d-cond>` )
+         ( `    </tt:group>` )
+         ( `  </object>` )
+         ( `</tt:cond>` ) ).
     validate_output( act = act_output no_log_check = abap_true ).
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
@@ -2176,11 +2176,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>simple_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
     DATA(exp_schema) = VALUE string_table(
-( `  <str>` )
-( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-( |      <tt:with-parameter name="simple_callback" ref=".{ st_root_name }"/>| )
-( `    </tt:call-method>` )
-( `  </str>` ) ).
+         ( `  <str>` )
+         ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
+         ( |      <tt:with-parameter name="simple_callback" ref=".{ st_root_name }"/>| )
+         ( `    </tt:call-method>` )
+         ( `  </str>` ) ).
     INSERT LINES OF exp_schema INTO TABLE me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
@@ -2189,11 +2189,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>table_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
     DATA(exp_schema) = VALUE string_table(
-( `  <array>` )
-( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-( |      <tt:with-parameter name="table_callback" ref=".{ st_root_name }"/>| )
-( `    </tt:call-method>` )
-( `  </array>` ) ).
+         ( `  <array>` )
+         ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
+         ( |      <tt:with-parameter name="table_callback" ref=".{ st_root_name }"/>| )
+         ( `    </tt:call-method>` )
+         ( `  </array>` ) ).
     INSERT LINES OF exp_schema INTO TABLE me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
@@ -2202,11 +2202,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>table_call_of_table.
     DATA(act_output) = test_generator->generate_type( test_type ).
     DATA(exp_schema) = VALUE string_table(
-( `  <array>` )
-( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-( |      <tt:with-parameter name="table_call_of_table" ref=".{ st_root_name }"/>| )
-( `    </tt:call-method>` )
-( `  </array>` ) ).
+         ( `  <array>` )
+         ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
+         ( |      <tt:with-parameter name="table_call_of_table" ref=".{ st_root_name }"/>| )
+         ( `    </tt:call-method>` )
+         ( `  </array>` ) ).
     INSERT LINES OF exp_schema INTO TABLE me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
@@ -2215,11 +2215,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>structure_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
     DATA(exp_schema) = VALUE string_table(
-( `  <object>` )
-( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-( |      <tt:with-parameter name="structure_callback" ref=".{ st_root_name }"/>| )
-( `    </tt:call-method>` )
-( `  </object>` ) ).
+         ( `  <object>` )
+         ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
+         ( |      <tt:with-parameter name="structure_callback" ref=".{ st_root_name }"/>| )
+         ( `    </tt:call-method>` )
+         ( `  </object>` ) ).
     INSERT LINES OF exp_schema INTO TABLE me->exp_transformation.
     validate_output( act_output ).
   ENDMETHOD.
@@ -2286,40 +2286,40 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
-            ( `<tt:cond>` )
-            ( `  <object>` )
-            ( `    <tt:group>` )
-            ( `      <tt:cond s-check="not-initial(MY_FIRST_ELEMENT)" frq="?">` )
-            ( `            <str name="myFirstElement">` )
-            ( `              <tt:value ref="MY_FIRST_ELEMENT"/>` )
-            ( `            </str>` )
-            ( `        </tt:cond>` )
-            ( `        <tt:cond>` )
-            ( `          <object>` )
-            ( `            <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-            ( `              <tt:with-parameter name="element_structure_callback" ref="ELEMENT_STRUCTURE_CALLBACK"/>` )
-            ( `            </tt:call-method>` )
-            ( `          </object>` )
-            ( `        </tt:cond>` )
-            ( `        <tt:cond s-check="not-initial(MY_THIRD_ELEMENT)" frq="?">` )
-            ( `          <num name="myThirdElement">` )
-            ( `            <tt:value ref="MY_THIRD_ELEMENT" option="format(alpha)"/>` )
-            ( `          </num>` )
-            ( `        </tt:cond>` )
-            ( `      <tt:d-cond frq="*">` )
-            ( `         <_ tt:lax="on">` )
-            ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-            ( `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;elementStructureCallback;myThirdElement;'"/>` )
-            ( `         </tt:call-method>` )
-            ( `         <tt:skip/>` )
-            ( `      </_>` )
-            ( `   </tt:d-cond>` )
-            ( `   <tt:d-cond frq="?">` )
-            ( `       <__/>` )
-            ( `   </tt:d-cond>` )
-            ( `    </tt:group>` )
-            ( `  </object>` )
-            ( `</tt:cond>` ) ).
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond s-check="not-initial(MY_FIRST_ELEMENT)" frq="?">` )
+        ( `            <str name="myFirstElement">` )
+        ( `              <tt:value ref="MY_FIRST_ELEMENT"/>` )
+        ( `            </str>` )
+        ( `        </tt:cond>` )
+        ( `        <tt:cond>` )
+        ( `          <object>` )
+        ( `            <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
+        ( `              <tt:with-parameter name="element_structure_callback" ref="ELEMENT_STRUCTURE_CALLBACK"/>` )
+        ( `            </tt:call-method>` )
+        ( `          </object>` )
+        ( `        </tt:cond>` )
+        ( `        <tt:cond s-check="not-initial(MY_THIRD_ELEMENT)" frq="?">` )
+        ( `          <num name="myThirdElement">` )
+        ( `            <tt:value ref="MY_THIRD_ELEMENT" option="format(alpha)"/>` )
+        ( `          </num>` )
+        ( `        </tt:cond>` )
+        ( `      <tt:d-cond frq="*">` )
+        ( `         <_ tt:lax="on">` )
+        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;elementStructureCallback;myThirdElement;'"/>` )
+        ( `         </tt:call-method>` )
+        ( `         <tt:skip/>` )
+        ( `      </_>` )
+        ( `   </tt:d-cond>` )
+        ( `   <tt:d-cond frq="?">` )
+        ( `       <__/>` )
+        ( `   </tt:d-cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` ) ).
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -2372,43 +2372,43 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
-( `<tt:cond>` )
-( `  <object>` )
-( `    <tt:assign to-ref="ENUM_COMPONENT" val="C('AA')"/>` )
-( `    <tt:group>` )
-( `      <tt:cond s-check="ENUM_COMPONENT!=C('AA')" frq="?">` )
-( `        <str name="enumComponent">` )
-( `          <tt:deserialize>` )
-( `            <tt:read type="C" var="VARIABLE"/>` )
-( `            <tt:cond-var check="VARIABLE='AAAA'">` )
-( `              <tt:assign to-ref="ENUM_COMPONENT" val="'AA'"/>` )
-( `            </tt:cond-var>` )
-( `            <tt:cond-var check="VARIABLE='BBBB'">` )
-( `              <tt:assign to-ref="ENUM_COMPONENT" val="'BB'"/>` )
-( `            </tt:cond-var>` )
-( `           </tt:deserialize>` )
-( `          <tt:serialize>` )
-( `            <tt:value ref="ENUM_COMPONENT" map="` )
-( `              val('AA')=xml('AAAA'),` )
-( `              val('BB')=xml('BBBB')"` )
-( `            />` )
-( `          </tt:serialize>` )
-( `        </str>` )
-( `      </tt:cond>` )
-( `      <tt:d-cond frq="*">` )
-( `         <_ tt:lax="on">` )
-( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-( `            <tt:with-parameter name="MEMBERS" val="'enumComponent;'"/>` )
-( `          </tt:call-method>` )
-( `          <tt:skip/>` )
-( `        </_>` )
-( `      </tt:d-cond>` )
-( `      <tt:d-cond frq="?">` )
-( `        <__/>` )
-( `      </tt:d-cond>` )
-( `    </tt:group>` )
-( `  </object>` )
-( `</tt:cond>` ) ).
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:assign to-ref="ENUM_COMPONENT" val="C('AA')"/>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond s-check="ENUM_COMPONENT!=C('AA')" frq="?">` )
+        ( `        <str name="enumComponent">` )
+        ( `          <tt:deserialize>` )
+        ( `            <tt:read type="C" var="VARIABLE"/>` )
+        ( `            <tt:cond-var check="VARIABLE='AAAA'">` )
+        ( `              <tt:assign to-ref="ENUM_COMPONENT" val="'AA'"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='BBBB'">` )
+        ( `              <tt:assign to-ref="ENUM_COMPONENT" val="'BB'"/>` )
+        ( `            </tt:cond-var>` )
+        ( `           </tt:deserialize>` )
+        ( `          <tt:serialize>` )
+        ( `            <tt:value ref="ENUM_COMPONENT" map="` )
+        ( `              val('AA')=xml('AAAA'),` )
+        ( `              val('BB')=xml('BBBB')"` )
+        ( `            />` )
+        ( `          </tt:serialize>` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:d-cond frq="*">` )
+        ( `         <_ tt:lax="on">` )
+        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'enumComponent;'"/>` )
+        ( `          </tt:call-method>` )
+        ( `          <tt:skip/>` )
+        ( `        </_>` )
+        ( `      </tt:d-cond>` )
+        ( `      <tt:d-cond frq="?">` )
+        ( `        <__/>` )
+        ( `      </tt:d-cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` ) ).
     validate_output( act_output ).
   ENDMETHOD.
 
@@ -2544,7 +2544,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA act_data LIKE test_type.
 
     exp_json = VALUE #(
-            ( `{` )
+        ( `{` )
         ( ` "mySecondElement":5` )
         ( `}` ) ).
 
@@ -2586,7 +2586,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>my_structure3.
     test_type = VALUE #(
       nested_struc = VALUE #( my_element = 'Nested Element' )
-      my_element = 'Not nested Element' ).
+      my_element   = 'Not nested Element' ).
     DATA act_data LIKE test_type.
     exp_json = VALUE #(
         ( `{` )
@@ -2638,7 +2638,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>ty_class_properties.
     test_type =
           VALUE #(
-            header = VALUE #( description = 'description of the class' abap_language_version = 5 original_language = 'E' )
+            header         = VALUE #( description = 'description of the class' abap_language_version = 5 original_language = 'E' )
             class_category = '01' ).
 
     DATA act_data LIKE test_type.
@@ -2665,13 +2665,13 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type =
       VALUE #(
         field2 = 'AA'
-        list1 =
+        list1  =
         VALUE #( element_of_list1 = 50
-                 list2 =
+                 list2            =
                  VALUE #(
-                 element_of_list2 = 'Deep Nested'
+                          element_of_list2 = 'Deep Nested'
+                          )
                  )
-                )
         field3 = 'ZZ' ).
     DATA act_data LIKE test_type.
 
@@ -2699,9 +2699,9 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type =
         VALUE #(
             inner_struc = VALUE #(
-                element_of_inner_struc = 50
-                inner_table_var = VALUE #( ( `line_1` ) ( `line_2` ) ) )
-            field2 = 'ZZ' ).
+                                   element_of_inner_struc = 50
+                                   inner_table_var        = VALUE #( ( `line_1` ) ( `line_2` ) ) )
+            field2      = 'ZZ' ).
     DATA act_data LIKE test_type.
 
     exp_json = VALUE #(
@@ -2727,10 +2727,10 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>aff_test_type.
     test_type =
         VALUE #(
-            field1 = 25
+            field1      = 25
             inner_struc = VALUE #(
-                inner_element = 50 )
-            field2 = 'ZZ' ).
+                                   inner_element = 50 )
+            field2      = 'ZZ' ).
     DATA act_data LIKE test_type.
 
     exp_json = VALUE #(
@@ -2783,8 +2783,8 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>nested_struc_with_default.
     DATA act_data LIKE test_type.
     test_type = VALUE #( outer_component = 12
-                         middle_struc = VALUE #( middle_component = 'wxyz'
-                                                 inner_struc = VALUE #( inner_component = 'Inner Component' ) ) ).
+                         middle_struc    = VALUE #( middle_component = 'wxyz'
+                                                    inner_struc      = VALUE #( inner_component = 'Inner Component' ) ) ).
     exp_json = VALUE #(
         ( `{` )
         ( `  "outerComponent":12,` )
@@ -2806,8 +2806,8 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA test_type TYPE zcl_aff_test_types=>nested_struc_with_default.
     DATA act_data LIKE test_type.
     test_type = VALUE #( outer_component = 10
-                         middle_struc = VALUE #( middle_component = 'abcd'
-                                                 inner_struc = VALUE #( inner_component = 'Default Value' ) ) ).
+                         middle_struc    = VALUE #( middle_component = 'abcd'
+                                                    inner_struc      = VALUE #( inner_component = 'Default Value' ) ) ).
     exp_json = VALUE #(
         ( `{` )
         ( `  "middleStruc": {` )
@@ -2824,23 +2824,23 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   METHOD structure_different_default.
     DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
     DATA act_data LIKE test_type.
-    test_type = VALUE #( four_byte_int = 5
-                          eight_byte_int = 55
-                          bin_float = '4.3'
-                          byte_like = 'FFFF'
-                          byte_like2 = 'FF00FF'
-                          decimal_float_16 = '25.26'
-                          decimal_float_34 = '123.05'
-                          packed_number = '123.45'
-                          numeric_text = '1067'
-                          character_text = 'abcde'
-                          string_text = 'Default text'
-                          date_field = '19720401'
-                          time_field = '201500'
-                          date_time_field = '9999-12-31T23:59:59.9999999'
-                          bool_true = abap_true
-                          bool_false = abap_false
-                          enum_type = '01' ) ##LITERAL.
+    test_type = VALUE #( four_byte_int    = 5
+                         eight_byte_int   = 55
+                         bin_float        = '4.3'
+                         byte_like        = 'FFFF'
+                         byte_like2       = 'FF00FF'
+                         decimal_float_16 = '25.26'
+                         decimal_float_34 = '123.05'
+                         packed_number    = '123.45'
+                         numeric_text     = '1067'
+                         character_text   = 'abcde'
+                         string_text      = 'Default text'
+                         date_field       = '19720401'
+                         time_field       = '201500'
+                         date_time_field  = '9999-12-31T23:59:59.9999999'
+                         bool_true        = abap_true
+                         bool_false       = abap_false
+                         enum_type        = '01' ) ##LITERAL.
     exp_json = VALUE #(
         ( `{` )
         ( `"dateTimeField": "9999-12-31T23:59:59.9999999+00:00"` )
@@ -2855,10 +2855,10 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   METHOD structure_with_default_problem.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
     DATA act_data LIKE test_type.
-    test_type = VALUE #( integer =  5
-                          string_element = 'DefaultString'
-                          enum_required = '01'
-                          enum_show_always = '01' ) ##LITERAL.
+    test_type = VALUE #( integer          = 5
+                         string_element   = 'DefaultString'
+                         enum_required    = '01'
+                         enum_show_always = '01' ) ##LITERAL.
     exp_json = VALUE #(
         ( `{` )
         ( `"integer" : 5,` )
@@ -2951,9 +2951,9 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     DATA element_structure_callback LIKE test_type-element_structure_callback.
     element_structure_callback = VALUE #( element_name = 5 ).
     zcl_aff_test_types=>set_expected( element_structure_callback ).
-    test_type = VALUE #( my_first_element = 'firstElement'
+    test_type = VALUE #( my_first_element           = 'firstElement'
                          element_structure_callback = element_structure_callback
-                         my_third_element = 6 ).
+                         my_third_element           = 6 ).
     exp_json = VALUE #(
         ( `{` )
         ( `  "myFirstElement": "firstElement",` )
@@ -2971,7 +2971,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 
   METHOD structure_with_elem_callback.
     DATA test_type TYPE zcl_aff_test_types=>structure_with_elem_callback.
-    test_type = VALUE #( element_callback = 'My First Element'
+    test_type = VALUE #( element_callback  = 'My First Element'
                          my_second_element = 4 ).
     zcl_aff_test_types=>set_expected( 'callbackClass was called' ).
     exp_json = VALUE #(
@@ -3097,7 +3097,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   METHOD from_abap_to_json.
     DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
     DATA(test_generator) = NEW zcl_aff_generator( cut ).
-    DATA(st_content) = test_generator->generate_type( test_type ).
+    DATA(st_content) = test_generator->zif_aff_generator~generate_type( test_type ).
 
     DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
     st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.

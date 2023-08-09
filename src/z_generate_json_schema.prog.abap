@@ -59,7 +59,7 @@ CLASS lcl_generator_helper IMPLEMENTATION.
     ENDIF.
 
     DATA(generator) = NEW zcl_aff_generator( writer ).
-    DATA(result_table) = generator->generate_type( <field> ).
+    DATA(result_table) = generator->zif_aff_generator~generate_type( <field> ).
     CONCATENATE LINES OF result_table INTO result SEPARATED BY cl_abap_char_utilities=>newline.
 
   ENDMETHOD.

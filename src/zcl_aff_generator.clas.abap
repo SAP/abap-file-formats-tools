@@ -4,21 +4,10 @@ CLASS zcl_aff_generator DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
+    INTERFACES zif_aff_generator.
     METHODS constructor
       IMPORTING
         writer TYPE REF TO zif_aff_writer.
-
-    METHODS generate_type
-      IMPORTING
-        data          TYPE data
-      RETURNING
-        VALUE(result) TYPE string_table
-      RAISING
-        zcx_aff_tools.
-
-    METHODS get_log
-      RETURNING
-        VALUE(log) TYPE REF TO zif_aff_log.
 
   PRIVATE SECTION.
     DATA:
@@ -80,7 +69,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
     log = NEW zcl_aff_log( ).
   ENDMETHOD.
 
-  METHOD generate_type.
+  METHOD zif_aff_generator~generate_type.
     DATA(type_description) = cl_abap_typedescr=>describe_by_data( data ).
     check_input( type_description ).
     process_type_description( type_description ).
@@ -187,8 +176,7 @@ CLASS zcl_aff_generator IMPLEMENTATION.
       node_description = table_description ).
   ENDMETHOD.
 
-
-  METHOD get_log.
+  METHOD zif_aff_generator~get_log.
     log = me->log.
   ENDMETHOD.
 
