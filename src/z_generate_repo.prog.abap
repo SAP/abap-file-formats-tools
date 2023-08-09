@@ -31,11 +31,11 @@ CLASS lcl_generator_helper IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD lif_generator~generate_type.
-    result = me->generator->generate_type( data ).
+    result = me->generator->zif_aff_generator~generate_type( data ).
   ENDMETHOD.
 
   METHOD lif_generator~get_log.
-    log = me->generator->get_log( ).
+    log = me->generator->zif_aff_generator~get_log( ).
   ENDMETHOD.
 
 ENDCLASS.
@@ -266,8 +266,8 @@ CLASS lcl_generator IMPLEMENTATION.
       IF NOT intf_name CP `z*`.
         INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
         IF intf_name CP `*/*`.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH'('.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH')'.
+          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH '('.
+          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH ')'.
           INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
         ENDIF.
       ENDIF.

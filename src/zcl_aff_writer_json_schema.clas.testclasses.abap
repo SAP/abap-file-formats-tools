@@ -8,7 +8,7 @@ CLASS ltcl_json_writer DEFINITION FINAL FOR TESTING
 
     DATA:
       cut            TYPE REF TO zcl_aff_writer_json_schema,
-      test_generator TYPE REF TO zcl_aff_generator.
+      test_generator TYPE REF TO zif_aff_generator.
 
     METHODS: use_ddic_info_for_element FOR TESTING RAISING cx_static_check,
       date_time_element FOR TESTING RAISING cx_static_check,
@@ -496,7 +496,7 @@ CLASS ltcl_json_writer_abap_doc DEFINITION FINAL FOR TESTING
     CONSTANTS:
         schema_id TYPE string VALUE 'schema/id.json'.
     DATA cut TYPE REF TO zcl_aff_writer_json_schema.
-    DATA test_generator TYPE REF TO zcl_aff_generator.
+    DATA test_generator TYPE REF TO zif_aff_generator.
     DATA log TYPE REF TO zif_aff_log.
 
     METHODS setup.
