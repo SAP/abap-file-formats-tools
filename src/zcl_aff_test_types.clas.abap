@@ -258,13 +258,13 @@ CLASS zcl_aff_test_types DEFINITION
     CONSTANTS:
       "! <p class="shorttext">Interface Category</p>
       "! Interface category
-      BEGIN OF enum_values,
+      BEGIN OF enum_values ##NEEDED,
         "! <p class="shorttext">generalCategory</p>
         "! General interface
         general      TYPE category VALUE '00',
         "! Interface definition of a classic BAdI
         classic_badi TYPE category VALUE '01',
-      END OF enum_values ##NEEDED.
+      END OF enum_values.
 
 * type with enum values without initial:
     TYPES:
@@ -276,14 +276,14 @@ CLASS zcl_aff_test_types DEFINITION
     CONSTANTS:
       "! <p class="shorttext">Interface Category</p>
       "! Interface category
-      BEGIN OF enum_values_no_initial,
+      BEGIN OF enum_values_no_initial ##NEEDED,
         "! <p class="shorttext">Component 1</p>
         "! Component 1
         component_1 TYPE category_no_initial VALUE '01',
         "! <p class="shorttext">Component 2</p>
         "! Component 2
         component_2 TYPE category_no_initial VALUE '02',
-      END OF enum_values_no_initial ##NEEDED.
+      END OF enum_values_no_initial.
 
     TYPES:
       "! <p class="shorttext">Structure with Different Enum Types</p>
