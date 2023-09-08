@@ -553,7 +553,7 @@ CLASS lcl_generator IMPLEMENTATION.
     LOOP AT replacing_table_string ASSIGNING FIELD-SYMBOL(<replace_string>).
       FIND ALL OCCURRENCES OF <replace_string>-to_be_replaced IN string_content IGNORING CASE RESULTS DATA(findings).
 *      replace all occurrences of <replace_string>-to_be_replaced in string_content with <replace_string>-replace_with ignoring case.
-      LOOP AT findings ASSIGNING FIELD-SYMBOL(<finding>) step -1.
+      LOOP AT findings ASSIGNING FIELD-SYMBOL(<finding>) STEP -1.
         IF <finding>-offset > 0.
           DATA(before_offset) = <finding>-offset - 1.
           DATA(char_before_offset) = to_lower( string_content+before_offset(1) ).
