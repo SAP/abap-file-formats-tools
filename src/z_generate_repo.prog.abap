@@ -256,15 +256,13 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDIF.
 
     " the interface names which need to be replaced
-    LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>).
-      IF to_lower( <intf> ) NP `z*`.
-        INSERT VALUE #( to_be_replaced = <intf> replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
-        IF to_lower( <intf> ) CP `*/*`.
-          DATA(to_be_replaced) = <intf>.
-          REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH '('.
-          REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH ')'.
-          INSERT VALUE #( to_be_replaced = to_be_replaced replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
-        ENDIF.
+    LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>) WHERE table_line NP `z*`.
+      INSERT VALUE #( to_be_replaced = <intf> replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
+      IF to_lower( <intf> ) CP `*/*`.
+        DATA(to_be_replaced) = <intf>.
+        REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH '('.
+        REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH ')'.
+        INSERT VALUE #( to_be_replaced = to_be_replaced replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
       ENDIF.
     ENDLOOP.
 
