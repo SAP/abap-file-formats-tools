@@ -132,7 +132,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
 
     METHODS:
       get_replacing_table_and_intfs
-        IMPORTING name_of_intf_of_mainobj TYPE string
+        IMPORTING name_of_intf_of_mainobj TYPE sobj_name
         RETURNING VALUE(interfaces)       TYPE string_table,
       replace_names_in_string
         IMPORTING content_as_string      TYPE string
@@ -311,9 +311,8 @@ CLASS lcl_generator IMPLEMENTATION.
       "adding the example files
       add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
     ENDIF.
-    DATA(interfaces) = get_replacing_table_and_intfs( CONV #( object-interface ) ).
+    DATA(interfaces) = get_replacing_table_and_intfs( object-interface ).
     DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
-    CLEAR intf_objects.
 
     "generate type folder with all serialized interfaces (main and subobjects)
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
@@ -354,7 +353,7 @@ CLASS lcl_generator IMPLEMENTATION.
         mainobjtype = `TABL`.
       ENDIF.
 
-      DATA(format_version) = get_format_version_of_intfname( CONV #( intfname ) ).
+      DATA(format_version) = get_format_version_of_intfname( intfname ).
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
       IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
         writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
