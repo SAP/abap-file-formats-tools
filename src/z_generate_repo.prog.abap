@@ -563,7 +563,6 @@ CLASS lcl_generator IMPLEMENTATION.
           char_before_offset = ' '.
         ENDIF.
         IF NOT to_lower( char_before_offset ) EQ 'z'.
-*         make the object names to lower
           REPLACE SECTION OFFSET <finding>-offset LENGTH <finding>-length OF string_content WITH <replace_string>-replace_with.
         ENDIF.
       ENDLOOP.
