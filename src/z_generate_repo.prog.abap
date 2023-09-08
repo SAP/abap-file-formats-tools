@@ -268,8 +268,8 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
 
-    INSERT VALUE #( to_be_replaced = `if_aff_types_v1` replace_with = get_objname_wo_namspace_with_z( `zif_aff_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
-    INSERT VALUE #( to_be_replaced =  `if_aff_oo_types_v1` replace_with = get_objname_wo_namspace_with_z(  `zif_aff_oo_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
+    INSERT VALUE #( to_be_replaced = `if_aff_types_v1` replace_with = `zif_aff_types_v1` ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
+    INSERT VALUE #( to_be_replaced =  `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
 
     SORT replacing_table_string ASCENDING BY to_be_replaced.
     DELETE ADJACENT DUPLICATES FROM replacing_table_string.
