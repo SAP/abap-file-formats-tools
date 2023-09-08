@@ -257,19 +257,19 @@ CLASS lcl_generator IMPLEMENTATION.
 
     " the interface names which need to be replaced
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>).
-      DATA(intf_name) = to_lower( <intf> ).
-      IF NOT intf_name CP `z*`.
-        INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
-        IF intf_name CP `*/*`.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH '('.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH ')'.
-          INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
+      IF NOT to_lower( <intf> ) CP `z*`.
+        INSERT VALUE #( to_be_replaced = <intf> replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
+        IF to_lower( <intf> ) CP `*/*`.
+          DATA(to_be_replaced) = <intf>.
+          REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH '('.
+          REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH ')'.
+          INSERT VALUE #( to_be_replaced = to_be_replaced replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
         ENDIF.
       ENDIF.
     ENDLOOP.
 
     INSERT VALUE #( to_be_replaced = `if_aff_types_v1` replace_with = `zif_aff_types_v1` ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
-    INSERT VALUE #( to_be_replaced =  `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
+    INSERT VALUE #( to_be_replaced = `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
 
     SORT replacing_table_string ASCENDING BY to_be_replaced.
     DELETE ADJACENT DUPLICATES FROM replacing_table_string.
