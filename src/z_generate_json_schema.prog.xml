@@ -50,6 +50,23 @@
    </TPOOL>
    <I18N_TPOOL>
     <item>
+     <LANGUAGE>B</LANGUAGE>
+     <TEXTPOOL>
+      <item>
+       <ID>S</ID>
+       <KEY>P_OBJTYP</KEY>
+       <ENTRY>סוג אובייקט</ENTRY>
+       <LENGTH>38</LENGTH>
+      </item>
+      <item>
+       <ID>S</ID>
+       <KEY>P_TYPE</KEY>
+       <ENTRY>שם סוג</ENTRY>
+       <LENGTH>38</LENGTH>
+      </item>
+     </TEXTPOOL>
+    </item>
+    <item>
      <LANGUAGE>D</LANGUAGE>
      <TEXTPOOL>
       <item>

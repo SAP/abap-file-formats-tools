@@ -553,23 +553,18 @@ CLASS lcl_generator IMPLEMENTATION.
   METHOD replace_names_in_string.
     DATA(string_content) = content_as_string.
     LOOP AT replacing_table_string ASSIGNING FIELD-SYMBOL(<replace_string>).
-      FIND ALL OCCURRENCES OF <replace_string>-to_be_replaced IN string_content IGNORING CASE RESULTS DATA(table).
+      FIND ALL OCCURRENCES OF <replace_string>-to_be_replaced IN string_content IGNORING CASE RESULTS DATA(findings).
 *      replace all occurrences of <replace_string>-to_be_replaced in string_content with <replace_string>-replace_with ignoring case.
-      DATA(counter_replaced) = 0.
-      LOOP AT table ASSIGNING FIELD-SYMBOL(<finding>).
+      LOOP AT findings ASSIGNING FIELD-SYMBOL(<finding>) step -1.
         IF <finding>-offset > 0.
-          DATA(offset) = <finding>-offset + counter_replaced.
-          DATA(before_offset) = offset - 1.
+          DATA(before_offset) = <finding>-offset - 1.
           DATA(char_before_offset) = to_lower( string_content+before_offset(1) ).
         ELSE.
           char_before_offset = ' '.
-          offset = 0.
         ENDIF.
         IF NOT to_lower( char_before_offset ) EQ 'z'.
-*          string_content = insert( val = string_content sub = 'z' off = offset ).
 *         make the object names to lower
-          REPLACE SECTION OFFSET offset LENGTH <finding>-length OF string_content WITH <replace_string>-replace_with.
-          counter_replaced += 1.
+          REPLACE SECTION OFFSET <finding>-offset LENGTH <finding>-length OF string_content WITH <replace_string>-replace_with.
         ENDIF.
       ENDLOOP.
     ENDLOOP.
