@@ -90,30 +90,6 @@
      <LENGTH>15</LENGTH>
     </item>
    </TPOOL>
-   <I18N_TPOOL>
-    <item>
-     <LANGUAGE>D</LANGUAGE>
-     <TEXTPOOL>
-      <item>
-       <ID>I</ID>
-       <KEY>000</KEY>
-       <ENTRY>Einstellungen</ENTRY>
-       <LENGTH>17</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>001</KEY>
-       <ENTRY>Verwaiste Daten löschen:</ENTRY>
-       <LENGTH>42</LENGTH>
-      </item>
-      <item>
-       <ID>R</ID>
-       <ENTRY>Testlauf</ENTRY>
-       <LENGTH>70</LENGTH>
-      </item>
-     </TEXTPOOL>
-    </item>
-   </I18N_TPOOL>
    <LONGTEXTS>
     <item>
      <DOKIL>
