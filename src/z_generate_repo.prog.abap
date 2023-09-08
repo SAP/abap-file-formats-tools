@@ -276,13 +276,10 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_objname_wo_namspace_with_z.
-    DATA(object_name_wo_namespace) = splitted_obj_name_parts[ lines( splitted_obj_name_parts ) ].
-    DATA(zname_of_obj) = to_lower( object_name_wo_namespace ).
-    IF NOT zname_of_obj CP `z*`.
-      result = |z{ zname_of_obj }|.
-    ELSE.
-      result = zname_of_obj.
-    SPLIT to_lower( object_name ) AT '/' INTO TABLE DATA(splitted_obj_name_parts).
+    SPLIT to_lower( object_name ) AT '/' INTO TABLE DATA(splitted_parts).
+    result = splitted_parts[ lines( splitted_parts ) ].
+    IF NOT result CP `z*`.
+      result = |z{ result }|.
     ENDIF.
   ENDMETHOD.
 
