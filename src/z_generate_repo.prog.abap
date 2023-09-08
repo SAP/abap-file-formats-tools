@@ -1251,6 +1251,7 @@ CLASS ltc_generator IMPLEMENTATION.
   METHOD configure_file_handler.
     DATA files TYPE if_aff_object_file_handler=>ty_object_files.
     DATA file_name TYPE string.
+    DATA file_content TYPE xstring.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
 
     LOOP AT objects ASSIGNING FIELD-SYMBOL(<object>).
@@ -1264,7 +1265,7 @@ CLASS ltc_generator IMPLEMENTATION.
       ENDTRY.
 
       TRY.
-          DATA(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
+          file_content = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
         CATCH cx_aff_root.
           cl_abap_unit_assert=>fail( ).
       ENDTRY.
