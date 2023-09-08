@@ -259,11 +259,11 @@ CLASS lcl_generator IMPLEMENTATION.
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>).
       DATA(intf_name) = to_lower( <intf> ).
       IF NOT intf_name CP `z*`.
-        INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
+        INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
         IF intf_name CP `*/*`.
           REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH '('.
           REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH ')'.
-          INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
+          INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
         ENDIF.
       ENDIF.
     ENDLOOP.
@@ -276,13 +276,13 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_objname_wo_namspace_with_z.
-    SPLIT object_name AT '/' INTO TABLE DATA(splitted_obj_name_parts).
     DATA(object_name_wo_namespace) = splitted_obj_name_parts[ lines( splitted_obj_name_parts ) ].
     DATA(zname_of_obj) = to_lower( object_name_wo_namespace ).
     IF NOT zname_of_obj CP `z*`.
       result = |z{ zname_of_obj }|.
     ELSE.
       result = zname_of_obj.
+    SPLIT to_lower( object_name ) AT '/' INTO TABLE DATA(splitted_obj_name_parts).
     ENDIF.
   ENDMETHOD.
 
