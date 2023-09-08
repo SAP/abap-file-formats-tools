@@ -1254,15 +1254,19 @@ CLASS ltc_generator IMPLEMENTATION.
 
   METHOD configure_file_handler.
     DATA files TYPE if_aff_object_file_handler=>ty_object_files.
+    DATA file_name TYPE string.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
 
     LOOP AT objects ASSIGNING FIELD-SYMBOL(<object>).
-      DATA(file_name) = |{ <object>-obj_name }.{ <object>-obj_type }.json|.
-      IF <object>-obj_name = c_aff_example_intf_nspace.
-        file_name = |(NAMESPACE)AFF_EXAMPLE_INTF.{ <object>-obj_type }.json|.
-      ELSEIF <object>-obj_name = c_intf_w_namespace.
-        file_name = |(NAMESP)IF_AFF_INTF_V1.{ <object>-obj_type }.json|.
-      ENDIF.
+      DATA(aff_obj) = NEW cl_aff_obj( name    = CONV #( <object>-obj_name )
+                                      package = <object>-devclass
+                                      type    = <object>-obj_type ).
+      TRY.
+          file_name = to_upper( cl_aff_file_name_mapper=>for_json( )->get_file_name_from_object( aff_obj ) ).
+        CATCH cx_aff_root.
+          cl_abap_unit_assert=>fail( ).
+      ENDTRY.
+
       TRY.
           DATA(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
         CATCH cx_aff_root.
