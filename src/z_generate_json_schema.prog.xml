@@ -48,47 +48,6 @@
      <LENGTH>38</LENGTH>
     </item>
    </TPOOL>
-   <I18N_TPOOL>
-    <item>
-     <LANGUAGE>B</LANGUAGE>
-     <TEXTPOOL>
-      <item>
-       <ID>S</ID>
-       <KEY>P_OBJTYP</KEY>
-       <ENTRY>סוג אובייקט</ENTRY>
-       <LENGTH>38</LENGTH>
-      </item>
-      <item>
-       <ID>S</ID>
-       <KEY>P_TYPE</KEY>
-       <ENTRY>שם סוג</ENTRY>
-       <LENGTH>38</LENGTH>
-      </item>
-     </TEXTPOOL>
-    </item>
-    <item>
-     <LANGUAGE>D</LANGUAGE>
-     <TEXTPOOL>
-      <item>
-       <ID>I</ID>
-       <KEY>000</KEY>
-       <ENTRY>Einstellungen</ENTRY>
-       <LENGTH>17</LENGTH>
-      </item>
-      <item>
-       <ID>I</ID>
-       <KEY>001</KEY>
-       <ENTRY>Verwaiste Daten löschen:</ENTRY>
-       <LENGTH>42</LENGTH>
-      </item>
-      <item>
-       <ID>R</ID>
-       <ENTRY>Testlauf</ENTRY>
-       <LENGTH>70</LENGTH>
-      </item>
-     </TEXTPOOL>
-    </item>
-   </I18N_TPOOL>
   </asx:values>
  </asx:abap>
 </abapGit>
