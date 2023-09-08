@@ -116,8 +116,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
 
   PRIVATE SECTION.
 
-    TYPES: clsname_tab TYPE STANDARD TABLE OF seoclsname,
-           BEGIN OF replacing_line,
+    TYPES: BEGIN OF replacing_line,
              to_be_replaced TYPE string,
              replace_with   TYPE string,
            END OF replacing_line.
@@ -131,9 +130,10 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
     DATA replacing_table_string TYPE replacing_tab.
 
 
-    METHODS: get_replacing_table_and_intfs
-      IMPORTING name_of_intf_of_mainobj TYPE string
-      EXPORTING interfaces              TYPE clsname_tab,
+    METHODS:
+      get_replacing_table_and_intfs
+        IMPORTING name_of_intf_of_mainobj TYPE string
+        RETURNING VALUE(interfaces)       TYPE string_table,
       replace_names_in_string
         IMPORTING content_as_string      TYPE string
                   replacing_table_string TYPE replacing_tab
@@ -246,7 +246,6 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD get_replacing_table_and_intfs.
 *       fill the table with the strings which need to be replaced (interface objects need to begin with z)
-    CLEAR interfaces.
     APPEND name_of_intf_of_mainobj TO interfaces.
     IF name_of_intf_of_mainobj CP `IF_AFF_FUGR*`.
       APPEND `IF_AFF_FUNC_V1` TO interfaces.
@@ -315,12 +314,7 @@ CLASS lcl_generator IMPLEMENTATION.
       "adding the example files
       add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
     ENDIF.
-    get_replacing_table_and_intfs(
-      EXPORTING
-        name_of_intf_of_mainobj = CONV #( object-interface )
-      IMPORTING
-        interfaces              = DATA(interfaces)
-    ).
+    DATA(interfaces) = get_replacing_table_and_intfs( CONV #( object-interface ) ).
     DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
     CLEAR intf_objects.
 
