@@ -304,8 +304,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
     IF object-example IS NOT INITIAL.
       SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @object-example AND object = @object-object_type INTO @DATA(example_obj_devclass).
-      DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass = example_obj_devclass obj_type = object-object_type obj_name = object-example ).
-      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = aff_framework_log ).
+      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( devclass = example_obj_devclass obj_type = object-object_type obj_name = object-example ) ) log = aff_framework_log ).
 
       "adding the example files
       add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
