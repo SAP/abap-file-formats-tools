@@ -135,22 +135,19 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
       IMPORTING name_of_intf_of_mainobj TYPE string
       EXPORTING interfaces              TYPE clsname_tab,
       replace_names_in_string
-        IMPORTING
-                  content_as_string      TYPE string
+        IMPORTING content_as_string      TYPE string
                   replacing_table_string TYPE replacing_tab
         RETURNING VALUE(content)         TYPE string,
       add_aff_files_to_zip
-        IMPORTING
-          files                  TYPE if_aff_object_file_handler=>ty_object_files
-          filename               TYPE string
-          replacing_table_string TYPE replacing_tab,
+        IMPORTING files                  TYPE if_aff_object_file_handler=>ty_object_files
+                  filename               TYPE string
+                  replacing_table_string TYPE replacing_tab,
       generate_repo_folder
         IMPORTING object TYPE aff_object,
       create_the_variable_dynamicaly
         IMPORTING absolute_typename TYPE string
         RETURNING VALUE(variable)   TYPE REF TO data
-        RAISING
-                  zcx_aff_tools,
+        RAISING   zcx_aff_tools,
       get_dynpro_value
         IMPORTING fieldname         TYPE string
         RETURNING VALUE(fieldvalue) TYPE string,
@@ -185,10 +182,9 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
         IMPORTING object_name   TYPE string
         RETURNING VALUE(result) TYPE string,
       add_file_to_zip
-        IMPORTING
-          i_file_name         TYPE string
-          i_stringtab_content TYPE rswsourcet
-          i_error_text        TYPE string.
+        IMPORTING i_file_name         TYPE string
+                  i_stringtab_content TYPE rswsourcet
+                  i_error_text        TYPE string.
 
 ENDCLASS.
 
