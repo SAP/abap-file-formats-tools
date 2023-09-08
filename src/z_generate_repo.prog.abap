@@ -258,7 +258,7 @@ CLASS lcl_generator IMPLEMENTATION.
     " the interface names which need to be replaced
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>) WHERE table_line NP `z*`.
       INSERT VALUE #( to_be_replaced = <intf> replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
-      IF to_lower( <intf> ) CP `*/*`.
+      IF <intf> CP `*/*`.
         DATA(to_be_replaced) = <intf>.
         REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH '('.
         REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH ')'.
@@ -283,6 +283,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
 
   METHOD generate_repo_folder.
+    DATA: file_handler TYPE REF TO if_aff_object_file_handler.
     IF p_repo = abap_true.
       "serialize only one repo folder
       IF p_objtyp IS INITIAL OR p_intf IS INITIAL.
@@ -296,7 +297,7 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(object_type_folder_name) = to_lower( object-object_type ).
 
     IF aff_factory IS NOT INITIAL.
-      DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
+      file_handler = aff_factory->get_object_file_handler( ). " for testing purposes
     ELSE.
       file_handler = cl_aff_factory=>get_object_file_handler( ).
     ENDIF.
@@ -387,14 +388,17 @@ CLASS lcl_generator IMPLEMENTATION.
         ENDTRY.
 
         example_part = | \| [{ file_name }](./examples/{ file_name })| .
+
       ENDIF.
+
+      data(definition_part) = | [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) |.
 
       DATA(readme) = VALUE rswsourcet(
               ( |# { object-object_type } File Format| )
               ( `` )
               ( `File | Cardinality | Definition | Schema | Example` )
               ( `:--- | :--- | :--- | :--- | :---` )
-              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
+              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| { definition_part } \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
                  example_part )
               ( `` )
       ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
