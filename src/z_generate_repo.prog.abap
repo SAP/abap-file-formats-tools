@@ -257,7 +257,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
     " the interface names which need to be replaced
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>).
-      IF NOT to_lower( <intf> ) CP `z*`.
+      IF to_lower( <intf> ) NP `z*`.
         INSERT VALUE #( to_be_replaced = <intf> replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
         IF to_lower( <intf> ) CP `*/*`.
           DATA(to_be_replaced) = <intf>.
