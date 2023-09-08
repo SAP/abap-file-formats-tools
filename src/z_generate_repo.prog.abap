@@ -393,8 +393,16 @@ CLASS lcl_generator IMPLEMENTATION.
       DATA(interfacename) = replace_names_in_string( content_as_string = to_lower( intfname ) replacing_table_string = replacing_table_string ).
       DATA example_part TYPE string.
       IF object-example  IS NOT INITIAL.
-        DATA(examplename) = replace_names_in_string( content_as_string = to_lower( object-example ) replacing_table_string = replacing_table_string ).
-        example_part = | \| [{ examplename }.{ object_type_folder_name }.json](./examples/{ examplename }.{ object_type_folder_name }.json)| .
+        DATA(aff_obj) = NEW cl_aff_obj( name    = CONV #( object-example )
+                                        package = VALUE #( )
+                                        type    = object-object_type ).
+        TRY.
+            DATA(file_name) = cl_aff_file_name_mapper=>for_json( )->get_file_name_from_object( aff_obj ).
+          CATCH cx_aff_root.
+            INSERT |Failed to create the file name for the README example| INTO TABLE report_log ##NO_TEXT.
+        ENDTRY.
+
+        example_part = | \| [{ file_name }](./examples/{ file_name })| .
       ENDIF.
 
       DATA(readme) = VALUE rswsourcet(
