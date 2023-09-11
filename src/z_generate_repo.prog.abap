@@ -116,41 +116,38 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
 
   PRIVATE SECTION.
 
-    TYPES: clsname_tab TYPE STANDARD TABLE OF seoclsname,
-           BEGIN OF replacing_line,
+    TYPES: BEGIN OF replacing_line,
              to_be_replaced TYPE string,
              replace_with   TYPE string,
            END OF replacing_line.
 
     TYPES: replacing_tab TYPE STANDARD TABLE OF replacing_line.
 
-    DATA:"needed for testing
+    DATA: "needed for testing
       aff_factory TYPE REF TO  if_aff_factory,
       generator   TYPE REF TO lif_generator,
       writer      TYPE REF TO zif_aff_writer.
     DATA replacing_table_string TYPE replacing_tab.
 
 
-    METHODS: get_replacing_table_and_intfs
-      IMPORTING name_of_intf_of_mainobj TYPE string
-      EXPORTING interfaces              TYPE clsname_tab,
+    METHODS:
+      get_replacing_table_and_intfs
+        IMPORTING name_of_intf_of_mainobj TYPE sobj_name
+        RETURNING VALUE(interfaces)       TYPE string_table,
       replace_names_in_string
-        IMPORTING
-                  content_as_string      TYPE string
+        IMPORTING content_as_string      TYPE string
                   replacing_table_string TYPE replacing_tab
         RETURNING VALUE(content)         TYPE string,
       add_aff_files_to_zip
-        IMPORTING
-          files                  TYPE if_aff_object_file_handler=>ty_object_files
-          filename               TYPE string
-          replacing_table_string TYPE replacing_tab,
+        IMPORTING files                  TYPE if_aff_object_file_handler=>ty_object_files
+                  filename               TYPE string
+                  replacing_table_string TYPE replacing_tab,
       generate_repo_folder
         IMPORTING object TYPE aff_object,
       create_the_variable_dynamicaly
         IMPORTING absolute_typename TYPE string
         RETURNING VALUE(variable)   TYPE REF TO data
-        RAISING
-                  zcx_aff_tools,
+        RAISING   zcx_aff_tools,
       get_dynpro_value
         IMPORTING fieldname         TYPE string
         RETURNING VALUE(fieldvalue) TYPE string,
@@ -185,10 +182,9 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
         IMPORTING object_name   TYPE string
         RETURNING VALUE(result) TYPE string,
       add_file_to_zip
-        IMPORTING
-          i_file_name         TYPE string
-          i_stringtab_content TYPE rswsourcet
-          i_error_text        TYPE string.
+        IMPORTING i_file_name         TYPE string
+                  i_stringtab_content TYPE rswsourcet
+                  i_error_text        TYPE string.
 
 ENDCLASS.
 
@@ -216,7 +212,7 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDTRY.
 
 *     On mac computers file_save_dialog( ) does not add ".zip" at the file_name ending.
-    IF NOT file_name CP '*.zip'.
+    IF file_name NP '*.zip'.
       file_name = |{ file_name }.zip| ##NO_TEXT.
       fullpath = |{ fullpath }.zip| ##NO_TEXT.
     ENDIF.
@@ -240,8 +236,7 @@ CLASS lcl_generator IMPLEMENTATION.
             filetype     = 'BIN'
             write_lf     = space
           CHANGING
-            data_tab     = content_as_table
-        ).
+            data_tab     = content_as_table ).
         INSERT |Success: Zip file created here { fullpath }| INTO TABLE report_log ##NO_TEXT.
       CATCH zcx_aff_tools.
         INSERT |File { fullpath } not created| INTO TABLE report_log ##NO_TEXT.
@@ -250,7 +245,6 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD get_replacing_table_and_intfs.
 *       fill the table with the strings which need to be replaced (interface objects need to begin with z)
-    CLEAR interfaces.
     APPEND name_of_intf_of_mainobj TO interfaces.
     IF name_of_intf_of_mainobj CP `IF_AFF_FUGR*`.
       APPEND `IF_AFF_FUNC_V1` TO interfaces.
@@ -261,38 +255,34 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDIF.
 
     " the interface names which need to be replaced
-    LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>).
-      DATA(intf_name) = to_lower( <intf> ).
-      IF NOT intf_name CP `z*`.
-        INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
-        IF intf_name CP `*/*`.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH '('.
-          REPLACE FIRST OCCURRENCE OF '/' IN intf_name WITH ')'.
-          INSERT VALUE #( to_be_replaced = intf_name replace_with = get_objname_wo_namspace_with_z( to_lower( <intf> ) ) ) INTO TABLE replacing_table_string.
-        ENDIF.
+    LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<intf>) WHERE table_line NP `z*`.
+      INSERT VALUE #( to_be_replaced = <intf> replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
+      IF <intf> CP `*/*`.
+        DATA(to_be_replaced) = <intf>.
+        REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH '('.
+        REPLACE FIRST OCCURRENCE OF '/' IN to_be_replaced WITH ')'.
+        INSERT VALUE #( to_be_replaced = to_be_replaced replace_with = get_objname_wo_namspace_with_z( <intf> ) ) INTO TABLE replacing_table_string.
       ENDIF.
     ENDLOOP.
 
-    INSERT VALUE #( to_be_replaced = `if_aff_types_v1` replace_with = get_objname_wo_namspace_with_z( `zif_aff_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
-    INSERT VALUE #( to_be_replaced =  `if_aff_oo_types_v1` replace_with = get_objname_wo_namspace_with_z(  `zif_aff_oo_types_v1` ) ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
+    INSERT VALUE #( to_be_replaced = `if_aff_types_v1` replace_with = `zif_aff_types_v1` ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
+    INSERT VALUE #( to_be_replaced = `if_aff_oo_types_v1` replace_with = `zif_aff_oo_types_v1` ) INTO TABLE replacing_table_string ##NO_TEXT ##NO_TEXT.
 
     SORT replacing_table_string ASCENDING BY to_be_replaced.
     DELETE ADJACENT DUPLICATES FROM replacing_table_string.
   ENDMETHOD.
 
   METHOD get_objname_wo_namspace_with_z.
-    SPLIT object_name AT '/' INTO TABLE DATA(splitted_obj_name_parts).
-    DATA(object_name_wo_namespace) = splitted_obj_name_parts[ lines( splitted_obj_name_parts ) ].
-    DATA(zname_of_obj) = to_lower( object_name_wo_namespace ).
-    IF NOT zname_of_obj CP `z*`.
-      result = |z{ zname_of_obj }|.
-    ELSE.
-      result = zname_of_obj.
+    SPLIT to_lower( object_name ) AT '/' INTO TABLE DATA(splitted_parts).
+    result = splitted_parts[ lines( splitted_parts ) ].
+    IF result NP `z*`.
+      result = |z{ result }|.
     ENDIF.
   ENDMETHOD.
 
 
   METHOD generate_repo_folder.
+    DATA: file_handler TYPE REF TO if_aff_object_file_handler.
     IF p_repo = abap_true.
       "serialize only one repo folder
       IF p_objtyp IS INITIAL OR p_intf IS INITIAL.
@@ -306,27 +296,20 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(object_type_folder_name) = to_lower( object-object_type ).
 
     IF aff_factory IS NOT INITIAL.
-      DATA(file_handler) = aff_factory->get_object_file_handler( ). " for testing purposes
+      file_handler = aff_factory->get_object_file_handler( ). " for testing purposes
     ELSE.
       file_handler = cl_aff_factory=>get_object_file_handler( ).
     ENDIF.
 
     IF object-example IS NOT INITIAL.
       SELECT SINGLE devclass FROM tadir WHERE pgmid = 'R3TR' AND obj_name = @object-example AND object = @object-object_type INTO @DATA(example_obj_devclass).
-      DATA(example_main_object) = VALUE if_aff_object_file_handler=>ty_object( devclass = example_obj_devclass obj_type = object-object_type obj_name = object-example ).
-      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( example_main_object ) ) log = aff_framework_log ).
+      DATA(example_files) = file_handler->serialize_objects( objects = VALUE #( ( devclass = example_obj_devclass obj_type = object-object_type obj_name = object-example ) ) log = aff_framework_log ).
 
       "adding the example files
       add_aff_files_to_zip( files = example_files filename = |{ object_type_folder_name }/examples/| replacing_table_string = replacing_table_string ).
     ENDIF.
-    get_replacing_table_and_intfs(
-      EXPORTING
-        name_of_intf_of_mainobj = CONV #( object-interface )
-      IMPORTING
-        interfaces              = DATA(interfaces)
-    ).
+    DATA(interfaces) = get_replacing_table_and_intfs( object-interface ).
     DATA intf_objects TYPE if_aff_object_file_handler=>tt_objects.
-    CLEAR intf_objects.
 
     "generate type folder with all serialized interfaces (main and subobjects)
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
@@ -367,7 +350,7 @@ CLASS lcl_generator IMPLEMENTATION.
         mainobjtype = `TABL`.
       ENDIF.
 
-      DATA(format_version) = get_format_version_of_intfname( CONV #( intfname ) ).
+      DATA(format_version) = get_format_version_of_intfname( intfname ).
       DATA(schemid) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ to_lower( mainobjtype ) }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
       IF writer IS INITIAL OR writer IS INSTANCE OF zcl_aff_writer_json_schema OR writer IS INSTANCE OF zcl_aff_writer_xslt. "in testcase the writer is of type zif_aff_writer
         writer = NEW zcl_aff_writer_json_schema( schema_id = schemid format_version = format_version ).
@@ -384,8 +367,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ELSE.
         add_file_to_zip( i_stringtab_content = schema_content
                          i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
-                         i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ##NO_TEXT
-                         ).
+                         i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ) ##NO_TEXT.
       ENDIF.
     ENDLOOP.
 
@@ -403,14 +385,17 @@ CLASS lcl_generator IMPLEMENTATION.
         ENDTRY.
 
         example_part = | \| [{ file_name }](./examples/{ file_name })| .
+
       ENDIF.
+
+      DATA(definition_part) = | [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) |.
 
       DATA(readme) = VALUE rswsourcet(
               ( |# { object-object_type } File Format| )
               ( `` )
               ( `File | Cardinality | Definition | Schema | Example` )
               ( `:--- | :--- | :--- | :--- | :---` )
-              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
+              ( |`<name>.{ object_type_folder_name }.json` \| 1 \| { definition_part } \| [`{ to_lower( objecttype ) }-v{ format_version }.json`](./{ to_lower( objecttype ) }-v{ format_version }.json)| &&
                  example_part )
               ( `` )
       ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
@@ -510,8 +495,7 @@ CLASS lcl_generator IMPLEMENTATION.
         objecttype     = objecttype
       IMPORTING
         intfname       = DATA(intfname)
-        format_version = DATA(format_version)
-    ).
+        format_version = DATA(format_version) ).
     IF objecttype = 'DOMA'.
       intfname = 'ZIF_AFF_DOMA_V1'.
     ENDIF.
@@ -548,8 +532,7 @@ CLASS lcl_generator IMPLEMENTATION.
             objecttype     = objecttype
           IMPORTING
             intfname       = DATA(intfname)
-            format_version = DATA(format_version)
-        ).
+            format_version = DATA(format_version) ).
         IF objecttype = 'NROB'.
           intfname = 'Z_AFF_NR'.
         ENDIF.
@@ -562,15 +545,15 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(string_content) = content_as_string.
     LOOP AT replacing_table_string ASSIGNING FIELD-SYMBOL(<replace_string>).
       FIND ALL OCCURRENCES OF <replace_string>-to_be_replaced IN string_content IGNORING CASE RESULTS DATA(findings).
-*      replace all occurrences of <replace_string>-to_be_replaced in string_content with <replace_string>-replace_with ignoring case.
-      LOOP AT findings ASSIGNING FIELD-SYMBOL(<finding>) step -1.
+
+      LOOP AT findings ASSIGNING FIELD-SYMBOL(<finding>) STEP -1.
         IF <finding>-offset > 0.
           DATA(before_offset) = <finding>-offset - 1.
           DATA(char_before_offset) = to_lower( string_content+before_offset(1) ).
         ELSE.
           char_before_offset = ' '.
         ENDIF.
-        IF NOT to_lower( char_before_offset ) EQ 'z'.
+        IF to_lower( char_before_offset ) <> 'z'.
           REPLACE SECTION OFFSET <finding>-offset LENGTH <finding>-length OF string_content WITH <replace_string>-replace_with.
         ENDIF.
       ENDLOOP.
@@ -643,7 +626,7 @@ CLASS lcl_generator IMPLEMENTATION.
       cl_abap_typedescr=>describe_by_name( EXPORTING p_name = class_typename RECEIVING p_descr_ref = r_typedescr EXCEPTIONS type_not_found = 1 ).
       IF sy-subrc = 1.
         INSERT |Type { absolute_typename } was not found. Either interface or type doesnt exist.| INTO TABLE report_log ##NO_TEXT.
-        RAISE EXCEPTION TYPE zcx_aff_tools.
+        RAISE EXCEPTION NEW zcx_aff_tools( ).
       ENDIF.
     ENDIF.
     r_elemdescr ?= r_typedescr.
@@ -769,7 +752,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
 
-    IF lines(  aff_framework_log->get_messages( ) ) > 0.
+    IF lines( aff_framework_log->get_messages( ) ) > 0.
       SKIP 1.
       WRITE: / `Messages of the AFF Object Handlers:` ##NO_TEXT.
       LOOP AT aff_framework_log->get_messages( ) ASSIGNING FIELD-SYMBOL(<framework_log_message>).
@@ -799,7 +782,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
     ELSEIF p_repo = abap_true.
       "serialize one repo folder
-      generate_repo_folder( VALUE #( object_type  = p_objtyp interface =  p_intf example =  p_examp ) ).
+      generate_repo_folder( VALUE #( object_type  = p_objtyp interface = p_intf example = p_examp ) ).
     ENDIF.
 
   ENDMETHOD.
@@ -968,7 +951,7 @@ CLASS lcl_generator IMPLEMENTATION.
       set_object_infos_in_ui( objinfos ).
       p_objtyp = objinfos-object_type.
       p_examp = objinfos-example.
-    ELSEIF p_objtyp IS  INITIAL AND p_intf IS INITIAL AND p_examp IS NOT INITIAL.
+    ELSEIF p_objtyp IS INITIAL AND p_intf IS INITIAL AND p_examp IS NOT INITIAL.
       p_examp = to_upper( p_examp ).
       objinfos = get_object_infos_by_exmplname( CONV #( p_examp ) ).
       set_object_infos_in_ui( objinfos ).
@@ -993,15 +976,15 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD set_parameters.
     p_schema = i_schema.
-    p_xslt  =      i_xslt  .
-    p_repo  =      i_repo  .
-    p_objtyp =     i_objtyp.
-    p_intf  =      i_intf  .
-    p_type  =      i_type  .
-    p_examp =      i_examp .
-    p_consol =     i_consol.
-    p_disk  =      i_disk  .
-    p_readm  =      i_readm  .
+    p_xslt  = i_xslt  .
+    p_repo  = i_repo  .
+    p_objtyp = i_objtyp.
+    p_intf  = i_intf  .
+    p_type  = i_type  .
+    p_examp = i_examp .
+    p_consol = i_consol.
+    p_disk  = i_disk  .
+    p_readm  = i_readm  .
 
   ENDMETHOD.
 
@@ -1037,7 +1020,7 @@ CLASS ltc_generator_double IMPLEMENTATION.
 
   METHOD lif_generator~generate_type.
     IF generate_type_will_raise_err = abap_true.
-      RAISE EXCEPTION TYPE zcx_aff_tools.
+      RAISE EXCEPTION NEW zcx_aff_tools( ).
     ELSE.
       DATA(type_description) = cl_abap_typedescr=>describe_by_data( data ).
       DATA(absolutename) = type_description->absolute_name.
@@ -1048,8 +1031,7 @@ CLASS ltc_generator_double IMPLEMENTATION.
       SPLIT objectpart AT '_' INTO TABLE DATA(splitted2).
       DATA(objecttype) = splitted2[ lines( splitted2 ) - 1 ].
       result = VALUE #(
-          ( |Test ST/Schema for { objecttype }| )
-      ).
+          ( |Test ST/Schema for { objecttype }| ) ).
     ENDIF.
   ENDMETHOD.
 
@@ -1197,8 +1179,7 @@ CLASS ltc_generator IMPLEMENTATION.
         ( obj_name = 'Z_AFF_EXAMPLE_ENHO'      devclass = c_example_intf_package obj_type = 'ENHO' )
         ( obj_name = 'Z_AFF_EXAMPLE_ENHS'      devclass = c_example_intf_package obj_type = 'ENHS' )
         ( obj_name = 'Z_AFF_EXAMPLE_FUGR'      devclass = c_example_intf_package obj_type = 'FUGR' )
-        ( obj_name = 'Z_AFF_NR'                devclass = c_example_intf_package obj_type = 'NROB' )
-    ).
+        ( obj_name = 'Z_AFF_NR'                devclass = c_example_intf_package obj_type = 'NROB' ) ).
     TRY.
         configure_file_handler( objects ).
       CATCH zcx_aff_tools.
@@ -1223,8 +1204,7 @@ CLASS ltc_generator IMPLEMENTATION.
     cut = NEW lcl_generator(
       aff_factory = aff_factory_double
       generator   = generator_double
-      writer      = writer_double
-    ).
+      writer      = writer_double ).
 
     INSERT LINES OF generator_double->get_log( )->get_messages( ) INTO TABLE expected_log_messages.
 
@@ -1255,6 +1235,7 @@ CLASS ltc_generator IMPLEMENTATION.
   METHOD configure_file_handler.
     DATA files TYPE if_aff_object_file_handler=>ty_object_files.
     DATA file_name TYPE string.
+    DATA file_content TYPE xstring.
     DATA(text_handler) = NEW cl_aff_content_handler_text( ).
 
     LOOP AT objects ASSIGNING FIELD-SYMBOL(<object>).
@@ -1268,7 +1249,7 @@ CLASS ltc_generator IMPLEMENTATION.
       ENDTRY.
 
       TRY.
-          DATA(file_content) = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
+          file_content = text_handler->if_aff_content_handler~serialize( |File of { <object>-obj_name }| ).
         CATCH cx_aff_root.
           cl_abap_unit_assert=>fail( ).
       ENDTRY.
@@ -1280,7 +1261,7 @@ CLASS ltc_generator IMPLEMENTATION.
                                          ( obj_type = <object>-obj_type obj_name  = <object>-obj_name file_name = file_name content = file_content )
                            ) ).
       cl_abap_testdouble=>configure_call( file_handler_double )->returning( files )->ignore_parameter( name = 'LOG' ).
-      file_handler_double->serialize_objects( objects =  VALUE #( ( <object> ) ) log = NEW cl_aff_log( )  ).
+      file_handler_double->serialize_objects( objects = VALUE #( ( <object> ) ) log = NEW cl_aff_log( ) ).
     ENDLOOP.
 
     file_name = `file_of_reps_func_fugr.json`.
@@ -1301,7 +1282,7 @@ CLASS ltc_generator IMPLEMENTATION.
                                             ( obj_name = 'IF_AFF_FUGR_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_FUNC_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_REPS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-    )
+                                            )
                                             log     = NEW cl_aff_log( ) ).
     file_name = `file_of_indx_tabl.json`.
     TRY.
@@ -1320,7 +1301,7 @@ CLASS ltc_generator IMPLEMENTATION.
     file_handler_double->serialize_objects( objects = VALUE #(
                                             ( obj_name = 'IF_AFF_TABL_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_INDX_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-    )
+                                            )
                                             log     = NEW cl_aff_log( ) ).
   ENDMETHOD.
 
@@ -1332,8 +1313,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-    ).
+      i_consol = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1350,15 +1330,13 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = 'IF_AFF_INTF_V1X' "version not readable
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-    ).
+      i_consol = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
     expected_report_log = VALUE #(
   ( `Formatversion couldn't be derived from interface IF_AFF_INTF_V1X. Format version 1 was assumed.` )
-  ( `Type \INTERFACE=IF_AFF_INTF_V1X\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
-  ).
+  ( `Type \INTERFACE=IF_AFF_INTF_V1X\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` ) ).
     CLEAR expected_log_messages.
     assert_logs_and_file_handler( ).
 
@@ -1372,8 +1350,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = 'IF_AFF_INTF_V99999' "interface does not exist in system
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-    ).
+      i_consol = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1381,8 +1358,7 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( cut->zip ).
 
     expected_report_log = VALUE #(
-  ( `Type \INTERFACE=IF_AFF_INTF_V99999\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
-  ).
+  ( `Type \INTERFACE=IF_AFF_INTF_V99999\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` ) ).
     CLEAR expected_log_messages.
     assert_logs_and_file_handler( ).
 
@@ -1396,16 +1372,14 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = 'IF_AFF_INTF_V1'
       i_type   = 'TY_BLABLA' "type does not exist in interface IF_AFF_INTF_V1
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-    ).
+      i_consol = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_initial( cut->zip ).
     expected_report_log = VALUE #(
-  ( `Type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_BLABLA was not found. Either interface or type doesnt exist.` )
-  ).
+  ( `Type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_BLABLA was not found. Either interface or type doesnt exist.` ) ).
     CLEAR expected_log_messages.
     assert_logs_and_file_handler( ).
   ENDMETHOD.
@@ -1418,8 +1392,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-    ).
+      i_consol = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1436,8 +1409,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = 'IF_AFF_FUNC_V1'
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-    ).
+      i_consol = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1454,8 +1426,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = 'IF_AFF_FUNC_V1'
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_disk   = abap_true
-    ).
+      i_disk   = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1476,8 +1447,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_disk   = abap_true
-    ).
+      i_disk   = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1498,8 +1468,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_disk   = abap_true
-    ).
+      i_disk   = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1519,8 +1488,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_disk   = abap_true
-    ).
+      i_disk   = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1553,8 +1521,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = ''
-      i_disk   = abap_true
-    ).
+      i_disk   = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1574,8 +1541,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf_w_namespace )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf_nspace )
-      i_disk   = abap_true
-    ).
+      i_disk   = abap_true ).
     cut->set_schema_test_content( VALUE #( ( `TEST ABC` ) ) ).
     "When
     cut->start_of_selection( ).
@@ -1600,8 +1566,7 @@ CLASS ltc_generator IMPLEMENTATION.
     expected_content = text_handler->if_aff_content_handler~serialize( `TEST ABC` ).
     cl_abap_unit_assert=>assert_equals( act = act_content exp = expected_content ).
     expected_report_log = VALUE #(
-  ( `Type \INTERFACE=/NAMESP/IF_AFF_INTF_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
-  ).
+  ( `Type \INTERFACE=/NAMESP/IF_AFF_INTF_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` ) ).
     CLEAR expected_log_messages.
     assert_logs_and_file_handler( ).
   ENDMETHOD.
@@ -1614,8 +1579,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = 'IF_AFF_FUGR_V1'
       i_type   = 'TY_MAIN'
       i_examp  = 'Z_AFF_EXAMPLE_FUGR'
-      i_disk   = abap_true
-    ).
+      i_disk   = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1645,8 +1609,7 @@ CLASS ltc_generator IMPLEMENTATION.
     expected_log_messages = VALUE #(
   ( type = 'I' message_text = `Generator Log` )
   ( type = 'I' message_text = `Generator Log` )
-  ( type = 'I' message_text = `Generator Log` )
-    ).
+  ( type = 'I' message_text = `Generator Log` ) ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
@@ -1658,8 +1621,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = 'IF_AFF_TABL_V1'
       i_type   = 'TY_MAIN'
       i_examp  = 'Z_AFF_EXAMPLE_TABL'
-      i_disk   = abap_true
-    ).
+      i_disk   = abap_true ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1677,8 +1639,7 @@ CLASS ltc_generator IMPLEMENTATION.
 
     expected_report_log = VALUE #(
   ( `Type \INTERFACE=IF_AFF_TABL_V1\TYPE=TY_MAIN was not found. Either interface or type doesnt exist.` )
-  ( `The schema for interface IF_AFF_TABL_V1 could not be created.` )
-  ).
+  ( `The schema for interface IF_AFF_TABL_V1 could not be created.` ) ).
 
     assert_logs_and_file_handler( ).
   ENDMETHOD.
@@ -1691,8 +1652,7 @@ CLASS ltc_generator IMPLEMENTATION.
     cut = NEW lcl_generator(
       aff_factory = aff_factory_double
       generator   = generator_double
-      writer      = writer_double
-    ).
+      writer      = writer_double ).
 
     "schema on console
     cut->set_parameters(
@@ -1701,8 +1661,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-    ).
+      i_consol = abap_true ).
 
     "When
     cut->start_of_selection( ).
@@ -1710,9 +1669,7 @@ CLASS ltc_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( cut->xslt_schema_content ).
     cl_abap_unit_assert=>assert_initial( cut->zip ).
 
-    expected_report_log = VALUE #(
-  ( `The generator couldn't generate the schema/XSLT for type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_MAIN` )
-  ).
+    expected_report_log = VALUE #( ( `The generator couldn't generate the schema/XSLT for type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_MAIN` ) ).
     CLEAR expected_log_messages.
     assert_logs_and_file_handler( ).
   ENDMETHOD.
@@ -1729,8 +1686,7 @@ CLASS ltc_generator IMPLEMENTATION.
     cut = NEW lcl_generator(
       aff_factory = aff_factory_double
       generator   = generator_double
-      writer      = writer_double
-    ).
+      writer      = writer_double ).
 
     "schema on console
     cut->set_parameters(
@@ -1739,16 +1695,13 @@ CLASS ltc_generator IMPLEMENTATION.
       i_intf   = CONV #( c_intf )
       i_type   = 'TY_MAIN'
       i_examp  = CONV #( c_aff_example_intf )
-      i_consol = abap_true
-    ).
+      i_consol = abap_true ).
 
     "When
     cut->start_of_selection( ).
     "Then
     cl_abap_unit_assert=>assert_not_initial( cut->xslt_schema_content ).
-    expected_report_log = VALUE #(
-  ( `ATTENTION: The created schema/xslt for type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_MAIN is not valid.` )
-  ).
+    expected_report_log = VALUE #( ( `ATTENTION: The created schema/xslt for type \INTERFACE=IF_AFF_INTF_V1\TYPE=TY_MAIN is not valid.` ) ).
     assert_logs_and_file_handler( ).
   ENDMETHOD.
 
@@ -1781,8 +1734,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_examp  = CONV #( c_aff_example_intf )
       i_consol = abap_true ).
 
-    expected_report_log = VALUE #(
-  ( `Please fill out at least the fields objecttype and interfacename` ) ).
+    expected_report_log = VALUE #( ( `Please fill out at least the fields objecttype and interfacename` ) ).
 
     " repo folder for one object
     create_new_cut_with_new_params(
@@ -1808,8 +1760,7 @@ CLASS ltc_generator IMPLEMENTATION.
     cut = NEW lcl_generator(
       aff_factory = aff_factory_double
       generator   = generator_double
-      writer      = writer_double
-    ).
+      writer      = writer_double ).
 
     cut->set_parameters(
       i_schema = i_schema
@@ -1820,8 +1771,7 @@ CLASS ltc_generator IMPLEMENTATION.
       i_type   = i_type
       i_examp  = i_examp
       i_consol = i_consol
-      i_disk   = i_disk
-    ).
+      i_disk   = i_disk ).
     "When
     cut->start_of_selection( ).
     "Then
@@ -1834,15 +1784,6 @@ ENDCLASS.
 
 
 INITIALIZATION.
-*  selection-screen begin of block comment with frame.
-*    selection-screen comment /05(79) text1.
-*    selection-screen comment /05(79) text2.
-*    selection-screen skip 1.
-*  selection-screen end of block comment.
-
-*  Define your type as described here:
-*  https://wiki.wdf.sap.corp/wiki/display/ADTVEGA/Bring+your+own+object#Bringyourownobject-CreateABAPobjecttypeforyourobject
-*  text1 = 'Enter an interfacename in field "object name" and a typename in field "type"' ##NO_TEXT.
 
   helper = NEW lcl_generator( ).
   helper->modify_screen( ).
@@ -1865,12 +1806,7 @@ AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_type.
   helper->on_value_request_for_type( ).
 
 AT SELECTION-SCREEN OUTPUT.
-* The OUTPUT event is also trigged to re-draw ABAP report screen allowing it to
-* be used to hide, display or deactivate fields. Please note at this point sy-ucomm field
-* has been refreshed so you need to use value captured above in gd_ucomm
-*  case gd_ucomm.
-*    when 'UPD'. "radiobutton selection made
-*  endcase.
+
 
   helper->modify_screen( ).
 
