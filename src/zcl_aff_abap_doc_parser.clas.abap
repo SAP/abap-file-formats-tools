@@ -446,9 +446,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDIF.
     write_log_for_multiple_entries( result_table = result_table annotaion = annotation_name ).
     DATA(annotation_length) = strlen( dummy_annotation ).
-    DATA(pcre_of_number_expressions) = NEW cl_abap_regex( pattern     = `(\+|-)?[0-9]+(.[0-9]+)?(e(\+|-)?[0-9]+)?`
-                                                          ignore_case = abap_true ).
-
+    DATA(pcre_of_number_expressions) = cl_abap_regex=>create_pcre( pattern     = `(\+|-)?[0-9]+(.[0-9]+)?(e(\+|-)?[0-9]+)?`
+                                                                    ignore_case = abap_true ).
     DATA(warning_written) = abap_false.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       DATA(offset_found) = <entry>-offset.
@@ -513,8 +512,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     IF current_offset >= strlen( text_to_check ).
       RETURN.
     ENDIF.
-    DATA(pcre_of_letter) = NEW cl_abap_regex( pattern     = `[a-zA-Z]`
-                                              ignore_case = abap_false ) ##NO_TEXT.
+    DATA(pcre_of_letter) = cl_abap_regex=>create_pcre( pattern = `[a-zA-Z]` ) ##NO_TEXT.
     DO.
       next_char = text_to_check+current_offset(1).
       current_offset += 1.
