@@ -367,7 +367,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ELSE.
         add_file_to_zip( i_stringtab_content = schema_content
                          i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
-                         i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ).
+                         i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ) ##NO_TEXT.
       ENDIF.
     ENDLOOP.
 
