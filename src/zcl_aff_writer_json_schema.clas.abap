@@ -851,7 +851,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       LOOP AT ddic_fixed_values ASSIGNING FIELD-SYMBOL(<value>).
         DATA text TYPE string.
         text = <value>-ddtext.
-        REPLACE ALL OCCURRENCES OF REGEX '\s' IN text WITH '_'  ##REGEX_POSIX.
+        REPLACE ALL OCCURRENCES OF PCRE '\s' IN text WITH '_'.
         INSERT VALUE #( value = format_to_camel_case( text ) ) INTO TABLE result-values.
       ENDLOOP.
     ENDIF.
