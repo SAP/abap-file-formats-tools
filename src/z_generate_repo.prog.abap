@@ -67,7 +67,7 @@ TYPES: BEGIN OF aff_object,
        END OF aff_object.
 
 
-CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
+CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
   PUBLIC SECTION.
     DATA generator_log TYPE REF TO zif_aff_log.
@@ -314,7 +314,7 @@ CLASS lcl_generator IMPLEMENTATION.
     "generate type folder with all serialized interfaces (main and subobjects)
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
       DATA(upper_intf) = to_upper( <interface> ).
-      SELECT SINGLE devclass FROM tadir WHERE obj_name = @upper_intf AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass) .
+      SELECT SINGLE devclass FROM tadir WHERE obj_name = @upper_intf AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass).
       IF intf_obj_devclass IS INITIAL.
         INSERT |{ upper_intf } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
       ENDIF.
@@ -384,7 +384,7 @@ CLASS lcl_generator IMPLEMENTATION.
             INSERT |Failed to create the file name for the README example| INTO TABLE report_log ##NO_TEXT.
         ENDTRY.
 
-        example_part = | \| [{ file_name }](./examples/{ file_name })| .
+        example_part = | \| [{ file_name }](./examples/{ file_name })|.
 
       ENDIF.
 
@@ -452,7 +452,7 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(intf_name) = i_object-interface.
     APPEND VALUE #( fieldname = 'P_INTF'  fieldvalue = intf_name ) TO dynpfields.
 
-    DATA(example_name) = i_object-example .
+    DATA(example_name) = i_object-example.
     APPEND VALUE #( fieldname = 'P_EXAMP'  fieldvalue = example_name ) TO dynpfields.
 
     CALL FUNCTION 'DYNP_VALUES_UPDATE'
@@ -688,7 +688,7 @@ CLASS lcl_generator IMPLEMENTATION.
       generator = NEW lcl_generator_helper( writer ).
     ENDIF.
     content = get_content( absolute_typename = |\\INTERFACE={ p_intf }\\TYPE={ p_type }| ).
-  ENDMETHOD .
+  ENDMETHOD.
 
   METHOD get_content.
     TRY.
@@ -703,7 +703,7 @@ CLASS lcl_generator IMPLEMENTATION.
     " getting the XSLT/Schema of the type
     TRY.
         content = generator->generate_type( <field> ).
-      CATCH zcx_aff_tools .
+      CATCH zcx_aff_tools.
         CLEAR content.
         INSERT |The generator couldn't generate the schema/XSLT for type { absolute_typename }| INTO TABLE report_log ##NO_TEXT.
         RETURN.
@@ -976,15 +976,15 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD set_parameters.
     p_schema = i_schema.
-    p_xslt  = i_xslt  .
-    p_repo  = i_repo  .
+    p_xslt  = i_xslt.
+    p_repo  = i_repo.
     p_objtyp = i_objtyp.
-    p_intf  = i_intf  .
-    p_type  = i_type  .
-    p_examp = i_examp .
+    p_intf  = i_intf.
+    p_type  = i_type.
+    p_examp = i_examp.
     p_consol = i_consol.
-    p_disk  = i_disk  .
-    p_readm  = i_readm  .
+    p_disk  = i_disk.
+    p_readm  = i_readm.
 
   ENDMETHOD.
 
@@ -1007,7 +1007,7 @@ CLASS lcl_generator IMPLEMENTATION.
 ENDCLASS.
 
 CLASS ltc_generator_double DEFINITION FINAL FOR TESTING.
-  PUBLIC SECTION .
+  PUBLIC SECTION.
     INTERFACES lif_generator.
     METHODS constructor
       IMPORTING
@@ -1213,7 +1213,7 @@ CLASS ltc_generator IMPLEMENTATION.
   METHOD assert_logs_and_file_handler.
     cl_abap_testdouble=>verify_expectations( file_handler_double ).
     cl_abap_unit_assert=>assert_equals( act = cut->report_log exp = expected_report_log ).
-    cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ) .
+    cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ).
     LOOP AT expected_log_messages ASSIGNING FIELD-SYMBOL(<exp_msg>).
       READ TABLE cut->generator_log->get_messages( ) WITH KEY message_text = <exp_msg>-message_text TRANSPORTING NO FIELDS.
       IF sy-subrc <> 0.
