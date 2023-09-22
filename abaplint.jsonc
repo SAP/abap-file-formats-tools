@@ -20,7 +20,7 @@
   ],
   "syntax": {
     "version": "v757",
-    "errorNamespace": "."
+    "errorNamespace": "^(zcl_aff_|zif_aff_)"
   },
   "rules": {
     "cds_comment_style": true,
