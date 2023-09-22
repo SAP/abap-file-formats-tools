@@ -866,7 +866,7 @@ CLASS lcl_generator IMPLEMENTATION.
       REPLACE ALL OCCURRENCES OF '_APP_%-VALU_PUSH' IN element_name WITH ``.
       REPLACE ALL OCCURRENCES OF '-LOW' IN element_name WITH ``.
 
-      FIND FIRST OCCURRENCE OF REGEX element_name IN TABLE hidden_elements ##REGEX_POSIX. "or line exists
+      FIND FIRST OCCURRENCE OF PCRE element_name IN TABLE hidden_elements. "or line exists
       IF sy-subrc = 0.
         screen-active = 0.
         MODIFY SCREEN.
