@@ -283,12 +283,10 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD generate_repo_folder.
     DATA: file_handler TYPE REF TO if_aff_object_file_handler.
-    IF p_repo = abap_true.
+    IF p_repo = abap_true AND ( p_objtyp IS INITIAL OR p_intf IS INITIAL ).
       "serialize only one repo folder
-      IF p_objtyp IS INITIAL OR p_intf IS INITIAL.
-        INSERT `Please fill out at least the fields objecttype and interfacename` INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-      ENDIF.
+      INSERT `Please fill out at least the fields objecttype and interfacename` INTO TABLE report_log ##NO_TEXT.
+      RETURN.
     ENDIF.
     " generate zip folder
     me->zip = NEW cl_abap_zip( ).
