@@ -6,7 +6,7 @@ DATA helper TYPE REF TO lcl_generator ##NEEDED.
 INTERFACE lif_generator.
   METHODS generate_type
     IMPORTING data          TYPE data
-    RETURNING VALUE(result) TYPE rswsourcet
+    RETURNING VALUE(result) TYPE string_table
     RAISING   zcx_aff_tools.
   METHODS get_log
     RETURNING
@@ -51,9 +51,9 @@ SELECTION-SCREEN END OF BLOCK block_1.
 SELECTION-SCREEN BEGIN OF BLOCK block_2 WITH FRAME TITLE TEXT-021 ##TEXT_POOL.
   PARAMETERS:
     p_objtyp TYPE trobjtype,
-    p_intf   TYPE sobj_name,
-    p_type   TYPE sobj_name DEFAULT 'TY_MAIN',
-    p_examp  TYPE sobj_name,
+    p_intf   TYPE tadir-obj_name,
+    p_type   TYPE tadir-obj_name DEFAULT 'TY_MAIN',
+    p_examp  TYPE tadir-obj_name,
     p_readm  TYPE abap_bool DEFAULT abap_true AS CHECKBOX,
     p_consol TYPE c RADIOBUTTON GROUP two USER-COMMAND two DEFAULT 'X',
     p_disk   TYPE c RADIOBUTTON GROUP two.
@@ -61,8 +61,8 @@ SELECTION-SCREEN END OF BLOCK block_2.
 
 TYPES: BEGIN OF aff_object,
          object_type    TYPE c LENGTH 4,
-         interface      TYPE sobj_name,
-         example        TYPE sobj_name,
+         interface      TYPE tadir-obj_name,
+         example        TYPE tadir-obj_name,
          format_version TYPE i,
        END OF aff_object.
 
@@ -73,8 +73,8 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
     DATA generator_log TYPE REF TO zif_aff_log.
     DATA aff_framework_log TYPE REF TO if_aff_log.
     DATA report_log TYPE stringtab.
-    DATA xslt_schema_content TYPE rswsourcet.
-    DATA schema_test_content TYPE rswsourcet.
+    DATA xslt_schema_content TYPE string_table.
+    DATA schema_test_content TYPE string_table.
     DATA zip TYPE REF TO cl_abap_zip.
 
     METHODS: set_parameters
@@ -82,16 +82,16 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
         i_schema TYPE abap_bool DEFAULT abap_false
         i_xslt   TYPE abap_bool DEFAULT abap_false
         i_repo   TYPE abap_bool DEFAULT abap_false
-        i_objtyp TYPE trobjtype OPTIONAL
-        i_intf   TYPE sobj_name OPTIONAL
-        i_type   TYPE sobj_name OPTIONAL
-        i_examp  TYPE sobj_name OPTIONAL
+        i_objtyp TYPE tadir-object OPTIONAL
+        i_intf   TYPE tadir-obj_name OPTIONAL
+        i_type   TYPE tadir-obj_name OPTIONAL
+        i_examp  TYPE tadir-obj_name OPTIONAL
         i_consol TYPE abap_bool DEFAULT abap_false
         i_disk   TYPE abap_bool DEFAULT abap_false
         i_readm  TYPE abap_bool DEFAULT abap_true,
 
       set_schema_test_content
-        IMPORTING schema_test_content TYPE rswsourcet,
+        IMPORTING schema_test_content TYPE string_table,
 
       constructor
         IMPORTING
@@ -109,7 +109,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
         IMPORTING zip_archive TYPE xstring
                   zipname     TYPE string,
       create_schema_xslt_zip
-        IMPORTING content      TYPE rswsourcet
+        IMPORTING content      TYPE string_table
         RETURNING VALUE(r_zip) TYPE REF TO cl_abap_zip,
       print_logs,
       output.
@@ -124,7 +124,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
     TYPES: replacing_tab TYPE STANDARD TABLE OF replacing_line.
 
     DATA: "needed for testing
-      aff_factory TYPE REF TO  if_aff_factory,
+      aff_factory TYPE REF TO if_aff_factory,
       generator   TYPE REF TO lif_generator,
       writer      TYPE REF TO zif_aff_writer.
     DATA replacing_table_string TYPE replacing_tab.
@@ -132,7 +132,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
     METHODS:
       get_replacing_table_and_intfs
-        IMPORTING name_of_intf_of_mainobj TYPE sobj_name
+        IMPORTING name_of_intf_of_mainobj TYPE tadir-obj_name
         RETURNING VALUE(interfaces)       TYPE string_table,
       replace_names_in_string
         IMPORTING content_as_string      TYPE string
@@ -174,16 +174,16 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
         IMPORTING intfname              TYPE string
         RETURNING VALUE(format_version) TYPE i,
       get_schema_or_xslt_content
-        RETURNING VALUE(content) TYPE rswsourcet,
+        RETURNING VALUE(content) TYPE string_table,
       get_content
         IMPORTING absolute_typename TYPE string
-        RETURNING VALUE(content)    TYPE rswsourcet,
+        RETURNING VALUE(content)    TYPE string_table,
       get_objname_wo_namspace_with_z
         IMPORTING object_name   TYPE string
         RETURNING VALUE(result) TYPE string,
       add_file_to_zip
         IMPORTING i_file_name         TYPE string
-                  i_stringtab_content TYPE rswsourcet
+                  i_stringtab_content TYPE string_table
                   i_error_text        TYPE string.
 
 ENDCLASS.
@@ -390,7 +390,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
       DATA(definition_part) = | [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) |.
 
-      DATA(readme) = VALUE rswsourcet(
+      DATA(readme) = VALUE string_table(
               ( |# { object-object_type } File Format| )
               ( `` )
               ( `File | Cardinality | Definition | Schema | Example` )
