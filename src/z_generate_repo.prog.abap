@@ -869,11 +869,10 @@ CLASS lcl_generator IMPLEMENTATION.
       FIND FIRST OCCURRENCE OF PCRE element_name IN TABLE hidden_elements. "or line exists
       IF sy-subrc = 0.
         screen-active = 0.
-        MODIFY SCREEN.
       ELSE.
         screen-active = 1.
-        MODIFY SCREEN.
       ENDIF.
+      MODIFY SCREEN.
     ENDLOOP.
   ENDMETHOD.
 
