@@ -1213,8 +1213,8 @@ CLASS ltcl_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = cut->report_log exp = expected_report_log ).
     cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ).
     LOOP AT expected_log_messages ASSIGNING FIELD-SYMBOL(<exp_msg>).
-      READ TABLE cut->generator_log->get_messages( ) WITH KEY message_text = <exp_msg>-message_text TRANSPORTING NO FIELDS.
-      IF sy-subrc <> 0.
+      DATA(messages) = cut->generator_log->get_messages( ).
+      IF line_exists( messages[ message_text = <exp_msg>-message_text ] ).
         cl_abap_unit_assert=>fail( ).
       ENDIF.
     ENDLOOP.
