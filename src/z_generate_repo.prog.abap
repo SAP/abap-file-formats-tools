@@ -1004,7 +1004,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
 ENDCLASS.
 
-CLASS ltc_generator_double DEFINITION FINAL FOR TESTING.
+CLASS ltcl_generator_double DEFINITION FINAL FOR TESTING.
   PUBLIC SECTION.
     INTERFACES lif_generator.
     METHODS constructor
@@ -1014,7 +1014,7 @@ CLASS ltc_generator_double DEFINITION FINAL FOR TESTING.
     DATA log_to_return TYPE REF TO zif_aff_log.
     DATA generate_type_will_raise_err TYPE abap_bool.
 ENDCLASS.
-CLASS ltc_generator_double IMPLEMENTATION.
+CLASS ltcl_generator_double IMPLEMENTATION.
 
   METHOD lif_generator~generate_type.
     IF generate_type_will_raise_err = abap_true.
@@ -1197,7 +1197,7 @@ CLASS ltc_generator IMPLEMENTATION.
 
     generator_log = NEW zcl_aff_log( ).
     generator_log->zif_aff_log~add_info( message_text = 'Generator Log' component_name = VALUE #( ) ).
-    generator_double = NEW ltc_generator_double( generator_log ).
+    generator_double = NEW ltcl_generator_double( generator_log ).
 
     cut = NEW lcl_generator(
       aff_factory = aff_factory_double
@@ -1645,7 +1645,7 @@ CLASS ltc_generator IMPLEMENTATION.
 
   METHOD generate_type_raises_error.
     "generator will raise an error when generate_type is called
-    generator_double = NEW ltc_generator_double( log_to_return  = generator_log generate_type_will_raise_err = abap_true ).
+    generator_double = NEW ltcl_generator_double( log_to_return  = generator_log generate_type_will_raise_err = abap_true ).
 
     cut = NEW lcl_generator(
       aff_factory = aff_factory_double
