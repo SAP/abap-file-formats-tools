@@ -1045,7 +1045,7 @@ CLASS ltcl_generator_double IMPLEMENTATION.
 ENDCLASS.
 
 
-CLASS ltc_generator DEFINITION FINAL FOR TESTING
+CLASS ltcl_generator DEFINITION FINAL FOR TESTING
   DURATION SHORT RISK LEVEL HARMLESS.
 
   PRIVATE SECTION.
@@ -1113,7 +1113,7 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
 
 ENDCLASS.
 
-CLASS ltc_generator IMPLEMENTATION.
+CLASS ltcl_generator IMPLEMENTATION.
 
   METHOD class_setup.
     " keep in mind, the test doubles created for the given function modules would be active for the entire test session
