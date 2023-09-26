@@ -23,6 +23,7 @@
     "errorNamespace": "^(zcl_aff_|zif_aff_)"
   },
   "rules": {
+    "selectionScreenBlockIndentation": true,
     "cds_comment_style": true,
     "cds_legacy_view": true,
     "change_if_to_case": false,
