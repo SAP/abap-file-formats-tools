@@ -877,18 +877,20 @@ CLASS lcl_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD on_value_request_for_objtype.
+    DATA value_help_result_table TYPE trobjtype_tab.
+
     DATA(objtype_value) = get_dynpro_value( fieldname = `P_OBJTYP` ).
     objtype_value = to_upper( objtype_value ).
     IF objtype_value IS INITIAL.
 *  put all Types into the value help
-      SELECT DISTINCT object FROM e071 INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ORDER BY object ##NUMBER_OK. "#EC CI_NOWHERE
+      SELECT DISTINCT object FROM e071 INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ORDER BY object ##NUMBER_OK. "#EC CI_NOWHERE
     ELSE.
 * The user does not have to type "*" on beginning and ending of the obj type pattern, we add it automatically
       DATA(objtype_with_percent) = |%{ to_upper( objtype_value ) }%|.
       REPLACE ALL OCCURRENCES OF '*' IN objtype_with_percent WITH `%`.
 
       " Retrieve object which match the search pattern entered in UI Element objtype
-      SELECT DISTINCT object FROM e071 INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER WHERE object LIKE @objtype_with_percent ##NUMBER_OK. "#EC CI_NOORDER "#EC CI_NOFIELD
+      SELECT DISTINCT object FROM e071 WHERE object LIKE @objtype_with_percent INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER  ##NUMBER_OK. "#EC CI_NOORDER "#EC CI_NOFIELD
     ENDIF.
 
     DATA(objtype) = set_value_help_result_to_field( fieldname = `P_OBJTYP` value_help_result_table = value_help_result_table ).
