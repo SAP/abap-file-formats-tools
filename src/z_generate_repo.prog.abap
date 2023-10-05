@@ -335,7 +335,7 @@ CLASS lcl_generator IMPLEMENTATION.
       DATA(objecttype) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
 
       DATA(found) = abap_false.
-      SELECT SINGLE @abap_true FROM tadir WHERE obj_name = @<interface> INTO @found. "#EC CI_GENBUFF
+      SELECT SINGLE @abap_true FROM tadir WHERE obj_name = @<interface> AND pgmid = 'R3TR' AND object = 'INTF' INTO @found. "#EC CI_GENBUFF
       IF found = abap_false.
         INSERT |The schema for interface { <interface> } could not be created.| INTO TABLE report_log ##NO_TEXT.
         CONTINUE.
