@@ -363,9 +363,11 @@ CLASS lcl_generator IMPLEMENTATION.
       IF schema_content IS INITIAL.
         INSERT |The schema for interface { intfname } could not be created.| INTO TABLE report_log ##NO_TEXT.
       ELSE.
+        data(file_name) = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT.
+        data(error_text) = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ##NO_TEXT.
         add_file_to_zip( i_stringtab_content = schema_content
-                         i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
-                         i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ) ##NO_TEXT.
+                         i_file_name         = file_name
+                         i_error_text        = error_text ).
       ENDIF.
     ENDLOOP.
 
