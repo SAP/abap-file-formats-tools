@@ -924,8 +924,8 @@ CLASS lcl_generator IMPLEMENTATION.
       REPLACE ALL OCCURRENCES OF '*' IN intfname_with_percent WITH `%`.
 
       " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
-      SELECT obj_name FROM tadir INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER
-      WHERE object = `INTF` AND obj_name LIKE @intfname_with_percent ORDER BY obj_name ##NUMBER_OK. "#EC CI_NOORDER
+      SELECT obj_name FROM tadir WHERE object = `INTF` AND obj_name LIKE @intfname_with_percent
+      INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
     ENDIF.
 
     DATA(intfname1) = set_value_help_result_to_field( fieldname = `P_INTF` value_help_result_table = value_help_result_table ).
