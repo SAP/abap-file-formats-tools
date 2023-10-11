@@ -6,7 +6,7 @@ DATA helper TYPE REF TO lcl_generator ##NEEDED.
 INTERFACE lif_generator.
   METHODS generate_type
     IMPORTING data          TYPE data
-    RETURNING VALUE(result) TYPE rswsourcet
+    RETURNING VALUE(result) TYPE string_table
     RAISING   zcx_aff_tools.
   METHODS get_log
     RETURNING
@@ -51,9 +51,9 @@ SELECTION-SCREEN END OF BLOCK block_1.
 SELECTION-SCREEN BEGIN OF BLOCK block_2 WITH FRAME TITLE TEXT-021 ##TEXT_POOL.
   PARAMETERS:
     p_objtyp TYPE trobjtype,
-    p_intf   TYPE sobj_name,
-    p_type   TYPE sobj_name DEFAULT 'TY_MAIN',
-    p_examp  TYPE sobj_name,
+    p_intf   TYPE tadir-obj_name,
+    p_type   TYPE tadir-obj_name DEFAULT 'TY_MAIN',
+    p_examp  TYPE tadir-obj_name,
     p_readm  TYPE abap_bool DEFAULT abap_true AS CHECKBOX,
     p_consol TYPE c RADIOBUTTON GROUP two USER-COMMAND two DEFAULT 'X',
     p_disk   TYPE c RADIOBUTTON GROUP two.
@@ -61,20 +61,20 @@ SELECTION-SCREEN END OF BLOCK block_2.
 
 TYPES: BEGIN OF aff_object,
          object_type    TYPE c LENGTH 4,
-         interface      TYPE sobj_name,
-         example        TYPE sobj_name,
+         interface      TYPE tadir-obj_name,
+         example        TYPE tadir-obj_name,
          format_version TYPE i,
        END OF aff_object.
 
 
-CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
+CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
   PUBLIC SECTION.
     DATA generator_log TYPE REF TO zif_aff_log.
     DATA aff_framework_log TYPE REF TO if_aff_log.
     DATA report_log TYPE stringtab.
-    DATA xslt_schema_content TYPE rswsourcet.
-    DATA schema_test_content TYPE rswsourcet.
+    DATA xslt_schema_content TYPE string_table.
+    DATA schema_test_content TYPE string_table.
     DATA zip TYPE REF TO cl_abap_zip.
 
     METHODS: set_parameters
@@ -82,16 +82,16 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
         i_schema TYPE abap_bool DEFAULT abap_false
         i_xslt   TYPE abap_bool DEFAULT abap_false
         i_repo   TYPE abap_bool DEFAULT abap_false
-        i_objtyp TYPE trobjtype OPTIONAL
-        i_intf   TYPE sobj_name OPTIONAL
-        i_type   TYPE sobj_name OPTIONAL
-        i_examp  TYPE sobj_name OPTIONAL
+        i_objtyp TYPE tadir-object OPTIONAL
+        i_intf   TYPE tadir-obj_name OPTIONAL
+        i_type   TYPE tadir-obj_name OPTIONAL
+        i_examp  TYPE tadir-obj_name OPTIONAL
         i_consol TYPE abap_bool DEFAULT abap_false
         i_disk   TYPE abap_bool DEFAULT abap_false
         i_readm  TYPE abap_bool DEFAULT abap_true,
 
       set_schema_test_content
-        IMPORTING schema_test_content TYPE rswsourcet,
+        IMPORTING schema_test_content TYPE string_table,
 
       constructor
         IMPORTING
@@ -109,7 +109,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
         IMPORTING zip_archive TYPE xstring
                   zipname     TYPE string,
       create_schema_xslt_zip
-        IMPORTING content      TYPE rswsourcet
+        IMPORTING content      TYPE string_table
         RETURNING VALUE(r_zip) TYPE REF TO cl_abap_zip,
       print_logs,
       output.
@@ -124,7 +124,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
     TYPES: replacing_tab TYPE STANDARD TABLE OF replacing_line.
 
     DATA: "needed for testing
-      aff_factory TYPE REF TO  if_aff_factory,
+      aff_factory TYPE REF TO if_aff_factory,
       generator   TYPE REF TO lif_generator,
       writer      TYPE REF TO zif_aff_writer.
     DATA replacing_table_string TYPE replacing_tab.
@@ -132,7 +132,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
 
     METHODS:
       get_replacing_table_and_intfs
-        IMPORTING name_of_intf_of_mainobj TYPE sobj_name
+        IMPORTING name_of_intf_of_mainobj TYPE tadir-obj_name
         RETURNING VALUE(interfaces)       TYPE string_table,
       replace_names_in_string
         IMPORTING content_as_string      TYPE string
@@ -174,16 +174,16 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC .
         IMPORTING intfname              TYPE string
         RETURNING VALUE(format_version) TYPE i,
       get_schema_or_xslt_content
-        RETURNING VALUE(content) TYPE rswsourcet,
+        RETURNING VALUE(content) TYPE string_table,
       get_content
         IMPORTING absolute_typename TYPE string
-        RETURNING VALUE(content)    TYPE rswsourcet,
+        RETURNING VALUE(content)    TYPE string_table,
       get_objname_wo_namspace_with_z
         IMPORTING object_name   TYPE string
         RETURNING VALUE(result) TYPE string,
       add_file_to_zip
         IMPORTING i_file_name         TYPE string
-                  i_stringtab_content TYPE rswsourcet
+                  i_stringtab_content TYPE string_table
                   i_error_text        TYPE string.
 
 ENDCLASS.
@@ -283,12 +283,10 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD generate_repo_folder.
     DATA: file_handler TYPE REF TO if_aff_object_file_handler.
-    IF p_repo = abap_true.
+    IF p_repo = abap_true AND ( p_objtyp IS INITIAL OR p_intf IS INITIAL ).
       "serialize only one repo folder
-      IF p_objtyp IS INITIAL OR p_intf IS INITIAL.
-        INSERT `Please fill out at least the fields objecttype and interfacename` INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-      ENDIF.
+      INSERT `Please fill out at least the fields objecttype and interfacename` INTO TABLE report_log ##NO_TEXT.
+      RETURN.
     ENDIF.
     " generate zip folder
     me->zip = NEW cl_abap_zip( ).
@@ -314,7 +312,7 @@ CLASS lcl_generator IMPLEMENTATION.
     "generate type folder with all serialized interfaces (main and subobjects)
     LOOP AT interfaces ASSIGNING FIELD-SYMBOL(<interface>).
       DATA(upper_intf) = to_upper( <interface> ).
-      SELECT SINGLE devclass FROM tadir WHERE obj_name = @upper_intf AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass) .
+      SELECT SINGLE devclass FROM tadir WHERE obj_name = @upper_intf AND pgmid = 'R3TR' AND object = 'INTF' INTO @DATA(intf_obj_devclass).
       IF intf_obj_devclass IS INITIAL.
         INSERT |{ upper_intf } is not found in table tadir. Package of the interface is unknown| INTO TABLE report_log ##NO_TEXT.
       ENDIF.
@@ -337,7 +335,7 @@ CLASS lcl_generator IMPLEMENTATION.
       DATA(objecttype) = splitted_intfname[ lines( splitted_intfname ) - 1 ].
 
       DATA(found) = abap_false.
-      SELECT SINGLE @abap_true FROM tadir WHERE obj_name = @<interface> INTO @found. "#EC CI_GENBUFF
+      SELECT SINGLE @abap_true FROM tadir WHERE obj_name = @<interface> AND pgmid = 'R3TR' AND object = 'INTF' INTO @found. "#EC CI_GENBUFF
       IF found = abap_false.
         INSERT |The schema for interface { <interface> } could not be created.| INTO TABLE report_log ##NO_TEXT.
         CONTINUE.
@@ -366,7 +364,7 @@ CLASS lcl_generator IMPLEMENTATION.
         INSERT |The schema for interface { intfname } could not be created.| INTO TABLE report_log ##NO_TEXT.
       ELSE.
         add_file_to_zip( i_stringtab_content = schema_content
-                         i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json| ##NO_TEXT
+                         i_file_name         = |{ object_type_folder_name }/{ to_lower( objecttype ) }-v{ format_version }.json|
                          i_error_text        = |The schema for interface { intfname } could not be created. Error when transforming schema content from string to xstring| ) ##NO_TEXT.
       ENDIF.
     ENDLOOP.
@@ -384,13 +382,13 @@ CLASS lcl_generator IMPLEMENTATION.
             INSERT |Failed to create the file name for the README example| INTO TABLE report_log ##NO_TEXT.
         ENDTRY.
 
-        example_part = | \| [{ file_name }](./examples/{ file_name })| .
+        example_part = | \| [{ file_name }](./examples/{ file_name })|.
 
       ENDIF.
 
       DATA(definition_part) = | [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) |.
 
-      DATA(readme) = VALUE rswsourcet(
+      DATA(readme) = VALUE string_table(
               ( |# { object-object_type } File Format| )
               ( `` )
               ( `File | Cardinality | Definition | Schema | Example` )
@@ -452,7 +450,7 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA(intf_name) = i_object-interface.
     APPEND VALUE #( fieldname = 'P_INTF'  fieldvalue = intf_name ) TO dynpfields.
 
-    DATA(example_name) = i_object-example .
+    DATA(example_name) = i_object-example.
     APPEND VALUE #( fieldname = 'P_EXAMP'  fieldvalue = example_name ) TO dynpfields.
 
     CALL FUNCTION 'DYNP_VALUES_UPDATE'
@@ -688,7 +686,7 @@ CLASS lcl_generator IMPLEMENTATION.
       generator = NEW lcl_generator_helper( writer ).
     ENDIF.
     content = get_content( absolute_typename = |\\INTERFACE={ p_intf }\\TYPE={ p_type }| ).
-  ENDMETHOD .
+  ENDMETHOD.
 
   METHOD get_content.
     TRY.
@@ -703,7 +701,7 @@ CLASS lcl_generator IMPLEMENTATION.
     " getting the XSLT/Schema of the type
     TRY.
         content = generator->generate_type( <field> ).
-      CATCH zcx_aff_tools .
+      CATCH zcx_aff_tools.
         CLEAR content.
         INSERT |The generator couldn't generate the schema/XSLT for type { absolute_typename }| INTO TABLE report_log ##NO_TEXT.
         RETURN.
@@ -868,30 +866,31 @@ CLASS lcl_generator IMPLEMENTATION.
       REPLACE ALL OCCURRENCES OF '_APP_%-VALU_PUSH' IN element_name WITH ``.
       REPLACE ALL OCCURRENCES OF '-LOW' IN element_name WITH ``.
 
-      FIND FIRST OCCURRENCE OF REGEX element_name IN TABLE hidden_elements ##REGEX_POSIX. "or line exists
+      FIND FIRST OCCURRENCE OF PCRE element_name IN TABLE hidden_elements. "or line exists
       IF sy-subrc = 0.
         screen-active = 0.
-        MODIFY SCREEN.
       ELSE.
         screen-active = 1.
-        MODIFY SCREEN.
       ENDIF.
+      MODIFY SCREEN.
     ENDLOOP.
   ENDMETHOD.
 
   METHOD on_value_request_for_objtype.
+    DATA value_help_result_table TYPE trobjtype_tab.
+
     DATA(objtype_value) = get_dynpro_value( fieldname = `P_OBJTYP` ).
     objtype_value = to_upper( objtype_value ).
     IF objtype_value IS INITIAL.
 *  put all Types into the value help
-      SELECT DISTINCT object FROM e071 INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ORDER BY object ##NUMBER_OK. "#EC CI_NOWHERE
+      SELECT DISTINCT object FROM e071 INTO TABLE @value_help_result_table UP TO 50 ROWS BYPASSING BUFFER ORDER BY object ##NUMBER_OK. "#EC CI_NOWHERE
     ELSE.
 * The user does not have to type "*" on beginning and ending of the obj type pattern, we add it automatically
       DATA(objtype_with_percent) = |%{ to_upper( objtype_value ) }%|.
       REPLACE ALL OCCURRENCES OF '*' IN objtype_with_percent WITH `%`.
 
       " Retrieve object which match the search pattern entered in UI Element objtype
-      SELECT DISTINCT object FROM e071 INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER WHERE object LIKE @objtype_with_percent ##NUMBER_OK. "#EC CI_NOORDER "#EC CI_NOFIELD
+      SELECT DISTINCT object FROM e071 WHERE object LIKE @objtype_with_percent INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER  ##NUMBER_OK. "#EC CI_NOORDER "#EC CI_NOFIELD
     ENDIF.
 
     DATA(objtype) = set_value_help_result_to_field( fieldname = `P_OBJTYP` value_help_result_table = value_help_result_table ).
@@ -925,8 +924,8 @@ CLASS lcl_generator IMPLEMENTATION.
       REPLACE ALL OCCURRENCES OF '*' IN intfname_with_percent WITH `%`.
 
       " Retrieve object names from tadir which match the search pattern entered in UI Element obj_name
-      SELECT obj_name FROM tadir INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER
-      WHERE object = `INTF` AND obj_name LIKE @intfname_with_percent ORDER BY obj_name ##NUMBER_OK. "#EC CI_NOORDER
+      SELECT obj_name FROM tadir WHERE object = `INTF` AND obj_name LIKE @intfname_with_percent
+      INTO TABLE @value_help_result_table UP TO 30 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
     ENDIF.
 
     DATA(intfname1) = set_value_help_result_to_field( fieldname = `P_INTF` value_help_result_table = value_help_result_table ).
@@ -976,15 +975,15 @@ CLASS lcl_generator IMPLEMENTATION.
 
   METHOD set_parameters.
     p_schema = i_schema.
-    p_xslt  = i_xslt  .
-    p_repo  = i_repo  .
+    p_xslt  = i_xslt.
+    p_repo  = i_repo.
     p_objtyp = i_objtyp.
-    p_intf  = i_intf  .
-    p_type  = i_type  .
-    p_examp = i_examp .
+    p_intf  = i_intf.
+    p_type  = i_type.
+    p_examp = i_examp.
     p_consol = i_consol.
-    p_disk  = i_disk  .
-    p_readm  = i_readm  .
+    p_disk  = i_disk.
+    p_readm  = i_readm.
 
   ENDMETHOD.
 
@@ -1006,8 +1005,8 @@ CLASS lcl_generator IMPLEMENTATION.
 
 ENDCLASS.
 
-CLASS ltc_generator_double DEFINITION FINAL FOR TESTING.
-  PUBLIC SECTION .
+CLASS ltcl_generator_double DEFINITION FINAL FOR TESTING.
+  PUBLIC SECTION.
     INTERFACES lif_generator.
     METHODS constructor
       IMPORTING
@@ -1016,7 +1015,7 @@ CLASS ltc_generator_double DEFINITION FINAL FOR TESTING.
     DATA log_to_return TYPE REF TO zif_aff_log.
     DATA generate_type_will_raise_err TYPE abap_bool.
 ENDCLASS.
-CLASS ltc_generator_double IMPLEMENTATION.
+CLASS ltcl_generator_double IMPLEMENTATION.
 
   METHOD lif_generator~generate_type.
     IF generate_type_will_raise_err = abap_true.
@@ -1047,7 +1046,7 @@ CLASS ltc_generator_double IMPLEMENTATION.
 ENDCLASS.
 
 
-CLASS ltc_generator DEFINITION FINAL FOR TESTING
+CLASS ltcl_generator DEFINITION FINAL FOR TESTING
   DURATION SHORT RISK LEVEL HARMLESS.
 
   PRIVATE SECTION.
@@ -1115,7 +1114,7 @@ CLASS ltc_generator DEFINITION FINAL FOR TESTING
 
 ENDCLASS.
 
-CLASS ltc_generator IMPLEMENTATION.
+CLASS ltcl_generator IMPLEMENTATION.
 
   METHOD class_setup.
     " keep in mind, the test doubles created for the given function modules would be active for the entire test session
@@ -1199,7 +1198,7 @@ CLASS ltc_generator IMPLEMENTATION.
 
     generator_log = NEW zcl_aff_log( ).
     generator_log->zif_aff_log~add_info( message_text = 'Generator Log' component_name = VALUE #( ) ).
-    generator_double = NEW ltc_generator_double( generator_log ).
+    generator_double = NEW ltcl_generator_double( generator_log ).
 
     cut = NEW lcl_generator(
       aff_factory = aff_factory_double
@@ -1213,10 +1212,10 @@ CLASS ltc_generator IMPLEMENTATION.
   METHOD assert_logs_and_file_handler.
     cl_abap_testdouble=>verify_expectations( file_handler_double ).
     cl_abap_unit_assert=>assert_equals( act = cut->report_log exp = expected_report_log ).
-    cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ) .
+    cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ).
     LOOP AT expected_log_messages ASSIGNING FIELD-SYMBOL(<exp_msg>).
-      READ TABLE cut->generator_log->get_messages( ) WITH KEY message_text = <exp_msg>-message_text TRANSPORTING NO FIELDS.
-      IF sy-subrc <> 0.
+      DATA(messages) = cut->generator_log->get_messages( ).
+      IF line_exists( messages[ message_text = <exp_msg>-message_text ] ).
         cl_abap_unit_assert=>fail( ).
       ENDIF.
     ENDLOOP.
@@ -1647,7 +1646,7 @@ CLASS ltc_generator IMPLEMENTATION.
 
   METHOD generate_type_raises_error.
     "generator will raise an error when generate_type is called
-    generator_double = NEW ltc_generator_double( log_to_return  = generator_log generate_type_will_raise_err = abap_true ).
+    generator_double = NEW ltcl_generator_double( log_to_return  = generator_log generate_type_will_raise_err = abap_true ).
 
     cut = NEW lcl_generator(
       aff_factory = aff_factory_double
