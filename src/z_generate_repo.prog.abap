@@ -382,7 +382,7 @@ CLASS lcl_generator IMPLEMENTATION.
             INSERT |Failed to create the file name for the README example| INTO TABLE report_log ##NO_TEXT.
         ENDTRY.
 
-        example_part = | \| [{ file_name }](./examples/{ file_name })|.
+        example_part = | \| [`{ file_name }`](./examples/{ file_name })|.
 
       ENDIF.
 
