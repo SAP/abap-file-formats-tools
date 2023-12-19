@@ -386,7 +386,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
       ENDIF.
 
-      DATA(definition_part) = | [`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap) |.
+      DATA(definition_part) = |[`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap)|.
 
       DATA(readme) = VALUE string_table(
               ( |# { object-object_type } File Format| )
