@@ -434,7 +434,7 @@ CLASS lcl_generator IMPLEMENTATION.
           content_as_string = replace_names_in_string( content_as_string = content_as_string replacing_table_string = replacing_table_string ).
           file_content_xstring = text_handler->if_aff_content_handler~serialize( content_as_string ).
         CATCH cx_aff_root INTO DATA(exception).
-          INSERT |Object names in file { <file>-file_name } could not be changed to 'z...'. { exception->get_text( ) }| INTO TABLE report_log ##NO_TEXT.
+          INSERT |Object names in file { <file>-file_namet } could not be changed to 'z...'. { exception->get_text( ) }| INTO TABLE report_log ##NO_TEXT.
       ENDTRY.
       zip->add( name    = |{ filename }{ file_name }|
                 content = file_content_xstring ).
@@ -458,7 +458,10 @@ CLASS lcl_generator IMPLEMENTATION.
         dyname     = sy-repid
         dynumb     = sy-dynnr
       TABLES
-        dynpfields = dynpfields.
+        dynpfields = dynpfields
+      EXCEPTIONS
+        OTHERS     = 1.
+
 
   ENDMETHOD.
 
@@ -609,7 +612,9 @@ CLASS lcl_generator IMPLEMENTATION.
               dyname     = sy-repid
               dynumb     = sy-dynnr
             TABLES
-              dynpfields = dynpfields.
+              dynpfields = dynpfields
+            EXCEPTIONS
+              OTHERS     = 1.
         ENDIF.
       ENDIF.
     ENDIF.
