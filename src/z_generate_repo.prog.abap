@@ -460,7 +460,7 @@ CLASS lcl_generator IMPLEMENTATION.
       TABLES
         dynpfields = dynpfields
       EXCEPTIONS
-        OTHERS     = 1.
+        OTHERS     = 0.
 
 
   ENDMETHOD.
@@ -614,7 +614,7 @@ CLASS lcl_generator IMPLEMENTATION.
             TABLES
               dynpfields = dynpfields
             EXCEPTIONS
-              OTHERS     = 1.
+              OTHERS     = 0.
         ENDIF.
       ENDIF.
     ENDIF.
