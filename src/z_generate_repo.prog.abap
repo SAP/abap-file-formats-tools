@@ -458,7 +458,10 @@ CLASS lcl_generator IMPLEMENTATION.
         dyname     = sy-repid
         dynumb     = sy-dynnr
       TABLES
-        dynpfields = dynpfields.
+        dynpfields = dynpfields
+      EXCEPTIONS
+        OTHERS     = 0.
+
 
   ENDMETHOD.
 
@@ -609,7 +612,9 @@ CLASS lcl_generator IMPLEMENTATION.
               dyname     = sy-repid
               dynumb     = sy-dynnr
             TABLES
-              dynpfields = dynpfields.
+              dynpfields = dynpfields
+            EXCEPTIONS
+              OTHERS     = 0.
         ENDIF.
       ENDIF.
     ENDIF.
