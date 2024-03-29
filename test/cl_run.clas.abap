@@ -40,7 +40,8 @@ CLASS cl_run IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
 
-    CONCATENATE LINES OF string_tab INTO result SEPARATED BY |\n|.
+    DATA(newline) = |\n|.
+    CONCATENATE LINES OF string_tab INTO result SEPARATED BY newline.
   ENDMETHOD.
 
 ENDCLASS.
