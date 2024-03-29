@@ -15,6 +15,7 @@ CLASS cl_run IMPLEMENTATION.
     DATA string_tab TYPE string_table.
     DATA type_name  TYPE string.
     DATA schema_id  TYPE string.
+    DATA newline    TYPE string.
     DATA ref        TYPE REF TO data.
     FIELD-SYMBOLS <row> LIKE LINE OF string_tab.
 
@@ -40,7 +41,7 @@ CLASS cl_run IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
 
-    DATA(newline) = |\n|.
+    newline = |\n|.
     CONCATENATE LINES OF string_tab INTO result SEPARATED BY newline.
   ENDMETHOD.
 
