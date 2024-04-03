@@ -4,6 +4,9 @@
 *&
 *&---------------------------------------------------------------------*
 REPORT z_generate_json_schema.
+
+INCLUDE z_aff_generator.
+
 CLASS lcl_generator_helper DEFINITION
  FINAL
  CREATE PUBLIC.
@@ -45,23 +48,16 @@ CLASS lcl_generator_helper IMPLEMENTATION.
 
     ASSIGN my_type->* TO <field>.
 
-    DATA(format_version) = get_format_version( interface_name ).
-    DATA(object_type_path) = get_object_type_path( interface_name ).
-    DATA(schema_id) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
-
-
-    DATA writer TYPE REF TO zcl_aff_writer.
-    " set up the writer
     IF generate_schema = abap_true.
-      writer = NEW zcl_aff_writer_json_schema( schema_id = schema_id format_version = format_version ).
+      DATA(format_version) = get_format_version( interface_name ).
+      DATA(object_type_path) = get_object_type_path( interface_name ).
+      DATA(schema_id) = |https://github.com/SAP/abap-file-formats/blob/main/file-formats/{ object_type_path }-v{ format_version }.json| ##NO_TEXT.
+      result = lcl_aff_generator=>generate_schema( schema_id      = schema_id
+                                                   data           = <field>
+                                                   format_version = format_version ).
     ELSE.
-      writer = NEW zcl_aff_writer_xslt( ).
+      result = lcl_aff_generator=>generate_xslt( <field> ).
     ENDIF.
-
-    DATA(generator) = NEW zcl_aff_generator( writer ).
-    DATA(result_table) = generator->zif_aff_generator~generate_type( <field> ).
-    CONCATENATE LINES OF result_table INTO result SEPARATED BY cl_abap_char_utilities=>newline.
-
   ENDMETHOD.
 
   METHOD get_format_version.
