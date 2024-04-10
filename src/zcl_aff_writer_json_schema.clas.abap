@@ -1043,8 +1043,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
   METHOD handle_language_field.
     write_tag( `"minLength": 2,` ).
-    write_tag( `"maxLength": 2,` ).
-    write_tag( `"pattern": "^[a-z]+$",` ).
   ENDMETHOD.
 
 
