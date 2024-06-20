@@ -14,7 +14,6 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS enum_values FOR TESTING RAISING cx_static_check.
     METHODS callback_class FOR TESTING RAISING cx_static_check.
     METHODS default_with_link FOR TESTING RAISING cx_static_check.
-    METHODS pattern FOR TESTING RAISING cx_static_check.
     METHODS too_many_titles_and_showalways FOR TESTING RAISING cx_static_check.
     METHODS too_many_number_annotations FOR TESTING RAISING cx_static_check.
     METHODS too_many_default_mixed FOR TESTING RAISING cx_static_check.
@@ -40,11 +39,11 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS content_media_multiple_entries FOR TESTING RAISING cx_static_check.
     METHODS content_media_type_used_wrong FOR TESTING RAISING cx_static_check.
     METHODS content_encoding_used_wrong FOR TESTING RAISING cx_static_check.
-    METHODS too_many_pattern FOR TESTING RAISING cx_static_check.
+    METHODS too_many_patterns FOR TESTING RAISING cx_static_check.
     METHODS pattern_with_colon FOR TESTING RAISING cx_static_check.
     METHODS pattern_no_single_quotes FOR TESTING RAISING cx_static_check.
     METHODS pattern_no_value FOR TESTING RAISING cx_static_check.
-
+    METHODS pattern FOR TESTING RAISING cx_static_check.
 
 ENDCLASS.
 
@@ -645,7 +644,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
                                                               exp_component_name = `Component Name` ).
   ENDMETHOD.
 
-  METHOD too_many_pattern.
+  METHOD too_many_patterns.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $pattern '[a-z]*' $pattern '[A-Z]*'`.
     DATA(act_abap_doc) = parser->parse(
       EXPORTING

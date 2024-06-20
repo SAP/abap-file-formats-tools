@@ -1,5 +1,5 @@
 CLASS zcl_aff_abap_doc_parser DEFINITION
- PUBLIC
+  PUBLIC
   FINAL
   CREATE PUBLIC.
 
