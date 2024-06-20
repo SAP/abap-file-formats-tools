@@ -199,7 +199,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         WHEN abap_doc_annotation-show_always.
           parse_show_always( ).
         WHEN abap_doc_annotation-pattern.
-          parse_pattern(  ).
+          parse_pattern( ).
         WHEN abap_doc_annotation-minimum OR abap_doc_annotation-maximum OR abap_doc_annotation-exclusive_minimum OR abap_doc_annotation-exclusive_maximum
              OR abap_doc_annotation-max_length OR abap_doc_annotation-multiple_of OR abap_doc_annotation-min_length.
           parse_number_annotations( key_word = key_word ).
@@ -554,25 +554,27 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDIF.
 
     DATA(string_to_parse) = abap_doc_string.
-    REPLACE ALL OCCURRENCES OF PCRE `\$pattern[\s]*(:[\s]*)?'` IN string_to_parse WITH `\$pattern'`.
-    REPLACE ALL OCCURRENCES OF PCRE `\$pattern[\s]*'` IN string_to_parse WITH `\$pattern'`.
 
-    FIND ALL OCCURRENCES OF PCRE `\$pattern'[^']*'` IN string_to_parse RESULTS DATA(result_table).
+    FIND ALL OCCURRENCES OF PCRE `\$pattern[\s]*(:[\s]*)?'([^']*)'` IN string_to_parse RESULTS DATA(result_table).
 
     IF lines( result_table ) = 0.
       DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-pattern ) ).
       parser_log->add_warning( message_text = msg component_name = component_name ).
       RETURN.
     ENDIF.
-
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-pattern ).
 
-
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
-      check_next_word( offset = <entry>-offset + <entry>-length text_to_check = string_to_parse ).
-      decoded_abap_doc-pattern = <entry>-offset + <entry>-length.
-    ENDLOOP.
+      IF lines( <entry>-submatches ) = 2 AND decoded_abap_doc-pattern IS INITIAL.
+        DATA(submatch) = <entry>-submatches[ 2 ].
+        IF submatch-length = 0.
+          msg = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-pattern ) ).
+          parser_log->add_warning( message_text = msg component_name = component_name ).
+        ENDIF.
 
+        decoded_abap_doc-pattern = substring( val = string_to_parse off = submatch-offset len = submatch-length ).
+      ENDIF.
+    ENDLOOP.
 
   ENDMETHOD.
 

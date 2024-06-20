@@ -67,6 +67,15 @@ CLASS zcl_aff_test_types DEFINITION
         default_link TYPE default_link,
       END OF struc_link_wrong_type.
 
+    TYPES:
+     "! <p class="shorttext">Structure With Pattern Annotation</p>
+     "! Structure with pattern annotation
+       BEGIN OF string_pattern,
+         "! <p class="shorttext">String with pattern</p>
+         "! description
+         "! $pattern '[a-Z]*'
+         string_pattern TYPE string,
+       END OF string_pattern.
 
     TYPES:
       "! in ST val(I()) only allow integers
@@ -436,7 +445,7 @@ CLASS zcl_aff_test_types DEFINITION
       BEGIN OF aff_test_type,
         "! <p class="shorttext">Title of Field1</p>
         "! Description of field1
-        field1            TYPE i,
+        field1 TYPE i,
         "! <p class="shorttext">Title of inner_struc</p>
         "! Description of inner_struc
         "! $showAlways
@@ -452,7 +461,7 @@ CLASS zcl_aff_test_types DEFINITION
         "! <p class="shorttext">Title of field2</p>
         "! Description of field2
         "! $required
-        field2            TYPE c LENGTH 2,
+        field2 TYPE c LENGTH 2,
       END OF aff_test_type.
 
 
@@ -544,7 +553,7 @@ CLASS zcl_aff_test_types DEFINITION
         "! $exclusiveMinimum: 0
         "! $maximum: 99999
         "! $multipleOf: 1
-        integer_with_multiple    TYPE i,
+        integer_with_multiple   TYPE i,
         "! <p class="shorttext">Packed Number With No Given Multiple</p>
         "! Packed number with no given multiple
         "! $exclusiveMinimum: 0
@@ -566,18 +575,18 @@ CLASS zcl_aff_test_types DEFINITION
         "! <p class="shorttext">Integer With Maximum </p>
         "! Integer with maximum
         "! $maximum: 10
-        integer                 TYPE i,
+        integer               TYPE i,
         "! <p class="shorttext">Integer With Given Multiple</p>
         "! Integer with given multiple
         "! $exclusiveMinimum: 0
         "! $maximum: 99999
         "! $multipleOf: 1
-        integer_with_multiple    TYPE i,
+        integer_with_multiple TYPE i,
         "! <p class="shorttext">Packed Number With Multiple</p>
         "! Packed number with given multiple
         "! $exclusiveMinimum: 0
         "! $multipleOf: 0.1
-        packed_with_multiple TYPE p LENGTH 4 DECIMALS 1,
+        packed_with_multiple  TYPE p LENGTH 4 DECIMALS 1,
       END OF structure_multiple_of_warning.
 
 
