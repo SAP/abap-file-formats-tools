@@ -445,7 +445,7 @@ CLASS zcl_aff_test_types DEFINITION
       BEGIN OF aff_test_type,
         "! <p class="shorttext">Title of Field1</p>
         "! Description of field1
-        field1          TYPE i,
+        field1            TYPE i,
         "! <p class="shorttext">Title of inner_struc</p>
         "! Description of inner_struc
         "! $showAlways
@@ -461,7 +461,7 @@ CLASS zcl_aff_test_types DEFINITION
         "! <p class="shorttext">Title of field2</p>
         "! Description of field2
         "! $required
-        field2          TYPE c LENGTH 2,
+        field2            TYPE c LENGTH 2,
       END OF aff_test_type.
 
 
