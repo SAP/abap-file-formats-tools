@@ -2817,7 +2817,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
-    METHOD pattern_complex.
+  METHOD pattern_complex.
     DATA(act_schema) = test_generator->generate_type( VALUE zcl_aff_test_types=>string_pattern_complex( ) ).
     DATA(exp_schema) = VALUE string_table(
     ( `   { ` )
