@@ -86,8 +86,8 @@ CLASS zcl_aff_test_types DEFINITION
        BEGIN OF string_pattern_simple,
          "! <p class="shorttext">String with pattern</p>
          "! description
-         "! $PATTERN '[a-Z]*'
-         string_pattern_simple TYPE string,
+         "! $pattern '[a-Z]*'
+         string_pattern TYPE string,
        END OF string_pattern_simple.
 
     TYPES:
