@@ -20,6 +20,7 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
                  content_media_type TYPE string VALUE `$contentMediaType`,
                  content_encoding   TYPE string VALUE `$contentEncoding`,
                  enum_value         TYPE string VALUE `$enumValue`,
+                 pattern            TYPE string VALUE `$pattern`,
                END OF abap_doc_annotation.
 
     TYPES:
@@ -41,6 +42,7 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
         content_media_type TYPE string,
         content_encoding   TYPE string,
         enum_value         TYPE string,
+        pattern            TYPE string,
       END OF abap_doc.
 
     METHODS: parse
@@ -99,6 +101,7 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
           annotation_name TYPE string
         RETURNING
           VALUE(number)   TYPE string,
+      parse_pattern,
       check_next_word
         IMPORTING
           offset        TYPE i
@@ -164,7 +167,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD parse_description.
-    FIND FIRST OCCURRENCE OF PCRE `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$enumValue|\$contentMediaType|\$contentEncoding)`
+    FIND FIRST OCCURRENCE OF PCRE `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$enumValue|\$contentMediaType|\$contentEncoding|\$pattern)`
       IN abap_doc_string MATCH OFFSET DATA(offset).
     IF sy-subrc = 0.
       DATA(description) = abap_doc_string+0(offset).
@@ -195,6 +198,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
           parse_required( ).
         WHEN abap_doc_annotation-show_always.
           parse_show_always( ).
+        WHEN abap_doc_annotation-pattern.
+          parse_pattern( ).
         WHEN abap_doc_annotation-minimum OR abap_doc_annotation-maximum OR abap_doc_annotation-exclusive_minimum OR abap_doc_annotation-exclusive_maximum
              OR abap_doc_annotation-max_length OR abap_doc_annotation-multiple_of OR abap_doc_annotation-min_length.
           parse_number_annotations( key_word = key_word ).
@@ -543,4 +548,35 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+  METHOD parse_pattern.
+    IF decoded_abap_doc-pattern IS NOT INITIAL.
+      RETURN.
+    ENDIF.
+
+    DATA(string_to_parse) = abap_doc_string.
+
+    FIND ALL OCCURRENCES OF PCRE `\$pattern[\s]*(:[\s]*)?'([^']*)'` IN string_to_parse RESULTS DATA(result_table).
+
+    IF lines( result_table ) = 0.
+      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-pattern ) ).
+      parser_log->add_warning( message_text = msg component_name = component_name ).
+      RETURN.
+    ENDIF.
+    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-pattern ).
+
+    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
+      IF lines( <entry>-submatches ) = 2 AND decoded_abap_doc-pattern IS INITIAL.
+        DATA(submatch) = <entry>-submatches[ 2 ].
+        IF submatch-length = 0.
+          msg = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-pattern ) ).
+          parser_log->add_warning( message_text = msg component_name = component_name ).
+        ENDIF.
+
+        decoded_abap_doc-pattern = substring( val = string_to_parse off = submatch-offset len = submatch-length ).
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
 ENDCLASS.
+

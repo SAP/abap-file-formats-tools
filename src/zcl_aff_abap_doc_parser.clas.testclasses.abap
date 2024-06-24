@@ -39,7 +39,11 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS content_media_multiple_entries FOR TESTING RAISING cx_static_check.
     METHODS content_media_type_used_wrong FOR TESTING RAISING cx_static_check.
     METHODS content_encoding_used_wrong FOR TESTING RAISING cx_static_check.
-
+    METHODS too_many_patterns FOR TESTING RAISING cx_static_check.
+    METHODS pattern_with_colon FOR TESTING RAISING cx_static_check.
+    METHODS pattern_no_single_quotes FOR TESTING RAISING cx_static_check.
+    METHODS pattern_no_value FOR TESTING RAISING cx_static_check.
+    METHODS pattern FOR TESTING RAISING cx_static_check.
 
 ENDCLASS.
 
@@ -580,6 +584,81 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
                                                               exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-enum_value } . First valid is used|
                                                               exp_type           = zif_aff_log=>c_message_type-info
                                                               exp_component_name = `Component Name` ).
+  ENDMETHOD.
+
+  METHOD pattern.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $pattern '[a-z]*'`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` pattern = `[a-z]*` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD pattern_with_colon.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $pattern   :         '[a-z]*'`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` pattern = `[a-z]*` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD pattern_no_single_quotes.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $pattern [a-z]*`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = `Annotation $pattern was used incorrectly`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning
+                                                              exp_component_name = `Component Name` ).
+  ENDMETHOD.
+
+  METHOD pattern_no_value.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $pattern ''`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = `Annotation $pattern was used incorrectly`
+                                                              exp_type           = zif_aff_log=>c_message_type-warning
+                                                              exp_component_name = `Component Name` ).
+  ENDMETHOD.
+
+  METHOD too_many_patterns.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $pattern '[a-z]*' $pattern '[A-Z]*'`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` pattern = `[a-z]*` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-pattern } . First valid is used|
+                                                              exp_type           = zif_aff_log=>c_message_type-info
+                                                              exp_component_name = `Component Name` ).
+
   ENDMETHOD.
 
 ENDCLASS.

@@ -440,6 +440,9 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         write_tag( `"pattern": "^[0-9]+$",` ).
       ENDIF.
     ENDIF.
+    IF abap_doc-pattern IS NOT INITIAL.
+      write_tag( |"pattern": "{ abap_doc-pattern }",| ).
+    ENDIF.
   ENDMETHOD.
 
 

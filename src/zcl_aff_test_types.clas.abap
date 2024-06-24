@@ -67,6 +67,28 @@ CLASS zcl_aff_test_types DEFINITION
         default_link TYPE default_link,
       END OF struc_link_wrong_type.
 
+    TYPES:
+    "! $pattern '[a-Z]*'
+    ty_string TYPE string.
+
+    TYPES:
+     "! <p class="shorttext">Structure With Pattern Annotation</p>
+     "! Structure with pattern annotation
+       BEGIN OF string_pattern_complex,
+         "! <p class="shorttext">String with pattern</p>
+         "! description
+         string_pattern TYPE ty_string,
+       END OF string_pattern_complex.
+
+    TYPES:
+     "! <p class="shorttext">Structure With Pattern Annotation</p>
+     "! Structure with pattern annotation
+       BEGIN OF string_pattern_simple,
+         "! <p class="shorttext">String with pattern</p>
+         "! description
+         "! $pattern '[a-Z]*'
+         string_pattern TYPE string,
+       END OF string_pattern_simple.
 
     TYPES:
       "! in ST val(I()) only allow integers

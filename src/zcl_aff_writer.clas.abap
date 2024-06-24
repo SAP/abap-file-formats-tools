@@ -567,6 +567,9 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     IF abap_doc_base-content_media_type IS INITIAL.
       abap_doc_base-content_media_type = abap_doc_additional-content_media_type.
     ENDIF.
+    IF abap_doc_base-pattern IS INITIAL.
+      abap_doc_base-pattern = abap_doc_additional-pattern.
+    ENDIF.
   ENDMETHOD.
 
 
