@@ -68,7 +68,7 @@ CLASS zcl_aff_test_types DEFINITION
       END OF struc_link_wrong_type.
 
     TYPES:
-    "! $pattern '[a-Z]*'
+    "! $pattern '\\n\\t\\r[a-z]*\\"'
     ty_string TYPE string.
 
     TYPES:

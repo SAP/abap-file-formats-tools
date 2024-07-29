@@ -44,6 +44,7 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS pattern_no_single_quotes FOR TESTING RAISING cx_static_check.
     METHODS pattern_no_value FOR TESTING RAISING cx_static_check.
     METHODS pattern FOR TESTING RAISING cx_static_check.
+    METHODS pattern_with_escape_sequences FOR TESTING RAISING cx_static_check.
 
 ENDCLASS.
 
@@ -659,6 +660,19 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
                                                               exp_type           = zif_aff_log=>c_message_type-info
                                                               exp_component_name = `Component Name` ).
 
+  ENDMETHOD.
+
+    METHOD pattern_with_escape_sequences.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $pattern '\\n\\t\\r[a-z]*\\"'`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` pattern = `\\\\n\\\\t\\\\r[a-z]*\\\\\"` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
 ENDCLASS.
