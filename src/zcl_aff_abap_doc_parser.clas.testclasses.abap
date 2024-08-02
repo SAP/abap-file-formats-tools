@@ -670,7 +670,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         to_parse       = abap_doc_to_parse
       CHANGING
         log            = log ).
-    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` pattern = `\\\\n\\\\t\\\\r[a-z]*\\\\\"` ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` pattern = `\\n\\t\\r[a-z]*\\\"` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
