@@ -662,7 +662,7 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
 
   ENDMETHOD.
 
-    METHOD pattern_with_escape_sequences.
+  METHOD pattern_with_escape_sequences.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $pattern '\\n\\t\\r[a-z]*\\"'`.
     DATA(act_abap_doc) = parser->parse(
       EXPORTING
