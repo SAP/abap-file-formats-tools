@@ -555,8 +555,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
     DATA(string_to_parse) = abap_doc_string.
 
-    REPLACE ALL OCCURRENCES OF PCRE `\\` IN string_to_parse WITH `\\`.
-    REPLACE ALL OCCURRENCES OF PCRE `\"` IN string_to_parse WITH `\\"`.
     FIND ALL OCCURRENCES OF PCRE `\$pattern[\s]*(:[\s]*)?'([^']*)'` IN string_to_parse RESULTS DATA(result_table).
 
     IF lines( result_table ) = 0.
