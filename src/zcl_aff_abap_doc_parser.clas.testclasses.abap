@@ -658,7 +658,6 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
                                                               exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-pattern } . First valid is used|
                                                               exp_type           = zif_aff_log=>c_message_type-info
                                                               exp_component_name = `Component Name` ).
-
   ENDMETHOD.
 
 ENDCLASS.
