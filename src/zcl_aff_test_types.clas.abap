@@ -96,7 +96,7 @@ CLASS zcl_aff_test_types DEFINITION
        BEGIN OF string_pattern_escape_sequence,
          "! <p class="shorttext">String with pattern</p>
          "! description
-         "! $pattern '\n\t\r"'
+         "! $pattern '\n\t\r'
          string_pattern TYPE string,
        END OF string_pattern_escape_sequence.
 

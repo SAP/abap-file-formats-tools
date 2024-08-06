@@ -2859,7 +2859,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
     ( `        "title": "String with pattern",` )
     ( `        "description": "description",` )
     ( `        "type": "string", ` )
-    ( `        "pattern": "\\n\\t\\r\"" ` )
+    ( `        "pattern": "\\n\\t\\r" ` )
     ( `      } ` )
     ( `   }, ` )
     ( `   "additionalProperties": false ` )
