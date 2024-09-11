@@ -441,6 +441,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ENDIF.
     ENDIF.
     IF abap_doc-pattern IS NOT INITIAL.
+      REPLACE ALL OCCURRENCES OF '\' IN abap_doc-pattern WITH '\\'.
+      REPLACE ALL OCCURRENCES OF '"' IN abap_doc-pattern WITH '\"'.
       write_tag( |"pattern": "{ abap_doc-pattern }",| ).
     ENDIF.
   ENDMETHOD.

@@ -555,7 +555,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
     DATA(string_to_parse) = abap_doc_string.
 
-    FIND ALL OCCURRENCES OF PCRE `\$pattern[\s]*(:[\s]*)?'([^']*)'` IN string_to_parse RESULTS DATA(result_table).
+    FIND ALL OCCURRENCES OF PCRE `\$pattern[\s]*(:[\s]*)?'(\S*)'` IN string_to_parse RESULTS DATA(result_table).
 
     IF lines( result_table ) = 0.
       DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-pattern ) ).

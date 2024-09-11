@@ -68,7 +68,7 @@ CLASS zcl_aff_test_types DEFINITION
       END OF struc_link_wrong_type.
 
     TYPES:
-    "! $pattern '[a-Z]*'
+    "! $pattern '[a-z]*'
     ty_string TYPE string.
 
     TYPES:
@@ -86,9 +86,29 @@ CLASS zcl_aff_test_types DEFINITION
        BEGIN OF string_pattern_simple,
          "! <p class="shorttext">String with pattern</p>
          "! description
-         "! $pattern '[a-Z]*'
+         "! $pattern '[a-z]*'
          string_pattern TYPE string,
        END OF string_pattern_simple.
+
+    TYPES:
+     "! <p class="shorttext">Structure With Pattern Annotation</p>
+     "! Structure with pattern annotation
+       BEGIN OF string_pattern_escape_sequence,
+         "! <p class="shorttext">String with pattern</p>
+         "! description
+         "! $pattern '\n\t\r'
+         string_pattern TYPE string,
+       END OF string_pattern_escape_sequence.
+
+    TYPES:
+     "! <p class="shorttext">Structure With Pattern Annotation</p>
+     "! Structure with pattern annotation
+       BEGIN OF string_pattern_quotes,
+         "! <p class="shorttext">String with pattern</p>
+         "! description
+         "! $pattern '"\"''
+         string_pattern TYPE string,
+       END OF string_pattern_quotes.
 
     TYPES:
       "! in ST val(I()) only allow integers

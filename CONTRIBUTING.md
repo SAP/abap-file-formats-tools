@@ -31,10 +31,8 @@ We also do not guarantee that every well-documented issue will be fixed.
 
 ## Contributing Code
 We welcome contributions to our codebase.
-Before you start your first contribution, here are some things you should know:
 
-Create [pull requests](https://github.com/SAP/abap-file-formats-tools/compare) if you know exactly what you want to change, and how.
-They are most welcome, and may range from minor format corrections to adding whole sections.
+Before you start your first contribution, please refer to [the contribution guidelines for SAP open source projects](https://github.com/SAP/.github/blob/main/CONTRIBUTING.md).
 
 ## Developer Certificate of Origin (DCO)
 Due to legal reasons, contributors will be asked to accept a DCO before they submit the first pull request to this projects, this happens in an automated fashion during the submission process.
