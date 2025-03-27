@@ -9,9 +9,9 @@ jobs:
   create-generateRepo:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '16'
     - name: Run npm steps
@@ -20,16 +20,16 @@ jobs:
         npm run createGenerateRepo
         npm run cutUnitTests
     - name: Upload build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: saff_generate_repo.prog.abap
         path: saff_generate_repo.prog.abap
   create-generatorInclude:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '16'
     - name: Run npm steps
@@ -37,7 +37,7 @@ jobs:
         npm install
         npm run createGeneratorInclude
     - name: Upload build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: saff_generator.prog.abap
         path: saff_generator.prog.abap
