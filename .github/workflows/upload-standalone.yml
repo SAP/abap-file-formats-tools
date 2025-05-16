@@ -1,8 +1,6 @@
 name: standalone-program
 
 on:
-  pull_request:
-
   push:
     branches:
       - main
