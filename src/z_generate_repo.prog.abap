@@ -132,8 +132,8 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
     METHODS:
       get_sval_data
-        importing object_type type seu_objkey
-        returning value(result) type cl_wb_objtype_data=>ty_object_data,
+        IMPORTING object_type TYPE seu_objkey
+        RETURNING VALUE(result) TYPE cl_wb_objtype_data=>ty_object_data,
       get_replacing_table_and_intfs
         IMPORTING name_of_intf_of_mainobj TYPE tadir-obj_name
         RETURNING VALUE(interfaces)       TYPE string_table,
@@ -397,7 +397,7 @@ CLASS lcl_generator IMPLEMENTATION.
               ( |# { sval_data-langu_data-description } File Format| )
               ( `` )
               ( `## Object Type Information` )
-              ( `Object Type | Description | Group` )
+              ( `Object Type | Description | Group` )
               ( `:--- | :--- | :---` )
               ( |{ object-object_type }  \| { sval_data-langu_data-description } \| { object_group }| )
               ( `## File Structure` )
