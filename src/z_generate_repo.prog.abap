@@ -1033,7 +1033,7 @@ CLASS lcl_generator IMPLEMENTATION.
 
     sval_data->get_selected_data(
       EXPORTING
-        p_data_selection = 'AL'
+        p_data_selection = if_wb_object_data_selection_co=>c_all_data
       IMPORTING
         p_data           = result ).
 
