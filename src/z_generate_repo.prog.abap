@@ -131,6 +131,9 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
 
     METHODS:
+      get_sval_data
+        IMPORTING object_type TYPE seu_objkey
+        RETURNING VALUE(result) TYPE cl_wb_objtype_data=>ty_object_data,
       get_replacing_table_and_intfs
         IMPORTING name_of_intf_of_mainobj TYPE tadir-obj_name
         RETURNING VALUE(interfaces)       TYPE string_table,
@@ -387,9 +390,17 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
 
       DATA(definition_part) = |[`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap)|.
+      DATA(sval_data) = get_sval_data( CONV #( object-object_type ) )-content-wvdata.
+      SELECT SINGLE FROM objtypegroups_t FIELDS group_name WHERE language = 'E' AND objtype_group = @sval_data-header_data-objtype_group INTO @DATA(object_group).
 
       DATA(readme) = VALUE string_table(
-              ( |# { object-object_type } File Format| )
+              ( |# { sval_data-langu_data-description } File Format| )
+              ( `` )
+              ( `## Object Type Information` )
+              ( `Object Type | Description | Group` )
+              ( `:--- | :--- | :---` )
+              ( |{ object-object_type }  \| { sval_data-langu_data-description } \| { object_group }| )
+              ( `## File Structure` )
               ( `` )
               ( `File | Cardinality | Definition | Schema | Example` )
               ( `:--- | :--- | :--- | :--- | :---` )
@@ -1006,6 +1017,26 @@ CLASS lcl_generator IMPLEMENTATION.
       write_to_zip( zip_archive = zip_archive zipname = zipname ).
     ENDIF.
     print_logs( ).
+  ENDMETHOD.
+
+  METHOD get_sval_data.
+    DATA: sval_data TYPE REF TO if_wb_object_data_model.
+    sval_data = NEW cl_wb_objtype_data( ).
+
+    NEW cl_wb_objtype_persist( )->if_wb_object_persist~get(
+      EXPORTING
+        p_object_key  = object_type
+        p_version     = 'A'
+        p_language    = 'E'
+      CHANGING
+        p_object_data = sval_data ).
+
+    sval_data->get_selected_data(
+      EXPORTING
+        p_data_selection = if_wb_object_data_selection_co=>c_all_data
+      IMPORTING
+        p_data           = result ).
+
   ENDMETHOD.
 
 ENDCLASS.
