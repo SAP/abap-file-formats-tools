@@ -16,7 +16,7 @@
     "downport": true,
 
     "check_syntax": true,
-    "definitions_top": true,
+    "definitions_top": false,
     "parser_error": true,
 
     // disabled,
