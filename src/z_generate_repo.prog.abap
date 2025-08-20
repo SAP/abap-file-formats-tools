@@ -934,7 +934,7 @@ CLASS lcl_generator IMPLEMENTATION.
       DATA search_pattern TYPE string.
       search_pattern = |IF_AFF%{ objtype_value }%|.
 *  put all IF_AFF* Interfaces into the value help
-      SELECT obj_name  FROM tadir WHERE obj_name LIKE @search_pattern AND devclass <> `SAFF_CORE` AND object = `INTF`
+      SELECT obj_name FROM tadir WHERE obj_name LIKE @search_pattern AND devclass <> `SAFF_CORE` AND object = `INTF`
       INTO TABLE @DATA(value_help_result_table) UP TO 50 ROWS BYPASSING BUFFER ##NUMBER_OK. "#EC CI_NOORDER
     ELSE.
 * The user does not have to type "*" on beginning and ending of the obj_name pattern, we add it automatically
