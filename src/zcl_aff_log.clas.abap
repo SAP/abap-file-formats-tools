@@ -172,7 +172,7 @@ CLASS ZCL_AFF_LOG IMPLEMENTATION.
 
   METHOD zif_aff_log~get_message_text.
     IF line_exists( message_table[ msgno = msgno ] ).
-      DATA(message_entry) = VALUE #( message_table[ msgno = msgno ] ).
+      DATA(message_entry) = message_table[ msgno = msgno ].
       message_text = message_entry-str1 && ` ` && msgv1 && ` ` &&
                 message_entry-str2 && ` ` && msgv2 && ` ` &&
                 message_entry-str3 && ` ` && msgv3 && ` ` &&
