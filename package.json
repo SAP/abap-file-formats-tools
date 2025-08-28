@@ -18,8 +18,8 @@
   "dependencies": {
     "@abaplint/cli": "^2.113.187",
     "@abaplint/database-sqlite": "^2.11.0",
-    "@abaplint/runtime": "^2.11.56",
-    "@abaplint/transpiler-cli": "^2.11.56",
+    "@abaplint/runtime": "^2.11.57",
+    "@abaplint/transpiler-cli": "^2.11.57",
     "abapmerge": "^0.16.6"
   }
 }
