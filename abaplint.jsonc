@@ -194,6 +194,7 @@
       "exclude": ["zcl_aff_test_types"]
     },
     "unused_variables": {
+      "skipAbstract": false,
       "exclude": ["zcl_aff_test_types", "zcl_aff_writer.clas.testclasses"]
     },
     "use_bool_expression": true,
