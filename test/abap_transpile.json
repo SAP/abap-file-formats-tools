@@ -19,7 +19,10 @@
     "addCommonJS": true,
     "keywords": ["in", "default"],
     "unknownTypes": "runtimeError",
-    "extraSetup": "../test/setup.mjs",
+    "setup": {
+      "filename": "../test/setup.mjs",
+      "preFunction": "setup"
+    },
     "skip": [
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "content_media_multiple_entries"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "content_encod_multiple_entries"},
