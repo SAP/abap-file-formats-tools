@@ -1887,9 +1887,9 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `      <tt:d-cond frq="*">` )
         ( `         <_ tt:lax="on">` )
         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        (
-`            <tt:with-parameter name="MEMBERS" val="'fourByteInt;eightByteInt;binFloat;byteLike;byteLike2;decimalFloat16;decimalFloat34;packedNumber;numericText;characterText;stringText;dateField;timeField;dateTimeField;boolTrue;boolFalse;enumType` &&
-                       `;'"/>` )
+        ( `            <tt:with-parameter name="MEMBERS" ` )
+        ( `             val="'fourByteInt;eightByteInt;binFloat;byteLike;byteLike2;decimalFloat16;decimalFloat34;packedNumber;numericText;&#xA;characterText;stringText;dateField;timeField` &&
+                       `;dateTimeField;boolTrue;boolFalse;enumType;'"/>` )
         ( `          </tt:call-method>` )
         ( `          <tt:skip/>` )
         ( `        </_>` )

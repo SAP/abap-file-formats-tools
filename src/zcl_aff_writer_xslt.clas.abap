@@ -773,7 +773,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         IF str_comp CS `&#xA;`.
           str_comp = |{ str_comp }{ formatted_name };|.
         ELSE.
-          str_comp = |{ str_comp }'&#xA;'{ formatted_name };|.
+          str_comp = |{ str_comp }&#xA;{ formatted_name };|.
         ENDIF.
       ELSE.
         str_comp = |{ str_comp }{ formatted_name };|.
