@@ -284,7 +284,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO output.
     APPEND LINES OF st_template_imports TO output.
     APPEND |<tt:root name="{ st_root_name }"/>| TO output.
-    APPEND |<tt:variable name="VARIABLE"/>| TO output.
+    APPEND `<tt:variable name="VARIABLE"/>` TO output.
     APPEND `<tt:template>` TO output.
     APPEND |<tt:ref name="{ st_root_name }">| TO output.
   ENDMETHOD.
@@ -321,13 +321,13 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ELSEIF enum_values IS INITIAL.
       write_tag( |<tt:value{ get_ref( element_name ) }{ get_option( json_type = type element_description = element_description ) }/>| ).
     ELSEIF abap_doc-default IS NOT INITIAL.
-      write_open_tag( line = |<tt:deserialize>| ).
+      write_open_tag( line = `<tt:deserialize>` ).
       write_enum_map_ext_compatible(
         element_description = element_description
         element_name        = element_name
         enum_values         = enum_values ).
       write_closing_tag( `</tt:deserialize>` ).
-      write_open_tag( |<tt:serialize>| ).
+      write_open_tag( `<tt:serialize>` ).
       write_enum_value_mappings( element_description = element_description element_name = element_name enum_values = enum_values ).
       write_closing_tag( `</tt:serialize>` ).
     ELSE.
@@ -774,7 +774,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     DATA(str_length) = strlen( str_comp ).
     IF str_length > 200.
-      data(str_comp_lb) = replace( val = str_comp sub = `;` occ = -10 with = '&#xA;' ).
+      DATA(str_comp_lb) = replace( val = str_comp sub = `;` occ = -10 with = '&#xA;' ).
       IF str_length > 300.
         str_comp_lb = replace( val = str_comp sub = `;` occ = -20 with = '&#xA;' ).
         IF str_length > 400.
@@ -816,7 +816,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD write_enum_map_ext_compatible.
-    write_tag( line = |<tt:read type="C" var="VARIABLE"/>| ).
+    write_tag( line = `<tt:read type="C" var="VARIABLE"/>` ).
     LOOP AT enum_values ASSIGNING FIELD-SYMBOL(<enum_value>).
       DATA(abap_value) = get_abap_value( abap_value = <enum_value>-abap_value element_description = element_description ).
       IF <enum_value>-overwritten_json_value IS INITIAL.

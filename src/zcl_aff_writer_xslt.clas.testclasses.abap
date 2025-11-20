@@ -24,7 +24,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-TYPES END OF include_in_include.
+  TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -607,7 +607,7 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
     APPEND `<?sap.transform simple?>` TO exp.
     APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO exp.
     APPEND |<tt:root name="{ st_root_name }"/>| TO exp.
-    APPEND |<tt:variable name="VARIABLE"/>| TO exp.
+    APPEND `<tt:variable name="VARIABLE"/>` TO exp.
     APPEND `<tt:template>` TO exp.
     APPEND |<tt:ref name="{ st_root_name }">| TO exp.
 
@@ -2122,7 +2122,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     log = cut->zif_aff_writer~get_log( ).
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
-      exp_text           = |Type of constant CO_TEST does not match type of STRUC_LINK_WRONG_TYPE-DEFAULT_LINK|
+      exp_text           = `Type of constant CO_TEST does not match type of STRUC_LINK_WRONG_TYPE-DEFAULT_LINK`
       exp_component_name = `STRUC_LINK_WRONG_TYPE-DEFAULT_LINK`
       exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
@@ -2433,7 +2433,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     APPEND `<?sap.transform simple?>` TO exp.
     APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO exp.
     APPEND |<tt:root name="{ st_root_name }"/>| TO exp.
-    APPEND |<tt:variable name="VARIABLE"/>| TO exp.
+    APPEND `<tt:variable name="VARIABLE"/>` TO exp.
     APPEND `<tt:template>` TO exp.
     APPEND |<tt:ref name="{ st_root_name }">| TO exp.
 
@@ -2465,10 +2465,8 @@ RISK LEVEL DANGEROUS.
 
     DATA exp_json TYPE string_table.
     DATA manually_changed_json TYPE string.
-    DATA cut TYPE REF TO zcl_aff_writer_xslt.
 
-    METHODS: setup,
-
+    METHODS:
       simple_struc_with_extra_field FOR TESTING RAISING cx_static_check,
 
       structure_in_structure               FOR TESTING RAISING cx_static_check,
@@ -2550,10 +2548,6 @@ RISK LEVEL DANGEROUS.
 ENDCLASS.
 
 CLASS ltcl_integration_test_ad IMPLEMENTATION.
-
-  METHOD setup.
-    cut = NEW zcl_aff_writer_xslt( ).
-  ENDMETHOD.
 
   METHOD teardown.
     CLEAR exp_json.
@@ -2879,16 +2873,16 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
       DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
       DATA act_data LIKE test_type.
       test_type = VALUE #( integer          = 5
-                           string_element   = 'DefaultString'
-                           enum_required    = '01'
-                           enum_show_always = '01' ) ##LITERAL.
+                             string_element   = 'DefaultString'
+                             enum_required    = '01'
+                             enum_show_always = '01' ) ##LITERAL.
       exp_json = VALUE #(
-          ( `{` )
-          ( `"integer" : 5,` )
-          ( `"stringElement" : "DefaultString",` )
-          ( `"enumRequired" : "exitClass",` )
-          ( `"enumShowAlways" : "exitClass"` )
-          ( `}` ) ).
+            ( `{` )
+            ( `"integer" : 5,` )
+            ( `"stringElement" : "DefaultString",` )
+            ( `"enumRequired" : "exitClass",` )
+            ( `"enumShowAlways" : "exitClass"` )
+            ( `}` ) ).
 
       manually_changed_json =
     `{` &&
