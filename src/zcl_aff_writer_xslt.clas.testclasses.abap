@@ -24,7 +24,7 @@ INTERFACE lif_test_types.
   TYPES:
     BEGIN OF include_in_include.
       INCLUDE TYPE include.
-  TYPES END OF include_in_include.
+TYPES END OF include_in_include.
 
   TYPES:
     BEGIN OF structure_include_in_include.
@@ -82,22 +82,22 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
       test_generator     TYPE REF TO zif_aff_generator,
       st_root_name       TYPE string VALUE 'root' ##NO_TEXT.
 
-    METHODS: structure_with_incl FOR TESTING RAISING cx_static_check,
+    METHODS: structure_with_incl   FOR TESTING RAISING cx_static_check,
       structure_include_in_include FOR TESTING RAISING cx_static_check,
-      table_structure FOR TESTING RAISING cx_static_check,
-      include_table FOR TESTING RAISING cx_static_check,
-      table_in_table FOR TESTING RAISING cx_static_check,
-      struc_tab_struc_tab FOR TESTING RAISING cx_static_check,
-      type_timestamp FOR TESTING RAISING cx_static_check,
-      type_boolean FOR TESTING RAISING cx_static_check,
-      type_numeric FOR TESTING RAISING cx_static_check,
-      type_string FOR TESTING RAISING cx_static_check,
-      open_unsupported_node FOR TESTING RAISING cx_static_check,
-      close_unsupported_node FOR TESTING RAISING cx_static_check,
-      date_time_element FOR TESTING RAISING cx_static_check,
-      structure_with_language FOR TESTING RAISING cx_static_check,
-      validate_valid_xslt FOR TESTING RAISING cx_static_check,
-      validate_invalid_xslt FOR TESTING RAISING cx_static_check,
+      table_structure              FOR TESTING RAISING cx_static_check,
+      include_table                FOR TESTING RAISING cx_static_check,
+      table_in_table               FOR TESTING RAISING cx_static_check,
+      struc_tab_struc_tab          FOR TESTING RAISING cx_static_check,
+      type_timestamp               FOR TESTING RAISING cx_static_check,
+      type_boolean                 FOR TESTING RAISING cx_static_check,
+      type_numeric                 FOR TESTING RAISING cx_static_check,
+      type_string                  FOR TESTING RAISING cx_static_check,
+      open_unsupported_node        FOR TESTING RAISING cx_static_check,
+      close_unsupported_node       FOR TESTING RAISING cx_static_check,
+      date_time_element            FOR TESTING RAISING cx_static_check,
+      structure_with_language      FOR TESTING RAISING cx_static_check,
+      validate_valid_xslt          FOR TESTING RAISING cx_static_check,
+      validate_invalid_xslt        FOR TESTING RAISING cx_static_check,
 
       setup,
       validate_output
@@ -635,17 +635,17 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
 
     DATA exp_json TYPE string_table.
 
-    METHODS: structure_with_incl FOR TESTING RAISING cx_static_check,
+    METHODS: structure_with_incl   FOR TESTING RAISING cx_static_check,
       structure_include_in_include FOR TESTING RAISING cx_static_check,
-      table_structure FOR TESTING RAISING cx_static_check,
-      include_table FOR TESTING RAISING cx_static_check,
-      table_in_table FOR TESTING RAISING cx_static_check,
-      struc_tab_struc_tab FOR TESTING RAISING cx_static_check,
-      type_timestamp FOR TESTING RAISING cx_static_check,
-      type_boolean FOR TESTING RAISING cx_static_check,
-      type_numeric FOR TESTING RAISING cx_static_check,
-      type_string FOR TESTING RAISING cx_static_check,
-      structure_with_language FOR TESTING RAISING cx_static_check,
+      table_structure              FOR TESTING RAISING cx_static_check,
+      include_table                FOR TESTING RAISING cx_static_check,
+      table_in_table               FOR TESTING RAISING cx_static_check,
+      struc_tab_struc_tab          FOR TESTING RAISING cx_static_check,
+      type_timestamp               FOR TESTING RAISING cx_static_check,
+      type_boolean                 FOR TESTING RAISING cx_static_check,
+      type_numeric                 FOR TESTING RAISING cx_static_check,
+      type_string                  FOR TESTING RAISING cx_static_check,
+      structure_with_language      FOR TESTING RAISING cx_static_check,
       from_json_to_abap
         IMPORTING
           json   TYPE xstring
@@ -1126,6 +1126,8 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
 ENDCLASS.
 
+CLASS ltcl_type_writer_xslt_ad DEFINITION DEFERRED.
+CLASS zcl_aff_writer_xslt DEFINITION LOCAL FRIENDS ltcl_type_writer_xslt_ad.
 "!@testing ZCL_AFF_GENERATOR
 CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
   DURATION MEDIUM
@@ -1144,35 +1146,36 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
         IMPORTING
           act          TYPE string_table
           no_log_check TYPE abap_boolean DEFAULT abap_false,
-      simple_integer FOR TESTING RAISING cx_static_check,
-      simple_string FOR TESTING RAISING cx_static_check,
-      simple_data FOR TESTING RAISING cx_static_check,
-      simple_structure FOR TESTING RAISING cx_static_check,
-      simple_structure_required FOR TESTING RAISING cx_static_check,
-      structure_in_structure FOR TESTING RAISING cx_static_check,
-      simple_table FOR TESTING RAISING cx_static_check,
-      simple_type_with_enum_values FOR TESTING RAISING cx_static_check,
-      structure_with_enum_values FOR TESTING RAISING cx_static_check,
-      deep_nested_structure FOR TESTING RAISING cx_static_check,
-      nested_structure_with_table FOR TESTING RAISING cx_static_check,
-      enum_values_with_wrong_link FOR TESTING RAISING cx_static_check,
-      struc_with_table_not_req FOR TESTING RAISING cx_static_check,
-      structure_different_default FOR TESTING RAISING cx_static_check,
-      nested_struc_with_default FOR TESTING RAISING cx_static_check,
-      structure_with_callback FOR TESTING RAISING cx_static_check,
-      struc_in_struc_with_callback FOR TESTING RAISING cx_static_check,
-      table_of_struc_with_callback FOR TESTING RAISING cx_static_check,
-      simple_element_with_callack FOR TESTING RAISING cx_static_check,
-      table_with_callback FOR TESTING RAISING cx_static_check,
-      table_with_call_of_table FOR TESTING RAISING cx_static_check,
-      struc_of_table_with_callback FOR TESTING RAISING cx_static_check,
-      structure_with_wrong_default FOR TESTING RAISING cx_static_check,
-      structure_with_wrong_callback FOR TESTING RAISING cx_static_check,
+      simple_integer                 FOR TESTING RAISING cx_static_check,
+      simple_string                  FOR TESTING RAISING cx_static_check,
+      simple_data                    FOR TESTING RAISING cx_static_check,
+      simple_structure               FOR TESTING RAISING cx_static_check,
+      simple_structure_required      FOR TESTING RAISING cx_static_check,
+      structure_in_structure         FOR TESTING RAISING cx_static_check,
+      simple_table                   FOR TESTING RAISING cx_static_check,
+      simple_type_with_enum_values   FOR TESTING RAISING cx_static_check,
+      structure_with_enum_values     FOR TESTING RAISING cx_static_check,
+      deep_nested_structure          FOR TESTING RAISING cx_static_check,
+      nested_structure_with_table    FOR TESTING RAISING cx_static_check,
+      enum_values_with_wrong_link    FOR TESTING RAISING cx_static_check,
+      struc_with_table_not_req       FOR TESTING RAISING cx_static_check,
+      structure_different_default    FOR TESTING RAISING cx_static_check,
+      nested_struc_with_default      FOR TESTING RAISING cx_static_check,
+      structure_with_callback        FOR TESTING RAISING cx_static_check,
+      struc_in_struc_with_callback   FOR TESTING RAISING cx_static_check,
+      table_of_struc_with_callback   FOR TESTING RAISING cx_static_check,
+      simple_element_with_callack    FOR TESTING RAISING cx_static_check,
+      table_with_callback            FOR TESTING RAISING cx_static_check,
+      table_with_call_of_table       FOR TESTING RAISING cx_static_check,
+      struc_of_table_with_callback   FOR TESTING RAISING cx_static_check,
+      structure_with_wrong_default   FOR TESTING RAISING cx_static_check,
+      structure_with_wrong_callback  FOR TESTING RAISING cx_static_check,
       type_of_enumtype_and_co_differ FOR TESTING RAISING cx_static_check,
-      wrong_default_type_link FOR TESTING RAISING cx_static_check,
-      structure_with_enums FOR TESTING RAISING cx_static_check,
+      wrong_default_type_link        FOR TESTING RAISING cx_static_check,
+      structure_with_enums           FOR TESTING RAISING cx_static_check,
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
-      struc_with_own_enum_values FOR TESTING RAISING cx_static_check.
+      struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
+    enable_extension FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
@@ -1761,6 +1764,18 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act_output ).
   ENDMETHOD.
 
+  METHOD enable_extension.
+    DATA test_type TYPE lif_test_types=>include_table.
+    test_type = VALUE #(
+        table             = VALUE #(
+                         ( element_1 = 1 element_2 = 'obj1_element_2_value' )
+                         ( element_1 = 2 element_2 = 'obj2_element_2_value' )
+                         )
+        include_element_1 = 1 ).
+    DATA(type_description) = cl_abap_typedescr=>describe_by_data( test_type ).
+    cut->enable_extension( CAST #( type_description ) ).
+  ENDMETHOD.
+
 
   METHOD structure_different_default.
     DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
@@ -1887,9 +1902,9 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `      <tt:d-cond frq="*">` )
         ( `         <_ tt:lax="on">` )
         ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" ` )
-        ( `             val="'fourByteInt;eightByteInt;binFloat;byteLike;byteLike2;decimalFloat16;decimalFloat34;packedNumber;numericText;&#xA;characterText;stringText;dateField;timeField` &&
-                       `;dateTimeField;boolTrue;boolFalse;enumType;'"/>` )
+        (
+`            <tt:with-parameter name="MEMBERS" val="'fourByteInt;eightByteInt;binFloat;byteLike;byteLike2;decimalFloat16;decimalFloat34;packedNumber;numericText;characterText;stringText;dateField;timeField;dateTimeField;boolTrue;boolFalse;enumType` &&
+                       `;'"/>` )
         ( `          </tt:call-method>` )
         ( `          <tt:skip/>` )
         ( `        </_>` )
@@ -2436,6 +2451,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 ENDCLASS.
 
 
+CLASS ltcl_integration_test_ad DEFINITION DEFERRED.
 CLASS ltcl_integration_test_ad DEFINITION FINAL FOR TESTING
 DURATION MEDIUM
 RISK LEVEL DANGEROUS.
@@ -2449,54 +2465,57 @@ RISK LEVEL DANGEROUS.
 
     DATA exp_json TYPE string_table.
     DATA manually_changed_json TYPE string.
+    DATA cut TYPE REF TO zcl_aff_writer_xslt.
 
-    METHODS: simple_struc_with_extra_field FOR TESTING RAISING cx_static_check,
+    METHODS: setup,
 
-      structure_in_structure FOR TESTING RAISING cx_static_check,
+      simple_struc_with_extra_field FOR TESTING RAISING cx_static_check,
 
-      simple_table FOR TESTING RAISING cx_static_check,
+      structure_in_structure               FOR TESTING RAISING cx_static_check,
 
-      simple_type_with_enum_values FOR TESTING RAISING cx_static_check,
+      simple_table                         FOR TESTING RAISING cx_static_check,
 
-      structure_with_enum_values FOR TESTING RAISING cx_static_check,
+      simple_type_with_enum_values         FOR TESTING RAISING cx_static_check,
 
-      deep_nested_structure FOR TESTING RAISING cx_static_check,
+      structure_with_enum_values           FOR TESTING RAISING cx_static_check,
 
-      nested_structure_with_table FOR TESTING RAISING cx_static_check,
+      deep_nested_structure                FOR TESTING RAISING cx_static_check,
 
-      structure_with_table_and_enum FOR TESTING RAISING cx_static_check,
+      nested_structure_with_table          FOR TESTING RAISING cx_static_check,
 
-      table_in_table FOR TESTING RAISING cx_static_check,
+      structure_with_table_and_enum        FOR TESTING RAISING cx_static_check,
 
-      simple_structure_with_required FOR TESTING RAISING cx_static_check,
+      table_in_table                       FOR TESTING RAISING cx_static_check,
 
-      nested_struc_no_default FOR TESTING RAISING cx_static_check,
+      simple_structure_with_required       FOR TESTING RAISING cx_static_check,
 
-      nested_struc_with_default FOR TESTING RAISING cx_static_check,
+      nested_struc_no_default              FOR TESTING RAISING cx_static_check,
 
-      structure_different_default FOR TESTING RAISING cx_static_check,
+      nested_struc_with_default            FOR TESTING RAISING cx_static_check,
 
-      structure_with_callback FOR TESTING RAISING cx_static_check,
+      structure_different_default          FOR TESTING RAISING cx_static_check,
 
-      struc_in_struc_with_callback FOR TESTING RAISING cx_static_check,
+      structure_with_callback              FOR TESTING RAISING cx_static_check,
 
-      simple_element_with_callback FOR TESTING RAISING cx_static_check,
+      struc_in_struc_with_callback         FOR TESTING RAISING cx_static_check,
 
-      table_with_callback FOR TESTING RAISING cx_static_check,
+      simple_element_with_callback         FOR TESTING RAISING cx_static_check,
 
-      struc_of_table_with_callback FOR TESTING RAISING cx_static_check,
+      table_with_callback                  FOR TESTING RAISING cx_static_check,
 
-      structure_with_elem_callback FOR TESTING RAISING cx_static_check,
+      struc_of_table_with_callback         FOR TESTING RAISING cx_static_check,
 
-      table_of_struc_with_callback FOR TESTING RAISING cx_static_check,
+      structure_with_elem_callback         FOR TESTING RAISING cx_static_check,
 
-      structure_with_num_text FOR TESTING RAISING cx_static_check,
+      table_of_struc_with_callback         FOR TESTING RAISING cx_static_check,
 
-      structure_with_include FOR TESTING RAISING cx_static_check,
+      structure_with_num_text              FOR TESTING RAISING cx_static_check,
 
-      structure_with_default_problem FOR TESTING RAISING cx_static_check,
+      structure_with_include               FOR TESTING RAISING cx_static_check,
 
-      struc_with_own_enum_values FOR TESTING RAISING cx_static_check,
+      structure_with_default_problem       FOR TESTING RAISING cx_static_check,
+
+      struc_with_own_enum_values           FOR TESTING RAISING cx_static_check,
 
       from_abap_to_json
         IMPORTING
@@ -2531,6 +2550,10 @@ RISK LEVEL DANGEROUS.
 ENDCLASS.
 
 CLASS ltcl_integration_test_ad IMPLEMENTATION.
+
+  METHOD setup.
+    cut = NEW zcl_aff_writer_xslt( ).
+  ENDMETHOD.
 
   METHOD teardown.
     CLEAR exp_json.
@@ -2821,337 +2844,337 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         act_data  = act_data ).
   ENDMETHOD.
 
-  METHOD structure_different_default.
-    DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
-    DATA act_data LIKE test_type.
-    test_type = VALUE #( four_byte_int    = 5
-                         eight_byte_int   = 55
-                         bin_float        = '4.3'
-                         byte_like        = 'FFFF'
-                         byte_like2       = 'FF00FF'
-                         decimal_float_16 = '25.26'
-                         decimal_float_34 = '123.05'
-                         packed_number    = '123.45'
-                         numeric_text     = '1067'
-                         character_text   = 'abcde'
-                         string_text      = 'Default text'
-                         date_field       = '19720401'
-                         time_field       = '201500'
-                         date_time_field  = '9999-12-31T23:59:59.9999999'
-                         bool_true        = abap_true
-                         bool_false       = abap_false
-                         enum_type        = '01' ) ##LITERAL.
-    exp_json = VALUE #(
-        ( `{` )
-        ( `"dateTimeField": "9999-12-31T23:59:59.9999999+00:00"` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = act_data ).
-  ENDMETHOD.
+    METHOD structure_different_default.
+      DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
+      DATA act_data LIKE test_type.
+      test_type = VALUE #( four_byte_int    = 5
+                           eight_byte_int   = 55
+                           bin_float        = '4.3'
+                           byte_like        = 'FFFF'
+                           byte_like2       = 'FF00FF'
+                           decimal_float_16 = '25.26'
+                           decimal_float_34 = '123.05'
+                           packed_number    = '123.45'
+                           numeric_text     = '1067'
+                           character_text   = 'abcde'
+                           string_text      = 'Default text'
+                           date_field       = '19720401'
+                           time_field       = '201500'
+                           date_time_field  = '9999-12-31T23:59:59.9999999'
+                           bool_true        = abap_true
+                           bool_false       = abap_false
+                           enum_type        = '01' ) ##LITERAL.
+      exp_json = VALUE #(
+          ( `{` )
+          ( `"dateTimeField": "9999-12-31T23:59:59.9999999+00:00"` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = act_data ).
+    ENDMETHOD.
 
-  METHOD structure_with_default_problem.
-    DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
-    DATA act_data LIKE test_type.
-    test_type = VALUE #( integer          = 5
-                         string_element   = 'DefaultString'
-                         enum_required    = '01'
-                         enum_show_always = '01' ) ##LITERAL.
-    exp_json = VALUE #(
-        ( `{` )
-        ( `"integer" : 5,` )
-        ( `"stringElement" : "DefaultString",` )
-        ( `"enumRequired" : "exitClass",` )
-        ( `"enumShowAlways" : "exitClass"` )
-        ( `}` ) ).
+    METHOD structure_with_default_problem.
+      DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
+      DATA act_data LIKE test_type.
+      test_type = VALUE #( integer          = 5
+                           string_element   = 'DefaultString'
+                           enum_required    = '01'
+                           enum_show_always = '01' ) ##LITERAL.
+      exp_json = VALUE #(
+          ( `{` )
+          ( `"integer" : 5,` )
+          ( `"stringElement" : "DefaultString",` )
+          ( `"enumRequired" : "exitClass",` )
+          ( `"enumShowAlways" : "exitClass"` )
+          ( `}` ) ).
 
-    manually_changed_json =
-  `{` &&
-  `"integer" : 5,` &&
-  `"enumRequired" : "exitClass"` &&
-  `}`.
+      manually_changed_json =
+    `{` &&
+    `"integer" : 5,` &&
+    `"enumRequired" : "exitClass"` &&
+    `}`.
 
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = act_data ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = act_data ).
 
-  ENDMETHOD.
-
-
-  METHOD simple_element_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>simple_callback.
-    test_type = 'String Element'.
-    zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = VALUE #(
-        ( `"callbackClass was called"` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD table_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>table_callback.
-    test_type = VALUE #( ( `First` ) ( `Second` ) ).
-    zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = VALUE #(
-        ( `[` )
-        ( `"callbackClass was called"` )
-        ( `]` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD structure_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>structure_callback.
-    test_type = VALUE #( element_name = 5 ).
-    zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `"elementName": "callbackClass was called"` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
+    ENDMETHOD.
 
 
-  METHOD struc_of_table_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
-    DATA table_with_callback LIKE test_type-element_table_callback.
-    table_with_callback = VALUE #( ( `first` ) ( `second` ) ).
-    zcl_aff_test_types=>set_expected( table_with_callback ).
-    test_type = VALUE #( element_table_callback = table_with_callback my_second_element = 5 ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `"elementTableCallback": [` )
-        ( `  "callbackClass was called"` )
-        ( ` ],` )
-        ( `"mySecondElement": 5` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
+    METHOD simple_element_with_callback.
+      DATA test_type TYPE zcl_aff_test_types=>simple_callback.
+      test_type = 'String Element'.
+      zcl_aff_test_types=>set_expected( test_type ).
+      exp_json = VALUE #(
+          ( `"callbackClass was called"` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
 
-  METHOD struc_in_struc_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
-    DATA element_structure_callback LIKE test_type-element_structure_callback.
-    element_structure_callback = VALUE #( element_name = 5 ).
-    zcl_aff_test_types=>set_expected( element_structure_callback ).
-    test_type = VALUE #( my_first_element           = 'firstElement'
-                         element_structure_callback = element_structure_callback
-                         my_third_element           = 6 ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `  "myFirstElement": "firstElement",` )
-        ( `  "elementStructureCallback": {` )
-        ( `     "elementName":"callbackClass was called"` )
-        ( `  },` )
-        ( `  "myThirdElement": 6` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
+    METHOD table_with_callback.
+      DATA test_type TYPE zcl_aff_test_types=>table_callback.
+      test_type = VALUE #( ( `First` ) ( `Second` ) ).
+      zcl_aff_test_types=>set_expected( test_type ).
+      exp_json = VALUE #(
+          ( `[` )
+          ( `"callbackClass was called"` )
+          ( `]` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
 
-  METHOD structure_with_elem_callback.
-    DATA test_type TYPE zcl_aff_test_types=>structure_with_elem_callback.
-    test_type = VALUE #( element_callback  = 'My First Element'
-                         my_second_element = 4 ).
-    zcl_aff_test_types=>set_expected( 'callbackClass was called' ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `"elementCallback": "callbackClass was called",` )
-        ( `"mySecondElement": 4` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD table_of_struc_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
-    test_type = VALUE #( ( element_name = 5 ) ( element_name = 10 ) ).
-    zcl_aff_test_types=>set_expected( VALUE zcl_aff_test_types=>structure_callback( element_name = 5 ) ).
-    exp_json = VALUE #(
-        ( `[` )
-        ( `  {` )
-        ( `    "elementName": "callbackClass was called"` )
-        ( `  },` )
-        ( `  {` )
-        ( `    "elementName": "callbackClass was called"` )
-        ( `  }` )
-        ( `]` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-
-  ENDMETHOD.
-
-  METHOD structure_with_num_text.
-    DATA test_type TYPE zcl_aff_test_types=>struc_with_num_text.
-    test_type = VALUE #( numerical_text1 = '4' numerical_text2 = '1234' ).
-
-    exp_json = VALUE #(
-        ( `{` )
-        ( `    "numericalText1": "0004",` )
-        ( `    "numericalText2": "1234",` )
-        ( `    "numericalText3": "0000"` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD structure_with_include.
-    DATA test_type TYPE zcl_aff_test_types=>structure_with_include.
-    test_type = VALUE #( first_element  = 'first'
-                         second_element = VALUE #( my_first_element  = 'inner first'
-                                                   my_second_element = 9 )
-                         third_element  = 10 ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `    "firstElement": "first",` )
-        ( `    "secondElement": { ` )
-        ( `      "myFirstElement": "inner first", ` )
-        ( `      "mySecondElement": 9 ` )
-        ( `    },` )
-        ( `    "otherElement": 0` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD struc_with_own_enum_values.
-    DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
-    test_type = VALUE #( enum_component = 'BB' ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `    "enumComponent": "BBBB"` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-    test_type = VALUE #( enum_component = 'AA' ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD do_integration_test.
-    from_abap_to_json(
-      EXPORTING
-        test_type = test_type
-      IMPORTING
-        result    = DATA(act_json)
-        json      = DATA(json_xstring) ).
-
-    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
-
-    IF manually_changed_json IS NOT INITIAL.
-      json_xstring = cl_abap_codepage=>convert_to( manually_changed_json ).
-    ENDIF.
-
-    from_json_to_abap(
-      EXPORTING
-        json   = json_xstring
-      IMPORTING
-        result = act_data ).
-
-    cl_abap_unit_assert=>assert_equals(
-      act = act_data
-      exp = test_type ).
-  ENDMETHOD.
-
-  METHOD from_abap_to_json.
-    DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
-    DATA(test_generator) = NEW zcl_aff_generator( cut ).
-    DATA(st_content) = test_generator->zif_aff_generator~generate_type( test_type ).
-
-    DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
-    st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
-
-    INSERT REPORT st_name FROM st_content EXTENSION TYPE c_ext_xslt_source.
-
-    DATA(json_writer) = cl_sxml_string_writer=>create( type = if_sxml=>co_xt_json ).
-    json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_linebreaks ).
-    json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_indent value = '2' ).
-    CALL TRANSFORMATION (st_name) SOURCE root = test_type RESULT XML json_writer.
-
-    DATA(string) = cl_abap_codepage=>convert_from( json_writer->get_output( ) ).
-    string = string && cl_abap_char_utilities=>newline.
-    SPLIT string AT cl_abap_char_utilities=>newline INTO TABLE result.
-
-    json = json_writer->get_output( ).
-
-    st_execution_counter += 1.
-  ENDMETHOD.
+    METHOD structure_with_callback.
+      DATA test_type TYPE zcl_aff_test_types=>structure_callback.
+      test_type = VALUE #( element_name = 5 ).
+      zcl_aff_test_types=>set_expected( test_type ).
+      exp_json = VALUE #(
+          ( `{` )
+          ( `"elementName": "callbackClass was called"` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
 
 
-  METHOD from_json_to_abap.
-    DATA(counter) = st_execution_counter - 1.
-    DATA(st_name) = CONV progname( c_xslt_prefix && counter ).
-    st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
+    METHOD struc_of_table_with_callback.
+      DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
+      DATA table_with_callback LIKE test_type-element_table_callback.
+      table_with_callback = VALUE #( ( `first` ) ( `second` ) ).
+      zcl_aff_test_types=>set_expected( table_with_callback ).
+      test_type = VALUE #( element_table_callback = table_with_callback my_second_element = 5 ).
+      exp_json = VALUE #(
+          ( `{` )
+          ( `"elementTableCallback": [` )
+          ( `  "callbackClass was called"` )
+          ( ` ],` )
+          ( `"mySecondElement": 5` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
+
+    METHOD struc_in_struc_with_callback.
+      DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
+      DATA element_structure_callback LIKE test_type-element_structure_callback.
+      element_structure_callback = VALUE #( element_name = 5 ).
+      zcl_aff_test_types=>set_expected( element_structure_callback ).
+      test_type = VALUE #( my_first_element           = 'firstElement'
+                           element_structure_callback = element_structure_callback
+                           my_third_element           = 6 ).
+      exp_json = VALUE #(
+          ( `{` )
+          ( `  "myFirstElement": "firstElement",` )
+          ( `  "elementStructureCallback": {` )
+          ( `     "elementName":"callbackClass was called"` )
+          ( `  },` )
+          ( `  "myThirdElement": 6` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
+
+    METHOD structure_with_elem_callback.
+      DATA test_type TYPE zcl_aff_test_types=>structure_with_elem_callback.
+      test_type = VALUE #( element_callback  = 'My First Element'
+                           my_second_element = 4 ).
+      zcl_aff_test_types=>set_expected( 'callbackClass was called' ).
+      exp_json = VALUE #(
+          ( `{` )
+          ( `"elementCallback": "callbackClass was called",` )
+          ( `"mySecondElement": 4` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
+
+    METHOD table_of_struc_with_callback.
+      DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
+      test_type = VALUE #( ( element_name = 5 ) ( element_name = 10 ) ).
+      zcl_aff_test_types=>set_expected( VALUE zcl_aff_test_types=>structure_callback( element_name = 5 ) ).
+      exp_json = VALUE #(
+          ( `[` )
+          ( `  {` )
+          ( `    "elementName": "callbackClass was called"` )
+          ( `  },` )
+          ( `  {` )
+          ( `    "elementName": "callbackClass was called"` )
+          ( `  }` )
+          ( `]` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+
+    ENDMETHOD.
+
+    METHOD structure_with_num_text.
+      DATA test_type TYPE zcl_aff_test_types=>struc_with_num_text.
+      test_type = VALUE #( numerical_text1 = '4' numerical_text2 = '1234' ).
+
+      exp_json = VALUE #(
+          ( `{` )
+          ( `    "numericalText1": "0004",` )
+          ( `    "numericalText2": "1234",` )
+          ( `    "numericalText3": "0000"` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
+
+    METHOD structure_with_include.
+      DATA test_type TYPE zcl_aff_test_types=>structure_with_include.
+      test_type = VALUE #( first_element  = 'first'
+                           second_element = VALUE #( my_first_element  = 'inner first'
+                                                     my_second_element = 9 )
+                           third_element  = 10 ).
+      exp_json = VALUE #(
+          ( `{` )
+          ( `    "firstElement": "first",` )
+          ( `    "secondElement": { ` )
+          ( `      "myFirstElement": "inner first", ` )
+          ( `      "mySecondElement": 9 ` )
+          ( `    },` )
+          ( `    "otherElement": 0` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
+
+    METHOD struc_with_own_enum_values.
+      DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
+      test_type = VALUE #( enum_component = 'BB' ).
+      exp_json = VALUE #(
+          ( `{` )
+          ( `    "enumComponent": "BBBB"` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+      test_type = VALUE #( enum_component = 'AA' ).
+      exp_json = VALUE #(
+          ( `{` )
+          ( `}` ) ).
+      do_integration_test(
+        EXPORTING
+          test_type = test_type
+        CHANGING
+          act_data  = test_type ).
+    ENDMETHOD.
+
+    METHOD do_integration_test.
+      from_abap_to_json(
+        EXPORTING
+          test_type = test_type
+        IMPORTING
+          result    = DATA(act_json)
+          json      = DATA(json_xstring) ).
+
+      assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
+
+      IF manually_changed_json IS NOT INITIAL.
+        json_xstring = cl_abap_codepage=>convert_to( manually_changed_json ).
+      ENDIF.
+
+      from_json_to_abap(
+        EXPORTING
+          json   = json_xstring
+        IMPORTING
+          result = act_data ).
+
+      cl_abap_unit_assert=>assert_equals(
+        act = act_data
+        exp = test_type ).
+    ENDMETHOD.
+
+    METHOD from_abap_to_json.
+      DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
+      DATA(test_generator) = NEW zcl_aff_generator( cut ).
+      DATA(st_content) = test_generator->zif_aff_generator~generate_type( test_type ).
+
+      DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
+      st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
+
+      INSERT REPORT st_name FROM st_content EXTENSION TYPE c_ext_xslt_source.
+
+      DATA(json_writer) = cl_sxml_string_writer=>create( type = if_sxml=>co_xt_json ).
+      json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_linebreaks ).
+      json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_indent value = '2' ).
+      CALL TRANSFORMATION (st_name) SOURCE root = test_type RESULT XML json_writer.
+
+      DATA(string) = cl_abap_codepage=>convert_from( json_writer->get_output( ) ).
+      string = string && cl_abap_char_utilities=>newline.
+      SPLIT string AT cl_abap_char_utilities=>newline INTO TABLE result.
+
+      json = json_writer->get_output( ).
+
+      st_execution_counter += 1.
+    ENDMETHOD.
 
 
-    DATA st_result TYPE abap_trans_resbind_tab.
-    FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
+    METHOD from_json_to_abap.
+      DATA(counter) = st_execution_counter - 1.
+      DATA(st_name) = CONV progname( c_xslt_prefix && counter ).
+      st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
 
-    CLEAR result.
-    APPEND INITIAL LINE TO st_result ASSIGNING <st_result>.
-    <st_result>-name = 'ROOT'.
-    GET REFERENCE OF result  INTO <st_result>-value.
 
-    DATA(json_reader) = cl_sxml_string_reader=>create( json ).
-    TRY.
-        CALL TRANSFORMATION (st_name)
-          SOURCE XML json_reader
-          RESULT (st_result).
-      CATCH cx_root INTO DATA(exception).
-        DELETE REPORT st_name.
-        cl_abap_unit_assert=>fail( exception->get_text( ) ).
-    ENDTRY.
-    DELETE REPORT st_name.
-  ENDMETHOD.
+      DATA st_result TYPE abap_trans_resbind_tab.
+      FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
 
-  METHOD assert_json_equals.
-    CONCATENATE LINES OF actual_json_stringtab INTO DATA(act_json_as_string).
-    CONCATENATE LINES OF expected_json_stringtab INTO DATA(exp_json_as_string).
-    CONDENSE act_json_as_string NO-GAPS.
-    CONDENSE exp_json_as_string NO-GAPS.
-    cl_abap_unit_assert=>assert_equals( msg = 'Expected json and actual json differ' exp = exp_json_as_string act = act_json_as_string ).
-  ENDMETHOD.
+      CLEAR result.
+      APPEND INITIAL LINE TO st_result ASSIGNING <st_result>.
+      <st_result>-name = 'ROOT'.
+      GET REFERENCE OF result  INTO <st_result>-value.
+
+      DATA(json_reader) = cl_sxml_string_reader=>create( json ).
+      TRY.
+          CALL TRANSFORMATION (st_name)
+            SOURCE XML json_reader
+            RESULT (st_result).
+        CATCH cx_root INTO DATA(exception).
+          DELETE REPORT st_name.
+          cl_abap_unit_assert=>fail( exception->get_text( ) ).
+      ENDTRY.
+      DELETE REPORT st_name.
+    ENDMETHOD.
+
+    METHOD assert_json_equals.
+      CONCATENATE LINES OF actual_json_stringtab INTO DATA(act_json_as_string).
+      CONCATENATE LINES OF expected_json_stringtab INTO DATA(exp_json_as_string).
+      CONDENSE act_json_as_string NO-GAPS.
+      CONDENSE exp_json_as_string NO-GAPS.
+      cl_abap_unit_assert=>assert_equals( msg = 'Expected json and actual json differ' exp = exp_json_as_string act = act_json_as_string ).
+    ENDMETHOD.
 
 
 ENDCLASS.

@@ -769,18 +769,33 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         str_comp = |{ formatted_name };|.
         CONTINUE.
       ENDIF.
-      IF strlen( str_comp ) > 100.
-        IF str_comp CS `&#xA;`.
-          str_comp = |{ str_comp }{ formatted_name };|.
-        ELSE.
-          str_comp = |{ str_comp }&#xA;{ formatted_name };|.
-        ENDIF.
-      ELSE.
-        str_comp = |{ str_comp }{ formatted_name };|.
-      ENDIF.
+      str_comp = |{ str_comp }{ formatted_name };|.
     ENDLOOP.
-    DATA(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>|.
 
+    DATA(str_length) = strlen( str_comp ).
+    IF str_length > 200.
+      data(str_comp_lb) = replace( val = str_comp sub = `;` occ = -10 with = '&#xA;' ).
+      IF str_length > 300.
+        str_comp_lb = replace( val = str_comp sub = `;` occ = -20 with = '&#xA;' ).
+        IF str_length > 400.
+          str_comp_lb = replace( val = str_comp sub = `;` occ = -20 with = '&#xA;' ).
+          str_comp_lb = replace( val = str_comp sub = `;` occ = -30 with = '&#xA;' ).
+          IF str_length > 500.
+            str_comp = replace( val = str_comp sub = `;` occ = -20 with = '&#xA;' ).
+            str_comp = replace( val = str_comp sub = `;` occ = -40 with = '&#xA;' ).
+            str_comp = replace( val = str_comp sub = `;` occ = -50 with = '&#xA;' ).
+            IF str_length > 1000.
+              str_comp = replace( val = str_comp sub = `;` occ = -20 with = '&#xA;' ).
+              str_comp = replace( val = str_comp sub = `;` occ = -40 with = '&#xA;' ).
+              str_comp = replace( val = str_comp sub = `;` occ = -60 with = '&#xA;' ).
+              str_comp = replace( val = str_comp sub = `;` occ = -80 with = '&#xA;' ).
+            ENDIF.
+          ENDIF.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+
+    DATA(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }<tt:with-parameter name="MEMBERS" val="'{ str_comp_lb }'"/>|.
     IF strlen( tag ) > 255.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
@@ -789,7 +804,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ELSE.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
     ENDIF.
-
     write_closing_tag( `</tt:call-method>` ).
     write_tag( `<tt:skip/>` ).
     write_closing_tag( `</_>` ).
