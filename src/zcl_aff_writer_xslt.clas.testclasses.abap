@@ -2838,337 +2838,337 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         act_data  = act_data ).
   ENDMETHOD.
 
-    METHOD structure_different_default.
-      DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
-      DATA act_data LIKE test_type.
-      test_type = VALUE #( four_byte_int    = 5
-                           eight_byte_int   = 55
-                           bin_float        = '4.3'
-                           byte_like        = 'FFFF'
-                           byte_like2       = 'FF00FF'
-                           decimal_float_16 = '25.26'
-                           decimal_float_34 = '123.05'
-                           packed_number    = '123.45'
-                           numeric_text     = '1067'
-                           character_text   = 'abcde'
-                           string_text      = 'Default text'
-                           date_field       = '19720401'
-                           time_field       = '201500'
-                           date_time_field  = '9999-12-31T23:59:59.9999999'
-                           bool_true        = abap_true
-                           bool_false       = abap_false
-                           enum_type        = '01' ) ##LITERAL.
-      exp_json = VALUE #(
+  METHOD structure_different_default.
+    DATA test_type TYPE zcl_aff_test_types=>structure_different_default.
+    DATA act_data LIKE test_type.
+    test_type = VALUE #( four_byte_int    = 5
+                         eight_byte_int   = 55
+                         bin_float        = '4.3'
+                         byte_like        = 'FFFF'
+                         byte_like2       = 'FF00FF'
+                         decimal_float_16 = '25.26'
+                         decimal_float_34 = '123.05'
+                         packed_number    = '123.45'
+                         numeric_text     = '1067'
+                         character_text   = 'abcde'
+                         string_text      = 'Default text'
+                         date_field       = '19720401'
+                         time_field       = '201500'
+                         date_time_field  = '9999-12-31T23:59:59.9999999'
+                         bool_true        = abap_true
+                         bool_false       = abap_false
+                         enum_type        = '01' ) ##LITERAL.
+    exp_json = VALUE #(
+        ( `{` )
+        ( `"dateTimeField": "9999-12-31T23:59:59.9999999+00:00"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = act_data ).
+  ENDMETHOD.
+
+  METHOD structure_with_default_problem.
+    DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
+    DATA act_data LIKE test_type.
+    test_type = VALUE #( integer          = 5
+                           string_element   = 'DefaultString'
+                           enum_required    = '01'
+                           enum_show_always = '01' ) ##LITERAL.
+    exp_json = VALUE #(
           ( `{` )
-          ( `"dateTimeField": "9999-12-31T23:59:59.9999999+00:00"` )
+          ( `"integer" : 5,` )
+          ( `"stringElement" : "DefaultString",` )
+          ( `"enumRequired" : "exitClass",` )
+          ( `"enumShowAlways" : "exitClass"` )
           ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = act_data ).
-    ENDMETHOD.
 
-    METHOD structure_with_default_problem.
-      DATA test_type TYPE zcl_aff_test_types=>structure_with_default_problem.
-      DATA act_data LIKE test_type.
-      test_type = VALUE #( integer          = 5
-                             string_element   = 'DefaultString'
-                             enum_required    = '01'
-                             enum_show_always = '01' ) ##LITERAL.
-      exp_json = VALUE #(
-            ( `{` )
-            ( `"integer" : 5,` )
-            ( `"stringElement" : "DefaultString",` )
-            ( `"enumRequired" : "exitClass",` )
-            ( `"enumShowAlways" : "exitClass"` )
-            ( `}` ) ).
+    manually_changed_json =
+  `{` &&
+  `"integer" : 5,` &&
+  `"enumRequired" : "exitClass"` &&
+  `}`.
 
-      manually_changed_json =
-    `{` &&
-    `"integer" : 5,` &&
-    `"enumRequired" : "exitClass"` &&
-    `}`.
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = act_data ).
 
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = act_data ).
-
-    ENDMETHOD.
+  ENDMETHOD.
 
 
-    METHOD simple_element_with_callback.
-      DATA test_type TYPE zcl_aff_test_types=>simple_callback.
-      test_type = 'String Element'.
-      zcl_aff_test_types=>set_expected( test_type ).
-      exp_json = VALUE #(
-          ( `"callbackClass was called"` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
+  METHOD simple_element_with_callback.
+    DATA test_type TYPE zcl_aff_test_types=>simple_callback.
+    test_type = 'String Element'.
+    zcl_aff_test_types=>set_expected( test_type ).
+    exp_json = VALUE #(
+        ( `"callbackClass was called"` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
 
-    METHOD table_with_callback.
-      DATA test_type TYPE zcl_aff_test_types=>table_callback.
-      test_type = VALUE #( ( `First` ) ( `Second` ) ).
-      zcl_aff_test_types=>set_expected( test_type ).
-      exp_json = VALUE #(
-          ( `[` )
-          ( `"callbackClass was called"` )
-          ( `]` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
+  METHOD table_with_callback.
+    DATA test_type TYPE zcl_aff_test_types=>table_callback.
+    test_type = VALUE #( ( `First` ) ( `Second` ) ).
+    zcl_aff_test_types=>set_expected( test_type ).
+    exp_json = VALUE #(
+        ( `[` )
+        ( `"callbackClass was called"` )
+        ( `]` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
 
-    METHOD structure_with_callback.
-      DATA test_type TYPE zcl_aff_test_types=>structure_callback.
-      test_type = VALUE #( element_name = 5 ).
-      zcl_aff_test_types=>set_expected( test_type ).
-      exp_json = VALUE #(
-          ( `{` )
-          ( `"elementName": "callbackClass was called"` )
-          ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
-
-
-    METHOD struc_of_table_with_callback.
-      DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
-      DATA table_with_callback LIKE test_type-element_table_callback.
-      table_with_callback = VALUE #( ( `first` ) ( `second` ) ).
-      zcl_aff_test_types=>set_expected( table_with_callback ).
-      test_type = VALUE #( element_table_callback = table_with_callback my_second_element = 5 ).
-      exp_json = VALUE #(
-          ( `{` )
-          ( `"elementTableCallback": [` )
-          ( `  "callbackClass was called"` )
-          ( ` ],` )
-          ( `"mySecondElement": 5` )
-          ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
-
-    METHOD struc_in_struc_with_callback.
-      DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
-      DATA element_structure_callback LIKE test_type-element_structure_callback.
-      element_structure_callback = VALUE #( element_name = 5 ).
-      zcl_aff_test_types=>set_expected( element_structure_callback ).
-      test_type = VALUE #( my_first_element           = 'firstElement'
-                           element_structure_callback = element_structure_callback
-                           my_third_element           = 6 ).
-      exp_json = VALUE #(
-          ( `{` )
-          ( `  "myFirstElement": "firstElement",` )
-          ( `  "elementStructureCallback": {` )
-          ( `     "elementName":"callbackClass was called"` )
-          ( `  },` )
-          ( `  "myThirdElement": 6` )
-          ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
-
-    METHOD structure_with_elem_callback.
-      DATA test_type TYPE zcl_aff_test_types=>structure_with_elem_callback.
-      test_type = VALUE #( element_callback  = 'My First Element'
-                           my_second_element = 4 ).
-      zcl_aff_test_types=>set_expected( 'callbackClass was called' ).
-      exp_json = VALUE #(
-          ( `{` )
-          ( `"elementCallback": "callbackClass was called",` )
-          ( `"mySecondElement": 4` )
-          ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
-
-    METHOD table_of_struc_with_callback.
-      DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
-      test_type = VALUE #( ( element_name = 5 ) ( element_name = 10 ) ).
-      zcl_aff_test_types=>set_expected( VALUE zcl_aff_test_types=>structure_callback( element_name = 5 ) ).
-      exp_json = VALUE #(
-          ( `[` )
-          ( `  {` )
-          ( `    "elementName": "callbackClass was called"` )
-          ( `  },` )
-          ( `  {` )
-          ( `    "elementName": "callbackClass was called"` )
-          ( `  }` )
-          ( `]` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-
-    ENDMETHOD.
-
-    METHOD structure_with_num_text.
-      DATA test_type TYPE zcl_aff_test_types=>struc_with_num_text.
-      test_type = VALUE #( numerical_text1 = '4' numerical_text2 = '1234' ).
-
-      exp_json = VALUE #(
-          ( `{` )
-          ( `    "numericalText1": "0004",` )
-          ( `    "numericalText2": "1234",` )
-          ( `    "numericalText3": "0000"` )
-          ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
-
-    METHOD structure_with_include.
-      DATA test_type TYPE zcl_aff_test_types=>structure_with_include.
-      test_type = VALUE #( first_element  = 'first'
-                           second_element = VALUE #( my_first_element  = 'inner first'
-                                                     my_second_element = 9 )
-                           third_element  = 10 ).
-      exp_json = VALUE #(
-          ( `{` )
-          ( `    "firstElement": "first",` )
-          ( `    "secondElement": { ` )
-          ( `      "myFirstElement": "inner first", ` )
-          ( `      "mySecondElement": 9 ` )
-          ( `    },` )
-          ( `    "otherElement": 0` )
-          ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
-
-    METHOD struc_with_own_enum_values.
-      DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
-      test_type = VALUE #( enum_component = 'BB' ).
-      exp_json = VALUE #(
-          ( `{` )
-          ( `    "enumComponent": "BBBB"` )
-          ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-      test_type = VALUE #( enum_component = 'AA' ).
-      exp_json = VALUE #(
-          ( `{` )
-          ( `}` ) ).
-      do_integration_test(
-        EXPORTING
-          test_type = test_type
-        CHANGING
-          act_data  = test_type ).
-    ENDMETHOD.
-
-    METHOD do_integration_test.
-      from_abap_to_json(
-        EXPORTING
-          test_type = test_type
-        IMPORTING
-          result    = DATA(act_json)
-          json      = DATA(json_xstring) ).
-
-      assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
-
-      IF manually_changed_json IS NOT INITIAL.
-        json_xstring = cl_abap_codepage=>convert_to( manually_changed_json ).
-      ENDIF.
-
-      from_json_to_abap(
-        EXPORTING
-          json   = json_xstring
-        IMPORTING
-          result = act_data ).
-
-      cl_abap_unit_assert=>assert_equals(
-        act = act_data
-        exp = test_type ).
-    ENDMETHOD.
-
-    METHOD from_abap_to_json.
-      DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
-      DATA(test_generator) = NEW zcl_aff_generator( cut ).
-      DATA(st_content) = test_generator->zif_aff_generator~generate_type( test_type ).
-
-      DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
-      st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
-
-      INSERT REPORT st_name FROM st_content EXTENSION TYPE c_ext_xslt_source.
-
-      DATA(json_writer) = cl_sxml_string_writer=>create( type = if_sxml=>co_xt_json ).
-      json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_linebreaks ).
-      json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_indent value = '2' ).
-      CALL TRANSFORMATION (st_name) SOURCE root = test_type RESULT XML json_writer.
-
-      DATA(string) = cl_abap_codepage=>convert_from( json_writer->get_output( ) ).
-      string = string && cl_abap_char_utilities=>newline.
-      SPLIT string AT cl_abap_char_utilities=>newline INTO TABLE result.
-
-      json = json_writer->get_output( ).
-
-      st_execution_counter += 1.
-    ENDMETHOD.
+  METHOD structure_with_callback.
+    DATA test_type TYPE zcl_aff_test_types=>structure_callback.
+    test_type = VALUE #( element_name = 5 ).
+    zcl_aff_test_types=>set_expected( test_type ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `"elementName": "callbackClass was called"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
 
 
-    METHOD from_json_to_abap.
-      DATA(counter) = st_execution_counter - 1.
-      DATA(st_name) = CONV progname( c_xslt_prefix && counter ).
-      st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
+  METHOD struc_of_table_with_callback.
+    DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
+    DATA table_with_callback LIKE test_type-element_table_callback.
+    table_with_callback = VALUE #( ( `first` ) ( `second` ) ).
+    zcl_aff_test_types=>set_expected( table_with_callback ).
+    test_type = VALUE #( element_table_callback = table_with_callback my_second_element = 5 ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `"elementTableCallback": [` )
+        ( `  "callbackClass was called"` )
+        ( ` ],` )
+        ( `"mySecondElement": 5` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD struc_in_struc_with_callback.
+    DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
+    DATA element_structure_callback LIKE test_type-element_structure_callback.
+    element_structure_callback = VALUE #( element_name = 5 ).
+    zcl_aff_test_types=>set_expected( element_structure_callback ).
+    test_type = VALUE #( my_first_element           = 'firstElement'
+                         element_structure_callback = element_structure_callback
+                         my_third_element           = 6 ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `  "myFirstElement": "firstElement",` )
+        ( `  "elementStructureCallback": {` )
+        ( `     "elementName":"callbackClass was called"` )
+        ( `  },` )
+        ( `  "myThirdElement": 6` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD structure_with_elem_callback.
+    DATA test_type TYPE zcl_aff_test_types=>structure_with_elem_callback.
+    test_type = VALUE #( element_callback  = 'My First Element'
+                         my_second_element = 4 ).
+    zcl_aff_test_types=>set_expected( 'callbackClass was called' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `"elementCallback": "callbackClass was called",` )
+        ( `"mySecondElement": 4` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD table_of_struc_with_callback.
+    DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
+    test_type = VALUE #( ( element_name = 5 ) ( element_name = 10 ) ).
+    zcl_aff_test_types=>set_expected( VALUE zcl_aff_test_types=>structure_callback( element_name = 5 ) ).
+    exp_json = VALUE #(
+        ( `[` )
+        ( `  {` )
+        ( `    "elementName": "callbackClass was called"` )
+        ( `  },` )
+        ( `  {` )
+        ( `    "elementName": "callbackClass was called"` )
+        ( `  }` )
+        ( `]` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+
+  ENDMETHOD.
+
+  METHOD structure_with_num_text.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_num_text.
+    test_type = VALUE #( numerical_text1 = '4' numerical_text2 = '1234' ).
+
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "numericalText1": "0004",` )
+        ( `    "numericalText2": "1234",` )
+        ( `    "numericalText3": "0000"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD structure_with_include.
+    DATA test_type TYPE zcl_aff_test_types=>structure_with_include.
+    test_type = VALUE #( first_element  = 'first'
+                         second_element = VALUE #( my_first_element  = 'inner first'
+                                                   my_second_element = 9 )
+                         third_element  = 10 ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "firstElement": "first",` )
+        ( `    "secondElement": { ` )
+        ( `      "myFirstElement": "inner first", ` )
+        ( `      "mySecondElement": 9 ` )
+        ( `    },` )
+        ( `    "otherElement": 0` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD struc_with_own_enum_values.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
+    test_type = VALUE #( enum_component = 'BB' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "enumComponent": "BBBB"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( enum_component = 'AA' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD do_integration_test.
+    from_abap_to_json(
+      EXPORTING
+        test_type = test_type
+      IMPORTING
+        result    = DATA(act_json)
+        json      = DATA(json_xstring) ).
+
+    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
+
+    IF manually_changed_json IS NOT INITIAL.
+      json_xstring = cl_abap_codepage=>convert_to( manually_changed_json ).
+    ENDIF.
+
+    from_json_to_abap(
+      EXPORTING
+        json   = json_xstring
+      IMPORTING
+        result = act_data ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = act_data
+      exp = test_type ).
+  ENDMETHOD.
+
+  METHOD from_abap_to_json.
+    DATA(cut) = NEW zcl_aff_writer_xslt( 'root' ).
+    DATA(test_generator) = NEW zcl_aff_generator( cut ).
+    DATA(st_content) = test_generator->zif_aff_generator~generate_type( test_type ).
+
+    DATA(st_name) = CONV progname( c_xslt_prefix && st_execution_counter ).
+    st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
+
+    INSERT REPORT st_name FROM st_content EXTENSION TYPE c_ext_xslt_source.
+
+    DATA(json_writer) = cl_sxml_string_writer=>create( type = if_sxml=>co_xt_json ).
+    json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_linebreaks ).
+    json_writer->if_sxml_writer~set_option( option = if_sxml_writer=>co_opt_indent value = '2' ).
+    CALL TRANSFORMATION (st_name) SOURCE root = test_type RESULT XML json_writer.
+
+    DATA(string) = cl_abap_codepage=>convert_from( json_writer->get_output( ) ).
+    string = string && cl_abap_char_utilities=>newline.
+    SPLIT string AT cl_abap_char_utilities=>newline INTO TABLE result.
+
+    json = json_writer->get_output( ).
+
+    st_execution_counter += 1.
+  ENDMETHOD.
 
 
-      DATA st_result TYPE abap_trans_resbind_tab.
-      FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
+  METHOD from_json_to_abap.
+    DATA(counter) = st_execution_counter - 1.
+    DATA(st_name) = CONV progname( c_xslt_prefix && counter ).
+    st_name = |{ st_name WIDTH = 30 PAD = '=' }XT|.
 
-      CLEAR result.
-      APPEND INITIAL LINE TO st_result ASSIGNING <st_result>.
-      <st_result>-name = 'ROOT'.
-      GET REFERENCE OF result  INTO <st_result>-value.
 
-      DATA(json_reader) = cl_sxml_string_reader=>create( json ).
-      TRY.
-          CALL TRANSFORMATION (st_name)
-            SOURCE XML json_reader
-            RESULT (st_result).
-        CATCH cx_root INTO DATA(exception).
-          DELETE REPORT st_name.
-          cl_abap_unit_assert=>fail( exception->get_text( ) ).
-      ENDTRY.
-      DELETE REPORT st_name.
-    ENDMETHOD.
+    DATA st_result TYPE abap_trans_resbind_tab.
+    FIELD-SYMBOLS <st_result> LIKE LINE OF st_result.
 
-    METHOD assert_json_equals.
-      CONCATENATE LINES OF actual_json_stringtab INTO DATA(act_json_as_string).
-      CONCATENATE LINES OF expected_json_stringtab INTO DATA(exp_json_as_string).
-      CONDENSE act_json_as_string NO-GAPS.
-      CONDENSE exp_json_as_string NO-GAPS.
-      cl_abap_unit_assert=>assert_equals( msg = 'Expected json and actual json differ' exp = exp_json_as_string act = act_json_as_string ).
-    ENDMETHOD.
+    CLEAR result.
+    APPEND INITIAL LINE TO st_result ASSIGNING <st_result>.
+    <st_result>-name = 'ROOT'.
+    GET REFERENCE OF result  INTO <st_result>-value.
+
+    DATA(json_reader) = cl_sxml_string_reader=>create( json ).
+    TRY.
+        CALL TRANSFORMATION (st_name)
+          SOURCE XML json_reader
+          RESULT (st_result).
+      CATCH cx_root INTO DATA(exception).
+        DELETE REPORT st_name.
+        cl_abap_unit_assert=>fail( exception->get_text( ) ).
+    ENDTRY.
+    DELETE REPORT st_name.
+  ENDMETHOD.
+
+  METHOD assert_json_equals.
+    CONCATENATE LINES OF actual_json_stringtab INTO DATA(act_json_as_string).
+    CONCATENATE LINES OF expected_json_stringtab INTO DATA(exp_json_as_string).
+    CONDENSE act_json_as_string NO-GAPS.
+    CONDENSE exp_json_as_string NO-GAPS.
+    cl_abap_unit_assert=>assert_equals( msg = 'Expected json and actual json differ' exp = exp_json_as_string act = act_json_as_string ).
+  ENDMETHOD.
 
 
 ENDCLASS.
