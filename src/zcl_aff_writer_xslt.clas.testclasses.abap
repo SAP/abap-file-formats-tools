@@ -1175,7 +1175,7 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       structure_with_enums           FOR TESTING RAISING cx_static_check,
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
       struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
-    enable_extension FOR TESTING RAISING cx_static_check.
+      enable_extension               FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
@@ -1765,15 +1765,31 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD enable_extension.
-    DATA test_type TYPE lif_test_types=>include_table.
-    test_type = VALUE #(
-        table             = VALUE #(
-                         ( element_1 = 1 element_2 = 'obj1_element_2_value' )
-                         ( element_1 = 2 element_2 = 'obj2_element_2_value' )
-                         )
-        include_element_1 = 1 ).
+    DATA: test_type TYPE zcl_aff_test_types=>big_structure.
+
     DATA(type_description) = cl_abap_typedescr=>describe_by_data( test_type ).
     cut->enable_extension( CAST #( type_description ) ).
+    DATA(actual) = cut->content.
+    DATA(expected) = VALUE string_table(
+      ( `<tt:d-cond frq="*">` )
+      ( `   <_ tt:lax="on">` )
+      ( `    <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+      ( `      <tt:with-parameter name="MEMBERS"` )
+      ( `val="'elementOne;elementTwo;elementThree;elementFour;elementFive;elementSix;elementSeven;elementEight;elementNine;elementTen;elementEleven;elementTwelve;elementThirteen;&#xA;` &&
+        `elementFourteen;elementFifteen;elementSixteen;elementSeventeen;elementEighteen;elementNineteen;elementTwenty;elementTwentyOne;elementTwentyTwo;&#xA;` &&
+        `elementTwentyThree;elementTwentyFour;elementTwentyFive;elementTwentySix;elementTwentySeven;elementTwentyEight;elementTwentyNine;elementThirty;elementThirtyOne;&#xA;` &&
+        `elementThirtyTwo;elementThirtyThree;elementThirtyFour;elementThirtyFive;elementThirtySix;elementThirtySeven;elementThirtyEight;elementThirtyNine;elementForty;&#xA;` &&
+        `elementFortyTwo;elementFortyThree;elementFortyFour;elementFortyFive;elementFortySix;elementFortySeven;elementFortyEight;elementFortyNine;elementFifty;'"/>` )
+      ( `    </tt:call-method>` )
+      ( `    <tt:skip/>` )
+      ( `  </_>` )
+      ( `</tt:d-cond>` )
+      ( `<tt:d-cond frq="?">` )
+      ( `  <__/>` )
+      ( `</tt:d-cond>` )
+       ).
+       zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( exp_data = expected act_data = actual ).
+
   ENDMETHOD.
 
 

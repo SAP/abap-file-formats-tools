@@ -824,6 +824,62 @@ CLASS zcl_aff_test_types DEFINITION
         element_name TYPE i,
       END OF structure_callback.
 
+* structure with a lot of fields
+    TYPES:
+      "! <p class="shorttext">Structure With A Lot Of Fields</p>
+      "! Structure With A Lot Of Fields
+      BEGIN OF big_structure,
+        element_one          TYPE i,
+        element_two          TYPE i,
+        element_three        TYPE i,
+        element_four         TYPE i,
+        element_five         TYPE i,
+        element_six          TYPE i,
+        element_seven        TYPE i,
+        element_eight        TYPE i,
+        element_nine         TYPE i,
+        element_ten          TYPE i,
+        element_eleven       TYPE i,
+        element_twelve       TYPE i,
+        element_thirteen     TYPE i,
+        element_fourteen     TYPE i,
+        element_fifteen      TYPE i,
+        element_sixteen      TYPE i,
+        element_seventeen    TYPE i,
+        element_eighteen     TYPE i,
+        element_nineteen     TYPE i,
+        element_twenty       TYPE i,
+        element_twenty_one   TYPE i,
+        element_twenty_two   TYPE i,
+        element_twenty_three TYPE i,
+        element_twenty_four  TYPE i,
+        element_twenty_five  TYPE i,
+        element_twenty_six   TYPE i,
+        element_twenty_seven TYPE i,
+        element_twenty_eight TYPE i,
+        element_twenty_nine  TYPE i,
+        element_thirty       TYPE i,
+        element_thirty_one   TYPE i,
+        element_thirty_two   TYPE i,
+        element_thirty_three TYPE i,
+        element_thirty_four  TYPE i,
+        element_thirty_five  TYPE i,
+        element_thirty_six   TYPE i,
+        element_thirty_seven TYPE i,
+        element_thirty_eight TYPE i,
+        element_thirty_nine  TYPE i,
+        element_forty        TYPE i,
+        element_forty_two    TYPE i,
+        element_forty_three  TYPE i,
+        element_forty_four   TYPE i,
+        element_forty_five   TYPE i,
+        element_forty_six    TYPE i,
+        element_forty_seven  TYPE i,
+        element_forty_eight  TYPE i,
+        element_forty_nine   TYPE i,
+        element_fifty        TYPE i,
+      END OF big_structure.
+
 
 
 * table of my_structure_with_callback
