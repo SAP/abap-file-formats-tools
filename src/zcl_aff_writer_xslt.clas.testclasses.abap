@@ -1786,9 +1786,8 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
       ( `</tt:d-cond>` )
       ( `<tt:d-cond frq="?">` )
       ( `  <__/>` )
-      ( `</tt:d-cond>` )
-       ).
-       zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( exp_data = expected act_data = actual ).
+      ( `</tt:d-cond>` ) ).
+     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( exp_data = expected act_data = actual ).
 
   ENDMETHOD.
 
