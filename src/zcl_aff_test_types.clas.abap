@@ -971,6 +971,29 @@ CLASS zcl_aff_test_types DEFINITION
         enum_component TYPE c LENGTH 2,
       END OF struc_with_own_enum_values.
 
+    CONSTANTS:
+      BEGIN OF co_enum_special_chars,
+        "! <p class="shorttext">Less Than</p>
+        "! Less than
+        less_than    TYPE c LENGTH 1 VALUE '<',
+        "! <p class="shorttext">Greater Than</p>
+        "! Greater than
+        greater_than TYPE c LENGTH 1 VALUE '>',
+        "! <p class="shorttext">Ampersand</p>
+        "! Ampersand
+        ampersand    TYPE c LENGTH 1 VALUE '&',
+      END OF co_enum_special_chars.
+
+    TYPES:
+      "! <p class="shorttext">Structure With Special Character Enum Values</p>
+      "! Structure with special character enum values
+      BEGIN OF struc_with_special_char_enums,
+        "! <p class="shorttext">Enum With Special Characters</p>
+        "! Enum with special characters
+        "! $values  {@link zcl_aff_test_types.data:co_enum_special_chars }
+        special_char_enum TYPE c LENGTH 1,
+      END OF struc_with_special_char_enums.
+
     CLASS-DATA subschema TYPE string_table.
 
     CLASS-DATA expected_var TYPE REF TO data.
