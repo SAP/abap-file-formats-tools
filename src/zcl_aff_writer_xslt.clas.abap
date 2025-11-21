@@ -816,9 +816,10 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD escape_xml_chars.
     result = value.
+    " Ampersand must be replaced first to avoid double-escaping
+    REPLACE ALL OCCURRENCES OF '&' IN result WITH '&#38;'.
     REPLACE ALL OCCURRENCES OF '<' IN result WITH '&#60;'.
     REPLACE ALL OCCURRENCES OF '>' IN result WITH '&#62;'.
-    REPLACE ALL OCCURRENCES OF '&' IN result WITH '&#38;'.
     REPLACE ALL OCCURRENCES OF '"' IN result WITH '&#34;'.
     REPLACE ALL OCCURRENCES OF '''' IN result WITH '&#39;'.
   ENDMETHOD.
