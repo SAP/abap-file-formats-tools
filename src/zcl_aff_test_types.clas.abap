@@ -869,6 +869,7 @@ CLASS zcl_aff_test_types DEFINITION
         element_thirty_eight TYPE i,
         element_thirty_nine  TYPE i,
         element_forty        TYPE i,
+        element_forty_one    TYPE i,
         element_forty_two    TYPE i,
         element_forty_three  TYPE i,
         element_forty_four   TYPE i,
@@ -879,7 +880,6 @@ CLASS zcl_aff_test_types DEFINITION
         element_forty_nine   TYPE i,
         element_fifty        TYPE i,
       END OF big_structure.
-
 
 
 * table of my_structure_with_callback
