@@ -795,21 +795,21 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF strlen( tag ) > 255.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
-         SPLIT str_comp AT '&#xA;' INTO TABLE DATA(str_comp_split).
-         DESCRIBE TABLE str_comp_split LINES DATA(lines).
-         LOOP AT str_comp_split INTO DATA(item).
-            loop_int += 1.
-            IF loop_int = lines.
-              APPEND |{ item }'"/>| TO content.
-              EXIT.
+       SPLIT str_comp AT '&#xA;' INTO TABLE DATA(str_comp_split).
+       DESCRIBE TABLE str_comp_split LINES DATA(lines).
+       LOOP AT str_comp_split INTO DATA(item).
+          loop_int += 1.
+          IF loop_int = lines.
+            APPEND |{ item }'"/>| TO content.
+            EXIT.
+          ELSE.
+            IF loop_int = 1.
+              APPEND |val="'{ item }&#xA;| TO content.
             ELSE.
-              IF loop_int = 1.
-                APPEND |val="'{ item }&#xA;| TO content.
-              ELSE.
-                APPEND |{ item }&#xA;| TO content.
-              ENDIF.
+              APPEND |{ item }&#xA;| TO content.
             ENDIF.
-         ENDLOOP.
+          ENDIF.
+       ENDLOOP.
       ENDIF.
     ELSE.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
