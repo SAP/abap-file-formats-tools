@@ -802,12 +802,10 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
           IF loop_int = lines.
             APPEND |{ item }'"/>| TO content.
             EXIT.
+          ELSEIF loop_int = 1.
+            APPEND |val="'{ item }&#xA;| TO content.
           ELSE.
-            IF loop_int = 1.
-              APPEND |val="'{ item }&#xA;| TO content.
-            ELSE.
-              APPEND |{ item }&#xA;| TO content.
-            ENDIF.
+            APPEND |{ item }&#xA;| TO content.
           ENDIF.
         ENDLOOP.
       ENDIF.
