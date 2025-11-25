@@ -1775,11 +1775,11 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
       ( `   <_ tt:lax="on">` )
       ( `    <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
       ( `      <tt:with-parameter name="MEMBERS"` )
-      ( `val="'elementOne;elementTwo;elementThree;elementFour;elementFive;elementSix;elementSeven;elementEight;elementNine;elementTen;elementEleven;elementTwelve;elementThirteen;elementFourteen;&#xA;` &&
-        `elementFifteen;elementSixteen;elementSeventeen;elementEighteen;elementNineteen;elementTwenty;elementTwentyOne;elementTwentyTwo;elementTwentyThree;&#xA;` &&
-        `elementTwentyFour;elementTwentyFive;elementTwentySix;elementTwentySeven;elementTwentyEight;elementTwentyNine;elementThirty;elementThirtyOne;elementThirtyTwo;&#xA;` &&
-        `elementThirtyThree;elementThirtyFour;elementThirtyFive;elementThirtySix;elementThirtySeven;elementThirtyEight;elementThirtyNine;elementForty;elementFortyOne;&#xA;` &&
-        `elementFortyTwo;elementFortyThree;elementFortyFour;elementFortyFive;elementFortySix;elementFortySeven;elementFortyEight;elementFortyNine;elementFifty;'"/>` )
+      ( `val="'elementOne;elementTwo;elementThree;elementFour;elementFive;elementSix;elementSeven;elementEight;elementNine;elementTen;elementEleven;elementTwelve;elementThirteen;elementFourteen;&#xA;` )
+      (  `elementFifteen;elementSixteen;elementSeventeen;elementEighteen;elementNineteen;elementTwenty;elementTwentyOne;elementTwentyTwo;elementTwentyThree;&#xA;` )
+      (  `elementTwentyFour;elementTwentyFive;elementTwentySix;elementTwentySeven;elementTwentyEight;elementTwentyNine;elementThirty;elementThirtyOne;elementThirtyTwo;&#xA;` )
+      (  `elementThirtyThree;elementThirtyFour;elementThirtyFive;elementThirtySix;elementThirtySeven;elementThirtyEight;elementThirtyNine;elementForty;elementFortyOne;&#xA;` )
+      (  `elementFortyTwo;elementFortyThree;elementFortyFour;elementFortyFive;elementFortySix;elementFortySeven;elementFortyEight;elementFortyNine;elementFifty;'"/>` )
       ( `    </tt:call-method>` )
       ( `    <tt:skip/>` )
       ( `  </_>` )

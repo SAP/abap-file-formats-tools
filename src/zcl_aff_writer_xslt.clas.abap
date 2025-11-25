@@ -760,6 +760,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     DATA(components) = structure_description->get_components( ).
     DATA str_comp TYPE string.
+    DATA: loop_int TYPE integer.
     LOOP AT components INTO DATA(component).
       DATA(formatted_name) = format_name( name = component-name ).
       IF component-as_include IS NOT INITIAL.
@@ -774,27 +775,41 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     DATA(str_length) = strlen( str_comp ).
     IF str_length > 200.
-      DATA(str_comp_lb) = replace( val = str_comp sub = `;` occ = -10 with = ';&#xA;' ).
+      str_comp = replace( val = str_comp sub = `;` occ = -10 with = ';' && '&#xA;' ).
       IF str_length > 300.
-        str_comp_lb = replace( val = str_comp_lb sub = `;` occ = -20 with = ';&#xA;' ).
+        str_comp = replace( val = str_comp sub = `;` occ = -20 with = ';' && '&#xA;' ).
         IF str_length > 400.
-          str_comp_lb = replace( val = str_comp_lb sub = `;` occ = -30 with = ';&#xA;' ).
+          str_comp = replace( val = str_comp sub = `;` occ = -30 with = ';' && '&#xA;' ).
           IF str_length > 600.
-            str_comp_lb = replace( val = str_comp_lb sub = `;` occ = -40 with = ';&#xA;' ).
+            str_comp = replace( val = str_comp sub = `;` occ = -40 with = ';' && '&#xA;' ).
             IF str_length > 1000.
-              str_comp_lb = replace( val = str_comp_lb sub = `;` occ = -60 with = ';&#xA;' ).
-              str_comp_lb = replace( val = str_comp_lb sub = `;` occ = -80 with = ';&#xA;' ).
+              str_comp = replace( val = str_comp sub = `;` occ = -60 with = ';' && '&#xA;' ).
+              str_comp = replace( val = str_comp sub = `;` occ = -80 with = ';' && '&#xA;' ).
             ENDIF.
           ENDIF.
         ENDIF.
       ENDIF.
     ENDIF.
 
-    DATA(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }<tt:with-parameter name="MEMBERS" val="'{ str_comp_lb }'"/>|.
+    DATA(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>|.
     IF strlen( tag ) > 255.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
-        APPEND |val="'{ str_comp_lb }'"/>| TO content.
+         SPLIT str_comp AT '&#xA;' INTO TABLE DATA(str_comp_split).
+         DESCRIBE TABLE str_comp_split LINES DATA(lines).
+         LOOP AT str_comp_split INTO DATA(item).
+            loop_int += 1.
+            IF loop_int = lines.
+              APPEND |{ item }'"/>| TO content.
+              EXIT.
+            ELSE.
+              IF loop_int = 1.
+                APPEND |val="'{ item }&#xA;| TO content.
+              ELSE.
+                APPEND |{ item }&#xA;| TO content.
+              ENDIF.
+            ENDIF.
+         ENDLOOP.
       ENDIF.
     ELSE.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
