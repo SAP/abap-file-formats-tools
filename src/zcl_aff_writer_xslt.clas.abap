@@ -753,65 +753,40 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD enable_extension.
-
     write_open_tag( `<tt:d-cond frq="*">` ).
     write_open_tag( ` <_ tt:lax="on">` ).
     write_open_tag( `<tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` ).
 
     DATA(components) = structure_description->get_components( ).
-    DATA str_comp TYPE string.
+    DATA table_with_all_components TYPE string_table.
+    DATA current_row TYPE string.
     DATA: loop_int TYPE integer.
     LOOP AT components INTO DATA(component).
       DATA(formatted_name) = format_name( name = component-name ).
       IF component-as_include IS NOT INITIAL.
         CONTINUE.
       ENDIF.
-      IF sy-tabix = 1.
-        str_comp = |{ formatted_name };|.
-        CONTINUE.
+      IF strlen( current_row ) < 200.
+        current_row = |{ current_row }{ formatted_name };|.
+      ELSE.
+        APPEND current_row TO table_with_all_components.
+        CLEAR current_row.
+        current_row = |{ formatted_name };|.
       ENDIF.
-      str_comp = |{ str_comp }{ formatted_name };|.
     ENDLOOP.
+    APPEND current_row TO table_with_all_components.
 
-    DATA(str_length) = strlen( str_comp ).
-    IF str_length > 200.
-      str_comp = replace( val = str_comp sub = `;` occ = -10 with = ';' && '&#xA;' ).
-      IF str_length > 300.
-        str_comp = replace( val = str_comp sub = `;` occ = -20 with = ';' && '&#xA;' ).
-        IF str_length > 400.
-          str_comp = replace( val = str_comp sub = `;` occ = -30 with = ';' && '&#xA;' ).
-          IF str_length > 600.
-            str_comp = replace( val = str_comp sub = `;` occ = -40 with = ';' && '&#xA;' ).
-            IF str_length > 1000.
-              str_comp = replace( val = str_comp sub = `;` occ = -60 with = ';' && '&#xA;' ).
-              str_comp = replace( val = str_comp sub = `;` occ = -80 with = ';' && '&#xA;' ).
-            ENDIF.
-          ENDIF.
-        ENDIF.
-      ENDIF.
-    ENDIF.
-
-    DATA(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>|.
-    IF strlen( tag ) > 255.
+    IF strlen( current_row ) > 150 OR lines( table_with_all_components ) > 1.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
-        SPLIT str_comp AT '&#xA;' INTO TABLE DATA(str_comp_split).
-        DESCRIBE TABLE str_comp_split LINES DATA(lines).
-        LOOP AT str_comp_split INTO DATA(item).
-          loop_int += 1.
-          IF loop_int = lines.
-            APPEND |{ item }'"/>| TO content.
-            EXIT.
-          ELSEIF loop_int = 1.
-            APPEND |val="'{ item }&#xA;| TO content.
-          ELSE.
-            APPEND |{ item }&#xA;| TO content.
-          ENDIF.
-        ENDLOOP.
+        APPEND `val="'` to content.
+        INSERT LINES OF table_with_all_components INTO TABLE content.
+        APPEND  `'"/>` TO content.
       ENDIF.
     ELSE.
-      write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
+      write_tag( |<tt:with-parameter name="MEMBERS" val="'{ current_row }'"/>| ).
     ENDIF.
+
     write_closing_tag( `</tt:call-method>` ).
     write_tag( `<tt:skip/>` ).
     write_closing_tag( `</_>` ).
@@ -819,8 +794,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_open_tag( `<tt:d-cond frq="?">` ).
     write_tag( `<__/>` ).
     write_closing_tag( `</tt:d-cond>` ).
-
-  ENDMETHOD.
+ENDMETHOD.
 
 
   METHOD write_enum_map_ext_compatible.
