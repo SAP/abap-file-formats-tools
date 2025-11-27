@@ -793,7 +793,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_open_tag( `<tt:d-cond frq="?">` ).
     write_tag( `<__/>` ).
     write_closing_tag( `</tt:d-cond>` ).
- ENDMETHOD.
+  ENDMETHOD.
 
 
   METHOD write_enum_map_ext_compatible.
