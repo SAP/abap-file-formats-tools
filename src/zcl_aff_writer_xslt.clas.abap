@@ -760,7 +760,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     DATA(components) = structure_description->get_components( ).
     DATA table_with_all_components TYPE string_table.
     DATA current_row TYPE string.
-    DATA: loop_int TYPE integer.
     LOOP AT components INTO DATA(component).
       DATA(formatted_name) = format_name( name = component-name ).
       IF component-as_include IS NOT INITIAL.
@@ -779,9 +778,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF strlen( current_row ) > 150 OR lines( table_with_all_components ) > 1.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
-        APPEND `val="'` to content.
+        APPEND `val="'` TO content.
         INSERT LINES OF table_with_all_components INTO TABLE content.
-        APPEND  `'"/>` TO content.
+        APPEND `'"/>` TO content.
       ENDIF.
     ELSE.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ current_row }'"/>| ).
@@ -794,7 +793,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_open_tag( `<tt:d-cond frq="?">` ).
     write_tag( `<__/>` ).
     write_closing_tag( `</tt:d-cond>` ).
-ENDMETHOD.
+ ENDMETHOD.
 
 
   METHOD write_enum_map_ext_compatible.
