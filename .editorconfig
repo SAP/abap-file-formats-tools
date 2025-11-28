@@ -10,44 +10,9 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-# Markdown and JSON files
-[*.{md,json,jsonc}]
-charset = utf-8
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-# ABAP files
-[*.abap]
-charset = utf-8
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-
 # XML files (allow UTF-8-BOM for ABAP compatibility)
 [*.xml]
 charset = utf-8-bom
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-# JavaScript files
-[*.{js,mjs}]
-charset = utf-8
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-# YAML files
-[*.{yml,yaml}]
-charset = utf-8
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-# TOML files
-[*.toml]
-charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
