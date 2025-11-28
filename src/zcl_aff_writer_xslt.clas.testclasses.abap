@@ -2532,6 +2532,8 @@ RISK LEVEL DANGEROUS.
 
       struc_with_own_enum_values           FOR TESTING RAISING cx_static_check,
 
+    big_structure FOR TESTING RAISING cx_static_check,
+
       from_abap_to_json
         IMPORTING
           test_type     TYPE data
@@ -2847,6 +2849,119 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         ( `  "middleStruc": {` )
         ( `    "innerStruc": { }` )
         ( `  }` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = act_data ).
+  ENDMETHOD.
+
+  METHOD big_structure.
+    DATA test_type TYPE zcl_aff_test_types=>big_structure.
+    DATA act_data LIKE test_type.
+    test_type = VALUE #( element_one          = 1
+                         element_two          = 2
+                         element_three        = 3
+                         element_four         = 4
+                         element_five         = 5
+                         element_six          = 6
+                         element_seven        = 7
+                         element_eight        = 8
+                         element_nine         = 9
+                         element_ten          = 10
+                         element_eleven       = 11
+                         element_twelve       = 12
+                         element_thirteen     = 13
+                         element_fourteen     = 14
+                         element_fifteen      = 15
+                         element_sixteen      = 16
+                         element_seventeen    = 17
+                         element_eighteen     = 18
+                         element_nineteen     = 19
+                         element_twenty       = 20
+                         element_twenty_one   = 21
+                         element_twenty_two   = 22
+                         element_twenty_three = 23
+                         element_twenty_four  = 24
+                         element_twenty_five  = 25
+                         element_twenty_six   = 26
+                         element_twenty_seven = 27
+                         element_twenty_eight = 28
+                         element_twenty_nine  = 29
+                         element_thirty       = 30
+                         element_thirty_one   = 31
+                         element_thirty_two   = 32
+                         element_thirty_three = 33
+                         element_thirty_four  = 34
+                         element_thirty_five  = 35
+                         element_thirty_six   = 36
+                         element_thirty_seven = 37
+                         element_thirty_eight = 38
+                         element_thirty_nine  = 39
+                         element_forty        = 40
+                         element_forty_one    = 41
+                         element_forty_two    = 42
+                         element_forty_three  = 43
+                         element_forty_four   = 44
+                         element_forty_five   = 45
+                         element_forty_six    = 46
+                         element_forty_seven  = 47
+                         element_forty_eight  = 48
+                         element_forty_nine   = 49
+                         element_fifty        = 50 ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `"elementOne"         : 1,` )
+        ( `"elementTwo"         : 2,` )
+        ( `"elementThree"       : 3,` )
+        ( `"elementFour"        : 4,` )
+        ( `"elementFive"        : 5,` )
+        ( `"elementSix"         : 6,` )
+        ( `"elementSeven"       : 7,` )
+        ( `"elementEight"       : 8,` )
+        ( `"elementNine"        : 9,` )
+        ( `"elementTen"         : 10,` )
+        ( `"elementEleven"      : 11,` )
+        ( `"elementTwelve"      : 12,` )
+        ( `"elementThirteen"    : 13,` )
+        ( `"elementFourteen"    : 14,` )
+        ( `"elementFifteen"     : 15,` )
+        ( `"elementSixteen"     : 16,` )
+        ( `"elementSeventeen"   : 17,` )
+        ( `"elementEighteen"    : 18,` )
+        ( `"elementNineteen"    : 19,` )
+        ( `"elementTwenty"      : 20,` )
+        ( `"elementTwentyOne"   : 21,` )
+        ( `"elementTwentyTwo"   : 22,` )
+        ( `"elementTwentyThree" : 23,` )
+        ( `"elementTwentyFour"  : 24,` )
+        ( `"elementTwentyFive"  : 25,` )
+        ( `"elementTwentySix"   : 26,` )
+        ( `"elementTwentySeven" : 27,` )
+        ( `"elementTwentyEight" : 28,` )
+        ( `"elementTwentyNine"  : 29,` )
+        ( `"elementThirty"      : 30,` )
+        ( `"elementThirtyOne"   : 31,` )
+        ( `"elementThirtyTwo"   : 32,` )
+        ( `"elementThirtyThree" : 33,` )
+        ( `"elementThirtyFour"  : 34,` )
+        ( `"elementThirtyFive"  : 35,` )
+        ( `"elementThirtySix"   : 36,` )
+        ( `"elementThirtySeven" : 37,` )
+        ( `"elementThirtyEight" : 38,` )
+        ( `"elementThirtyNine"  : 39,` )
+        ( `"elementForty"       : 40,` )
+        ( `"elementFortyOne"    : 41,` )
+        ( `"elementFortyTwo"    : 42,` )
+        ( `"elementFortyThree"  : 43,` )
+        ( `"elementFortyFour"   : 44,` )
+        ( `"elementFortyFive"   : 45,` )
+        ( `"elementFortySix"    : 46,` )
+        ( `"elementFortySeven"  : 47,` )
+        ( `"elementFortyEight"  : 48,` )
+        ( `"elementFortyNine"   : 49,` )
+        ( `"elementFifty"       : 50` )
         ( `}` ) ).
     do_integration_test(
       EXPORTING
