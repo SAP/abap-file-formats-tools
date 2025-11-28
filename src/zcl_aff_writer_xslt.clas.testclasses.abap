@@ -774,10 +774,10 @@ CLASS ltcl_integration_test IMPLEMENTATION.
 
   ENDMETHOD.
 
-  method big_structure.
-    data test_type type zcl_aff_test_types=>big_structure.
+  METHOD big_structure.
+    DATA test_type TYPE zcl_aff_test_types=>big_structure.
 
-    test_type = value #( element_one          = 1
+    test_type = VALUE #( element_one          = 1
                          element_two          = 2
                          element_three        = 3
                          element_four         = 4
@@ -827,7 +827,7 @@ CLASS ltcl_integration_test IMPLEMENTATION.
                          element_forty_eight  = 48
                          element_forty_nine   = 49
                          element_fifty        = 50 ).
-    exp_json = value #( ( `{` )
+    exp_json = VALUE #( ( `{` )
                         ( `"elementOne"         : 1,` )
                         ( `"elementTwo"         : 2,` )
                         ( `"elementThree"       : 3,` )
@@ -880,20 +880,20 @@ CLASS ltcl_integration_test IMPLEMENTATION.
                         ( `"elementFifty"       : 50` )
                         ( `}` ) ).
 
-    from_abap_to_json( exporting test_type = test_type
-                       importing result    = data(act_json)
-                                 json      = data(json_xstring) ).
+    from_abap_to_json( EXPORTING test_type = test_type
+                       IMPORTING result    = DATA(act_json)
+                                 json      = DATA(json_xstring) ).
 
     assert_json_equals( actual_json_stringtab   = act_json
                         expected_json_stringtab = exp_json ).
 
-    data act_data  like test_type.
-    from_json_to_abap( exporting json   = json_xstring
-                       importing result = act_data ).
+    DATA act_data  LIKE test_type.
+    from_json_to_abap( EXPORTING json   = json_xstring
+                       IMPORTING result = act_data ).
 
     cl_abap_unit_assert=>assert_equals( exp = test_type
                                         act = act_data ).
-  endmethod.
+  ENDMETHOD.
 
   METHOD include_table.
     DATA test_type TYPE lif_test_types=>include_table.
