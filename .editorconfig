@@ -3,13 +3,16 @@
 # top-most EditorConfig file
 root = true
 
-# ensure the LF line endings
-[*.{md,json}]
+# Default for all files
+[*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-# ensure the LF line endings
-[*.abap]
+# XML files (allow UTF-8-BOM for ABAP compatibility)
+[*.xml]
+charset = utf-8-bom
+end_of_line = lf
 insert_final_newline = true
+trim_trailing_whitespace = true
