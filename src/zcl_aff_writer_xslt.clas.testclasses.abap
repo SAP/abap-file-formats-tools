@@ -1298,7 +1298,6 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
       struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
       struc_with_special_char_enums  FOR TESTING RAISING cx_static_check,
-      struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
       enable_extension               FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
