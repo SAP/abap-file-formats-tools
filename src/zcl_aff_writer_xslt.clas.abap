@@ -284,7 +284,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO output.
     APPEND LINES OF st_template_imports TO output.
     APPEND |<tt:root name="{ st_root_name }"/>| TO output.
-    APPEND |<tt:variable name="VARIABLE"/>| TO output.
+    APPEND `<tt:variable name="VARIABLE"/>` TO output.
     APPEND `<tt:template>` TO output.
     APPEND |<tt:ref name="{ st_root_name }">| TO output.
   ENDMETHOD.
@@ -321,13 +321,13 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ELSEIF enum_values IS INITIAL.
       write_tag( |<tt:value{ get_ref( element_name ) }{ get_option( json_type = type element_description = element_description ) }/>| ).
     ELSEIF abap_doc-default IS NOT INITIAL.
-      write_open_tag( line = |<tt:deserialize>| ).
+      write_open_tag( line = `<tt:deserialize>` ).
       write_enum_map_ext_compatible(
         element_description = element_description
         element_name        = element_name
         enum_values         = enum_values ).
       write_closing_tag( `</tt:deserialize>` ).
-      write_open_tag( |<tt:serialize>| ).
+      write_open_tag( `<tt:serialize>` ).
       write_enum_value_mappings( element_description = element_description element_name = element_name enum_values = enum_values ).
       write_closing_tag( `</tt:serialize>` ).
     ELSE.
@@ -753,33 +753,39 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD enable_extension.
-
     write_open_tag( `<tt:d-cond frq="*">` ).
     write_open_tag( ` <_ tt:lax="on">` ).
     write_open_tag( `<tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` ).
 
     DATA(components) = structure_description->get_components( ).
-    DATA str_comp TYPE string.
+    DATA table_with_all_components TYPE string_table.
+    DATA current_row TYPE string.
     LOOP AT components INTO DATA(component).
       DATA(formatted_name) = format_name( name = component-name ).
       IF component-as_include IS NOT INITIAL.
         CONTINUE.
       ENDIF.
-      IF sy-tabix = 1.
-        str_comp = |{ formatted_name };|.
-        CONTINUE.
+      IF strlen( current_row ) < 200.
+        current_row = |{ current_row }{ formatted_name };|.
+      ELSE.
+        APPEND current_row TO table_with_all_components.
+        CLEAR current_row.
+        current_row = |{ formatted_name };|.
       ENDIF.
-      str_comp = |{ str_comp }{ formatted_name };|.
     ENDLOOP.
-    DATA(tag) = |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>|.
-    IF strlen( tag ) > 255.
+    APPEND current_row TO table_with_all_components.
+
+    IF strlen( current_row ) > 150 OR lines( table_with_all_components ) > 1.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
       IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
-        APPEND |val="'{ str_comp }'"/>| TO content.
+        APPEND `val="'` TO content.
+        INSERT LINES OF table_with_all_components INTO TABLE content.
+        APPEND `'"/>` TO content.
       ENDIF.
     ELSE.
-      write_tag( |<tt:with-parameter name="MEMBERS" val="'{ str_comp }'"/>| ).
+      write_tag( |<tt:with-parameter name="MEMBERS" val="'{ current_row }'"/>| ).
     ENDIF.
+
     write_closing_tag( `</tt:call-method>` ).
     write_tag( `<tt:skip/>` ).
     write_closing_tag( `</_>` ).
@@ -787,12 +793,11 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_open_tag( `<tt:d-cond frq="?">` ).
     write_tag( `<__/>` ).
     write_closing_tag( `</tt:d-cond>` ).
-
   ENDMETHOD.
 
 
   METHOD write_enum_map_ext_compatible.
-    write_tag( line = |<tt:read type="C" var="VARIABLE"/>| ).
+    write_tag( line = `<tt:read type="C" var="VARIABLE"/>` ).
     LOOP AT enum_values ASSIGNING FIELD-SYMBOL(<enum_value>).
       DATA(abap_value) = get_abap_value( abap_value = <enum_value>-abap_value element_description = element_description ).
       IF <enum_value>-overwritten_json_value IS INITIAL.
