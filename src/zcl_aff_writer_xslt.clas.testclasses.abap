@@ -2687,6 +2687,8 @@ RISK LEVEL DANGEROUS.
 
       struc_with_own_enum_values           FOR TESTING RAISING cx_static_check,
 
+      struc_with_special_char_enums        FOR TESTING RAISING cx_static_check,
+
     from_abap_to_json
         IMPORTING
           test_type     TYPE data
@@ -3250,6 +3252,40 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( enum_component = 'AA' ).
     exp_json = VALUE #(
         ( `{` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD struc_with_special_char_enums.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_special_char_enums.
+    test_type = VALUE #( special_char_enum = '<' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "lessThan"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '>' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "greaterThan"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '&' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "ampersand"` )
         ( `}` ) ).
     do_integration_test(
       EXPORTING
