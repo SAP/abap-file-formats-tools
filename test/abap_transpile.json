@@ -19,7 +19,10 @@
     "addCommonJS": true,
     "keywords": ["in", "default"],
     "unknownTypes": "runtimeError",
-    "extraSetup": "../test/setup.mjs",
+    "setup": {
+      "filename": "../test/setup.mjs",
+      "preFunction": "setup"
+    },
     "skip": [
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "content_media_multiple_entries"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "content_encod_multiple_entries"},
@@ -27,7 +30,6 @@
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "too_many_titles_and_showalways"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_default_problem", "note": "cx_sy_move_cast_error, datadescr into structdescr"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "number_element_default", "note": "cx_sy_move_cast_error"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_wrong_default", "note": "cx_sy_move_cast_error"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "title_and_desc_escaped", "note": "some regex problem? escaping of characters?"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "unknown_abap_doc_tag", "note": "some regex problem? escaping of characters?"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer", "method": "use_ddic_info_for_max_length", "note": "Expected table to contain '9' rows , got '8'"},
