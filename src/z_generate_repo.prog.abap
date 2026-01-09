@@ -1252,7 +1252,7 @@ CLASS ltcl_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ).
     LOOP AT expected_log_messages ASSIGNING FIELD-SYMBOL(<exp_msg>).
       DATA(messages) = cut->generator_log->get_messages( ).
-      IF not line_exists( messages[ message_text = <exp_msg>-message_text ] ).
+      IF NOT line_exists( messages[ message_text = <exp_msg>-message_text ] ).
         cl_abap_unit_assert=>fail( ).
       ENDIF.
     ENDLOOP.
