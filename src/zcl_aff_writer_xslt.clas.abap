@@ -206,7 +206,12 @@ CLASS zcl_aff_writer_xslt DEFINITION
       get_to_ref
         IMPORTING
                   name          TYPE string
-        RETURNING VALUE(result) TYPE string.
+        RETURNING VALUE(result) TYPE string,
+      escape_xml_chars
+        IMPORTING
+          value         TYPE string
+        RETURNING
+          VALUE(result) TYPE string.
 
 
 ENDCLASS.
@@ -459,6 +464,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_abap_value.
     DATA abap_value_copy TYPE string.
+    DATA escaped_value TYPE string.
     CASE element_description->type_kind.
       WHEN cl_abap_typedescr=>typekind_int OR cl_abap_typedescr=>typekind_int1 OR
            cl_abap_typedescr=>typekind_int2 OR cl_abap_typedescr=>typekind_int8.
@@ -466,9 +472,11 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         CONDENSE abap_value_copy.
         result = |I({ abap_value_copy })|.
       WHEN cl_abap_typedescr=>typekind_num.
-        result = |N('{ abap_value }')|.
+        escaped_value = escape_xml_chars( abap_value ).
+        result = |N('{ escaped_value }')|.
       WHEN OTHERS.
-        result = |'{ abap_value }'|.
+        escaped_value = escape_xml_chars( abap_value ).
+        result = |'{ escaped_value }'|.
     ENDCASE.
   ENDMETHOD.
 
@@ -809,6 +817,16 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ abap_value }"/>| ).
       write_closing_tag( `</tt:cond-var>` ).
     ENDLOOP.
+  ENDMETHOD.
+
+  METHOD escape_xml_chars.
+    result = value.
+    " Ampersand must be replaced first to avoid double-escaping
+    REPLACE ALL OCCURRENCES OF '&' IN result WITH '&#38;'.
+    REPLACE ALL OCCURRENCES OF '<' IN result WITH '&#60;'.
+    REPLACE ALL OCCURRENCES OF '>' IN result WITH '&#62;'.
+    REPLACE ALL OCCURRENCES OF '"' IN result WITH '&#34;'.
+    REPLACE ALL OCCURRENCES OF '''' IN result WITH '&#39;'.
   ENDMETHOD.
 
 ENDCLASS.

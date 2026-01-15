@@ -1297,6 +1297,7 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       structure_with_enums           FOR TESTING RAISING cx_static_check,
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
       struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
+      struc_with_special_char_enums  FOR TESTING RAISING cx_static_check,
       enable_extension               FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
@@ -2566,6 +2567,39 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act_output ).
   ENDMETHOD.
 
+  METHOD struc_with_special_char_enums.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_special_char_enums.
+    DATA(act_output) = test_generator->generate_type( test_type ).
+    me->exp_transformation = VALUE #(
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond s-check="not-initial(SPECIAL_CHAR_ENUM)" frq="?">` )
+        ( `        <str name="specialCharEnum">` )
+        ( `          <tt:value ref="SPECIAL_CHAR_ENUM" map="` )
+        ( `            val('&#60;')=xml('lessThan'),` )
+        ( `            val('&#62;')=xml('greaterThan'),` )
+        ( `            val('&#38;')=xml('ampersand')"` )
+        ( `          />` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:d-cond frq="*">` )
+        ( `         <_ tt:lax="on">` )
+        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'specialCharEnum;'"/>` )
+        ( `          </tt:call-method>` )
+        ( `          <tt:skip/>` )
+        ( `        </_>` )
+        ( `      </tt:d-cond>` )
+        ( `      <tt:d-cond frq="?">` )
+        ( `        <__/>` )
+        ( `      </tt:d-cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` ) ).
+    validate_output( act_output ).
+  ENDMETHOD.
+
   METHOD validate_output.
     DATA exp TYPE string_table.
 
@@ -2652,6 +2686,8 @@ RISK LEVEL DANGEROUS.
       structure_with_default_problem       FOR TESTING RAISING cx_static_check,
 
       struc_with_own_enum_values           FOR TESTING RAISING cx_static_check,
+
+      struc_with_special_char_enums        FOR TESTING RAISING cx_static_check,
 
     from_abap_to_json
         IMPORTING
@@ -3216,6 +3252,40 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( enum_component = 'AA' ).
     exp_json = VALUE #(
         ( `{` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD struc_with_special_char_enums.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_special_char_enums.
+    test_type = VALUE #( special_char_enum = '<' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "lessThan"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '>' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "greaterThan"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '&' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "ampersand"` )
         ( `}` ) ).
     do_integration_test(
       EXPORTING
