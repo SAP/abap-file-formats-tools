@@ -69,7 +69,7 @@ CLASS ltcl_json_writer IMPLEMENTATION.
 ( |    "$schema": "{ zcl_aff_writer_json_schema=>c_schema_specification }",| )
 ( |    "$id": "{ schema_id }",| )
 ( `    "type": "string",` )
-( `    "format" :"date-time"` )
+( `    "format" :"date"` )
 ( `}` )
 ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
@@ -897,7 +897,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `    "title": "Date",` )
 ( `    "description": "This is a date",` )
 ( `    "type": "string",` )
-( `    "format" :"date-time"` )
+( `    "format" :"date"` )
 ( `}` )
 ( ) ).
     zcl_aff_tools_unit_test_helper=>assert_equals_ignore_spaces( act_data = act_schema exp_data = exp_schema ).
@@ -1775,14 +1775,14 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 ( `        "title": "Date", ` )
 ( `        "description": "Date", ` )
 ( `        "type": "string", ` )
-( `        "format": "date-time", ` )
+( `        "format": "date", ` )
 ( `        "default": "1972-04-01" ` )
 ( `      }, ` )
 ( `      "timeField": { ` )
 ( `        "title": "Time", ` )
 ( `        "description": "Time", ` )
 ( `        "type": "string", ` )
-( `        "format": "date-time", ` )
+( `        "format": "time", ` )
 ( `        "default": "20:15:00" ` )
 ( `      }, ` )
 ( `      "dateTimeField": { ` )
