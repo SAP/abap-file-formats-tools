@@ -1333,7 +1333,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD simple_data.
-    DATA test_type TYPE zcl_aff_test_types=>my_date.
+    DATA test_type TYPE zcl_aff_test_types=>my_date_time.
     DATA(act_output) = test_generator->generate_type( test_type ).
 
     me->exp_transformation = VALUE #(

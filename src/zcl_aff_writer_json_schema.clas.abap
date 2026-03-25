@@ -961,9 +961,11 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD get_format.
-    IF element_description->type_kind = cl_abap_typedescr=>typekind_date OR
-    element_description->type_kind = cl_abap_typedescr=>typekind_time OR
-    element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
+    IF element_description->type_kind = cl_abap_typedescr=>typekind_date.
+      result = `date` ##NO_TEXT.
+    ELSEIF element_description->type_kind = cl_abap_typedescr=>typekind_time.
+      result = `time` ##NO_TEXT.
+    ELSEIF element_description->type_kind = cl_abap_typedescr=>typekind_utclong.
       result = `date-time` ##NO_TEXT.
     ENDIF.
   ENDMETHOD.

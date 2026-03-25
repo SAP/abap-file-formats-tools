@@ -177,11 +177,11 @@ CLASS zcl_aff_test_types DEFINITION
       mystring TYPE string.
 
 
-* date
+* date-time
     TYPES:
-      "! <p   class="shorttext">Date</p>
-      "! This is a date
-      my_date TYPE d.
+      "! <p   class="shorttext">Date-Time</p>
+      "! This is a date-time
+      my_date_time TYPE utclong.
 
 
 * simple structure
