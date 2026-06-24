@@ -158,13 +158,6 @@ CLASS zcl_aff_writer DEFINITION
         CHANGING
           string_to_work_on TYPE string,
 
-      is_callback_class_valid
-        IMPORTING
-          class_name      TYPE string
-          component_name  TYPE string
-        RETURNING
-          VALUE(is_valid) TYPE abap_boolean,
-
       is_default_value_valid
         IMPORTING element_description TYPE REF TO cl_abap_elemdescr
                   default_value       TYPE string
@@ -585,25 +578,6 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     log = me->log.
   ENDMETHOD.
 
-  METHOD is_callback_class_valid.
-    DATA(name_of_callback_class) = to_upper( class_name ).
-    cl_oo_classname_service=>get_all_method_includes(
-      EXPORTING
-        clsname            = CONV #( name_of_callback_class )
-      RECEIVING
-        result             = DATA(result)
-      EXCEPTIONS
-        class_not_existing = 1 ).
-    IF sy-subrc = 0.
-      DATA(has_method_get_subschema) = xsdbool( line_exists( result[ cpdkey = VALUE #( clsname = name_of_callback_class cpdname = 'GET_SUBSCHEMA' ) ] ) ).
-      DATA(has_method_serialize) = xsdbool( line_exists( result[ cpdkey = VALUE #( clsname = name_of_callback_class cpdname = 'SERIALIZE' ) ] ) ).
-      DATA(has_method_deserialize) = xsdbool( line_exists( result[ cpdkey = VALUE #( clsname = name_of_callback_class cpdname = 'DESERIALIZE' ) ] ) ).
-      is_valid = xsdbool( has_method_get_subschema = abap_true AND has_method_serialize = abap_true AND has_method_deserialize = abap_true ).
-    ENDIF.
-    IF is_valid = abap_false.
-      log->add_warning( message_text = zif_aff_log=>co_msg106 component_name = component_name ).
-    ENDIF.
-  ENDMETHOD.
 
   METHOD validate_default_link.
     DATA msg TYPE string.

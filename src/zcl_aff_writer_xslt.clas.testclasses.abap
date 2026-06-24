@@ -61,29 +61,28 @@ INTERFACE lif_test_types.
       first_table TYPE first_table_type,
     END OF struc_tab_struc_tab.
 
-  TYPES: langu TYPE sy-langu.
+  TYPES langu TYPE sy-langu.
   TYPES:
     BEGIN OF structure_with_language,
       language  TYPE sy-langu,
       language2 TYPE langu,
     END OF structure_with_language.
 
-    " table of struc with sy-langu:
-    types:
-      "! <p class="shorttext synchronized" >sy langu struc</p>
-      "! This is a sy-langu struc
-      begin of my_structure_sylangu,
-        "! <p class="shorttext">sy langu</p>
-        "! sy langu
-        language type sy-langu,
-        "! <p class="shorttext">field 2</p>
-        "! field 2
-        dummy type i,
-      end of my_structure_sylangu.
-    TYPES:
-    "! <p class="shorttext">A Standard Table of struc of sy-langu</p>
-    "! A standard table of struc of sy-langu
-    my_sy_langu_struc_table TYPE STANDARD TABLE OF my_structure_sylangu WITH DEFAULT KEY.
+  " table of struc with sy-langu:
+  TYPES:
+    "! <p class="shorttext synchronized" >sy langu struc</p>
+    "! This is a sy-langu struc
+    BEGIN OF my_structure_sylangu,
+      "! <p class="shorttext">sy langu</p>
+      "! sy langu
+      language TYPE sy-langu,
+      "! <p class="shorttext">field 2</p>
+      "! field 2
+      dummy    TYPE i,
+    END OF my_structure_sylangu.
+  "! <p class="shorttext">A Standard Table of struc of sy-langu</p>
+  "! A standard table of struc of sy-langu
+  TYPES my_sy_langu_struc_table TYPE STANDARD TABLE OF my_structure_sylangu WITH DEFAULT KEY.
 
 ENDINTERFACE.
 

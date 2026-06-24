@@ -160,10 +160,6 @@ CLASS zcl_aff_writer_json_schema DEFINITION
           element_description TYPE REF TO cl_abap_elemdescr
           enum_properties     TYPE ty_enum_properties,
 
-      write_subschema
-        IMPORTING
-          callback_class TYPE string,
-
       reset_indent_level_tag,
 
       write_enum_properties
@@ -755,21 +751,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_tag( '"uniqueItems": true,' ).
     ENDIF.
     write_open_tag( '"items": {' ).
-  ENDMETHOD.
-
-
-  METHOD write_subschema.
-    TRY.
-        DATA subschema TYPE string_table.
-        CALL METHOD (callback_class)=>get_subschema
-          RECEIVING
-            subschema = subschema.
-        LOOP AT subschema ASSIGNING FIELD-SYMBOL(<line>).
-          write_tag( <line> ).
-        ENDLOOP.
-        ignore_til_indent_level = indent_level.
-      CATCH cx_sy_dyn_call_error ##NO_HANDLER.
-    ENDTRY.
   ENDMETHOD.
 
 

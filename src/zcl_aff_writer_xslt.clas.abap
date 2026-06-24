@@ -164,13 +164,6 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RAISING
           zcx_aff_tools,
 
-      write_callback_template
-        IMPORTING
-          element_name TYPE string
-          description  TYPE REF TO cl_abap_typedescr
-          tag          TYPE string OPTIONAL
-        RAISING
-          zcx_aff_tools,
       reset_indent_level_tag,
       write_defaults,
       write_iso_language_callback
@@ -658,44 +651,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDLOOP.
     INSERT LINES OF list_of_applies INTO content INDEX actual_entry-line_to_insert + 1.
     DELETE me->stack_default_comp_of_struc INDEX 1.
-  ENDMETHOD.
-
-
-  METHOD write_callback_template.
-    IF indent_level > 0.
-      write_open_tag( line = '<tt:cond>' ).
-      IF last_operation( ) <> zif_aff_writer=>operation-open_table.
-        DATA(ref_name) = element_name.
-      ELSE.
-        ref_name = '$ref'.
-      ENDIF.
-    ELSE.
-      ref_name = |.{ st_root_name  }|.
-    ENDIF.
-    CASE description->kind.
-      WHEN cl_abap_typedescr=>kind_elem.
-        IF tag IS NOT INITIAL.
-          DATA(calculated_tag) = tag.
-        ELSE.
-          calculated_tag = get_tag_from_type( get_json_type_from_description( CAST cl_abap_elemdescr( description ) ) ).
-        ENDIF.
-        DATA(component_start) = |<{ calculated_tag }>|.
-        DATA(component_end) = |</{ calculated_tag }>|.
-      WHEN cl_abap_typedescr=>kind_struct.
-        component_start = `<object>`.
-        component_end = `</object>`.
-      WHEN cl_abap_typedescr=>kind_table.
-        component_start = `<array>`.
-        component_end = `</array>`.
-    ENDCASE.
-
-    write_open_tag( line = |{ component_start } | ).
-    write_callback( parameter_name = element_name ref_name = ref_name ).
-    write_closing_tag( line = |  { component_end } | ).
-    IF indent_level > 0.
-      write_closing_tag( '</tt:cond>' ).
-    ENDIF.
-    ignore_til_indent_level = indent_level + 1.
   ENDMETHOD.
 
 
