@@ -558,9 +558,6 @@ CLASS zcl_aff_writer IMPLEMENTATION.
     IF abap_doc_base-default IS INITIAL.
       abap_doc_base-default = abap_doc_additional-default.
     ENDIF.
-    IF abap_doc_base-callback_class IS INITIAL.
-      abap_doc_base-callback_class = abap_doc_additional-callback_class.
-    ENDIF.
     IF abap_doc_base-content_encoding IS INITIAL.
       abap_doc_base-content_encoding = abap_doc_additional-content_encoding.
     ENDIF.

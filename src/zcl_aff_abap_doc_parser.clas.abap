@@ -5,7 +5,6 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
 
   PUBLIC SECTION.
     CONSTANTS: BEGIN OF abap_doc_annotation,
-                 callback_class     TYPE string VALUE `$callbackClass`,
                  default            TYPE string VALUE `$default`,
                  values             TYPE string VALUE `$values`,
                  required           TYPE string VALUE `$required`,
@@ -38,7 +37,6 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
         default            TYPE string,
         min_length         TYPE string,
         max_length         TYPE string,
-        callback_class     TYPE string,
         content_media_type TYPE string,
         content_encoding   TYPE string,
         enum_value         TYPE string,
@@ -77,7 +75,6 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
       remove_leading_trailing_spaces
         CHANGING string_to_work_on TYPE string,
       parse_annotations,
-      parse_callback_class,
       get_annotation_value
         IMPORTING
           length                  TYPE i
@@ -188,8 +185,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       DATA(length) = <entry>-length.
       DATA(key_word) = abap_doc_string+offset(length).
       CASE key_word.
-        WHEN abap_doc_annotation-callback_class.
-          parse_callback_class( ).
         WHEN abap_doc_annotation-default.
           parse_default( ).
         WHEN abap_doc_annotation-values.
@@ -218,26 +213,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     abap_doc_string = modified_abap_doc_string.
   ENDMETHOD.
 
-  METHOD parse_callback_class.
-    IF decoded_abap_doc-callback_class IS NOT INITIAL.
-      RETURN.
-    ENDIF.
-    DATA(string_to_parse) = abap_doc_string.
-    REPLACE ALL OCCURRENCES OF PCRE `\$callbackClass[\s]*(:[\s]*)?\{[\s]*@link` IN string_to_parse WITH `\$callbackClass\{@link`.
-    FIND ALL OCCURRENCES OF PCRE `\$callbackClass\{@link[^\}]+\}` IN string_to_parse RESULTS DATA(result_table).
-    IF lines( result_table ) = 0.
-      DATA(msg) = parser_log->get_message_text( msgno = 109 msgv1 = CONV #( abap_doc_annotation-callback_class ) ).
-      parser_log->add_warning( message_text = msg component_name = component_name ).
-      RETURN.
-    ENDIF.
-    write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-callback_class ).
-    DATA(offset_found) = result_table[ 1 ]-offset.
-    DATA(length_found) = result_table[ 1 ]-length.
-    decoded_abap_doc-callback_class = get_annotation_value( length = length_found - 1 offset = offset_found to_decode = string_to_parse length_of_annotation = 20 remove_whitespaces = abap_true ).
-    LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
-      check_next_word( offset = <entry>-offset + <entry>-length text_to_check = string_to_parse ).
-    ENDLOOP.
-  ENDMETHOD.
 
   METHOD get_annotation_value.
     DATA(step) = offset + length_of_annotation.

@@ -12,7 +12,7 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS required_max_exclmin FOR TESTING RAISING cx_static_check.
     METHODS showalways_exclmax_multipleof FOR TESTING RAISING cx_static_check.
     METHODS enum_values FOR TESTING RAISING cx_static_check.
-    METHODS callback_class FOR TESTING RAISING cx_static_check.
+
     METHODS default_with_link FOR TESTING RAISING cx_static_check.
     METHODS too_many_titles_and_showalways FOR TESTING RAISING cx_static_check.
     METHODS too_many_number_annotations FOR TESTING RAISING cx_static_check.
@@ -20,10 +20,9 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS too_many_default_link FOR TESTING RAISING cx_static_check.
     METHODS too_many_default_value FOR TESTING RAISING cx_static_check.
     METHODS too_many_value_links FOR TESTING RAISING cx_static_check.
-    METHODS too_many_callbackclasses FOR TESTING RAISING cx_static_check.
+
     METHODS too_many_required_annotations FOR TESTING RAISING cx_static_check.
     METHODS unknown_annotation FOR TESTING RAISING cx_static_check.
-    METHODS wrong_usage_callback_class FOR TESTING RAISING cx_static_check.
     METHODS wrong_usage_default FOR TESTING RAISING cx_static_check.
     METHODS wrong_usage_enum_values FOR TESTING RAISING cx_static_check.
     METHODS wrong_value_number_annotation FOR TESTING RAISING cx_static_check.
@@ -123,19 +122,6 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
-
-  METHOD callback_class.
-    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $callbackClass {     @link    cl_aff_test_types_for_writer    } `.
-    DATA(act_abap_doc) = parser->parse(
-      EXPORTING
-        component_name = `Component Name`
-        to_parse       = abap_doc_to_parse
-      CHANGING
-        log            = log ).
-    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` callback_class = `cl_aff_test_types_for_writer` ).
-    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
-  ENDMETHOD.
 
   METHOD content_media_type.
     DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description.$contentMediaType     'text/html' `.
@@ -348,21 +334,6 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
                                                               exp_component_name = `Component Name` ).
   ENDMETHOD.
 
-  METHOD too_many_callbackclasses.
-    DATA(abap_doc_to_parse) = `Here are too many callbackclass links. $callbackClass { @link cl_aff_test_types_for_writer } $minimum 4 $callbackClass {  @link  cl_aff_test_types_for_writer  }`.
-    DATA(act_abap_doc) = parser->parse(
-      EXPORTING
-        component_name = `Component Name`
-        to_parse       = abap_doc_to_parse
-      CHANGING
-        log            = log ).
-    exp_abap_doc = VALUE #( description = `Here are too many callbackclass links.` callback_class = `cl_aff_test_types_for_writer` minimum = '4' ).
-    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
-                                                              exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-callback_class } . First valid is used|
-                                                              exp_type           = zif_aff_log=>c_message_type-info
-                                                              exp_component_name = `Component Name` ).
-  ENDMETHOD.
 
   METHOD too_many_required_annotations.
     DATA(abap_doc_to_parse) = `Here are too many required annotations. $required $minLength 5 $required $maxLength 10`.
@@ -393,23 +364,6 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
     zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
       log                = log
       exp_text           = `Annotation $unknown is unknown`
-      exp_type           = zif_aff_log=>c_message_type-warning
-      exp_component_name = `Component Name` ).
-  ENDMETHOD.
-
-  METHOD wrong_usage_callback_class.
-    DATA(abap_doc_to_parse) = `Wrong usage of callbackClass annotation. $callbackClass { cl_aff_test_types_for_writer } $default '4' `.
-    DATA(act_abap_doc) = parser->parse(
-      EXPORTING
-        component_name = `Component Name`
-        to_parse       = abap_doc_to_parse
-      CHANGING
-        log            = log ).
-    exp_abap_doc = VALUE #( description = `Wrong usage of callbackClass annotation.` default = '"4"' ).
-    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
-      log                = log
-      exp_text           = `Annotation $callbackClass was used incorrectly`
       exp_type           = zif_aff_log=>c_message_type-warning
       exp_component_name = `Component Name` ).
   ENDMETHOD.

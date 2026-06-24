@@ -68,6 +68,23 @@ INTERFACE lif_test_types.
       language2 TYPE langu,
     END OF structure_with_language.
 
+    " table of struc with sy-langu:
+    types:
+      "! <p class="shorttext synchronized" >sy langu struc</p>
+      "! This is a sy-langu struc
+      begin of my_structure_sylangu,
+        "! <p class="shorttext">sy langu</p>
+        "! sy langu
+        language type sy-langu,
+        "! <p class="shorttext">field 2</p>
+        "! field 2
+        dummy type i,
+      end of my_structure_sylangu.
+    TYPES:
+    "! <p class="shorttext">A Standard Table of struc of sy-langu</p>
+    "! A standard table of struc of sy-langu
+    my_sy_langu_struc_table TYPE STANDARD TABLE OF my_structure_sylangu WITH DEFAULT KEY.
+
 ENDINTERFACE.
 
 "!@testing ZCL_AFF_GENERATOR
@@ -98,8 +115,7 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
       structure_with_language      FOR TESTING RAISING cx_static_check,
       validate_valid_xslt          FOR TESTING RAISING cx_static_check,
       validate_invalid_xslt        FOR TESTING RAISING cx_static_check,
-
-      setup,
+    setup,
       validate_output
         IMPORTING
           act TYPE string_table.
@@ -647,6 +663,7 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
       type_string                  FOR TESTING RAISING cx_static_check,
       structure_with_language      FOR TESTING RAISING cx_static_check,
     big_structure FOR TESTING RAISING cx_static_check,
+    table_of_struc_of_sylangu FOR TESTING RAISING cx_static_check,
       from_json_to_abap
         IMPORTING
           json   TYPE xstring
@@ -773,6 +790,48 @@ CLASS ltcl_integration_test IMPLEMENTATION.
       exp = test_type ).
 
   ENDMETHOD.
+
+  METHOD table_of_struc_of_sylangu.
+
+    DATA test_type TYPE lif_test_types=>my_sy_langu_struc_table.
+    test_type = VALUE #(
+      ( language = 'D' dummy = 1 )
+      ( language = 'E' dummy = 2 ) ).
+
+    from_abap_to_json(
+      EXPORTING
+        test_type = test_type
+      IMPORTING
+        result    = DATA(act_json)
+        json      = DATA(json_xstring) ).
+
+    exp_json = VALUE #(
+        ( `[` )
+        ( ` {` )
+        ( `  "language": "de",` )
+        ( `  "dummy": 1` )
+        ( ` },` )
+        ( ` {` )
+        ( `  "language": "en",` )
+        ( `  "dummy": 2` )
+        ( ` }` )
+        ( `]` ) ).
+
+    assert_json_equals( actual_json_stringtab = act_json expected_json_stringtab = exp_json ).
+
+    DATA act_data LIKE test_type.
+    from_json_to_abap(
+      EXPORTING
+        json   = json_xstring
+      IMPORTING
+        result = act_data ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = act_data
+      exp = test_type ).
+
+  ENDMETHOD.
+
 
   METHOD big_structure.
     DATA test_type TYPE zcl_aff_test_types=>big_structure.
@@ -1283,15 +1342,7 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       struc_with_table_not_req       FOR TESTING RAISING cx_static_check,
       structure_different_default    FOR TESTING RAISING cx_static_check,
       nested_struc_with_default      FOR TESTING RAISING cx_static_check,
-      structure_with_callback        FOR TESTING RAISING cx_static_check,
-      struc_in_struc_with_callback   FOR TESTING RAISING cx_static_check,
-      table_of_struc_with_callback   FOR TESTING RAISING cx_static_check,
-      simple_element_with_callack    FOR TESTING RAISING cx_static_check,
-      table_with_callback            FOR TESTING RAISING cx_static_check,
-      table_with_call_of_table       FOR TESTING RAISING cx_static_check,
-      struc_of_table_with_callback   FOR TESTING RAISING cx_static_check,
       structure_with_wrong_default   FOR TESTING RAISING cx_static_check,
-      structure_with_wrong_callback  FOR TESTING RAISING cx_static_check,
       type_of_enumtype_and_co_differ FOR TESTING RAISING cx_static_check,
       wrong_default_type_link        FOR TESTING RAISING cx_static_check,
       structure_with_enums           FOR TESTING RAISING cx_static_check,
@@ -2326,201 +2377,6 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
                                                               exp_component_name = `STRUCTURE_WITH_WRONG_DEFAULT-ELEMENT_TWO` ).
   ENDMETHOD.
 
-  METHOD simple_element_with_callack.
-    DATA test_type TYPE zcl_aff_test_types=>simple_callback.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE string_table(
-         ( `  <str>` )
-         ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-         ( |      <tt:with-parameter name="simple_callback" ref=".{ st_root_name }"/>| )
-         ( `    </tt:call-method>` )
-         ( `  </str>` ) ).
-    INSERT LINES OF exp_schema INTO TABLE me->exp_transformation.
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD table_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>table_callback.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE string_table(
-         ( `  <array>` )
-         ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-         ( |      <tt:with-parameter name="table_callback" ref=".{ st_root_name }"/>| )
-         ( `    </tt:call-method>` )
-         ( `  </array>` ) ).
-    INSERT LINES OF exp_schema INTO TABLE me->exp_transformation.
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD table_with_call_of_table.
-    DATA test_type TYPE zcl_aff_test_types=>table_call_of_table.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE string_table(
-         ( `  <array>` )
-         ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-         ( |      <tt:with-parameter name="table_call_of_table" ref=".{ st_root_name }"/>| )
-         ( `    </tt:call-method>` )
-         ( `  </array>` ) ).
-    INSERT LINES OF exp_schema INTO TABLE me->exp_transformation.
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD structure_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>structure_callback.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    DATA(exp_schema) = VALUE string_table(
-         ( `  <object>` )
-         ( `    <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-         ( |      <tt:with-parameter name="structure_callback" ref=".{ st_root_name }"/>| )
-         ( `    </tt:call-method>` )
-         ( `  </object>` ) ).
-    INSERT LINES OF exp_schema INTO TABLE me->exp_transformation.
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD table_of_struc_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = VALUE #(
-        ( `   <tt:cond>` )
-        ( `     <array>` )
-        ( `       <tt:loop>` )
-        ( `         <tt:group>` )
-        ( `           <tt:cond>` )
-        ( `             <object>` )
-        ( `              <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-        ( `                 <tt:with-parameter name="structure_callback" ref="$ref"/>` )
-        ( `               </tt:call-method>` )
-        ( `             </object>` )
-        ( `           </tt:cond>` )
-        ( `           </tt:group>` )
-        ( `         </tt:loop>` )
-        ( `       </array>` )
-        ( `     </tt:cond>` ) ).
-    validate_output( act = act_output ).
-  ENDMETHOD.
-
-  METHOD struc_of_table_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = VALUE #(
-        ( `      <tt:cond>` )
-        ( `        <object>` )
-        ( `          <tt:group>` )
-        ( `            <tt:cond>` )
-        ( `              <array>` )
-        ( `                <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-        ( `                  <tt:with-parameter name="element_table_callback" ref="ELEMENT_TABLE_CALLBACK"/>` )
-        ( `                </tt:call-method>` )
-        ( `              </array>` )
-        ( `            </tt:cond>` )
-        ( `            <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">` )
-        ( `             <num name="mySecondElement">` )
-        ( `              <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>` )
-        ( `             </num>` )
-        ( `            </tt:cond>` )
-        ( `      <tt:d-cond frq="*">` )
-        ( `         <_ tt:lax="on">` )
-        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'elementTableCallback;mySecondElement;'"/>` )
-        ( `          </tt:call-method>` )
-        ( `          <tt:skip/>` )
-        ( `        </_>` )
-        ( `      </tt:d-cond>` )
-        ( `      <tt:d-cond frq="?">` )
-        ( `        <__/>` )
-        ( `      </tt:d-cond>` )
-        ( `          </tt:group>` )
-        ( `        </object>` )
-        ( `      </tt:cond>` ) ).
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD struc_in_struc_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = VALUE #(
-        ( `<tt:cond>` )
-        ( `  <object>` )
-        ( `    <tt:group>` )
-        ( `      <tt:cond s-check="not-initial(MY_FIRST_ELEMENT)" frq="?">` )
-        ( `            <str name="myFirstElement">` )
-        ( `              <tt:value ref="MY_FIRST_ELEMENT"/>` )
-        ( `            </str>` )
-        ( `        </tt:cond>` )
-        ( `        <tt:cond>` )
-        ( `          <object>` )
-        ( `            <tt:call-method class="zcl_aff_test_types" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">` )
-        ( `              <tt:with-parameter name="element_structure_callback" ref="ELEMENT_STRUCTURE_CALLBACK"/>` )
-        ( `            </tt:call-method>` )
-        ( `          </object>` )
-        ( `        </tt:cond>` )
-        ( `        <tt:cond s-check="not-initial(MY_THIRD_ELEMENT)" frq="?">` )
-        ( `          <num name="myThirdElement">` )
-        ( `            <tt:value ref="MY_THIRD_ELEMENT" option="format(alpha)"/>` )
-        ( `          </num>` )
-        ( `        </tt:cond>` )
-        ( `      <tt:d-cond frq="*">` )
-        ( `         <_ tt:lax="on">` )
-        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;elementStructureCallback;myThirdElement;'"/>` )
-        ( `         </tt:call-method>` )
-        ( `         <tt:skip/>` )
-        ( `      </_>` )
-        ( `   </tt:d-cond>` )
-        ( `   <tt:d-cond frq="?">` )
-        ( `       <__/>` )
-        ( `   </tt:d-cond>` )
-        ( `    </tt:group>` )
-        ( `  </object>` )
-        ( `</tt:cond>` ) ).
-    validate_output( act_output ).
-  ENDMETHOD.
-
-  METHOD structure_with_wrong_callback.
-    DATA test_type TYPE zcl_aff_test_types=>structure_with_wrong_callback.
-    DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = VALUE #(
-
-        ( `<tt:cond>` )
-        ( `  <object>` )
-        ( `    <tt:group>` )
-        ( `      <tt:cond frq="?">` )
-        ( `        <str name="myFirstElement">` )
-        ( `          <tt:value ref="MY_FIRST_ELEMENT"/>` )
-        ( `        </str>` )
-        ( `      </tt:cond>` )
-        ( `      <tt:cond s-check="not-initial(MY_SECOND_ELEMENT)" frq="?">` )
-        ( `        <num name="mySecondElement">` )
-        ( `          <tt:value ref="MY_SECOND_ELEMENT" option="format(alpha)"/>` )
-        ( `        </num>` )
-        ( `      </tt:cond>` )
-        ( `      <tt:d-cond frq="*">` )
-        ( `         <_ tt:lax="on">` )
-        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
-        ( `            <tt:with-parameter name="MEMBERS" val="'myFirstElement;mySecondElement;'"/>` )
-        ( `          </tt:call-method>` )
-        ( `          <tt:skip/>` )
-        ( `        </_>` )
-        ( `      </tt:d-cond>` )
-        ( `      <tt:d-cond frq="?">` )
-        ( `        <__/>` )
-        ( `      </tt:d-cond>` )
-        ( `    </tt:group>` )
-        ( `  </object>` )
-        ( `</tt:cond>` ) ).
-    validate_output( act = act_output no_log_check = abap_true ).
-    log = cut->zif_aff_writer~get_log( ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
-                                                              exp_text           = zif_aff_log=>co_msg106
-                                                              exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_FIRST_ELEMENT`
-                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_text(
-      log                = log
-      exp_text           = `Annotation $callbackClass was used incorrectly`
-      exp_type           = zif_aff_log=>c_message_type-warning
-      exp_component_name = `STRUCTURE_WITH_WRONG_CALLBACK-MY_SECOND_ELEMENT` ).
-  ENDMETHOD.
 
   METHOD struc_with_own_enum_values.
     DATA test_type TYPE zcl_aff_test_types=>struc_with_own_enum_values.
@@ -2630,20 +2486,6 @@ RISK LEVEL DANGEROUS.
       nested_struc_with_default            FOR TESTING RAISING cx_static_check,
 
       structure_different_default          FOR TESTING RAISING cx_static_check,
-
-      structure_with_callback              FOR TESTING RAISING cx_static_check,
-
-      struc_in_struc_with_callback         FOR TESTING RAISING cx_static_check,
-
-      simple_element_with_callback         FOR TESTING RAISING cx_static_check,
-
-      table_with_callback                  FOR TESTING RAISING cx_static_check,
-
-      struc_of_table_with_callback         FOR TESTING RAISING cx_static_check,
-
-      structure_with_elem_callback         FOR TESTING RAISING cx_static_check,
-
-      table_of_struc_with_callback         FOR TESTING RAISING cx_static_check,
 
       structure_with_num_text              FOR TESTING RAISING cx_static_check,
 
@@ -3036,131 +2878,6 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
 
   ENDMETHOD.
 
-
-  METHOD simple_element_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>simple_callback.
-    test_type = 'String Element'.
-    zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = VALUE #(
-        ( `"callbackClass was called"` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD table_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>table_callback.
-    test_type = VALUE #( ( `First` ) ( `Second` ) ).
-    zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = VALUE #(
-        ( `[` )
-        ( `"callbackClass was called"` )
-        ( `]` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD structure_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>structure_callback.
-    test_type = VALUE #( element_name = 5 ).
-    zcl_aff_test_types=>set_expected( test_type ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `"elementName": "callbackClass was called"` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-
-  METHOD struc_of_table_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>struc_of_table_with_callback.
-    DATA table_with_callback LIKE test_type-element_table_callback.
-    table_with_callback = VALUE #( ( `first` ) ( `second` ) ).
-    zcl_aff_test_types=>set_expected( table_with_callback ).
-    test_type = VALUE #( element_table_callback = table_with_callback my_second_element = 5 ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `"elementTableCallback": [` )
-        ( `  "callbackClass was called"` )
-        ( ` ],` )
-        ( `"mySecondElement": 5` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD struc_in_struc_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>struc_in_struc_with_callback.
-    DATA element_structure_callback LIKE test_type-element_structure_callback.
-    element_structure_callback = VALUE #( element_name = 5 ).
-    zcl_aff_test_types=>set_expected( element_structure_callback ).
-    test_type = VALUE #( my_first_element           = 'firstElement'
-                         element_structure_callback = element_structure_callback
-                         my_third_element           = 6 ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `  "myFirstElement": "firstElement",` )
-        ( `  "elementStructureCallback": {` )
-        ( `     "elementName":"callbackClass was called"` )
-        ( `  },` )
-        ( `  "myThirdElement": 6` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD structure_with_elem_callback.
-    DATA test_type TYPE zcl_aff_test_types=>structure_with_elem_callback.
-    test_type = VALUE #( element_callback  = 'My First Element'
-                         my_second_element = 4 ).
-    zcl_aff_test_types=>set_expected( 'callbackClass was called' ).
-    exp_json = VALUE #(
-        ( `{` )
-        ( `"elementCallback": "callbackClass was called",` )
-        ( `"mySecondElement": 4` )
-        ( `}` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-  ENDMETHOD.
-
-  METHOD table_of_struc_with_callback.
-    DATA test_type TYPE zcl_aff_test_types=>table_of_struc_with_callback.
-    test_type = VALUE #( ( element_name = 5 ) ( element_name = 10 ) ).
-    zcl_aff_test_types=>set_expected( VALUE zcl_aff_test_types=>structure_callback( element_name = 5 ) ).
-    exp_json = VALUE #(
-        ( `[` )
-        ( `  {` )
-        ( `    "elementName": "callbackClass was called"` )
-        ( `  },` )
-        ( `  {` )
-        ( `    "elementName": "callbackClass was called"` )
-        ( `  }` )
-        ( `]` ) ).
-    do_integration_test(
-      EXPORTING
-        test_type = test_type
-      CHANGING
-        act_data  = test_type ).
-
-  ENDMETHOD.
 
   METHOD structure_with_num_text.
     DATA test_type TYPE zcl_aff_test_types=>struc_with_num_text.

@@ -31,7 +31,6 @@ CLASS zcl_aff_writer_xslt DEFINITION
       close_table REDEFINITION,
       write_callback
         IMPORTING
-          name_of_callback_class TYPE string
           parameter_name         TYPE string
           ref_name               TYPE string.
 
@@ -232,9 +231,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     clear_type_specifics( ).
     set_abapdoc_fullname_tab_struc( type_description = structure_description type_name = structure_name ).
 
-    IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
-      write_callback_template( element_name = structure_name description = structure_description ).
-    ENDIF.
     write_open_tag( |<tt:cond{ get_condition_tab_or_struc( structure_name ) }>| ).
     write_open_tag( |<object{ get_name( name = structure_name ) }{ get_ref_for_structure( structure_name ) }>| ).
     INSERT VALUE #( line_to_insert = lines( content ) ) INTO me->stack_default_comp_of_struc INDEX 1.
@@ -245,10 +241,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   METHOD open_table.
     clear_type_specifics( ).
     set_abapdoc_fullname_tab_struc( type_description = table_description type_name = table_name ).
-
-    IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
-      write_callback_template( element_name = table_name description = table_description ).
-    ENDIF.
 
     write_open_tag( |<tt:cond{ get_condition_tab_or_struc( table_name ) }>| ).
     write_open_tag( |<array{ get_name( name = table_name ) }>| ).
@@ -311,9 +303,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     DATA(tag) = get_tag_from_type( type ).
 
-    IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
-      write_callback_template( element_name = element_name description = element_description tag = tag ).
-    ENDIF.
     write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description enum_values = enum_values type = type ) }>| ).
     write_open_tag( |<{ tag }{ get_name( name = element_name ) }>| ).
     IF ( is_sy_langu( element_description = element_description ) ).
@@ -701,7 +690,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDCASE.
 
     write_open_tag( line = |{ component_start } | ).
-    write_callback( name_of_callback_class = abap_doc-callback_class parameter_name = element_name ref_name = ref_name ).
+    write_callback( parameter_name = element_name ref_name = ref_name ).
     write_closing_tag( line = |  { component_end } | ).
     IF indent_level > 0.
       write_closing_tag( '</tt:cond>' ).
@@ -711,7 +700,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD write_callback.
-    write_open_tag( line = |<tt:call-method class="{ name_of_callback_class }" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">| ).
+    write_open_tag( line = |<tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">| ).
     DATA(parameter_name_to_lower) = to_lower( parameter_name ).
     write_tag( line = |<tt:with-parameter name="{ parameter_name_to_lower }" ref="{ ref_name }"/>| ).
     write_closing_tag( '</tt:call-method>' ).
@@ -749,7 +738,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD write_iso_language_callback.
-    write_callback( name_of_callback_class = 'cl_aff_xslt_callback_language' parameter_name = 'language' ref_name = element_name ).
+    write_callback( parameter_name = 'language' ref_name = element_name ).
   ENDMETHOD.
 
   METHOD enable_extension.
