@@ -912,7 +912,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD write_tag.
-      APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
+    APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
   ENDMETHOD.
 
 
@@ -947,18 +947,18 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   METHOD check_title_and_description.
     DATA msg TYPE string.
 
-      IF abap_doc_to_check-title IS INITIAL.
-        msg = log->get_message_text( msgno = 119 msgv1 = `Title` ) ##NO_TEXT.
-        log->add_info( message_text = msg component_name = fullname_of_checked_type ).
-      ENDIF.
+    IF abap_doc_to_check-title IS INITIAL.
+      msg = log->get_message_text( msgno = 119 msgv1 = `Title` ) ##NO_TEXT.
+      log->add_info( message_text = msg component_name = fullname_of_checked_type ).
+    ENDIF.
 
-      IF abap_doc_to_check-description IS INITIAL.
-        msg = log->get_message_text( msgno = 119 msgv1 = `Description` ) ##NO_TEXT.
-        log->add_info( message_text = msg component_name = fullname_of_checked_type ).
-      ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
-        msg = log->get_message_text( msgno = 125 msgv1 = CONV #( c_max_length_of_description ) ).
-        log->add_warning( message_text = msg component_name = fullname_of_checked_type ).
-      ENDIF.
+    IF abap_doc_to_check-description IS INITIAL.
+      msg = log->get_message_text( msgno = 119 msgv1 = `Description` ) ##NO_TEXT.
+      log->add_info( message_text = msg component_name = fullname_of_checked_type ).
+    ELSEIF strlen( abap_doc_to_check-description ) > c_max_length_of_description.
+      msg = log->get_message_text( msgno = 125 msgv1 = CONV #( c_max_length_of_description ) ).
+      log->add_warning( message_text = msg component_name = fullname_of_checked_type ).
+    ENDIF.
   ENDMETHOD.
 
 
