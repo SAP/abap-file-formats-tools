@@ -160,8 +160,6 @@ CLASS zcl_aff_writer_json_schema DEFINITION
           element_description TYPE REF TO cl_abap_elemdescr
           enum_properties     TYPE ty_enum_properties,
 
-      reset_indent_level_tag,
-
       write_enum_properties
         IMPORTING
           property_table TYPE string_table,
@@ -296,10 +294,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
 *    remove "," in last line
-    IF ignore_til_indent_level > indent_level OR ignore_til_indent_level IS INITIAL.
-      DATA(last_line) = content[ lines( content ) ].
-      content[ lines( content ) ] = substring( val = last_line off = 0 len = strlen( last_line ) - 1 ).
-    ENDIF.
+    DATA(last_line) = content[ lines( content ) ].
+    content[ lines( content ) ] = substring( val = last_line off = 0 len = strlen( last_line ) - 1 ).
 
     IF last_operation( ) <> zif_aff_writer=>operation-open_table.
       write_closing_tag( `}` ).
@@ -569,7 +565,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ENDIF.
     ENDDO.
     DELETE me->structure_buffer INDEX 1.
-    reset_indent_level_tag( ).
   ENDMETHOD.
 
 
@@ -613,14 +608,13 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_closing_tag( `}` ).
     ENDDO.
     DELETE me->table_buffer INDEX line_index( me->table_buffer[ name = table_name ] ).
-    reset_indent_level_tag( ).
   ENDMETHOD.
 
 
   METHOD append_comma_to_prev_line.
     IF ( last_operation( ) = zif_aff_writer=>operation-write_element OR
        last_operation( ) = zif_aff_writer=>operation-close_structure OR
-       last_operation( ) = zif_aff_writer=>operation-close_table ) AND ( ignore_til_indent_level > indent_level OR ignore_til_indent_level IS INITIAL ).
+       last_operation( ) = zif_aff_writer=>operation-close_table ).
       append_to_previous_line( `,` ).
     ENDIF.
   ENDMETHOD.
@@ -886,7 +880,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD write_req_and_add_props.
-    IF ignore_til_indent_level > indent_level OR ignore_til_indent_level IS INITIAL.
       content[ lines( content ) ] = content[ lines( content ) ] && `,`.
       write_tag( `"additionalProperties": false` ).
       IF stack_of_required_tabs[ 1 ] IS NOT INITIAL.
@@ -903,7 +896,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         indent_level = indent_level - 1.
         write_tag( `]` ).
       ENDIF.
-    ENDIF.
+*    ENDIF.
     delete_first_tab_of_req_stack( ).
   ENDMETHOD.
 
@@ -920,9 +913,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD write_tag.
-    IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level.
       APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
-    ENDIF.
   ENDMETHOD.
 
 
@@ -949,13 +940,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD reset_indent_level_tag.
-    IF ignore_til_indent_level = indent_level.
-      CLEAR ignore_til_indent_level.
-    ENDIF.
-  ENDMETHOD.
-
-
   METHOD append_after_output.
     APPEND `` TO output.
   ENDMETHOD.
@@ -964,7 +948,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
   METHOD check_title_and_description.
     DATA msg TYPE string.
 
-    IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level > indent_level. "Only write message if no callback class provided
       IF abap_doc_to_check-title IS INITIAL.
         msg = log->get_message_text( msgno = 119 msgv1 = `Title` ) ##NO_TEXT.
         log->add_info( message_text = msg component_name = fullname_of_checked_type ).
@@ -977,7 +960,6 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         msg = log->get_message_text( msgno = 125 msgv1 = CONV #( c_max_length_of_description ) ).
         log->add_warning( message_text = msg component_name = fullname_of_checked_type ).
       ENDIF.
-    ENDIF.
   ENDMETHOD.
 
 

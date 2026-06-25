@@ -34,7 +34,6 @@ CLASS zcl_aff_writer DEFINITION
       indent_level            TYPE i VALUE 0,
       log                     TYPE REF TO zif_aff_log,
       abap_doc_parser         TYPE REF TO zcl_aff_abap_doc_parser,
-      ignore_til_indent_level TYPE i,
       abap_doc                TYPE zcl_aff_abap_doc_parser=>abap_doc,
       fullname_of_type        TYPE string.
 

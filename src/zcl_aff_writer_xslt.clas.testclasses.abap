@@ -661,8 +661,8 @@ CLASS ltcl_integration_test DEFINITION FINAL FOR TESTING
       type_numeric                 FOR TESTING RAISING cx_static_check,
       type_string                  FOR TESTING RAISING cx_static_check,
       structure_with_language      FOR TESTING RAISING cx_static_check,
-    big_structure FOR TESTING RAISING cx_static_check,
-    table_of_struc_of_sylangu FOR TESTING RAISING cx_static_check,
+      big_structure                FOR TESTING RAISING cx_static_check,
+      table_of_struc_of_sylangu    FOR TESTING RAISING cx_static_check,
       from_json_to_abap
         IMPORTING
           json   TYPE xstring

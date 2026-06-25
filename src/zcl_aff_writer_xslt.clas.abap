@@ -14,8 +14,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
 
   PROTECTED SECTION.
 
-    METHODS:
-      write_open_structure
+    METHODS: write_open_structure
         IMPORTING
           structure_name        TYPE string
           structure_description TYPE REF TO cl_abap_typedescr
@@ -28,11 +27,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
       open_table REDEFINITION,
       close_structure REDEFINITION,
       write_tag REDEFINITION,
-      close_table REDEFINITION,
-      write_callback
-        IMPORTING
-          parameter_name         TYPE string
-          ref_name               TYPE string.
+      close_table REDEFINITION.
 
   PRIVATE SECTION.
 
@@ -164,7 +159,6 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RAISING
           zcx_aff_tools,
 
-      reset_indent_level_tag,
       write_defaults,
       write_iso_language_callback
         IMPORTING
@@ -250,7 +244,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_closing_tag( `</tt:group>` ).
     write_closing_tag( `</object>` ).
     write_closing_tag( `</tt:cond>` ).
-    reset_indent_level_tag( ).
   ENDMETHOD.
 
 
@@ -260,7 +253,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_closing_tag( `</array>` ).
     write_closing_tag( `</tt:cond>` ).
     next_tag_without_name_and_ref = abap_false.
-    reset_indent_level_tag( ).
   ENDMETHOD.
 
 
@@ -318,7 +310,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     write_closing_tag( |</{ tag }>| ).
     write_closing_tag( `</tt:cond>` ).
-    reset_indent_level_tag( ).
   ENDMETHOD.
 
   METHOD set_abapdoc_fullname_element.
@@ -558,9 +549,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD write_tag.
-    IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
       APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
-    ENDIF.
   ENDMETHOD.
 
 
@@ -654,21 +643,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD write_callback.
-    write_open_tag( line = |<tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">| ).
-    DATA(parameter_name_to_lower) = to_lower( parameter_name ).
-    write_tag( line = |<tt:with-parameter name="{ parameter_name_to_lower }" ref="{ ref_name }"/>| ).
-    write_closing_tag( '</tt:call-method>' ).
-  ENDMETHOD.
-
-
-  METHOD reset_indent_level_tag.
-    IF ignore_til_indent_level - 1 = indent_level.
-      CLEAR ignore_til_indent_level.
-    ENDIF.
-  ENDMETHOD.
-
-
   METHOD zif_aff_writer~validate.
     DATA tsource TYPE o2pageline_table.
     APPEND LINES OF source TO tsource.
@@ -693,7 +667,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD write_iso_language_callback.
-    write_callback( parameter_name = 'language' ref_name = element_name ).
+    write_open_tag( line = '<tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">' ).
+    write_tag( line = |<tt:with-parameter name="language" ref="{ element_name }"/>| ).
+    write_closing_tag( '</tt:call-method>' ).
   ENDMETHOD.
 
   METHOD enable_extension.
@@ -721,11 +697,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     IF strlen( current_row ) > 150 OR lines( table_with_all_components ) > 1.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
-      IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
         APPEND `val="'` TO content.
         INSERT LINES OF table_with_all_components INTO TABLE content.
         APPEND `'"/>` TO content.
-      ENDIF.
     ELSE.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ current_row }'"/>| ).
     ENDIF.
