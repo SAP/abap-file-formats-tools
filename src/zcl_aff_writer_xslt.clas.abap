@@ -549,7 +549,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD write_tag.
-      APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
+    APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
   ENDMETHOD.
 
 
