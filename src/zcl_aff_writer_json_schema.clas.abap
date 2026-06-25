@@ -880,23 +880,22 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
 
   METHOD write_req_and_add_props.
+    content[ lines( content ) ] = content[ lines( content ) ] && `,`.
+    write_tag( `"additionalProperties": false` ).
+    IF stack_of_required_tabs[ 1 ] IS NOT INITIAL.
       content[ lines( content ) ] = content[ lines( content ) ] && `,`.
-      write_tag( `"additionalProperties": false` ).
-      IF stack_of_required_tabs[ 1 ] IS NOT INITIAL.
-        content[ lines( content ) ] = content[ lines( content ) ] && `,`.
-        write_tag( `"required": [` ).
-        indent_level = indent_level + 1.
-        LOOP AT stack_of_required_tabs[ 1 ] ASSIGNING FIELD-SYMBOL(<required_comp>).
-          IF sy-tabix < lines( stack_of_required_tabs[ 1 ] ).
-            write_tag( |"{ <required_comp> }",| ).
-          ELSE.
-            write_tag( |"{ <required_comp> }"| ).
-          ENDIF.
-        ENDLOOP.
-        indent_level = indent_level - 1.
-        write_tag( `]` ).
-      ENDIF.
-*    ENDIF.
+      write_tag( `"required": [` ).
+      indent_level = indent_level + 1.
+      LOOP AT stack_of_required_tabs[ 1 ] ASSIGNING FIELD-SYMBOL(<required_comp>).
+        IF sy-tabix < lines( stack_of_required_tabs[ 1 ] ).
+          write_tag( |"{ <required_comp> }",| ).
+        ELSE.
+          write_tag( |"{ <required_comp> }"| ).
+        ENDIF.
+      ENDLOOP.
+      indent_level = indent_level - 1.
+      write_tag( `]` ).
+    ENDIF.
     delete_first_tab_of_req_stack( ).
   ENDMETHOD.
 

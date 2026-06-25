@@ -697,9 +697,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     IF strlen( current_row ) > 150 OR lines( table_with_all_components ) > 1.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
-        APPEND `val="'` TO content.
-        INSERT LINES OF table_with_all_components INTO TABLE content.
-        APPEND `'"/>` TO content.
+      APPEND `val="'` TO content.
+      INSERT LINES OF table_with_all_components INTO TABLE content.
+      APPEND `'"/>` TO content.
     ELSE.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ current_row }'"/>| ).
     ENDIF.
