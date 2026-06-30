@@ -132,7 +132,7 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
 
     METHODS:
       get_sval_data
-        IMPORTING object_type TYPE seu_objkey
+        IMPORTING object_type   TYPE seu_objkey
         RETURNING VALUE(result) TYPE cl_wb_objtype_data=>ty_object_data,
       get_replacing_table_and_intfs
         IMPORTING name_of_intf_of_mainobj TYPE tadir-obj_name
@@ -215,8 +215,7 @@ CLASS lcl_generator IMPLEMENTATION.
     ENDTRY.
 
 *     On mac computers file_save_dialog( ) does not add ".zip" at the file_name ending.
-    IF file_name NP '*.zip'.
-      file_name = |{ file_name }.zip| ##NO_TEXT.
+    IF fullpath NP '*.zip'.
       fullpath = |{ fullpath }.zip| ##NO_TEXT.
     ENDIF.
 
@@ -234,7 +233,7 @@ CLASS lcl_generator IMPLEMENTATION.
     TRY.
         cl_gui_frontend_services=>gui_download(
           EXPORTING
-            filename     = file_name
+            filename     = fullpath
             bin_filesize = xstring_length
             filetype     = 'BIN'
             write_lf     = space
@@ -814,7 +813,7 @@ CLASS lcl_generator IMPLEMENTATION.
       RETURN.
     ELSEIF typename_value IS INITIAL AND intfname_value IS NOT INITIAL.
       SELECT cmpname FROM seocompo WHERE clsname = @intfname_value AND cmptype = 3 INTO TABLE @DATA(value_help_result)
-      UP TO 30 ROWS BYPASSING BUFFER ##NUMBER_OK.      "#EC CI_NOORDER
+      UP TO 30 ROWS BYPASSING BUFFER ##NUMBER_OK.       "#EC CI_NOORDER
     ELSE. "both are filled
       DATA(typename_with_percent) = |%{ to_upper( typename_value ) }%|.
       REPLACE ALL OCCURRENCES OF '*' IN typename_with_percent WITH `%`.
@@ -1253,7 +1252,7 @@ CLASS ltcl_generator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = lines( cut->generator_log->get_messages( ) ) exp = lines( expected_log_messages ) ).
     LOOP AT expected_log_messages ASSIGNING FIELD-SYMBOL(<exp_msg>).
       DATA(messages) = cut->generator_log->get_messages( ).
-      IF line_exists( messages[ message_text = <exp_msg>-message_text ] ).
+      IF NOT line_exists( messages[ message_text = <exp_msg>-message_text ] ).
         cl_abap_unit_assert=>fail( ).
       ENDIF.
     ENDLOOP.
@@ -1319,7 +1318,7 @@ CLASS ltcl_generator IMPLEMENTATION.
                                             ( obj_name = 'IF_AFF_FUGR_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_FUNC_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_REPS_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-                                            )
+    )
                                             log     = NEW cl_aff_log( ) ).
     file_name = `file_of_indx_tabl.json`.
     TRY.
@@ -1338,7 +1337,7 @@ CLASS ltcl_generator IMPLEMENTATION.
     file_handler_double->serialize_objects( objects = VALUE #(
                                             ( obj_name = 'IF_AFF_TABL_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
                                             ( obj_name = 'IF_AFF_INDX_V1' devclass = 'SEO_AFF' obj_type = 'INTF' )
-                                            )
+    )
                                             log     = NEW cl_aff_log( ) ).
   ENDMETHOD.
 
