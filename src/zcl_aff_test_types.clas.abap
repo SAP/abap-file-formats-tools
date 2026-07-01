@@ -918,29 +918,10 @@ CLASS zcl_aff_test_types DEFINITION
 
   PROTECTED SECTION.
   PRIVATE SECTION.
-    CLASS-METHODS jump_to_end
-      IMPORTING
-        reader TYPE REF TO if_sxml_reader
-      RAISING
-        cx_sxml_parse_error.
 ENDCLASS.
 
 
 
 CLASS ZCL_AFF_TEST_TYPES IMPLEMENTATION.
 
-
-  METHOD jump_to_end.
-    DATA(type_start) = reader->name.
-    DATA exit TYPE abap_boolean VALUE abap_false.
-    IF reader->node_type = if_sxml_node=>co_nt_element_close.
-      exit = abap_true.
-    ENDIF.
-    WHILE exit = abap_false.
-      reader->next_node( ).
-      IF reader->node_type = if_sxml_node=>co_nt_element_close AND reader->name = type_start.
-        exit = abap_true.
-      ENDIF.
-    ENDWHILE.
-  ENDMETHOD.
 ENDCLASS.
