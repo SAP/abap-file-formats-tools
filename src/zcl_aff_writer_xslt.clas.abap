@@ -452,9 +452,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         xml_value = <enum_value>-overwritten_json_value.
       ENDIF.
       IF index < lines( enum_values ).
-        write_tag( |  val({ abap_value })=xml('{ xml_value }'),| ) ##NO_TEXT.
+        write_tag( |  val({ abap_value })=xml('{ escape_xml_chars( xml_value ) }'),| ) ##NO_TEXT.
       ELSE.
-        write_tag( |  val({ abap_value })=xml('{ xml_value }')"| ) ##NO_TEXT.
+        write_tag( |  val({ abap_value })=xml('{ escape_xml_chars( xml_value ) }')"| ) ##NO_TEXT.
         write_tag( `/>` ).
       ENDIF.
       index += 1.
@@ -529,7 +529,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     IF abap_doc-required = abap_false AND abap_doc-showalways = abap_false.
       IF default IS NOT INITIAL.
-        condition = | s-check="{ element_name }!={ default }"| ##NO_TEXT.
+        condition = | s-check="{ element_name }!={ escape_xml_chars( default ) }"| ##NO_TEXT.
       ELSE.
         condition = | s-check="not-initial({ element_name })"| ##NO_TEXT.
       ENDIF.
@@ -673,7 +673,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     DATA(actual_entry) = me->stack_default_comp_of_struc[ 1 ].
     DATA list_of_applies LIKE content.
     LOOP AT actual_entry-table_of_defaults ASSIGNING FIELD-SYMBOL(<default>).
-      APPEND |{ repeat( val = ` `  occ = ( indent_level * c_indent_number_characters ) - c_indent_number_characters ) }<tt:assign to-ref="{ <default>-var_name }" val="{ <default>-default_value }"/>| TO list_of_applies.
+      APPEND |{ repeat( val = ` `  occ = ( indent_level * c_indent_number_characters ) - c_indent_number_characters ) }<tt:assign to-ref="{ <default>-var_name }" val="{ escape_xml_chars( <default>-default_value ) }"/>| TO list_of_applies.
     ENDLOOP.
     INSERT LINES OF list_of_applies INTO content INDEX actual_entry-line_to_insert + 1.
     DELETE me->stack_default_comp_of_struc INDEX 1.
@@ -813,7 +813,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ELSE.
         xml_value = <enum_value>-overwritten_json_value.
       ENDIF.
-      write_open_tag( |<tt:cond-var check="VARIABLE='{ xml_value }'">| ).
+      write_open_tag( |<tt:cond-var check="VARIABLE='{ escape_xml_chars( xml_value ) }'">| ).
       write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ abap_value }"/>| ).
       write_closing_tag( `</tt:cond-var>` ).
     ENDLOOP.

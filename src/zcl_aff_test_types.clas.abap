@@ -1051,6 +1051,41 @@ CLASS zcl_aff_test_types DEFINITION
         special_char_enum TYPE c LENGTH 1,
       END OF struc_with_special_char_enums.
 
+    CONSTANTS:
+      BEGIN OF co_enum_special_chars_values,
+        "! <p class="shorttext">Less Than</p>
+        "! Less than
+        "! $enumValue '<'
+        less_than    TYPE c LENGTH 1 VALUE '<',
+        "! <p class="shorttext">Greater Than</p>
+        "! Greater than
+        "! $enumValue '>'
+        greater_than TYPE c LENGTH 1 VALUE '>',
+        "! <p class="shorttext">Ampersand</p>
+        "! Ampersand
+        "! $enumValue '&'
+        ampersand    TYPE c LENGTH 1 VALUE '&',
+        "! <p class="shorttext">Quotation Marks</p>
+        "! Quotation Marks
+        "! $enumValue '"'
+        quotation_marks    TYPE c LENGTH 1 VALUE '"',
+*        "! <p class="shorttext">Single Quotes</p>
+*        "! Single Quotes
+*        "! $enumValue ''''
+*        single_quotes    TYPE c LENGTH 1 VALUE '''',
+      END OF co_enum_special_chars_values.
+
+    TYPES:
+      "! <p class="shorttext">Structure With Special Character Enum Values</p>
+      "! Structure with special character enum values
+      BEGIN OF struc_wth_spcl_char_enums_vals,
+        "! <p class="shorttext">Enum With Special Characters</p>
+        "! Enum with special characters
+        "! $values  {@link zcl_aff_test_types.data:co_enum_special_chars_values }
+        "! $default {@link zcl_aff_test_types.data:co_enum_special_chars_values.less_than }
+        special_char_enum TYPE c LENGTH 1,
+      END OF struc_wth_spcl_char_enums_vals.
+
     CLASS-DATA subschema TYPE string_table.
 
     CLASS-DATA expected_var TYPE REF TO data.

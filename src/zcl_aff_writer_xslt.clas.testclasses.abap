@@ -1268,37 +1268,38 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
         IMPORTING
           act          TYPE string_table
           no_log_check TYPE abap_boolean DEFAULT abap_false,
-      simple_integer                 FOR TESTING RAISING cx_static_check,
-      simple_string                  FOR TESTING RAISING cx_static_check,
-      simple_data                    FOR TESTING RAISING cx_static_check,
-      simple_structure               FOR TESTING RAISING cx_static_check,
-      simple_structure_required      FOR TESTING RAISING cx_static_check,
-      structure_in_structure         FOR TESTING RAISING cx_static_check,
-      simple_table                   FOR TESTING RAISING cx_static_check,
-      simple_type_with_enum_values   FOR TESTING RAISING cx_static_check,
-      structure_with_enum_values     FOR TESTING RAISING cx_static_check,
-      deep_nested_structure          FOR TESTING RAISING cx_static_check,
-      nested_structure_with_table    FOR TESTING RAISING cx_static_check,
-      enum_values_with_wrong_link    FOR TESTING RAISING cx_static_check,
-      struc_with_table_not_req       FOR TESTING RAISING cx_static_check,
-      structure_different_default    FOR TESTING RAISING cx_static_check,
-      nested_struc_with_default      FOR TESTING RAISING cx_static_check,
-      structure_with_callback        FOR TESTING RAISING cx_static_check,
-      struc_in_struc_with_callback   FOR TESTING RAISING cx_static_check,
-      table_of_struc_with_callback   FOR TESTING RAISING cx_static_check,
-      simple_element_with_callack    FOR TESTING RAISING cx_static_check,
-      table_with_callback            FOR TESTING RAISING cx_static_check,
-      table_with_call_of_table       FOR TESTING RAISING cx_static_check,
-      struc_of_table_with_callback   FOR TESTING RAISING cx_static_check,
-      structure_with_wrong_default   FOR TESTING RAISING cx_static_check,
-      structure_with_wrong_callback  FOR TESTING RAISING cx_static_check,
-      type_of_enumtype_and_co_differ FOR TESTING RAISING cx_static_check,
-      wrong_default_type_link        FOR TESTING RAISING cx_static_check,
-      structure_with_enums           FOR TESTING RAISING cx_static_check,
-      structure_with_default_problem FOR TESTING RAISING cx_static_check,
-      struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
-      struc_with_special_char_enums  FOR TESTING RAISING cx_static_check,
-      enable_extension               FOR TESTING RAISING cx_static_check.
+      simple_integer                  FOR TESTING RAISING cx_static_check,
+      simple_string                   FOR TESTING RAISING cx_static_check,
+      simple_data                     FOR TESTING RAISING cx_static_check,
+      simple_structure                FOR TESTING RAISING cx_static_check,
+      simple_structure_required       FOR TESTING RAISING cx_static_check,
+      structure_in_structure          FOR TESTING RAISING cx_static_check,
+      simple_table                    FOR TESTING RAISING cx_static_check,
+      simple_type_with_enum_values    FOR TESTING RAISING cx_static_check,
+      structure_with_enum_values      FOR TESTING RAISING cx_static_check,
+      deep_nested_structure           FOR TESTING RAISING cx_static_check,
+      nested_structure_with_table     FOR TESTING RAISING cx_static_check,
+      enum_values_with_wrong_link     FOR TESTING RAISING cx_static_check,
+      struc_with_table_not_req        FOR TESTING RAISING cx_static_check,
+      structure_different_default     FOR TESTING RAISING cx_static_check,
+      nested_struc_with_default       FOR TESTING RAISING cx_static_check,
+      structure_with_callback         FOR TESTING RAISING cx_static_check,
+      struc_in_struc_with_callback    FOR TESTING RAISING cx_static_check,
+      table_of_struc_with_callback    FOR TESTING RAISING cx_static_check,
+      simple_element_with_callack     FOR TESTING RAISING cx_static_check,
+      table_with_callback             FOR TESTING RAISING cx_static_check,
+      table_with_call_of_table        FOR TESTING RAISING cx_static_check,
+      struc_of_table_with_callback    FOR TESTING RAISING cx_static_check,
+      structure_with_wrong_default    FOR TESTING RAISING cx_static_check,
+      structure_with_wrong_callback   FOR TESTING RAISING cx_static_check,
+      type_of_enumtype_and_co_differ  FOR TESTING RAISING cx_static_check,
+      wrong_default_type_link         FOR TESTING RAISING cx_static_check,
+      structure_with_enums            FOR TESTING RAISING cx_static_check,
+      structure_with_default_problem  FOR TESTING RAISING cx_static_check,
+      struc_with_own_enum_values      FOR TESTING RAISING cx_static_check,
+      struc_with_special_char_enums   FOR TESTING RAISING cx_static_check,
+      struc_wth_spcl_char_enums_vals  FOR TESTING RAISING cx_static_check,
+      enable_extension                FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
@@ -2597,6 +2598,61 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `    </tt:group>` )
         ( `  </object>` )
         ( `</tt:cond>` ) ).
+    validate_output( act_output ).
+  ENDMETHOD.
+
+  METHOD struc_wth_spcl_char_enums_vals.
+    DATA test_type TYPE zcl_aff_test_types=>struc_wth_spcl_char_enums_vals.
+    DATA(act_output) = test_generator->generate_type( test_type ).
+    me->exp_transformation = VALUE #(
+      ( `<tt:cond>` )
+      ( `  <object>` )
+      ( `    <tt:assign to-ref="SPECIAL_CHAR_ENUM" val="C('&#60;')"/>` )
+      ( `    <tt:group>` )
+      ( `      <tt:cond s-check="SPECIAL_CHAR_ENUM!=C('&#60;')" frq="?">` )
+      ( `        <str name="specialCharEnum">` )
+      ( `          <tt:deserialize>` )
+      ( `            <tt:read type="C" var="VARIABLE"/>` )
+      ( `            <tt:cond-var check="VARIABLE='&#60;'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#60;'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `            <tt:cond-var check="VARIABLE='&#62;'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#62;'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `            <tt:cond-var check="VARIABLE='&#38;'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#38;'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `            <tt:cond-var check="VARIABLE='&#34;'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#34;'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `          </tt:deserialize>` )
+      ( `          <tt:serialize>` )
+      ( `            <tt:value ref="SPECIAL_CHAR_ENUM" map="` )
+      ( `              val('&#60;')=xml('&#60;'),` )
+      ( `              val('&#62;')=xml('&#62;'),` )
+      ( `              val('&#38;')=xml('&#38;'),` )
+      ( `              val('&#34;')=xml('&#34;')"` )
+      ( `            />` )
+      ( `          </tt:serialize>` )
+      ( `        </str>` )
+      ( `      </tt:cond>` )
+      ( `      <tt:d-cond frq="*">` )
+      ( `         <_ tt:lax="on">` )
+      (
+      `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`
+      )
+      ( `            <tt:with-parameter name="MEMBERS" val="'specialCharEnum;'"/>` )
+      ( `          </tt:call-method>` )
+      ( `          <tt:skip/>` )
+      ( `        </_>` )
+      ( `      </tt:d-cond>` )
+      ( `      <tt:d-cond frq="?">` )
+      ( `        <__/>` )
+      ( `      </tt:d-cond>` )
+      ( `    </tt:group>` )
+      ( `  </object>` )
+      ( `</tt:cond>` )
+       ).
     validate_output( act_output ).
   ENDMETHOD.
 
