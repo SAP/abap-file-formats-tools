@@ -2427,7 +2427,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD struc_with_special_char_enums.
     DATA test_type TYPE zcl_aff_test_types=>struc_with_special_char_enums.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
 ( `<tt:cond>` )
 ( `  <object>` )
 ( `    <tt:assign to-ref="SPECIAL_CHAR_ENUM" val="C('X')"/>` )
@@ -2482,7 +2482,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
   METHOD default_has_spec_char.
     DATA test_type TYPE zcl_aff_test_types=>default_has_spec_char.
     DATA(act_output) = test_generator->generate_type( test_type ).
-    me->exp_transformation = value #(
+    me->exp_transformation = VALUE #(
 ( `<tt:cond>` )
 ( `  <object>` )
 ( `    <tt:assign to-ref="SPECIAL_CHAR_ENUM" val="C('&#60;')"/>` )
@@ -2521,8 +2521,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
 ( `      </tt:d-cond>` )
 ( `    </tt:group>` )
 ( `  </object>` )
-( `</tt:cond>` )
- ).
+( `</tt:cond>` ) ).
     validate_output( act_output ).
   ENDMETHOD.
   METHOD dollar_enum_val_with_spec_char.
