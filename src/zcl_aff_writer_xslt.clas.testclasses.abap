@@ -2506,8 +2506,7 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
       ( `      </tt:d-cond>` )
       ( `    </tt:group>` )
       ( `  </object>` )
-      ( `</tt:cond>` )
-       ).
+      ( `</tt:cond>` ) ).
     validate_output( act_output ).
   ENDMETHOD.
 
