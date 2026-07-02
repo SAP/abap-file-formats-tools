@@ -14,8 +14,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
 
   PROTECTED SECTION.
 
-    METHODS:
-      write_open_structure
+    METHODS: write_open_structure
         IMPORTING
           structure_name        TYPE string
           structure_description TYPE REF TO cl_abap_typedescr
@@ -28,12 +27,7 @@ CLASS zcl_aff_writer_xslt DEFINITION
       open_table REDEFINITION,
       close_structure REDEFINITION,
       write_tag REDEFINITION,
-      close_table REDEFINITION,
-      write_callback
-        IMPORTING
-          name_of_callback_class TYPE string
-          parameter_name         TYPE string
-          ref_name               TYPE string.
+      close_table REDEFINITION.
 
   PRIVATE SECTION.
 
@@ -165,14 +159,6 @@ CLASS zcl_aff_writer_xslt DEFINITION
         RAISING
           zcx_aff_tools,
 
-      write_callback_template
-        IMPORTING
-          element_name TYPE string
-          description  TYPE REF TO cl_abap_typedescr
-          tag          TYPE string OPTIONAL
-        RAISING
-          zcx_aff_tools,
-      reset_indent_level_tag,
       write_defaults,
       write_iso_language_callback
         IMPORTING
@@ -237,9 +223,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     clear_type_specifics( ).
     set_abapdoc_fullname_tab_struc( type_description = structure_description type_name = structure_name ).
 
-    IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
-      write_callback_template( element_name = structure_name description = structure_description ).
-    ENDIF.
     write_open_tag( |<tt:cond{ get_condition_tab_or_struc( structure_name ) }>| ).
     write_open_tag( |<object{ get_name( name = structure_name ) }{ get_ref_for_structure( structure_name ) }>| ).
     INSERT VALUE #( line_to_insert = lines( content ) ) INTO me->stack_default_comp_of_struc INDEX 1.
@@ -250,10 +233,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   METHOD open_table.
     clear_type_specifics( ).
     set_abapdoc_fullname_tab_struc( type_description = table_description type_name = table_name ).
-
-    IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
-      write_callback_template( element_name = table_name description = table_description ).
-    ENDIF.
 
     write_open_tag( |<tt:cond{ get_condition_tab_or_struc( table_name ) }>| ).
     write_open_tag( |<array{ get_name( name = table_name ) }>| ).
@@ -270,7 +249,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_closing_tag( `</tt:group>` ).
     write_closing_tag( `</object>` ).
     write_closing_tag( `</tt:cond>` ).
-    reset_indent_level_tag( ).
   ENDMETHOD.
 
 
@@ -280,7 +258,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_closing_tag( `</array>` ).
     write_closing_tag( `</tt:cond>` ).
     next_tag_without_name_and_ref = abap_false.
-    reset_indent_level_tag( ).
   ENDMETHOD.
 
 
@@ -316,9 +293,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     DATA(tag) = get_tag_from_type( type ).
 
-    IF abap_doc-callback_class IS NOT INITIAL AND is_callback_class_valid( class_name = abap_doc-callback_class component_name = fullname_of_type ).
-      write_callback_template( element_name = element_name description = element_description tag = tag ).
-    ENDIF.
     write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description enum_values = enum_values type = type ) }>| ).
     write_open_tag( |<{ tag }{ get_name( name = element_name ) }>| ).
     IF ( is_sy_langu( element_description = element_description ) ).
@@ -341,7 +315,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     write_closing_tag( |</{ tag }>| ).
     write_closing_tag( `</tt:cond>` ).
-    reset_indent_level_tag( ).
   ENDMETHOD.
 
   METHOD set_abapdoc_fullname_element.
@@ -584,9 +557,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
 
   METHOD write_tag.
-    IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
-      APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
-    ENDIF.
+    APPEND |{ repeat( val = ` `  occ = indent_level * c_indent_number_characters ) }{ line }| TO content.
   ENDMETHOD.
 
 
@@ -680,59 +651,6 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD write_callback_template.
-    IF indent_level > 0.
-      write_open_tag( line = '<tt:cond>' ).
-      IF last_operation( ) <> zif_aff_writer=>operation-open_table.
-        DATA(ref_name) = element_name.
-      ELSE.
-        ref_name = '$ref'.
-      ENDIF.
-    ELSE.
-      ref_name = |.{ st_root_name  }|.
-    ENDIF.
-    CASE description->kind.
-      WHEN cl_abap_typedescr=>kind_elem.
-        IF tag IS NOT INITIAL.
-          DATA(calculated_tag) = tag.
-        ELSE.
-          calculated_tag = get_tag_from_type( get_json_type_from_description( CAST cl_abap_elemdescr( description ) ) ).
-        ENDIF.
-        DATA(component_start) = |<{ calculated_tag }>|.
-        DATA(component_end) = |</{ calculated_tag }>|.
-      WHEN cl_abap_typedescr=>kind_struct.
-        component_start = `<object>`.
-        component_end = `</object>`.
-      WHEN cl_abap_typedescr=>kind_table.
-        component_start = `<array>`.
-        component_end = `</array>`.
-    ENDCASE.
-
-    write_open_tag( line = |{ component_start } | ).
-    write_callback( name_of_callback_class = abap_doc-callback_class parameter_name = element_name ref_name = ref_name ).
-    write_closing_tag( line = |  { component_end } | ).
-    IF indent_level > 0.
-      write_closing_tag( '</tt:cond>' ).
-    ENDIF.
-    ignore_til_indent_level = indent_level + 1.
-  ENDMETHOD.
-
-
-  METHOD write_callback.
-    write_open_tag( line = |<tt:call-method class="{ name_of_callback_class }" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">| ).
-    DATA(parameter_name_to_lower) = to_lower( parameter_name ).
-    write_tag( line = |<tt:with-parameter name="{ parameter_name_to_lower }" ref="{ ref_name }"/>| ).
-    write_closing_tag( '</tt:call-method>' ).
-  ENDMETHOD.
-
-
-  METHOD reset_indent_level_tag.
-    IF ignore_til_indent_level - 1 = indent_level.
-      CLEAR ignore_til_indent_level.
-    ENDIF.
-  ENDMETHOD.
-
-
   METHOD zif_aff_writer~validate.
     DATA tsource TYPE o2pageline_table.
     APPEND LINES OF source TO tsource.
@@ -757,7 +675,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD write_iso_language_callback.
-    write_callback( name_of_callback_class = 'cl_aff_xslt_callback_language' parameter_name = 'language' ref_name = element_name ).
+    write_open_tag( line = '<tt:call-method class="cl_aff_xslt_callback_language" d-name="deserialize" reader="reader" s-name="serialize" writer="writer">' ).
+    write_tag( line = |<tt:with-parameter name="language" ref="{ element_name }"/>| ).
+    write_closing_tag( '</tt:call-method>' ).
   ENDMETHOD.
 
   METHOD enable_extension.
@@ -785,11 +705,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     IF strlen( current_row ) > 150 OR lines( table_with_all_components ) > 1.
       write_tag( `<tt:with-parameter name="MEMBERS"` ).
-      IF ignore_til_indent_level IS INITIAL OR ignore_til_indent_level - 1 > indent_level.
-        APPEND `val="'` TO content.
-        INSERT LINES OF table_with_all_components INTO TABLE content.
-        APPEND `'"/>` TO content.
-      ENDIF.
+      APPEND `val="'` TO content.
+      INSERT LINES OF table_with_all_components INTO TABLE content.
+      APPEND `'"/>` TO content.
     ELSE.
       write_tag( |<tt:with-parameter name="MEMBERS" val="'{ current_row }'"/>| ).
     ENDIF.
