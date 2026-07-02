@@ -1326,40 +1326,6 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
         IMPORTING
           act          TYPE string_table
           no_log_check TYPE abap_boolean DEFAULT abap_false,
-<<<<<<< HEAD
-      simple_integer                  FOR TESTING RAISING cx_static_check,
-      simple_string                   FOR TESTING RAISING cx_static_check,
-      simple_data                     FOR TESTING RAISING cx_static_check,
-      simple_structure                FOR TESTING RAISING cx_static_check,
-      simple_structure_required       FOR TESTING RAISING cx_static_check,
-      structure_in_structure          FOR TESTING RAISING cx_static_check,
-      simple_table                    FOR TESTING RAISING cx_static_check,
-      simple_type_with_enum_values    FOR TESTING RAISING cx_static_check,
-      structure_with_enum_values      FOR TESTING RAISING cx_static_check,
-      deep_nested_structure           FOR TESTING RAISING cx_static_check,
-      nested_structure_with_table     FOR TESTING RAISING cx_static_check,
-      enum_values_with_wrong_link     FOR TESTING RAISING cx_static_check,
-      struc_with_table_not_req        FOR TESTING RAISING cx_static_check,
-      structure_different_default     FOR TESTING RAISING cx_static_check,
-      nested_struc_with_default       FOR TESTING RAISING cx_static_check,
-      structure_with_callback         FOR TESTING RAISING cx_static_check,
-      struc_in_struc_with_callback    FOR TESTING RAISING cx_static_check,
-      table_of_struc_with_callback    FOR TESTING RAISING cx_static_check,
-      simple_element_with_callack     FOR TESTING RAISING cx_static_check,
-      table_with_callback             FOR TESTING RAISING cx_static_check,
-      table_with_call_of_table        FOR TESTING RAISING cx_static_check,
-      struc_of_table_with_callback    FOR TESTING RAISING cx_static_check,
-      structure_with_wrong_default    FOR TESTING RAISING cx_static_check,
-      structure_with_wrong_callback   FOR TESTING RAISING cx_static_check,
-      type_of_enumtype_and_co_differ  FOR TESTING RAISING cx_static_check,
-      wrong_default_type_link         FOR TESTING RAISING cx_static_check,
-      structure_with_enums            FOR TESTING RAISING cx_static_check,
-      structure_with_default_problem  FOR TESTING RAISING cx_static_check,
-      struc_with_own_enum_values      FOR TESTING RAISING cx_static_check,
-      struc_with_special_char_enums   FOR TESTING RAISING cx_static_check,
-      struc_wth_spcl_char_enums_vals  FOR TESTING RAISING cx_static_check,
-      enable_extension                FOR TESTING RAISING cx_static_check.
-=======
       simple_integer                 FOR TESTING RAISING cx_static_check,
       simple_string                  FOR TESTING RAISING cx_static_check,
       simple_data                    FOR TESTING RAISING cx_static_check,
@@ -1381,8 +1347,9 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       structure_with_enums           FOR TESTING RAISING cx_static_check,
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
       struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
-      enable_extension               FOR TESTING RAISING cx_static_check.
->>>>>>> c8e390a (Remove Callback Handling (#372))
+      enable_extension               FOR TESTING RAISING cx_static_check,
+    struc_with_special_char_enums FOR TESTING RAISING cx_static_check,
+    struc_wth_spcl_char_enums_vals FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
