@@ -974,40 +974,6 @@ CLASS zcl_aff_test_types DEFINITION
         special_char_enum TYPE c LENGTH 1,
       END OF struc_wth_spcl_char_enums_vals.
 
-    CLASS-DATA subschema TYPE string_table.
-
-    CLASS-DATA expected_var TYPE REF TO data.
-
-    CLASS-METHODS get_subschema
-      RETURNING VALUE(subschema) TYPE string_table.
-
-    CLASS-METHODS serialize
-      IMPORTING
-        writer                     TYPE REF TO if_sxml_writer
-        simple_callback            TYPE simple_callback OPTIONAL
-        structure_callback         TYPE structure_callback OPTIONAL
-        table_callback             TYPE table_callback OPTIONAL
-        element_callback           TYPE string OPTIONAL
-        element_structure_callback TYPE structure_callback OPTIONAL
-        element_table_callback     TYPE table_callback OPTIONAL.
-
-    CLASS-METHODS deserialize
-      IMPORTING
-        reader                     TYPE REF TO if_sxml_reader
-      EXPORTING
-        simple_callback            TYPE simple_callback
-        structure_callback         TYPE structure_callback
-        table_callback             TYPE table_callback
-        element_callback           TYPE string
-        element_structure_callback TYPE structure_callback
-        element_table_callback     TYPE table_callback
-      RAISING
-        cx_sxml_error.
-
-    CLASS-METHODS set_expected
-      IMPORTING
-        expected_variable TYPE any.
-
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
