@@ -73,6 +73,10 @@ CLASS zcl_aff_test_types DEFINITION
     ty_string TYPE string.
 
     TYPES:
+    "! test type with special character " in description
+    ty_abap_doc_with_spec_char TYPE string.
+
+    TYPES:
      "! <p class="shorttext">Structure With Pattern Annotation</p>
      "! Structure with pattern annotation
        BEGIN OF string_pattern_complex,
@@ -161,6 +165,31 @@ CLASS zcl_aff_test_types DEFINITION
       "! Test description "\
       num_text1 TYPE n LENGTH 4.
 
+    TYPES:
+      type_without_title_and_desc TYPE n LENGTH 4.
+
+    CONSTANTS:
+      BEGIN OF co_enum_with_quot_mark,
+        "! <p class="shorttext">Ampersand " needs to be escaped in the enumTitles</p>
+        "! Ampersand " needs to be escaped in the enum enumDescriptions
+        "! $enumValue '&'
+        enum_with_spec_char_in_abapdoc    TYPE c LENGTH 1 VALUE '&',
+        "! <p class="shorttext">Quotation Marks</p>
+        "! Quotation Marks
+        "! $enumValue '"'
+        enum_with_spec_char_in_value    TYPE c LENGTH 1 VALUE '"',
+      END OF co_enum_with_quot_mark.
+
+    TYPES:
+       "! <p class="shorttext">Enum with quotation marks</p>
+      "! Enum with quotation marks
+      BEGIN OF quotat_mark_in_enum_abap_doc,
+        "! <p class="shorttext">Enum With Special Characters</p>
+        "! Enum with special " characters
+        "! $values  {@link zcl_aff_test_types.data:co_enum_with_quot_mark }
+        "! $default {@link zcl_aff_test_types.data:co_enum_with_quot_mark.enum_with_spec_char_in_value }
+        special_char_enum TYPE c LENGTH 1,
+      END OF quotat_mark_in_enum_abap_doc.
 
 * integer
     TYPES:
@@ -918,6 +947,9 @@ CLASS zcl_aff_test_types DEFINITION
 
     CONSTANTS:
       BEGIN OF co_enum_special_chars,
+        "! <p class="shorttext">Dummy</p>
+        "! Dummy
+        dummy    TYPE c LENGTH 1 VALUE 'X',
         "! <p class="shorttext">Less Than</p>
         "! Less than
         less_than    TYPE c LENGTH 1 VALUE '<',
@@ -935,12 +967,16 @@ CLASS zcl_aff_test_types DEFINITION
       BEGIN OF struc_with_special_char_enums,
         "! <p class="shorttext">Enum With Special Characters</p>
         "! Enum with special characters
+        "! $default {@link zcl_aff_test_types.data:co_enum_special_chars.dummy }
         "! $values  {@link zcl_aff_test_types.data:co_enum_special_chars }
         special_char_enum TYPE c LENGTH 1,
       END OF struc_with_special_char_enums.
 
     CONSTANTS:
-      BEGIN OF co_enum_special_chars_values,
+      BEGIN OF co_dollar_enumvalue_spec_char,
+        "! <p class="shorttext">Dummy</p>
+        "! Dummy
+        dummy    TYPE c LENGTH 1 VALUE 'X',
         "! <p class="shorttext">Less Than</p>
         "! Less than
         "! $enumValue '<'
@@ -961,18 +997,40 @@ CLASS zcl_aff_test_types DEFINITION
 *        "! Single Quotes
 *        "! $enumValue ''''
 *        single_quotes    TYPE c LENGTH 1 VALUE '''',
-      END OF co_enum_special_chars_values.
+      END OF co_dollar_enumvalue_spec_char.
 
     TYPES:
       "! <p class="shorttext">Structure With Special Character Enum Values</p>
       "! Structure with special character enum values
-      BEGIN OF struc_wth_spcl_char_enums_vals,
+      BEGIN OF dollar_enumvalues_w_spec_chars,
         "! <p class="shorttext">Enum With Special Characters</p>
         "! Enum with special characters
-        "! $values  {@link zcl_aff_test_types.data:co_enum_special_chars_values }
-        "! $default {@link zcl_aff_test_types.data:co_enum_special_chars_values.less_than }
+        "! $values  {@link zcl_aff_test_types.data:co_dollar_enumvalue_spec_char }
+        "! $default {@link zcl_aff_test_types.data:co_dollar_enumvalue_spec_char.dummy }
         special_char_enum TYPE c LENGTH 1,
-      END OF struc_wth_spcl_char_enums_vals.
+      END OF dollar_enumvalues_w_spec_chars.
+
+    CONSTANTS:
+      BEGIN OF co_default_has_spec_char,
+        "! <p class="shorttext">Dummy</p>
+        "! Dummy
+        dummy    TYPE c LENGTH 1 VALUE 'X',
+        "! <p class="shorttext">Less Than</p>
+        "! Less than
+        "! $enumValue '<'
+        less_than    TYPE c LENGTH 1 VALUE '<',
+      END OF co_default_has_spec_char.
+
+    TYPES:
+      "! <p class="shorttext">Structure With Special Character Enum Values</p>
+      "! Structure with special character enum values
+      BEGIN OF default_has_spec_char,
+        "! <p class="shorttext">Enum With Special Characters</p>
+        "! Enum with special characters
+        "! $values  {@link zcl_aff_test_types.data:co_default_has_spec_char }
+        "! $default {@link zcl_aff_test_types.data:co_default_has_spec_char.less_than }
+        special_char_enum TYPE c LENGTH 1,
+      END OF default_has_spec_char.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
