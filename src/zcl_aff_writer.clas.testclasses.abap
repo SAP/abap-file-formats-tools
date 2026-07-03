@@ -61,8 +61,6 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       get_all_path_information FOR TESTING RAISING cx_static_check,
       get_abap_doc_for_absolute_name FOR TESTING RAISING cx_static_check,
       compare_abap_doc FOR TESTING RAISING cx_static_check,
-      callback_class_is_valid FOR TESTING RAISING cx_static_check,
-      callback_class_is_invalid FOR TESTING RAISING cx_static_check,
       validate_default FOR TESTING RAISING cx_static_check,
       validate_source FOR TESTING RAISING cx_static_check,
       get_struc_of_enum_values_cl FOR TESTING RAISING cx_static_check,
@@ -334,27 +332,6 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = exp_structure->kind act = act_structure_of_values->kind ).
     cl_abap_unit_assert=>assert_equals( exp = exp_structure->type_kind act = act_structure_of_values->type_kind ).
     cl_abap_unit_assert=>assert_equals( exp = exp_structure->struct_kind act = act_structure_of_values->struct_kind ).
-  ENDMETHOD.
-
-
-  METHOD callback_class_is_valid.
-    DATA(class_name) = `ZCL_AFF_TEST_TYPES`.
-    DATA(is_valid) = cut->is_callback_class_valid( class_name = class_name component_name = 'Component Name' ).
-    DATA(log) = cut->zif_aff_writer~get_log( ).
-    cl_abap_unit_assert=>assert_equals( exp = abap_true act = is_valid ).
-    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
-  ENDMETHOD.
-
-
-  METHOD callback_class_is_invalid.
-    DATA(class_name) = `ZCL_AFF_WRITER`.
-    DATA(is_valid) = cut->is_callback_class_valid( class_name = class_name component_name = 'Component Name' ).
-    DATA(log) = cut->zif_aff_writer~get_log( ).
-    cl_abap_unit_assert=>assert_equals( exp = abap_false act = is_valid ).
-    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
-                                                              exp_text           = zif_aff_log=>co_msg106
-                                                              exp_component_name = `Component Name`
-                                                              exp_type           = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD validate_default.
