@@ -547,6 +547,10 @@ CLASS zcl_aff_writer IMPLEMENTATION.
       abap_doc_base-min_length = abap_doc_additional-min_length.
       abap_doc_base-max_length = abap_doc_additional-max_length.
     ENDIF.
+    IF abap_doc_base-max_items IS INITIAL AND abap_doc_base-min_items IS INITIAL.
+      abap_doc_base-min_items = abap_doc_additional-min_items.
+      abap_doc_base-max_items = abap_doc_additional-max_items.
+    ENDIF.
     IF abap_doc_base-default IS INITIAL.
       abap_doc_base-default = abap_doc_additional-default.
     ENDIF.
