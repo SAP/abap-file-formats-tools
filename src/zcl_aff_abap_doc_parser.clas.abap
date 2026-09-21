@@ -15,6 +15,8 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
                  exclusive_maximum  TYPE string VALUE `$exclusiveMaximum`,
                  max_length         TYPE string VALUE `$maxLength`,
                  min_length         TYPE string VALUE `$minLength`,
+                 max_items          TYPE string VALUE `$maxItems`,
+                 min_items          TYPE string VALUE `$minItems`,
                  multiple_of        TYPE string VALUE `$multipleOf`,
                  content_media_type TYPE string VALUE `$contentMediaType`,
                  content_encoding   TYPE string VALUE `$contentEncoding`,
@@ -37,6 +39,8 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
         default            TYPE string,
         min_length         TYPE string,
         max_length         TYPE string,
+        min_items          TYPE string,
+        max_items          TYPE string,
         content_media_type TYPE string,
         content_encoding   TYPE string,
         enum_value         TYPE string,
@@ -164,8 +168,10 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD parse_description.
-    FIND FIRST OCCURRENCE OF PCRE `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$enumValue|\$contentMediaType|\$contentEncoding|\$pattern)`
-      IN abap_doc_string MATCH OFFSET DATA(offset).
+    DATA(annotation_pattern) = `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|` &&
+                               `\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$maxItems|` &&
+                               `\$minItems|\$enumValue|\$contentMediaType|\$contentEncoding|\$pattern)`.
+    FIND FIRST OCCURRENCE OF PCRE annotation_pattern IN abap_doc_string MATCH OFFSET DATA(offset).
     IF sy-subrc = 0.
       DATA(description) = abap_doc_string+0(offset).
       remove_leading_trailing_spaces( CHANGING string_to_work_on = description ).
@@ -196,7 +202,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
         WHEN abap_doc_annotation-pattern.
           parse_pattern( ).
         WHEN abap_doc_annotation-minimum OR abap_doc_annotation-maximum OR abap_doc_annotation-exclusive_minimum OR abap_doc_annotation-exclusive_maximum
-             OR abap_doc_annotation-max_length OR abap_doc_annotation-multiple_of OR abap_doc_annotation-min_length.
+             OR abap_doc_annotation-max_length OR abap_doc_annotation-multiple_of OR abap_doc_annotation-min_length
+             OR abap_doc_annotation-max_items OR abap_doc_annotation-min_items.
           parse_number_annotations( key_word = key_word ).
         WHEN abap_doc_annotation-enum_value.
           parse_enum_value( ).
@@ -408,6 +415,14 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       WHEN abap_doc_annotation-max_length.
         IF decoded_abap_doc-max_length IS INITIAL.
           decoded_abap_doc-max_length = get_number_annotation( annotation_name = key_word ).
+        ENDIF.
+      WHEN abap_doc_annotation-min_items.
+        IF decoded_abap_doc-min_items IS INITIAL.
+          decoded_abap_doc-min_items = get_number_annotation( annotation_name = key_word ).
+        ENDIF.
+      WHEN abap_doc_annotation-max_items.
+        IF decoded_abap_doc-max_items IS INITIAL.
+          decoded_abap_doc-max_items = get_number_annotation( annotation_name = key_word ).
         ENDIF.
     ENDCASE.
   ENDMETHOD.

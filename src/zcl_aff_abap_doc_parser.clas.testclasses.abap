@@ -43,6 +43,7 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS pattern_no_single_quotes FOR TESTING RAISING cx_static_check.
     METHODS pattern_no_value FOR TESTING RAISING cx_static_check.
     METHODS pattern FOR TESTING RAISING cx_static_check.
+    METHODS min_max_items FOR TESTING RAISING cx_static_check.
 
 ENDCLASS.
 
@@ -612,6 +613,18 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
                                                               exp_text           = |There are several occurrences of annotation { zcl_aff_abap_doc_parser=>abap_doc_annotation-pattern } . First valid is used|
                                                               exp_type           = zif_aff_log=>c_message_type-info
                                                               exp_component_name = `Component Name` ).
+  ENDMETHOD.
+
+  METHOD min_max_items.
+    DATA(abap_doc_to_parse) = `<p class="shorttext">Title</p> This is the description. $minItems 1 $maxItems 5`.
+    DATA(act_abap_doc) = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc_to_parse
+      CHANGING
+        log            = log ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` min_items = '1' max_items = '5' ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
   ENDMETHOD.
 
 ENDCLASS.

@@ -226,6 +226,13 @@ CLASS zcl_aff_test_types DEFINITION
     my_standard_table TYPE STANDARD TABLE OF mystring WITH DEFAULT KEY.
 
     TYPES:
+    "! <p class="shorttext">A Table With Item Bounds</p>
+    "! A standard table of myString with item bounds
+    "! $minItems 1
+    "! $maxItems 5
+    my_table_with_item_bounds TYPE STANDARD TABLE OF mystring WITH DEFAULT KEY.
+
+    TYPES:
     "! <p class="shorttext">A Hashed Table</p>
     "! A hashed table of my_structure
     my_hashed_table TYPE HASHED TABLE OF my_structure WITH UNIQUE KEY my_first_element.

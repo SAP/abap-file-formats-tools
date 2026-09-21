@@ -599,6 +599,12 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     IF CAST cl_abap_tabledescr( table_description )->has_unique_key = abap_true.
       write_tag( `"uniqueItems": true,` ).
     ENDIF.
+    IF abap_doc-min_items IS NOT INITIAL.
+      write_tag( |"minItems": { abap_doc-min_items },| ).
+    ENDIF.
+    IF abap_doc-max_items IS NOT INITIAL.
+      write_tag( |"maxItems": { abap_doc-max_items },| ).
+    ENDIF.
     write_open_tag( `"items": {` ).
   ENDMETHOD.
 
@@ -743,6 +749,12 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     write_tag( '"type": "array",' ).
     IF table_description->has_unique_key = abap_true.
       write_tag( '"uniqueItems": true,' ).
+    ENDIF.
+    IF abap_doc-min_items IS NOT INITIAL.
+      write_tag( |"minItems": { abap_doc-min_items },| ).
+    ENDIF.
+    IF abap_doc-max_items IS NOT INITIAL.
+      write_tag( |"maxItems": { abap_doc-max_items },| ).
     ENDIF.
     write_open_tag( '"items": {' ).
   ENDMETHOD.
