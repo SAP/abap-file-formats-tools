@@ -168,8 +168,10 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD parse_description.
-    FIND FIRST OCCURRENCE OF PCRE `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$maxItems|\$minItems|\$enumValue|\$contentMediaType|\$contentEncoding|\$pattern)`
-      IN abap_doc_string MATCH OFFSET DATA(offset).
+    DATA(annotation_pattern) = `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|` &&
+                               `\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$maxItems|` &&
+                               `\$minItems|\$enumValue|\$contentMediaType|\$contentEncoding|\$pattern)`.
+    FIND FIRST OCCURRENCE OF PCRE annotation_pattern IN abap_doc_string MATCH OFFSET DATA(offset).
     IF sy-subrc = 0.
       DATA(description) = abap_doc_string+0(offset).
       remove_leading_trailing_spaces( CHANGING string_to_work_on = description ).
