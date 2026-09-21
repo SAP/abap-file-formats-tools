@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v4
-    - uses: Homebrew/actions/setup-homebrew@master
+    - uses: Homebrew/actions/setup-homebrew@main
     - uses: actions/setup-node@v4
     - name: Downport and Unit Tests
       run: |
