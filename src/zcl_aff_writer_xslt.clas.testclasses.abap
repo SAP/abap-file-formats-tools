@@ -1347,7 +1347,10 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       structure_with_enums           FOR TESTING RAISING cx_static_check,
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
       struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
-      enable_extension               FOR TESTING RAISING cx_static_check.
+      enable_extension               FOR TESTING RAISING cx_static_check,
+    struc_with_special_char_enums FOR TESTING RAISING cx_static_check,
+    dollar_enum_val_with_spec_char FOR TESTING RAISING cx_static_check,
+    default_has_spec_char FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
@@ -2421,6 +2424,164 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act_output ).
   ENDMETHOD.
 
+  METHOD struc_with_special_char_enums.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_special_char_enums.
+    DATA(act_output) = test_generator->generate_type( test_type ).
+    me->exp_transformation = VALUE #(
+( `<tt:cond>` )
+( `  <object>` )
+( `    <tt:assign to-ref="SPECIAL_CHAR_ENUM" val="C('X')"/>` )
+( `    <tt:group>` )
+( `      <tt:cond s-check="SPECIAL_CHAR_ENUM!=C('X')" frq="?">` )
+( `        <str name="specialCharEnum">` )
+( `          <tt:deserialize>` )
+( `            <tt:read type="C" var="VARIABLE"/>` )
+( `            <tt:cond-var check="VARIABLE='dummy'">` )
+( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'X'"/>` )
+( `            </tt:cond-var>` )
+( `            <tt:cond-var check="VARIABLE='lessThan'">` )
+( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#60;'"/>` )
+( `            </tt:cond-var>` )
+( `            <tt:cond-var check="VARIABLE='greaterThan'">` )
+( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#62;'"/>` )
+( `            </tt:cond-var>` )
+( `            <tt:cond-var check="VARIABLE='ampersand'">` )
+( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#38;'"/>` )
+( `            </tt:cond-var>` )
+( `          </tt:deserialize>` )
+( `          <tt:serialize>` )
+( `            <tt:value ref="SPECIAL_CHAR_ENUM" map="` )
+( `              val('X')=xml('dummy'),` )
+( `              val('&#60;')=xml('lessThan'),` )
+( `              val('&#62;')=xml('greaterThan'),` )
+( `              val('&#38;')=xml('ampersand')"` )
+( `            />` )
+( `          </tt:serialize>` )
+( `        </str>` )
+( `      </tt:cond>` )
+( `      <tt:d-cond frq="*">` )
+( `         <_ tt:lax="on">` )
+(
+`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`
+)
+( `            <tt:with-parameter name="MEMBERS" val="'specialCharEnum;'"/>` )
+( `          </tt:call-method>` )
+( `          <tt:skip/>` )
+( `        </_>` )
+( `      </tt:d-cond>` )
+( `      <tt:d-cond frq="?">` )
+( `        <__/>` )
+( `      </tt:d-cond>` )
+( `    </tt:group>` )
+( `  </object>` )
+( `</tt:cond>` ) ).
+    validate_output( act_output ).
+  ENDMETHOD.
+
+
+  METHOD default_has_spec_char.
+    DATA test_type TYPE zcl_aff_test_types=>default_has_spec_char.
+    DATA(act_output) = test_generator->generate_type( test_type ).
+    me->exp_transformation = VALUE #(
+( `<tt:cond>` )
+( `  <object>` )
+( `    <tt:assign to-ref="SPECIAL_CHAR_ENUM" val="C('&#60;')"/>` )
+( `    <tt:group>` )
+( `      <tt:cond s-check="SPECIAL_CHAR_ENUM!=C('&#60;')" frq="?">` )
+( `        <str name="specialCharEnum">` )
+( `          <tt:deserialize>` )
+( `            <tt:read type="C" var="VARIABLE"/>` )
+( `            <tt:cond-var check="VARIABLE='dummy'">` )
+( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'X'"/>` )
+( `            </tt:cond-var>` )
+( `            <tt:cond-var check="VARIABLE='&#60;'">` )
+( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#60;'"/>` )
+( `            </tt:cond-var>` )
+( `          </tt:deserialize>` )
+( `          <tt:serialize>` )
+( `            <tt:value ref="SPECIAL_CHAR_ENUM" map="` )
+( `              val('X')=xml('dummy'),` )
+( `              val('&#60;')=xml('&#60;')"` )
+( `            />` )
+( `          </tt:serialize>` )
+( `        </str>` )
+( `      </tt:cond>` )
+( `      <tt:d-cond frq="*">` )
+( `         <_ tt:lax="on">` )
+(
+`          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`
+)
+( `            <tt:with-parameter name="MEMBERS" val="'specialCharEnum;'"/>` )
+( `          </tt:call-method>` )
+( `          <tt:skip/>` )
+( `        </_>` )
+( `      </tt:d-cond>` )
+( `      <tt:d-cond frq="?">` )
+( `        <__/>` )
+( `      </tt:d-cond>` )
+( `    </tt:group>` )
+( `  </object>` )
+( `</tt:cond>` ) ).
+    validate_output( act_output ).
+  ENDMETHOD.
+  METHOD dollar_enum_val_with_spec_char.
+    DATA test_type TYPE zcl_aff_test_types=>dollar_enumvalues_w_spec_chars.
+    DATA(act_output) = test_generator->generate_type( test_type ).
+    me->exp_transformation = VALUE #(
+      ( `<tt:cond>` )
+      ( `  <object>` )
+      ( `    <tt:assign to-ref="SPECIAL_CHAR_ENUM" val="C('X')"/>` )
+      ( `    <tt:group>` )
+      ( `      <tt:cond s-check="SPECIAL_CHAR_ENUM!=C('X')" frq="?">` )
+      ( `        <str name="specialCharEnum">` )
+      ( `          <tt:deserialize>` )
+      ( `            <tt:read type="C" var="VARIABLE"/>` )
+      ( `            <tt:cond-var check="VARIABLE='dummy'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'X'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `            <tt:cond-var check="VARIABLE='&#60;'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#60;'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `            <tt:cond-var check="VARIABLE='&#62;'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#62;'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `            <tt:cond-var check="VARIABLE='&#38;'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#38;'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `            <tt:cond-var check="VARIABLE='&#34;'">` )
+      ( `              <tt:assign  to-ref="SPECIAL_CHAR_ENUM" val="'&#34;'"/>` )
+      ( `            </tt:cond-var>` )
+      ( `          </tt:deserialize>` )
+      ( `          <tt:serialize>` )
+      ( `            <tt:value ref="SPECIAL_CHAR_ENUM" map="` )
+      ( `              val('X')=xml('dummy'),` )
+      ( `              val('&#60;')=xml('&#60;'),` )
+      ( `              val('&#62;')=xml('&#62;'),` )
+      ( `              val('&#38;')=xml('&#38;'),` )
+      ( `              val('&#34;')=xml('&#34;')"` )
+      ( `            />` )
+      ( `          </tt:serialize>` )
+      ( `        </str>` )
+      ( `      </tt:cond>` )
+      ( `      <tt:d-cond frq="*">` )
+      ( `         <_ tt:lax="on">` )
+      (
+      `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">`
+      )
+      ( `            <tt:with-parameter name="MEMBERS" val="'specialCharEnum;'"/>` )
+      ( `          </tt:call-method>` )
+      ( `          <tt:skip/>` )
+      ( `        </_>` )
+      ( `      </tt:d-cond>` )
+      ( `      <tt:d-cond frq="?">` )
+      ( `        <__/>` )
+      ( `      </tt:d-cond>` )
+      ( `    </tt:group>` )
+      ( `  </object>` )
+      ( `</tt:cond>` ) ).
+    validate_output( act_output ).
+  ENDMETHOD.
+
   METHOD validate_output.
     DATA exp TYPE string_table.
 
@@ -2493,6 +2654,12 @@ RISK LEVEL DANGEROUS.
       structure_with_default_problem       FOR TESTING RAISING cx_static_check,
 
       struc_with_own_enum_values           FOR TESTING RAISING cx_static_check,
+
+      struc_with_special_char_enums        FOR TESTING RAISING cx_static_check,
+
+    dollar_enum_val_with_spec_char FOR TESTING RAISING cx_static_check,
+
+    default_has_spec_char FOR TESTING RAISING cx_static_check,
 
     from_abap_to_json
         IMPORTING
@@ -2932,6 +3099,108 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     test_type = VALUE #( enum_component = 'AA' ).
     exp_json = VALUE #(
         ( `{` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD struc_with_special_char_enums.
+    DATA test_type TYPE zcl_aff_test_types=>struc_with_special_char_enums.
+    test_type = VALUE #( special_char_enum = '<' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "lessThan"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '>' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "greaterThan"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '&' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "ampersand"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD dollar_enum_val_with_spec_char.
+    DATA test_type TYPE zcl_aff_test_types=>dollar_enumvalues_w_spec_chars.
+    test_type = VALUE #( special_char_enum = '<' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "<"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '>' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": ">"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '&' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "&"` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+    test_type = VALUE #( special_char_enum = '"' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "\""` )
+        ( `}` ) ).
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD default_has_spec_char.
+    DATA test_type TYPE zcl_aff_test_types=>default_has_spec_char.
+    test_type = VALUE #( special_char_enum = '<' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `}` ) ). "empty json because "<" is default
+    do_integration_test(
+      EXPORTING
+        test_type = test_type
+      CHANGING
+        act_data  = test_type ).
+
+    test_type = VALUE #( special_char_enum = 'X' ).
+    exp_json = VALUE #(
+        ( `{` )
+        ( `    "specialCharEnum": "dummy"` )
         ( `}` ) ).
     do_integration_test(
       EXPORTING
