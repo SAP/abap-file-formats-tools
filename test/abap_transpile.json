@@ -1,9 +1,12 @@
 {
-  "input_folder": "downport",
+  "input_folder": ["src", "deps"],
   "input_filter": [
     "intf",
     "dtel",
     "clas"
+  ],
+  "exclude_filter": [
+    "zcl_aff_writer_xslt\\.clas\\.testclasses\\.abap$"
   ],
   "output_folder": "output",
   "libs": [
