@@ -1,0 +1,30 @@
+{
+  "input_folder": ["src", "deps", "test", "abap-file-formats/file-formats"],
+  "input_filter": [
+    "\\.intf\\.",
+    "\\.dtel\\.",
+    "\\.clas\\."
+  ],
+  "exclude_filter": [
+    "\\.testclasses\\.abap$",
+    "[\\\\/]examples[\\\\/]"
+  ],
+  "output_folder": "output",
+  "libs": [
+    {
+      "url": "https://github.com/open-abap/open-abap-core"
+    }
+  ],
+  "write_unit_tests": false,
+  "options": {
+    "ignoreSyntaxCheck": false,
+    "addFilenames": true,
+    "addCommonJS": true,
+    "keywords": ["in", "default"],
+    "unknownTypes": "runtimeError",
+    "setup": {
+      "filename": "../test/setup.mjs",
+      "preFunction": "setup"
+    }
+  }
+}
