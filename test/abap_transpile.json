@@ -49,22 +49,6 @@
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_different_default", "note": "abap.types.typeTodoDecFloat16Type is not a constructor"},
       {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_include"},
 
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "table_with_call_of_struc", "note": "callback stuff"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "simple_table_with_callbackclas", "note": "callbacks.. https://github.com/SAP/abap-file-formats-tools/issues/63 "},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "struct_with_table_callback"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "element_with_callbackclas"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "element_in_structure_callback"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "table_of_struc_with_callback"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "nested_table_with_callback"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "struc_with_struc_callback"},
-      {"object": "ZCL_AFF_WRITER_JSON_SCHEMA", "class": "ltcl_json_writer_abap_doc", "method": "structure_with_wrong_callback"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_invalid", "note": "??"},
-      {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "callback_class_is_valid", "note": "cl_oo_classname_service=>get_all_method_includes"},
-      {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "callback_class"},
-      {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "too_many_callbackclasses"},
-      {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "wrong_usage_callback_class"},
-
-
       {"object": "ZCL_AFF_WRITER", "class": "ltcl_type_writer", "method": "get_type_info_string_like_enum", "note": "enums are not yet supported"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "enum_values", "note": "ENUMS out of scope"},
       {"object": "ZCL_AFF_ABAP_DOC_PARSER", "class": "ltcl_aff_abap_doc_parser", "method": "too_many_enum_values", "note": "ENUMS out of scope"},
