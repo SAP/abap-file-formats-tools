@@ -25,6 +25,11 @@
   "rules": {
     "cds_comment_style": true,
     "cds_legacy_view": true,
+    "add_test_attributes": true,
+    "aff_and_xml": true,
+    "align_pseudo_comments": true,
+    "align_type_expressions": false,
+    "catch_and_raise": true,
     "change_if_to_case": false,
     "classic_exceptions_overlap": true,
     "expand_macros": true,
