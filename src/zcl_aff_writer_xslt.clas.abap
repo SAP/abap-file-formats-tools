@@ -598,7 +598,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_prefixed_default.
     DATA value_copy TYPE string.
-    CASE element_description->type_kind.
+    CASE element_description->type_kind.                "#EC CI_BOOL_OK
       WHEN cl_abap_typedescr=>typekind_int OR cl_abap_typedescr=>typekind_int1 OR cl_abap_typedescr=>typekind_int2.
         value_copy = value.
         CONDENSE value_copy.
