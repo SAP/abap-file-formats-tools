@@ -46,6 +46,7 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       get_type_info_boolean1 FOR TESTING RAISING cx_static_check,
       get_type_info_boolean2 FOR TESTING RAISING cx_static_check,
       get_type_info_boolean3 FOR TESTING RAISING cx_static_check,
+      get_type_info_boolean4 FOR TESTING RAISING cx_static_check,
       get_type_info_numeric FOR TESTING RAISING cx_static_check,
       get_type_info_date_time FOR TESTING RAISING cx_static_check,
       stack_stores_operations FOR TESTING RAISING cx_static_check,
@@ -125,6 +126,16 @@ CLASS ltcl_type_writer IMPLEMENTATION.
 
   METHOD get_type_info_boolean3.
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-boolean act = cut->get_json_type_from_description( get_element_description( VALUE flag( ) ) ) ).
+  ENDMETHOD.
+
+  METHOD get_type_info_boolean4.
+    TRY.
+        DATA built_in_bool TYPE REF TO data.
+        CREATE DATA built_in_bool TYPE ('B').
+        cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-boolean act = cut->get_json_type_from_description( get_element_description( built_in_bool->* ) ) ).
+      CATCH cx_sy_create_data_error.
+        cl_abap_unit_assert=>skip( 'Build in boolean type B is not available' ).
+    ENDTRY.
   ENDMETHOD.
 
   METHOD get_type_info_numeric.
