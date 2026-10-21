@@ -177,7 +177,7 @@ CLASS zcl_aff_writer DEFINITION
   PRIVATE SECTION.
     CONSTANTS:
       BEGIN OF c_abap_types,
-        boolean   TYPE string VALUE `ABAP_BOOLEAN;ABAP_BOOL;BOOLEAN;BOOLE_D;XFELD;XSDBOOLEAN;FLAG`,
+        boolean   TYPE string VALUE `ABAP_BOOLEAN;ABAP_BOOL;BOOLEAN;BOOLE_D;XFELD;XSDBOOLEAN;FLAG;B`,
         timestamp TYPE string VALUE `TIMESTAMP;TIMESTAMPL`,
       END OF c_abap_types.
 
@@ -237,11 +237,13 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
 
   METHOD get_json_type_from_description.
+    CONSTANTS typekind_bool TYPE abap_typekind VALUE 'B'. "See CL_ABAP_TYPEDESCR=>TYPEKIND_BOOL, no direct usage for compatibility
     CASE element_description->type_kind.
       WHEN cl_abap_typedescr=>typekind_string OR cl_abap_typedescr=>typekind_csequence OR
            cl_abap_typedescr=>typekind_clike OR cl_abap_typedescr=>typekind_char OR
            cl_abap_typedescr=>typekind_w OR cl_abap_typedescr=>typekind_xstring OR
-           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum.
+           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum OR
+           typekind_bool.
         result = COND #( WHEN is_type_boolean( element_description ) THEN zif_aff_writer=>type_info-boolean
                          ELSE zif_aff_writer=>type_info-string ).
       WHEN cl_abap_typedescr=>typekind_float OR cl_abap_typedescr=>typekind_int OR
@@ -263,13 +265,15 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD is_type_boolean.
     DATA(type_name) = element_description->get_relative_name( ).
-    result = xsdbool( element_description->output_length = 1 AND ( type_name IS NOT INITIAL AND c_abap_types-boolean CS type_name ) ).
+    SPLIT c_abap_types-boolean AT ';' INTO TABLE DATA(booleans).
+    result = xsdbool( element_description->output_length = 1 AND ( type_name IS NOT INITIAL AND line_exists( booleans[ table_line = type_name ] ) ) ).
   ENDMETHOD.
 
 
   METHOD is_type_timestamp.
     DATA(type_name) = element_description->get_relative_name( ).
-    result = xsdbool( type_name IS NOT INITIAL AND c_abap_types-timestamp CS type_name ).
+    SPLIT c_abap_types-timestamp AT ';' INTO TABLE DATA(timestamps).
+    result = xsdbool( type_name IS NOT INITIAL AND line_exists( timestamps[ table_line = type_name ] ) ).
   ENDMETHOD.
 
 

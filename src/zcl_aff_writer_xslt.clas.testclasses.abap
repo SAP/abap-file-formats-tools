@@ -106,6 +106,7 @@ CLASS ltcl_type_writer_xslt DEFINITION FINAL FOR TESTING
       struc_tab_struc_tab          FOR TESTING RAISING cx_static_check,
       type_timestamp               FOR TESTING RAISING cx_static_check,
       type_boolean                 FOR TESTING RAISING cx_static_check,
+      type_built_in_boolean        FOR TESTING RAISING cx_static_check,
       type_numeric                 FOR TESTING RAISING cx_static_check,
       type_string                  FOR TESTING RAISING cx_static_check,
       open_unsupported_node        FOR TESTING RAISING cx_static_check,
@@ -457,6 +458,25 @@ CLASS ltcl_type_writer_xslt IMPLEMENTATION.
         ( `</tt:cond>` ) ).
 
     validate_output( act_output ).
+  ENDMETHOD.
+
+  METHOD type_built_in_boolean.
+    TRY.
+        DATA built_in_bool TYPE REF TO data.
+        CREATE DATA built_in_bool TYPE ('B').
+        DATA(act_output) = test_generator->generate_type( built_in_bool->* ).
+
+        me->exp_transformation = VALUE #(
+            ( `<tt:cond>` )
+            ( `    <bool>` )
+            ( `        <tt:value option="format(boolean)"/>` )
+            ( `    </bool>` )
+            ( `</tt:cond>` ) ).
+
+        validate_output( act_output ).
+      CATCH cx_sy_create_data_error.
+        cl_abap_unit_assert=>skip( 'Build in boolean type B is not available' ).
+    ENDTRY.
   ENDMETHOD.
 
   METHOD type_numeric.
