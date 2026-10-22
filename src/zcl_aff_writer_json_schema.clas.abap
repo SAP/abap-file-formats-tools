@@ -206,7 +206,13 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         IMPORTING
           element_description TYPE REF TO cl_abap_elemdescr
         RETURNING
-          VALUE(result)       TYPE abap_bool.
+          VALUE(result)       TYPE abap_bool,
+       escape_xml_chars
+        IMPORTING
+          value         TYPE string
+        RETURNING
+          VALUE(result) TYPE string.
+
 ENDCLASS.
 
 
@@ -393,9 +399,9 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     indent_level = indent_level + 1.
     LOOP AT property_table ASSIGNING FIELD-SYMBOL(<value>).
       IF sy-tabix < lines( property_table ).
-        write_tag( |"{ <value> }",| ).
+        write_tag( |"{ escape_xml_chars( <value> ) }",| ).
       ELSE.
-        write_tag( |"{ <value> }"| ).
+        write_tag( |"{ escape_xml_chars( <value> ) }"| ).
       ENDIF.
     ENDLOOP.
     indent_level = indent_level - 1.
@@ -489,7 +495,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         default = <entry>-overwritten_value.
       ENDIF.
 
-      default = |"{ default }"|.
+      default = |"{ escape_xml_chars( default ) }"|.
     ELSEIF is_default_value_valid( element_description = element_description default_value = default fullname_of_type = fullname_of_type ).
       IF json_type = zif_aff_writer=>type_info-numeric OR json_type = zif_aff_writer=>type_info-boolean.
         REPLACE ALL OCCURRENCES OF `"` IN default WITH ``.
@@ -511,6 +517,11 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     write_tag( |"default": { default },| ).
+  ENDMETHOD.
+
+  METHOD escape_xml_chars.
+    result = value.
+    REPLACE ALL OCCURRENCES OF '"' IN result WITH '\"'.
   ENDMETHOD.
 
 
