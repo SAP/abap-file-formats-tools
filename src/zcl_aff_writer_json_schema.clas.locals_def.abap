@@ -1,40 +1,58 @@
-class lcl_aff_conditions definition final.
-  public section.
-    types:
-      begin of enum_member,
-        link type string,
-        json type string,
-      end of enum_member,
-      enum_members type standard table of enum_member with empty key,
-      begin of node,
-        parent type i,
-        name type string,
-        type_key type string,
-        items type abap_bool,
-        kind type abap_typekind,
-        json_type type string,
-        doc type zcl_aff_abap_doc_parser=>abap_doc,
-        default_json type string,
-        members type enum_members,
-      end of node,
-      nodes type standard table of node with empty key.
-    methods constructor importing occurrences type nodes.
+CLASS lcl_aff_conditions DEFINITION FINAL.
+  PUBLIC SECTION.
+    TYPES:
+      BEGIN OF enum_member,
+        link TYPE string,
+        json TYPE string,
+      END OF enum_member,
+      enum_members TYPE STANDARD TABLE OF enum_member WITH EMPTY KEY,
+      BEGIN OF node,
+        parent TYPE i,
+        name TYPE string,
+        type_key TYPE string,
+        items TYPE abap_bool,
+        kind TYPE abap_typekind,
+        json_type TYPE string,
+        doc TYPE zcl_aff_abap_doc_parser=>abap_doc,
+        default_json TYPE string,
+        members TYPE enum_members,
+      END OF node,
+      nodes TYPE STANDARD TABLE OF node WITH EMPTY KEY.
+    METHODS constructor IMPORTING occurrences TYPE nodes.
     "! Returns the "allOf" member for the root schema, or nothing if there are no conditions
-    methods compile returning value(result) type string raising zcx_aff_tools.
-  private section.
-    data occurrences type nodes.
-    data context type i.
-    data component type string.
-    methods compile_rule importing target type node condition type string
-      returning value(result) type string raising zcx_aff_tools.
-    methods resolve importing link type string returning value(result) type i raising zcx_aff_tools.
-    methods descend importing start type i names type string_table returning value(result) type i.
-    methods literal importing field type i token type string returning value(result) type string raising zcx_aff_tools.
-    methods normalize_link importing link type string returning value(result) type string raising zcx_aff_tools.
-    methods common_scope importing first type i second type i returning value(result) type i.
-    methods wrap importing target type i scope type i json type string guard type abap_bool default abap_false
-      returning value(result) type string raising zcx_aff_tools.
-    methods quote importing text type string returning value(result) type string.
-    methods fail importing text type string raising zcx_aff_tools.
-endclass.
+    METHODS compile RETURNING VALUE(result) TYPE string RAISING zcx_aff_tools.
+  PRIVATE SECTION.
+    DATA occurrences TYPE nodes.
+    DATA context TYPE i.
+    DATA component TYPE string.
+    METHODS compile_rule
+      IMPORTING target        TYPE node
+                condition     TYPE string
+      RETURNING VALUE(result) TYPE string
+      RAISING   zcx_aff_tools.
+    METHODS resolve IMPORTING link TYPE string RETURNING VALUE(result) TYPE i RAISING zcx_aff_tools.
+    METHODS descend
+      IMPORTING start         TYPE i
+                names         TYPE string_table
+      RETURNING VALUE(result) TYPE i.
+    METHODS literal
+      IMPORTING field         TYPE i
+                token         TYPE string
+      RETURNING VALUE(result) TYPE string
+      RAISING   zcx_aff_tools.
+    METHODS normalize_link IMPORTING link TYPE string RETURNING VALUE(result) TYPE string RAISING zcx_aff_tools.
+    METHODS common_scope
+      IMPORTING first         TYPE i
+                second        TYPE i
+      RETURNING VALUE(result) TYPE i.
+    METHODS wrap
+      IMPORTING target        TYPE i
+                scope         TYPE i
+                json          TYPE string
+                guard         TYPE abap_bool DEFAULT abap_false
+      RETURNING VALUE(result) TYPE string
+      RAISING   zcx_aff_tools.
+    METHODS quote IMPORTING text TYPE string RETURNING VALUE(result) TYPE string.
+    METHODS fail IMPORTING text TYPE string RAISING zcx_aff_tools.
+ENDCLASS.
 

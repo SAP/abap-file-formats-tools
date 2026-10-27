@@ -1,193 +1,193 @@
-class lcl_aff_conditions implementation.
-  method constructor.
+CLASS lcl_aff_conditions IMPLEMENTATION.
+  METHOD constructor.
     me->occurrences = occurrences.
-  endmethod.
+  ENDMETHOD.
 
-  method quote.
+  METHOD quote.
     result = '"' && escape( val = text format = cl_abap_format=>e_json_string ) && '"'.
-  endmethod.
+  ENDMETHOD.
 
-  method fail.
-    raise exception new zcx_aff_tools( message = |Conditional annotation on { component }: { text }| ).
-  endmethod.
+  METHOD fail.
+    RAISE EXCEPTION NEW zcx_aff_tools( message = |Conditional annotation on { component }: { text }| ).
+  ENDMETHOD.
 
-  method normalize_link.
+  METHOD normalize_link.
     result = link.
-    replace all occurrences of pcre '\s' in result with ''.
-    if not matches( val = result pcre = '\{@link[^{}]+\}' ).
+    REPLACE ALL OCCURRENCES OF PCRE '\s' IN result WITH ''.
+    IF NOT matches( val = result pcre = '\{@link[^{}]+\}' ).
       fail( 'Expected an ABAP Doc link' ).
-    endif.
+    ENDIF.
     result = substring( val = result off = 6 len = strlen( result ) - 7 ).
-    replace all occurrences of 'data:' in result with ''.
+    REPLACE ALL OCCURRENCES OF 'data:' IN result WITH ''.
     result = to_upper( result ).
-    if not matches( val = result pcre = '[A-Z0-9_/]+\.[A-Z0-9_]+(\.[A-Z0-9_]+)+' ).
+    IF NOT matches( val = result pcre = '[A-Z0-9_/]+\.[A-Z0-9_]+(\.[A-Z0-9_]+)+' ).
       fail( 'Invalid component link' ).
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
-  method descend.
+  METHOD descend.
     result = start.
-    loop at names into data(name).
+    LOOP AT names INTO DATA(name).
       result = line_index( occurrences[ parent = result name = to_mixed( to_lower( name ) ) items = abap_false ] ).
-      if result = 0.
-        return.
-      endif.
-    endloop.
-  endmethod.
+      IF result = 0.
+        RETURN.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
 
-  method resolve.
-    data(key) = normalize_link( link ).
-    split key at '.' into table data(parts).
-    data(type_key) = parts[ 1 ] && '.' && parts[ 2 ].
-    delete parts from 1 to 2.
+  METHOD resolve.
+    DATA(key) = normalize_link( link ).
+    SPLIT key AT '.' INTO TABLE DATA(parts).
+    DATA(type_key) = parts[ 1 ] && '.' && parts[ 2 ].
+    DELETE parts FROM 1 TO 2.
     " A declaration in the nearest enclosing occurrence denotes this row/object.
-    data(ancestor) = context.
-    while ancestor > 0.
-      if occurrences[ ancestor ]-type_key = type_key.
+    DATA(ancestor) = context.
+    WHILE ancestor > 0.
+      IF occurrences[ ancestor ]-type_key = type_key.
         result = descend( start = ancestor names = parts ).
-        if result = 0.
+        IF result = 0.
           fail( |Unknown component in { key }| ).
-        endif.
-        return.
-      endif.
+        ENDIF.
+        RETURN.
+      ENDIF.
       ancestor = occurrences[ ancestor ]-parent.
-    endwhile.
+    ENDWHILE.
     " Else the declaration must have one unambiguous reachable occurrence.
-    loop at occurrences transporting no fields where type_key = type_key.
-      data(candidate) = descend( start = sy-tabix names = parts ).
-      if candidate > 0.
-        if result > 0.
+    LOOP AT occurrences TRANSPORTING NO FIELDS WHERE type_key = type_key.
+      DATA(candidate) = descend( start = sy-tabix names = parts ).
+      IF candidate > 0.
+        IF result > 0.
           fail( |Ambiguous field link { key }| ).
-        endif.
+        ENDIF.
         result = candidate.
-      endif.
-    endloop.
-    if result = 0.
+      ENDIF.
+    ENDLOOP.
+    IF result = 0.
       fail( |Unknown or unreachable field link { key }| ).
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
-  method literal.
-    data(node) = occurrences[ field ].
-    if token(1) = '{'.
-      data(key) = normalize_link( token ).
-      if node-members is initial.
+  METHOD literal.
+    DATA(node) = occurrences[ field ].
+    IF token(1) = '{'.
+      DATA(key) = normalize_link( token ).
+      IF node-members IS INITIAL.
         fail( 'Constant links require a declared AFF enum' ).
-      endif.
-      result = value #( node-members[ link = key ]-json optional ).
-      if result is initial.
+      ENDIF.
+      result = VALUE #( node-members[ link = key ]-json OPTIONAL ).
+      IF result IS INITIAL.
         fail( |Constant { key } is not a member of the field enum| ).
-      endif.
-      return.
-    endif.
-    if node-members is not initial.
+      ENDIF.
+      RETURN.
+    ENDIF.
+    IF node-members IS NOT INITIAL.
       fail( 'Enum comparison values must use constant links' ).
-    endif.
+    ENDIF.
     " The condition pattern only admits boolean, quoted string and numeric literals.
-    data(literal_type) = cond string( when token = 'true' or token = 'false' then 'boolean'
-                                      when token(1) = `'` then 'string'
-                                      else 'numeric' ).
-    if literal_type <> node-json_type.
+    DATA(literal_type) = COND string( WHEN token = 'true' OR token = 'false' THEN 'boolean'
+                                      WHEN token(1) = `'` THEN 'string'
+                                      ELSE 'numeric' ).
+    IF literal_type <> node-json_type.
       fail( |{ literal_type } literal used for a { node-json_type } field| ).
-    endif.
-    data(decimal_kinds) = cl_abap_typedescr=>typekind_packed && cl_abap_typedescr=>typekind_float
+    ENDIF.
+    DATA(decimal_kinds) = cl_abap_typedescr=>typekind_packed && cl_abap_typedescr=>typekind_float
       && cl_abap_typedescr=>typekind_decfloat16 && cl_abap_typedescr=>typekind_decfloat34.
-    if literal_type = 'string'.
+    IF literal_type = 'string'.
       result = quote( replace( val = substring( val = token off = 1 len = strlen( token ) - 2 ) sub = `''` with = `'` occ = 0 ) ).
-    elseif literal_type = 'numeric' and token cs '.' and node-kind na decimal_kinds.
+    ELSEIF literal_type = 'numeric' AND token CS '.' AND node-kind NA decimal_kinds.
       fail( 'Non-integral literal used for an integer field' ).
-    else.
+    ELSE.
       result = token.
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
-  method common_scope.
+  METHOD common_scope.
     " The root is an ancestor of every node, so the search always succeeds.
     result = first.
-    while result > 0.
-      data(ancestor) = second.
-      while ancestor > 0.
-        if ancestor = result.
-          return.
-        endif.
+    WHILE result > 0.
+      DATA(ancestor) = second.
+      WHILE ancestor > 0.
+        IF ancestor = result.
+          RETURN.
+        ENDIF.
         ancestor = occurrences[ ancestor ]-parent.
-      endwhile.
+      ENDWHILE.
       result = occurrences[ result ]-parent.
-    endwhile.
-  endmethod.
+    ENDWHILE.
+  ENDMETHOD.
 
-  method wrap.
+  METHOD wrap.
     result = json.
-    data(current) = target.
-    while current <> scope.
-      data(node) = occurrences[ current ].
-      if node-items = abap_true.
-        if guard = abap_true.
+    DATA(current) = target.
+    WHILE current <> scope.
+      DATA(node) = occurrences[ current ].
+      IF node-items = abap_true.
+        IF guard = abap_true.
           fail( 'Use exists instead of implicitly traversing a table' ).
-        endif.
+        ENDIF.
         result = '{"items":' && result && '}'.
-      else.
-        data(required) = cond string( when guard = abap_true and node-doc-required = abap_false
-          then '"required":[' && quote( node-name ) && '],' ).
+      ELSE.
+        DATA(required) = COND string( WHEN guard = abap_true AND node-doc-required = abap_false
+          THEN '"required":[' && quote( node-name ) && '],' ).
         result = '{' && required && '"properties":{' && quote( node-name ) && ':' && result && '}}'.
-      endif.
+      ENDIF.
       current = node-parent.
-    endwhile.
-  endmethod.
+    ENDWHILE.
+  ENDMETHOD.
 
-  method compile.
-    data rules type string_table.
-    loop at occurrences into data(target) where doc-available_when is not initial or doc-required_when is not initial.
-      component = cond #( when target-parent > 0 then occurrences[ target-parent ]-type_key && '.' ) && target-name.
-      if target-parent = 0 or target-items = abap_true.
+  METHOD compile.
+    DATA rules TYPE string_table.
+    LOOP AT occurrences INTO DATA(target) WHERE doc-available_when IS NOT INITIAL OR doc-required_when IS NOT INITIAL.
+      component = COND #( WHEN target-parent > 0 THEN occurrences[ target-parent ]-type_key && '.' ) && target-name.
+      IF target-parent = 0 OR target-items = abap_true.
         fail( 'Conditional annotations must be on structure components' ).
-      endif.
-      data(conditions) = value string_table( ( target-doc-available_when ) ( target-doc-required_when ) ).
-      delete conditions where table_line is initial.
-      delete adjacent duplicates from conditions.
-      loop at conditions into data(condition).
-        append compile_rule( target = target condition = condition ) to rules.
-      endloop.
-    endloop.
-    if rules is not initial.
+      ENDIF.
+      DATA(conditions) = VALUE string_table( ( target-doc-available_when ) ( target-doc-required_when ) ).
+      DELETE conditions WHERE table_line IS INITIAL.
+      DELETE ADJACENT DUPLICATES FROM conditions.
+      LOOP AT conditions INTO DATA(condition).
+        APPEND compile_rule( target = target condition = condition ) TO rules.
+      ENDLOOP.
+    ENDLOOP.
+    IF rules IS NOT INITIAL.
       result = '"allOf":[' && concat_lines_of( table = rules sep = ',' ) && ']'.
-    endif.
-  endmethod.
+    ENDIF.
+  ENDMETHOD.
 
-  method compile_rule.
+  METHOD compile_rule.
     context = target-parent.
-    find first occurrence of pcre
+    FIND FIRST OCCURRENCE OF PCRE
           `^\s*(\{\s*@link[^{}]+\})\s*(!?=)\s*(\{\s*@link[^{}]+\}|'(?:''|[^'])*'|true|false|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?)\s*$`
-      in condition submatches data(field_link) data(operator) data(value_token).
-    if sy-subrc <> 0.
+      IN condition SUBMATCHES DATA(field_link) DATA(operator) DATA(value_token).
+    IF sy-subrc <> 0.
       fail( 'Only a single ABAP field link = or != literal or enum constant link is supported' ).
-    endif.
-    data(field) = resolve( field_link ).
-    data(node) = occurrences[ field ].
-    if node-json_type = 'array' or node-json_type = 'object'.
+    ENDIF.
+    DATA(field) = resolve( field_link ).
+    DATA(node) = occurrences[ field ].
+    IF node-json_type = 'array' OR node-json_type = 'object'.
       fail( 'Only scalar fields can be compared' ).
-    endif.
-    data(value) = literal( field = field token = value_token ).
+    ENDIF.
+    DATA(value) = literal( field = field token = value_token ).
     " The rule is built where both fields are reachable and then nested into the root schema.
-    data(scope) = common_scope( first = target-parent second = node-parent ).
+    DATA(scope) = common_scope( first = target-parent second = node-parent ).
 
-    data(presence) = cond string( when node-doc-required = abap_false and node-default_json <> value
-      then '"required":[' && quote( node-name ) && '],' ).
-    data(test) = wrap( target = node-parent scope = scope guard = abap_true
+    DATA(presence) = COND string( WHEN node-doc-required = abap_false AND node-default_json <> value
+      THEN '"required":[' && quote( node-name ) && '],' ).
+    DATA(test) = wrap( target = node-parent scope = scope guard = abap_true
       json = '{' && presence && '"properties":{' && quote( node-name ) && ':{"const":' && value && '}}}' ).
-    data(required) = cond string( when condition = target-doc-required_when then
+    DATA(required) = COND string( WHEN condition = target-doc-required_when THEN
       wrap( target = target-parent scope = scope json = '{"required":[' && quote( target-name ) && ']}' ) ).
-    data(forbidden) = cond string( when condition = target-doc-available_when then
+    DATA(forbidden) = COND string( WHEN condition = target-doc-available_when THEN
       wrap( target = target-parent scope = scope json = '{"properties":{' && quote( target-name ) && ':false}}' ) ).
 
     " The if schema tests equality, so != swaps then and else.
-    data(negated) = xsdbool( operator = '!=' ).
-    data(then_schema) = cond string( when negated = abap_true then forbidden else required ).
-    data(else_schema) = cond string( when negated = abap_true then required else forbidden ).
-    data(rule) = '{"if":' && test
-      && cond string( when then_schema is not initial then ',"then":' && then_schema )
-      && cond string( when else_schema is not initial then ',"else":' && else_schema ) && '}'.
+    DATA(negated) = xsdbool( operator = '!=' ).
+    DATA(then_schema) = COND string( WHEN negated = abap_true THEN forbidden ELSE required ).
+    DATA(else_schema) = COND string( WHEN negated = abap_true THEN required ELSE forbidden ).
+    DATA(rule) = '{"if":' && test
+      && COND string( WHEN then_schema IS NOT INITIAL THEN ',"then":' && then_schema )
+      && COND string( WHEN else_schema IS NOT INITIAL THEN ',"else":' && else_schema ) && '}'.
     result = wrap( target = scope scope = 1 json = rule ).
-  endmethod.
-endclass.
+  ENDMETHOD.
+ENDCLASS.
 
