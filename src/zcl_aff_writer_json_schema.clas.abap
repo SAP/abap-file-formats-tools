@@ -1070,7 +1070,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     DATA(last_member) = content[ closing_line - 1 ].
     FIND FIRST OCCURRENCE OF PCRE '\S' IN last_member MATCH OFFSET DATA(indent).
     content[ closing_line - 1 ] &&= ','.
-    INSERT LINES OF format_condition_json( json = conditions indent = indent ) INTO content INDEX closing_line.
+    LOOP AT format_condition_json( json = conditions indent = indent ) INTO DATA(condition_line).
+      INSERT condition_line INTO content INDEX closing_line.
+      closing_line += 1.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD format_condition_json.

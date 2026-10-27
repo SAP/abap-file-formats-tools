@@ -2586,8 +2586,12 @@ CLASS lcl_condition_json IMPLEMENTATION.
       CASE token->type.
         WHEN if_sxml_node=>co_nt_element_open.
           DATA(element) = CAST if_sxml_open_element( token ).
-          DATA(attribute) = element->get_attribute_value( 'name' ).
-          DATA(name) = COND string( WHEN attribute IS BOUND THEN attribute->get_value( ) ).
+          DATA(name) = ``.
+          LOOP AT element->get_attributes( ) INTO DATA(attribute).
+            IF attribute->qname-name = 'name'.
+              name = attribute->get_value( ).
+            ENDIF.
+          ENDLOOP.
           APPEND VALUE #( parent = VALUE #( stack[ 1 ] OPTIONAL ) name = name kind = element->qname-name ) TO nodes.
           INSERT lines( nodes ) INTO stack INDEX 1.
         WHEN if_sxml_node=>co_nt_value.
