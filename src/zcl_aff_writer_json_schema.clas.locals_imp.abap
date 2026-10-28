@@ -149,9 +149,33 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
         APPEND compile_rule( target = target condition = condition ) TO rules.
       ENDLOOP.
     ENDLOOP.
+    LOOP AT occurrences INTO target.
+      DATA(target_index) = sy-tabix.
+      LOOP AT target-members INTO DATA(member) WHERE doc-available_when IS NOT INITIAL OR doc-required_when IS NOT INITIAL.
+        component = member-link.
+        IF member-doc-required_when IS NOT INITIAL.
+          fail( '$requiredWhen is not supported on enum constants' ).
+        ENDIF.
+        IF target-parent = 0.
+          fail( 'Conditional enum values require an enclosing structure' ).
+        ENDIF.
+        APPEND compile_rule( target = target condition = member-doc-available_when
+          target_index = target_index member = member ) TO rules.
+      ENDLOOP.
+    ENDLOOP.
     IF rules IS NOT INITIAL.
       result = '"allOf":[' && concat_lines_of( table = rules sep = ',' ) && ']'.
     ENDIF.
+  ENDMETHOD.
+
+  METHOD restrict_enum.
+    DATA(values) = VALUE string_table( ).
+    LOOP AT target-members INTO DATA(candidate) WHERE json <> member-json.
+      APPEND candidate-json TO values.
+    ENDLOOP.
+    " An empty enum is not a valid JSON Schema; false forbids every value.
+    result = COND #( WHEN values IS INITIAL THEN 'false'
+      ELSE '{"enum":[' && concat_lines_of( table = values sep = ',' ) && ']}' ).
   ENDMETHOD.
 
   METHOD compile_rule.
@@ -175,10 +199,13 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
       THEN '"required":[' && quote( node-name ) && '],' ).
     DATA(test) = wrap( target = node-parent scope = scope guard = abap_true
       json = '{' && presence && '"properties":{' && quote( node-name ) && ':{"const":' && value && '}}}' ).
-    DATA(required) = COND string( WHEN condition = target-doc-required_when THEN
+    DATA(required) = COND string( WHEN member IS INITIAL AND condition = target-doc-required_when THEN
       wrap( target = target-parent scope = scope json = '{"required":[' && quote( target-name ) && ']}' ) ).
     DATA(forbidden) = COND string( WHEN condition = target-doc-available_when THEN
       wrap( target = target-parent scope = scope json = '{"properties":{' && quote( target-name ) && ':false}}' ) ).
+    IF member IS NOT INITIAL.
+      forbidden = wrap( target = target_index scope = scope json = restrict_enum( target = target member = member ) ).
+    ENDIF.
 
     " The if schema tests equality, so != swaps then and else.
     DATA(negated) = xsdbool( operator = '!=' ).

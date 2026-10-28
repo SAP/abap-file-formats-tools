@@ -4,6 +4,7 @@ CLASS lcl_aff_conditions DEFINITION FINAL.
       BEGIN OF enum_member,
         link TYPE string,
         json TYPE string,
+        doc TYPE zcl_aff_abap_doc_parser=>abap_doc,
       END OF enum_member,
       enum_members TYPE STANDARD TABLE OF enum_member WITH EMPTY KEY,
       BEGIN OF node,
@@ -28,8 +29,14 @@ CLASS lcl_aff_conditions DEFINITION FINAL.
     METHODS compile_rule
       IMPORTING target        TYPE node
                 condition     TYPE string
+                target_index  TYPE i OPTIONAL
+                member        TYPE enum_member OPTIONAL
       RETURNING VALUE(result) TYPE string
       RAISING   zcx_aff_tools.
+    METHODS restrict_enum
+      IMPORTING target        TYPE node
+                member        TYPE enum_member
+      RETURNING VALUE(result) TYPE string.
     METHODS resolve IMPORTING link TYPE string RETURNING VALUE(result) TYPE i RAISING zcx_aff_tools.
     METHODS descend
       IMPORTING start         TYPE i

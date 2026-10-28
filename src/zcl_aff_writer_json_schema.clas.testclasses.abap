@@ -2628,6 +2628,10 @@ CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK L
       RAISING   cx_static_check.
     METHODS local_boolean FOR TESTING RAISING cx_static_check.
     METHODS root_enum FOR TESTING RAISING cx_static_check.
+    METHODS enum_values FOR TESTING RAISING cx_static_check.
+    METHODS nested_enum_values FOR TESTING RAISING cx_static_check.
+    METHODS single_enum_value FOR TESTING RAISING cx_static_check.
+    METHODS canteen_enum_value FOR TESTING RAISING cx_static_check.
     METHODS required_discriminator FOR TESTING RAISING cx_static_check.
     METHODS repeated_rows FOR TESTING RAISING cx_static_check.
     METHODS not_equal FOR TESTING RAISING cx_static_check.
@@ -2709,6 +2713,46 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
       '"then":{"required":["detail"]},"else":{"properties":{"detail":false}}}' ).
   ENDMETHOD.
 
+  METHOD enum_values.
+    generate( VALUE zcl_aff_test_types=>ty_cond_enum_values( ) ).
+    assert_rule( '{"if":{"properties":{"mode":{"const":"cloudDevelopment"}}},"else":{"properties":{"otherExecution":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"else":{"properties":{"execution":{"enum":["modern","auto"]}}}}' ).
+    assert_rule( index = 3 expected = '{"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"then":{"properties":{"execution":{"enum":["classic","modern"]}}}}' ).
+    assert_rule( index = 4 expected = '{"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"else":{"properties":{"otherExecution":{"enum":["modern","auto"]}}}}' ).
+    assert_rule( index = 5 expected = '{"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"then":{"properties":{"otherExecution":{"enum":["classic","modern"]}}}}' ).
+    DATA(properties) = schema->member( parent = 1 name = 'properties' ).
+    DATA(execution) = schema->member( parent = properties name = 'execution' ).
+    DATA(enum_root) = schema->member( parent = execution name = 'enum' ).
+    DATA(expected) = NEW lcl_condition_json( '["classic","modern","auto"]' ).
+    cl_abap_unit_assert=>assert_equals( act = schema->subtree( enum_root ) exp = expected->nodes ).
+  ENDMETHOD.
+
+  METHOD nested_enum_values.
+    generate( VALUE zcl_aff_test_types=>ty_cond_enum_nested( ) ).
+    DATA(rule) = '"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"else":{"properties":{"execution":{"enum":["modern","auto"]}}}'.
+    assert_rule( index = 4 expected = '{"properties":{"settings":{' && rule && '}}}' ).
+    assert_rule( index = 8 expected = '{"properties":{"rows":{"items":{' && rule && '}}}}' ).
+    assert_rule( index = 12 expected = '{"properties":{"otherRows":{"items":{' && rule && '}}}}' ).
+  ENDMETHOD.
+
+  METHOD single_enum_value.
+    generate( VALUE zcl_aff_test_types=>ty_cond_single_value( ) ).
+    assert_rule( '{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},' &&
+      '"else":{"properties":{"execution":false}}}' ).
+  ENDMETHOD.
+
+  METHOD canteen_enum_value.
+    generate( VALUE zcl_aff_test_types=>ty_cond_canteen_main( ) ).
+    assert_rule( index = 2 expected = '{"if":{"required":["generalInformation"],"properties":{"generalInformation":{' &&
+      '"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}}}},' &&
+      '"else":{"properties":{"favorites":{"properties":{"canteen":{"enum":["wdf01"]}}}}}}' ).
+  ENDMETHOD.
+
   METHOD repeated_rows.
     generate( VALUE zcl_aff_test_types=>ty_conditional( ) ).
     DATA(row_rule) = '"items":{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},"then":{"required":["detail"]}}'.
@@ -2748,6 +2792,8 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     reject( data = VALUE zcl_aff_test_types=>ty_cond_duplicate( ) expected = 'Only a single' ).
     reject( data = VALUE zcl_aff_test_types=>ty_cond_wrong_enum( ) expected = 'not a member' ).
     reject( data = VALUE zcl_aff_test_types=>ty_cond_compound( ) expected = 'Only a single' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_invalid_enum_value( ) expected = 'Unknown' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_execution( ) expected = 'enclosing structure' ).
   ENDMETHOD.
 
   METHOD optional_ancestor.

@@ -48,6 +48,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       BEGIN OF ty_enum_value,
         value             TYPE string,
         overwritten_value TYPE string,
+        doc               TYPE zcl_aff_abap_doc_parser=>abap_doc,
       END OF ty_enum_value.
 
     TYPES:
@@ -899,7 +900,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         DATA(fullname_of_value) = name_of_constant && '-' && <component>-name.
         DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name = fullname_of_value ).
 
-        APPEND VALUE ty_enum_value( value = format_to_camel_case( CONV #( <component>-name ) )  overwritten_value = abap_doc_of_component-enum_value ) TO result-values.
+        APPEND VALUE ty_enum_value( value = format_to_camel_case( CONV #( <component>-name ) )
+          overwritten_value = abap_doc_of_component-enum_value doc = abap_doc_of_component ) TO result-values.
         APPEND abap_doc_of_component-description TO result-descriptions.
         APPEND abap_doc_of_component-title TO result-titles.
 
@@ -1046,7 +1048,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         DATA(member_index) = sy-tabix.
         DATA(external) = COND string( WHEN member-overwritten_value IS NOT INITIAL THEN member-overwritten_value ELSE member-value ).
         APPEND VALUE #( link = to_upper( group_link && '.' && enum_structure->components[ member_index ]-name )
-          json = '"' && escape( val = external format = cl_abap_format=>e_json_string ) && '"' ) TO node-members.
+          json = '"' && escape( val = external format = cl_abap_format=>e_json_string ) && '"'
+          doc = member-doc ) TO node-members.
       ENDLOOP.
     ENDIF.
     APPEND node TO condition_nodes.

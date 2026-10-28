@@ -47,5 +47,35 @@ Additionally to the ABAP-file-formats-related annotations, one can also use the 
  Possible values for the encoding are `7bit`, `8bit`, `binary`, `quoted-printable`, `base16`, `base32` and `base64`.
  This annotation can also only be used for characters like ABAP types, i.e., types that are mapped to JSON type `string`.
 
+### Conditional Enum Values
+`$availableWhen` can be applied to individual constants in a structure referenced
+by `$values`. The annotated enum value is allowed only when the condition holds:
+
+```abap
+"! $values {@link zif_aff_example_v1.data:co_canteen}
+TYPES ty_canteen TYPE c LENGTH 5.
+
+CONSTANTS:
+  BEGIN OF co_canteen,
+    wdf01 TYPE ty_canteen VALUE 'WDF01',
+    "! $availableWhen {@link zif_aff_example_v1.data:ty_main.general_information.drinks_coffee} = true
+    wdf55 TYPE ty_canteen VALUE 'WDF55',
+  END OF co_canteen.
+```
+
+The generator retains the full base `enum` and adds `if`/`then`/`else` rules in
+`allOf`, narrowing the enum when a value is unavailable. Multiple restrictions
+apply together. `$enumValue` overrides are respected. If no values remain, the
+generator emits `false` rather than an invalid empty `enum`.
+
+Conditions use a single field link followed by `=` or `!=` and a literal or enum
+constant link. Field links are resolved in each usage context, including table
+rows; ambiguous or unreachable links are rejected. Conditional enum values need
+an enclosing structure. `$requiredWhen` is not supported on enum constants.
+
+These restrictions do not make the field required or change its default. Avoid
+using a conditionally unavailable value as an unconditional default if consumers
+apply defaults to missing fields.
+
 ## How to Obtain Support
 Feel free to raise issues to ask questions or report bugs.
