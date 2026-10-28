@@ -18,10 +18,14 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
       fail( 'Expected an ABAP Doc link' ).
     ENDIF.
     result = substring( val = result off = 6 len = strlen( result ) - 7 ).
-    REPLACE ALL OCCURRENCES OF 'data:' IN result WITH ''.
     result = to_upper( result ).
-    IF NOT matches( val = result pcre = '[A-Z0-9_/]+\.[A-Z0-9_]+(\.[A-Z0-9_]+)+' ).
-      fail( 'Invalid component link' ).
+    IF constant_link = abap_true.
+      IF NOT matches( val = result pcre = '[A-Z0-9_/]+\.DATA:[A-Z0-9_]+(\.[A-Z0-9_]+)+' ).
+        fail( 'Constant links must use class.data:constant.member' ).
+      ENDIF.
+      REPLACE FIRST OCCURRENCE OF '.DATA:' IN result WITH '.'.
+    ELSEIF NOT matches( val = result pcre = '[A-Z0-9_/]+\.[A-Z0-9_]+(\.[A-Z0-9_]+)+' ).
+      fail( 'Field links must use class.type.component without .data:' ).
     ENDIF.
   ENDMETHOD.
 
@@ -70,7 +74,7 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
   METHOD literal.
     DATA(node) = occurrences[ field ].
     IF token(1) = '{'.
-      DATA(key) = normalize_link( token ).
+      DATA(key) = normalize_link( link = token constant_link = abap_true ).
       IF node-members IS INITIAL.
         fail( 'Constant links require a declared AFF enum' ).
       ENDIF.

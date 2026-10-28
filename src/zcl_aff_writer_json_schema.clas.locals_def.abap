@@ -47,7 +47,11 @@ CLASS lcl_aff_conditions DEFINITION FINAL.
                 token         TYPE string
       RETURNING VALUE(result) TYPE string
       RAISING   zcx_aff_tools.
-    METHODS normalize_link IMPORTING link TYPE string RETURNING VALUE(result) TYPE string RAISING zcx_aff_tools.
+    METHODS normalize_link
+      IMPORTING link          TYPE string
+                constant_link TYPE abap_bool DEFAULT abap_false
+      RETURNING VALUE(result) TYPE string
+      RAISING   zcx_aff_tools.
     METHODS common_scope
       IMPORTING first         TYPE i
                 second        TYPE i

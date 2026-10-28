@@ -2639,6 +2639,7 @@ CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK L
     METHODS optional_ancestor FOR TESTING RAISING cx_static_check.
     METHODS explicit_defaults FOR TESTING RAISING cx_static_check.
     METHODS invalid_definitions FOR TESTING RAISING cx_static_check.
+    METHODS invalid_link_conventions FOR TESTING RAISING cx_static_check.
     METHODS reject
       IMPORTING data     TYPE data
                 expected TYPE string
@@ -2794,6 +2795,26 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     reject( data = VALUE zcl_aff_test_types=>ty_cond_compound( ) expected = 'Only a single' ).
     reject( data = VALUE zcl_aff_test_types=>ty_cond_invalid_enum_value( ) expected = 'Unknown' ).
     reject( data = VALUE zcl_aff_test_types=>ty_cond_execution( ) expected = 'enclosing structure' ).
+  ENDMETHOD.
+
+  METHOD invalid_link_conventions.
+    DATA(conditions) = VALUE string_table(
+      ( `{@link zcl_aff_test_types.data:ty_cond_enum.mode} = true` )
+      ( `{@link zcl_aff_test_types.ty_cond_enum} = true` )
+      ( `{@link zcl_aff_test_types.ty_cond_enum.mode} = {@link zcl_aff_test_types.co_condition_mode.cloud_mode}` ) ).
+    LOOP AT conditions INTO DATA(condition).
+      DATA(nodes) = VALUE lcl_aff_conditions=>nodes(
+        ( type_key = 'ZCL_AFF_TEST_TYPES.TY_COND_ENUM' json_type = 'object' )
+        ( parent = 1 name = 'mode' json_type = 'string'
+          members = VALUE #( ( link = 'ZCL_AFF_TEST_TYPES.CO_CONDITION_MODE.CLOUD_MODE' json = '"cloudDevelopment"' ) ) )
+        ( parent = 1 name = 'detail' json_type = 'string' doc-available_when = condition ) ).
+      TRY.
+          NEW lcl_aff_conditions( nodes )->compile( ).
+          cl_abap_unit_assert=>fail( 'Invalid link convention was silently accepted' ).
+        CATCH zcx_aff_tools INTO DATA(exception).
+          cl_abap_unit_assert=>assert_true( xsdbool( exception->get_text( ) CS 'links must use' ) ).
+      ENDTRY.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD optional_ancestor.
