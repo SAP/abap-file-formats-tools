@@ -127,6 +127,13 @@ CLASS zcl_aff_writer DEFINITION
           VALUE(name_of_constant)    TYPE string,
 
 
+      expand_local_links
+        IMPORTING
+          text TYPE string
+          name_of_source TYPE string
+        RETURNING
+          VALUE(result) TYPE string,
+
       get_abap_doc_for_absolute_name
         IMPORTING
           absolute_name   TYPE abap_abstypename
@@ -383,8 +390,29 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             to_parse       = result
           CHANGING
             log            = log ).
+        IF read_abap_doc-enumvalues_link CP '.*'.
+          read_abap_doc-enumvalues_link = to_lower( name_of_source ) && read_abap_doc-enumvalues_link.
+        ENDIF.
+        read_abap_doc-default = expand_local_links( text = read_abap_doc-default name_of_source = name_of_source ).
+        read_abap_doc-available_when = expand_local_links( text = read_abap_doc-available_when name_of_source = name_of_source ).
+        read_abap_doc-required_when = expand_local_links( text = read_abap_doc-required_when name_of_source = name_of_source ).
       CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
     ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD expand_local_links.
+    result = text.
+    FIND ALL OCCURRENCES OF PCRE `'(?:''|[^'])*'|@link\s+\.(?=[A-Za-z0-9_/])` IN text RESULTS DATA(matches).
+    DATA(index) = lines( matches ).
+    WHILE index > 0.
+      DATA(match) = matches[ index ].
+      IF text+match-offset(1) <> `'`.
+        DATA(offset) = match-offset + match-length - 1.
+        result = substring( val = result len = offset ) && to_lower( name_of_source ) && substring( val = result off = offset ).
+      ENDIF.
+      index -= 1.
+    ENDWHILE.
   ENDMETHOD.
 
 

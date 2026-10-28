@@ -2627,6 +2627,8 @@ CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK L
                 index TYPE i DEFAULT 1
       RAISING   cx_static_check.
     METHODS local_boolean FOR TESTING RAISING cx_static_check.
+    METHODS short_links FOR TESTING RAISING cx_static_check.
+    METHODS reused_short_links FOR TESTING RAISING cx_static_check.
     METHODS root_enum FOR TESTING RAISING cx_static_check.
     METHODS enum_values FOR TESTING RAISING cx_static_check.
     METHODS nested_enum_values FOR TESTING RAISING cx_static_check.
@@ -2698,6 +2700,33 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     assert_rule( '{"properties":{"generalInformation":{' &&
       '"if":{"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}},' &&
       '"then":{"required":["coffeeBrand"]},"else":{"properties":{"coffeeBrand":false}}}}}' ).
+  ENDMETHOD.
+
+  METHOD short_links.
+    generate( VALUE zif_aff_test_short_links=>ty_settings( ) ).
+    assert_rule( '{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},' &&
+      '"then":{"required":["detail"]},"else":{"properties":{"detail":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"required":["mode"],"properties":{"mode":{"const":"cloudDevelopment"}}},' &&
+      '"else":{"properties":{"cloudDetail":false}}}' ).
+    assert_rule( index = 3 expected = '{"if":{"properties":{"mode":{"const":"standard"}}},' &&
+      '"else":{"properties":{"execution":{"enum":["modern"]}}}}' ).
+    DATA(properties) = schema->member( parent = 1 name = 'properties' ).
+    DATA(mode) = schema->member( parent = properties name = 'mode' ).
+    cl_abap_unit_assert=>assert_equals( act = schema->nodes[ schema->member( parent = mode name = 'default' ) ]-value exp = 'standard' ).
+  ENDMETHOD.
+
+  METHOD reused_short_links.
+    generate( VALUE zcl_aff_test_types=>ty_short_links_consumer( ) ).
+    assert_rule( '{"properties":{"settings":{' &&
+      '"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},' &&
+      '"then":{"required":["detail"]},"else":{"properties":{"detail":false}}}}}' ).
+    assert_rule( index = 2 expected = '{"properties":{"settings":{' &&
+      '"if":{"required":["mode"],"properties":{"mode":{"const":"cloudDevelopment"}}},"else":{"properties":{"cloudDetail":false}}}}}' ).
+    assert_rule( index = 3 expected = '{"properties":{"settings":{' &&
+      '"if":{"properties":{"mode":{"const":"standard"}}},"else":{"properties":{"execution":{"enum":["modern"]}}}}}}' ).
+    DATA(properties) = schema->member( parent = 1 name = 'properties' ).
+    DATA(mode) = schema->member( parent = properties name = 'mode' ).
+    cl_abap_unit_assert=>assert_equals( act = schema->nodes[ schema->member( parent = mode name = 'default' ) ]-value exp = 'standard' ).
   ENDMETHOD.
 
   METHOD root_enum.
@@ -2852,4 +2881,3 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     assert_rule( '{"if":{"properties":{"count":{"const":0}}},"then":{"required":["detail"]}}' ).
   ENDMETHOD.
 ENDCLASS.
-

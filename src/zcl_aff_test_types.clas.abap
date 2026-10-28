@@ -6,6 +6,16 @@ CLASS zcl_aff_test_types DEFINITION
 
   PUBLIC SECTION.
 
+    TYPES:
+      BEGIN OF ty_short_links_consumer,
+        mode TYPE zif_aff_test_short_links=>ty_mode,
+        settings TYPE zif_aff_test_short_links=>ty_settings,
+      END OF ty_short_links_consumer.
+
+    "! $values {@link .data:co_condition_mode}
+    "! $default {@link .data:co_condition_mode.standard_mode}
+    TYPES ty_short_link_mode TYPE c LENGTH 1.
+
     "! $values {@link zcl_aff_test_types.data:co_condition_mode}
     "! $default {@link zcl_aff_test_types.data:co_condition_mode.standard_mode}
     TYPES ty_condition_mode TYPE c LENGTH 1.
