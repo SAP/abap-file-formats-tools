@@ -58,6 +58,8 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       END OF ty_enum_properties.
 
 
+    " Record occurrences, not just ABAP types: the same type can occur in several
+    " objects or table rows. Compile after the root closes so forward links resolve.
     DATA condition_nodes TYPE lcl_aff_conditions=>nodes.
     DATA condition_stack TYPE STANDARD TABLE OF i WITH EMPTY KEY.
     METHODS remember_condition_node
@@ -266,7 +268,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     ENDIF.
 
     remember_condition_node( name = element_name description = element_description
-      json_type = COND #( WHEN enum_properties IS NOT INITIAL THEN 'string' ELSE json_type ) members = enum_properties ).
+      json_type = json_type members = enum_properties ).
 
     DATA(check_not_needed) = abap_false.
 

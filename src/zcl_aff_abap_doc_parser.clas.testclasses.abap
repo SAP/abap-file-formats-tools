@@ -46,6 +46,7 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS min_max_items FOR TESTING RAISING cx_static_check.
     METHODS available_when FOR TESTING RAISING cx_static_check.
     METHODS required_when FOR TESTING RAISING cx_static_check.
+    METHODS both_conditions FOR TESTING RAISING cx_static_check.
     METHODS condition_followed_by_annot FOR TESTING RAISING cx_static_check.
     METHODS condition_dollar_in_literal FOR TESTING RAISING cx_static_check.
     METHODS condition_dollar_in_link FOR TESTING RAISING cx_static_check.
@@ -666,6 +667,14 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` available_when = `{@link .mode} = 'A'` minimum = `1` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD both_conditions.
+    DATA(act_abap_doc) = parse_condition_doc(
+      `Description $requiredWhen {@link .flag} = true $availableWhen {@link .flag} = true` ).
+    exp_abap_doc = VALUE #( description = `Description` required_when = `{@link .flag} = true` available_when = `{@link .flag} = true` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-warning ).
   ENDMETHOD.
 
   METHOD condition_dollar_in_literal.

@@ -95,6 +95,7 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
       find_annotations RETURNING VALUE(result) TYPE match_result_tab,
       parse_condition
         IMPORTING annotation TYPE string
+                  annotations TYPE match_result_tab
         RETURNING VALUE(result) TYPE string,
       parse_default,
       parse_enum_values,
@@ -200,9 +201,9 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       DATA(key_word) = abap_doc_string+offset(length).
       CASE key_word.
         WHEN abap_doc_annotation-available_when.
-          decoded_abap_doc-available_when = parse_condition( key_word ).
+          decoded_abap_doc-available_when = parse_condition( annotation = key_word annotations = result_table ).
         WHEN abap_doc_annotation-required_when.
-          decoded_abap_doc-required_when = parse_condition( key_word ).
+          decoded_abap_doc-required_when = parse_condition( annotation = key_word annotations = result_table ).
         WHEN abap_doc_annotation-default.
           parse_default( ).
         WHEN abap_doc_annotation-values.
@@ -245,6 +246,8 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD find_annotations.
+    " Only conditions allow quoted literals; dollars inside those literals or links
+    " are values, not the start of another annotation.
     FIND ALL OCCURRENCES OF PCRE `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(candidates).
     DATA(conditional) = abap_false.
     DATA(quoted) = abap_false.
@@ -280,42 +283,24 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD parse_condition.
-    DATA(occurrences) = VALUE match_result_tab( ).
-    LOOP AT find_annotations( ) INTO DATA(found).
+    DATA start TYPE i.
+    DATA(end) = strlen( abap_doc_string ).
+    DATA(occurrences) = 0.
+    LOOP AT annotations INTO DATA(found).
       IF substring( val = abap_doc_string off = found-offset len = found-length ) = annotation.
-        APPEND found TO occurrences.
+        occurrences += 1.
+        start = found-offset + found-length.
+      ELSEIF occurrences = 1 AND end = strlen( abap_doc_string ).
+        end = found-offset.
       ENDIF.
     ENDLOOP.
-    IF lines( occurrences ) <> 1.
+    IF occurrences <> 1.
       parser_log->add_error( message_text = |Duplicate conditional annotation { annotation }| component_name = component_name ).
       result = '#invalid'.
       RETURN.
     ENDIF.
-    DATA(start) = occurrences[ 1 ]-offset + occurrences[ 1 ]-length.
-    result = substring( val = abap_doc_string off = start ).
-    DATA(quoted) = abap_false.
-    DATA(in_link) = abap_false.
-    DATA(position) = 0.
-    WHILE position < strlen( result ).
-      DATA(character) = result+position(1).
-      IF character = `'` AND in_link = abap_false.
-        IF quoted = abap_true AND position + 1 < strlen( result ) AND substring( val = result off = position + 1 len = 1 ) = `'`.
-          position += 2.
-          CONTINUE.
-        ENDIF.
-        quoted = xsdbool( quoted = abap_false ).
-      ELSEIF quoted = abap_false.
-        IF character = '{'.
-          in_link = abap_true.
-        ELSEIF character = '}'.
-          in_link = abap_false.
-        ELSEIF character = '$' AND in_link = abap_false.
-          result = substring( val = result len = position ).
-          EXIT.
-        ENDIF.
-      ENDIF.
-      position += 1.
-    ENDWHILE.
+    " Annotation boundaries already exclude dollars inside literals and links.
+    result = substring( val = abap_doc_string off = start len = end - start ).
     remove_leading_trailing_spaces( CHANGING string_to_work_on = result ).
     IF result IS INITIAL.
       parser_log->add_error( message_text = |Empty conditional annotation { annotation }| component_name = component_name ).

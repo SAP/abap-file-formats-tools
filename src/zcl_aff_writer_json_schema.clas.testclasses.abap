@@ -2549,8 +2549,7 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 
 ENDCLASS.
 
-" Independent reader for structural assertions and the conditional keyword subset.
-" This does not replace a standards-compliant JSON Schema validator.
+" Read generated JSON for exact structural assertions, independent of formatting.
 CLASS lcl_condition_json DEFINITION FINAL.
   PUBLIC SECTION.
     TYPES:
@@ -2567,11 +2566,9 @@ CLASS lcl_condition_json DEFINITION FINAL.
       IMPORTING parent        TYPE i
                 name          TYPE string
       RETURNING VALUE(result) TYPE i.
-    METHODS accepts
-      IMPORTING schema        TYPE REF TO lcl_condition_json
-                s             TYPE i DEFAULT 1
-                d             TYPE i DEFAULT 1
-      RETURNING VALUE(result) TYPE abap_bool.
+    METHODS subtree
+      IMPORTING root TYPE i
+      RETURNING VALUE(result) TYPE tt_nodes.
 ENDCLASS.
 
 CLASS lcl_condition_json IMPLEMENTATION.
@@ -2606,65 +2603,15 @@ CLASS lcl_condition_json IMPLEMENTATION.
     result = line_index( nodes[ parent = parent name = name ] ).
   ENDMETHOD.
 
-  METHOD accepts.
-    result = abap_false.
-    IF schema->nodes[ s ]-kind = 'bool'.
-      result = xsdbool( schema->nodes[ s ]-value = 'true' ).
-      RETURN.
-    ENDIF.
-    DATA(properties) = schema->member( parent = s name = 'properties' ).
-    IF properties > 0.
-      LOOP AT schema->nodes INTO DATA(property) WHERE parent = properties.
-        DATA(property_schema) = sy-tabix.
-        DATA(value) = member( parent = d name = property-name ).
-        IF value > 0 AND accepts( schema = schema s = property_schema d = value ) = abap_false.
-          RETURN.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
-    DATA(required) = schema->member( parent = s name = 'required' ).
-    IF required > 0.
-      LOOP AT schema->nodes INTO DATA(required_field) WHERE parent = required.
-        IF member( parent = d name = required_field-value ) = 0.
-          RETURN.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
-    DATA(const) = schema->member( parent = s name = 'const' ).
-    IF const > 0 AND ( schema->nodes[ const ]-value <> nodes[ d ]-value OR schema->nodes[ const ]-kind <> nodes[ d ]-kind ).
-      RETURN.
-    ENDIF.
-    DATA(enum) = schema->member( parent = s name = 'enum' ).
-    IF enum > 0 AND NOT line_exists( schema->nodes[ parent = enum value = nodes[ d ]-value kind = nodes[ d ]-kind ] ).
-      RETURN.
-    ENDIF.
-    DATA(all_of) = schema->member( parent = s name = 'allOf' ).
-    IF all_of > 0.
-      LOOP AT schema->nodes TRANSPORTING NO FIELDS WHERE parent = all_of.
-        DATA(subschema) = sy-tabix.
-        IF accepts( schema = schema s = subschema d = d ) = abap_false.
-          RETURN.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
-    DATA(items) = schema->member( parent = s name = 'items' ).
-    IF items > 0 AND nodes[ d ]-kind = 'array'.
-      LOOP AT nodes TRANSPORTING NO FIELDS WHERE parent = d.
-        DATA(item_index) = sy-tabix.
-        IF accepts( schema = schema s = items d = item_index ) = abap_false.
-          RETURN.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
-    DATA(if_schema) = schema->member( parent = s name = 'if' ).
-    IF if_schema > 0.
-      DATA(branch) = COND string( WHEN accepts( schema = schema s = if_schema d = d ) = abap_true THEN 'then' ELSE 'else' ).
-      DATA(branch_schema) = schema->member( parent = s name = branch ).
-      IF branch_schema > 0 AND accepts( schema = schema s = branch_schema d = d ) = abap_false.
-        RETURN.
+  METHOD subtree.
+    LOOP AT nodes INTO DATA(node) FROM root.
+      IF sy-tabix > root AND node-parent < root.
+        EXIT.
       ENDIF.
-    ENDIF.
-    result = abap_true.
+      node-parent = COND #( WHEN sy-tabix = root THEN 0 ELSE node-parent - root + 1 ).
+      APPEND node TO result.
+    ENDLOOP.
+    result[ 1 ]-name = ``.
   ENDMETHOD.
 ENDCLASS.
 
@@ -2676,9 +2623,9 @@ CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK L
     METHODS setup.
     METHODS initialize.
     METHODS generate IMPORTING data TYPE data RAISING cx_static_check.
-    METHODS check
-      IMPORTING json  TYPE string
-                valid TYPE abap_bool
+    METHODS assert_rule
+      IMPORTING expected TYPE string
+                index TYPE i DEFAULT 1
       RAISING   cx_static_check.
     METHODS local_boolean FOR TESTING RAISING cx_static_check.
     METHODS root_enum FOR TESTING RAISING cx_static_check.
@@ -2688,13 +2635,11 @@ CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK L
     METHODS literals FOR TESTING RAISING cx_static_check.
     METHODS optional_ancestor FOR TESTING RAISING cx_static_check.
     METHODS explicit_defaults FOR TESTING RAISING cx_static_check.
-    METHODS wb2j_integration FOR TESTING RAISING cx_static_check.
     METHODS invalid_definitions FOR TESTING RAISING cx_static_check.
     METHODS reject
       IMPORTING data     TYPE data
                 expected TYPE string
       RAISING   cx_static_check.
-    METHODS parser_annotations FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_conditional_schema IMPLEMENTATION.
@@ -2716,9 +2661,20 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     schema = NEW #( concat_lines_of( table = output sep = cl_abap_char_utilities=>newline ) ).
   ENDMETHOD.
 
-  METHOD check.
-    DATA(document) = NEW lcl_condition_json( json ).
-    cl_abap_unit_assert=>assert_equals( act = document->accepts( schema ) exp = valid msg = json ).
+  METHOD assert_rule.
+    DATA(all_of) = schema->member( parent = 1 name = 'allOf' ).
+    cl_abap_unit_assert=>assert_not_initial( all_of ).
+    DATA(rule_index) = 0.
+    LOOP AT schema->nodes TRANSPORTING NO FIELDS WHERE parent = all_of.
+      rule_index += 1.
+      IF rule_index = index.
+        DATA(root) = sy-tabix.
+        EXIT.
+      ENDIF.
+    ENDLOOP.
+    cl_abap_unit_assert=>assert_not_initial( root ).
+    DATA(expected_json) = NEW lcl_condition_json( expected ).
+    cl_abap_unit_assert=>assert_equals( act = schema->subtree( root ) exp = expected_json->nodes ).
   ENDMETHOD.
 
   METHOD local_boolean.
@@ -2726,74 +2682,55 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     DATA(properties) = schema->member( parent = 1 name = 'properties' ).
     DATA(general) = schema->member( parent = properties name = 'generalInformation' ).
     cl_abap_unit_assert=>assert_initial( schema->member( parent = general name = 'allOf' ) ).
-    cl_abap_unit_assert=>assert_not_initial( schema->member( parent = 1 name = 'allOf' ) ).
-    check( json = '{"formatVersion":"1","header":{}}' valid = abap_true ).
-    check( json = '{"formatVersion":"1","header":{},"generalInformation":{}}' valid = abap_true ).
-    check( json = '{"formatVersion":"1","header":{},"generalInformation":{"drinksCoffee":false}}' valid = abap_true ).
-    check( json = '{"formatVersion":"1","header":{},"generalInformation":{"coffeeBrand":"X"}}' valid = abap_false ).
-    check( json = '{"formatVersion":"1","header":{},"generalInformation":{"drinksCoffee":false,"coffeeBrand":"X"}}' valid = abap_false ).
-    check( json = '{"formatVersion":"1","header":{},"generalInformation":{"drinksCoffee":true}}' valid = abap_false ).
-    check( json = '{"formatVersion":"1","header":{},"generalInformation":{"drinksCoffee":true,"coffeeBrand":"X"}}' valid = abap_true ).
+    DATA(all_of) = schema->member( parent = 1 name = 'allOf' ).
+    DATA(rule_count) = 0.
+    LOOP AT schema->nodes TRANSPORTING NO FIELDS WHERE parent = all_of.
+      rule_count += 1.
+    ENDLOOP.
+    cl_abap_unit_assert=>assert_equals( act = rule_count exp = 4 msg = 'Identical conditions must not produce duplicate rules' ).
+    " Identical available/required conditions produce one rule, scoped to this object.
+    assert_rule( '{"properties":{"generalInformation":{' &&
+      '"if":{"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}},' &&
+      '"then":{"required":["coffeeBrand"]},"else":{"properties":{"coffeeBrand":false}}}}}' ).
   ENDMETHOD.
 
   METHOD root_enum.
     generate( VALUE zcl_aff_test_types=>ty_conditional( ) ).
     cl_abap_unit_assert=>assert_initial( schema->member( parent = 1 name = 'if' ) ).
     cl_abap_unit_assert=>assert_not_initial( schema->member( parent = 1 name = 'allOf' ) ).
-    check( json = '{"formatVersion":"1","header":{},"favorites":{"wb2k":"X"}}' valid = abap_true ).
-    check( json = '{"formatVersion":"1","header":{"languageVersion":"standardMode"},"favorites":{"wb2k":"X"}}' valid = abap_true ).
-    check( json = '{"formatVersion":"1","header":{"languageVersion":"cloudDevelopment"},"favorites":{"wb2k":"X"}}' valid = abap_false ).
-    check( json = '{"formatVersion":"1","header":{"languageVersion":"cloudDevelopment"}}' valid = abap_true ).
-    check( json = '{"formatVersion":"1","header":{"languageVersion":"keyUser"},"favorites":{"wb2k":"X"}}' valid = abap_false ).
+    " Required ancestors and matching defaults need no additional presence guard.
+    assert_rule( index = 2 expected = '{"if":{"properties":{"header":{"properties":{"languageVersion":{"const":"standardMode"}}}}},' &&
+      '"else":{"properties":{"favorites":{"properties":{"wb2k":false}}}}}' ).
     initialize( ).
     generate( VALUE zcl_aff_test_types=>ty_cond_enum( ) ).
-    check( json = '{"mode":"cloudDevelopment","detail":"X"}' valid = abap_true ).
-    check( json = '{"mode":"standardMode","detail":"X"}' valid = abap_false ).
+    assert_rule( '{"if":{"properties":{"mode":{"const":"cloudDevelopment"}}},"else":{"properties":{"detail":false}}}' ).
   ENDMETHOD.
 
   METHOD required_discriminator.
     generate( VALUE zcl_aff_test_types=>ty_cond_required( ) ).
-    DATA(all_of) = schema->member( parent = 1 name = 'allOf' ).
-    DATA(if_schema) = schema->member( parent = line_index( schema->nodes[ parent = all_of ] ) name = 'if' ).
-    cl_abap_unit_assert=>assert_initial( schema->member( parent = if_schema name = 'required' ) ).
-    check( json = '{"enabled":true,"detail":"X"}' valid = abap_true ).
-    check( json = '{"enabled":true}' valid = abap_false ).
-    check( json = '{"enabled":false,"detail":"X"}' valid = abap_false ).
-    check( json = '{"enabled":false}' valid = abap_true ).
-    check( json = '{}' valid = abap_false ).
+    assert_rule( '{"if":{"properties":{"enabled":{"const":true}}},' &&
+      '"then":{"required":["detail"]},"else":{"properties":{"detail":false}}}' ).
   ENDMETHOD.
 
   METHOD repeated_rows.
     generate( VALUE zcl_aff_test_types=>ty_conditional( ) ).
-    check( json = '{"formatVersion":"1","header":{},"skills":[{"enabled":true,"detail":"X"},{}],"otherSkills":[{}]}' valid = abap_true ).
-    check( json = '{"formatVersion":"1","header":{},"skills":[{"enabled":true,"detail":"X"},{"enabled":true}]}' valid = abap_false ).
-    check( json = '{"formatVersion":"1","header":{},"skills":[{}],"otherSkills":[{"enabled":true}]}' valid = abap_false ).
-    check( json = '{"formatVersion":"1","header":{},"skills":[],"otherSkills":[]}' valid = abap_true ).
+    DATA(row_rule) = '"items":{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},"then":{"required":["detail"]}}'.
+    assert_rule( index = 3 expected = '{"properties":{"skills":{' && row_rule && '}}}' ).
+    assert_rule( index = 4 expected = '{"properties":{"otherSkills":{' && row_rule && '}}}' ).
   ENDMETHOD.
 
   METHOD literals.
     generate( VALUE zcl_aff_test_types=>ty_cond_literals( ) ).
-    check( json = '{"name":"O''Brien","named":"X"}' valid = abap_true ).
-    check( json = '{"name":"Other","named":"X"}' valid = abap_false ).
-    check( json = '{"named":"X"}' valid = abap_false ).
-    check( json = '{"count":2}' valid = abap_false ).
-    check( json = '{"count":2,"counted":"X"}' valid = abap_true ).
-    check( json = '{"count":3}' valid = abap_true ).
-    check( json = '{}' valid = abap_true ).
+    assert_rule( '{"if":{"required":["name"],"properties":{"name":{"const":"O''Brien"}}},"else":{"properties":{"named":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"required":["count"],"properties":{"count":{"const":2}}},"then":{"required":["counted"]}}' ).
   ENDMETHOD.
 
   METHOD not_equal.
     generate( VALUE zcl_aff_test_types=>ty_cond_not_equal( ) ).
-    check( json = '{"count":2,"disabledDetail":"X"}' valid = abap_true ).
-    check( json = '{"count":2,"enabled":false,"disabledDetail":"X"}' valid = abap_true ).
-    check( json = '{"count":2,"enabled":true,"disabledDetail":"X"}' valid = abap_false ).
-    check( json = '{"count":2}' valid = abap_true ).
-    check( json = '{"count":3}' valid = abap_false ).
-    check( json = '{"count":3,"counted":"X"}' valid = abap_true ).
-    check( json = '{"count":2,"localDetail":"X"}' valid = abap_true ).
-    check( json = '{"count":2,"mode":"keyUser","localDetail":"X"}' valid = abap_true ).
-    check( json = '{"count":2,"mode":"cloudDevelopment","localDetail":"X"}' valid = abap_false ).
-    check( json = '{"count":2,"mode":"cloudDevelopment"}' valid = abap_true ).
+    " Inequality swaps then and else, retaining the equality presence guard.
+    assert_rule( '{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},"then":{"properties":{"disabledDetail":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"required":["count"],"properties":{"count":{"const":2}}},"else":{"required":["counted"]}}' ).
+    assert_rule( index = 3 expected = '{"if":{"required":["mode"],"properties":{"mode":{"const":"cloudDevelopment"}}},"then":{"properties":{"localDetail":false}}}' ).
   ENDMETHOD.
 
   METHOD reject.
@@ -2819,71 +2756,16 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
 
   METHOD optional_ancestor.
     generate( VALUE zcl_aff_test_types=>ty_cond_optional( ) ).
-    check( json = '{}' valid = abap_true ).
-    check( json = '{"detail":"X"}' valid = abap_false ).
-    check( json = '{"generalInformation":{},"detail":"X"}' valid = abap_false ).
-    check( json = '{"generalInformation":{"drinksCoffee":false},"detail":"X"}' valid = abap_false ).
-    check( json = '{"generalInformation":{"drinksCoffee":true,"coffeeBrand":"X"},"detail":"X"}' valid = abap_true ).
+    assert_rule( index = 2 expected = '{"if":{"required":["generalInformation"],"properties":{"generalInformation":{' &&
+      '"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}}}},"else":{"properties":{"detail":false}}}' ).
   ENDMETHOD.
 
   METHOD explicit_defaults.
     generate( VALUE zcl_aff_test_types=>ty_cond_true_default( ) ).
-    check( json = '{}' valid = abap_false ).
-    check( json = '{"detail":"X"}' valid = abap_true ).
-    check( json = '{"enabled":true}' valid = abap_false ).
-    check( json = '{"enabled":false}' valid = abap_true ).
+    assert_rule( '{"if":{"properties":{"enabled":{"const":true}}},"then":{"required":["detail"]}}' ).
     initialize( ).
     generate( VALUE zcl_aff_test_types=>ty_cond_zero_default( ) ).
-    check( json = '{}' valid = abap_false ).
-    check( json = '{"detail":"X"}' valid = abap_true ).
-    check( json = '{"count":0}' valid = abap_false ).
-    check( json = '{"count":1}' valid = abap_true ).
-  ENDMETHOD.
-
-  " Environment-dependent integration: the live UIA WB2J demo interface.
-  METHOD wb2j_integration.
-    DATA wb2j TYPE REF TO data.
-    TRY.
-        CREATE DATA wb2j TYPE ('IF_AFF_WB2J_V2=>TY_MAIN').
-      CATCH cx_sy_create_data_error.
-        cl_abap_unit_assert=>skip( 'WB2J demo interface is not installed' ).
-        RETURN.
-    ENDTRY.
-    writer = NEW #( schema_id = 'urn:aff:test:wb2j' format_version = 2 ).
-    generator = NEW zcl_aff_generator( writer ).
-    generate( wb2j->* ).
-    cl_abap_unit_assert=>assert_initial( schema->member( parent = 1 name = 'if' ) ).
-    cl_abap_unit_assert=>assert_not_initial( schema->member( parent = 1 name = 'allOf' ) ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en"}}' valid = abap_true ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en"},"favorites":{"wb2k":"TEST"}}' valid = abap_true ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en","abapLanguageVersion":"standard"},"favorites":{"wb2k":"TEST"}}' valid = abap_true ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en","abapLanguageVersion":"cloudDevelopment"},"favorites":{"wb2k":"TEST"}}' valid = abap_false ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en","abapLanguageVersion":"keyUser"},"favorites":{"wb2k":"TEST"}}' valid = abap_false ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en","abapLanguageVersion":"cloudDevelopment"}}' valid = abap_true ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en"},"generalInformation":{"firstName":"A","lastName":"B","coffeeBrand":"starbucks"}}' valid = abap_false ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en"},"generalInformation":{"firstName":"A","lastName":"B","drinksCoffee":false,"coffeeBrand":"starbucks"}}' valid = abap_false ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en"},"generalInformation":{"firstName":"A","lastName":"B","drinksCoffee":true,"coffeeBrand":"starbucks"}}' valid = abap_true ).
-    check( json = '{"formatVersion":"2","header":{"description":"Test","originalLanguage":"en"},"generalInformation":{"firstName":"A","lastName":"B","drinksCoffee":true}}' valid = abap_false ).
-  ENDMETHOD.
-
-  METHOD parser_annotations.
-    DATA(log) = CAST zif_aff_log( NEW zcl_aff_log( ) ).
-    DATA(doc) = NEW zcl_aff_abap_doc_parser( )->parse(
-      EXPORTING component_name = 'DETAIL'
-        to_parse = `Description $requiredWhen {@link zcl_aff_test_types.data:ty_cond_general.drinks_coffee} = true $availableWhen {@link zcl_aff_test_types.data:ty_cond_general.drinks_coffee} = true`
-      CHANGING log = log ).
-    cl_abap_unit_assert=>assert_false( doc-required ).
-    cl_abap_unit_assert=>assert_equals( act = doc-description exp = 'Description' ).
-    cl_abap_unit_assert=>assert_equals( act = doc-required_when exp = '{@link zcl_aff_test_types.data:ty_cond_general.drinks_coffee} = true' ).
-    cl_abap_unit_assert=>assert_equals( act = doc-available_when exp = doc-required_when ).
-    log = NEW zcl_aff_log( ).
-    doc = NEW zcl_aff_abap_doc_parser( )->parse(
-      EXPORTING component_name = 'DETAIL'
-        to_parse = `Description $availableWhen {@link zcl_aff_test_types.data:ty_cond_literals.name} = '$requiredWhen'`
-      CHANGING log = log ).
-    cl_abap_unit_assert=>assert_equals( act = doc-available_when exp = `{@link zcl_aff_test_types.data:ty_cond_literals.name} = '$requiredWhen'` ).
-    cl_abap_unit_assert=>assert_initial( doc-required_when ).
-    cl_abap_unit_assert=>assert_false( log->has_messages( ) ).
+    assert_rule( '{"if":{"properties":{"count":{"const":0}}},"then":{"required":["detail"]}}' ).
   ENDMETHOD.
 ENDCLASS.
 

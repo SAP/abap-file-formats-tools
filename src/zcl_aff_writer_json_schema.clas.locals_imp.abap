@@ -123,7 +123,7 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
       DATA(node) = occurrences[ current ].
       IF node-items = abap_true.
         IF guard = abap_true.
-          fail( 'Use exists instead of implicitly traversing a table' ).
+          fail( 'Comparisons cannot traverse table rows outside their own row scope' ).
         ENDIF.
         result = '{"items":' && result && '}'.
       ELSE.
@@ -173,6 +173,8 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
 
     DATA(presence) = COND string( WHEN node-doc-required = abap_false AND node-default_json <> value
       THEN '"required":[' && quote( node-name ) && '],' ).
+    " properties alone also matches an absent field. Allow that only when the
+    " field is already required or its AFF default equals the comparison value.
     DATA(test) = wrap( target = node-parent scope = scope guard = abap_true
       json = '{' && presence && '"properties":{' && quote( node-name ) && ':{"const":' && value && '}}}' ).
     DATA(required) = COND string( WHEN condition = target-doc-required_when THEN
