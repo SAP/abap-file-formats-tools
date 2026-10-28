@@ -58,8 +58,6 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       END OF ty_enum_properties.
 
 
-    " Record occurrences, not just ABAP types: the same type can occur in several
-    " objects or table rows. Compile after the root closes so forward links resolve.
     DATA condition_nodes TYPE lcl_aff_conditions=>nodes.
     DATA condition_stack TYPE STANDARD TABLE OF i WITH EMPTY KEY.
     METHODS remember_condition_node

@@ -2549,7 +2549,6 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
 
 ENDCLASS.
 
-" Read generated JSON for exact structural assertions, independent of formatting.
 CLASS lcl_condition_json DEFINITION FINAL.
   PUBLIC SECTION.
     TYPES:
@@ -2688,7 +2687,6 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
       rule_count += 1.
     ENDLOOP.
     cl_abap_unit_assert=>assert_equals( act = rule_count exp = 4 msg = 'Identical conditions must not produce duplicate rules' ).
-    " Identical available/required conditions produce one rule, scoped to this object.
     assert_rule( '{"properties":{"generalInformation":{' &&
       '"if":{"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}},' &&
       '"then":{"required":["coffeeBrand"]},"else":{"properties":{"coffeeBrand":false}}}}}' ).
@@ -2698,7 +2696,6 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     generate( VALUE zcl_aff_test_types=>ty_conditional( ) ).
     cl_abap_unit_assert=>assert_initial( schema->member( parent = 1 name = 'if' ) ).
     cl_abap_unit_assert=>assert_not_initial( schema->member( parent = 1 name = 'allOf' ) ).
-    " Required ancestors and matching defaults need no additional presence guard.
     assert_rule( index = 2 expected = '{"if":{"properties":{"header":{"properties":{"languageVersion":{"const":"standardMode"}}}}},' &&
       '"else":{"properties":{"favorites":{"properties":{"wb2k":false}}}}}' ).
     initialize( ).
@@ -2727,7 +2724,6 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
 
   METHOD not_equal.
     generate( VALUE zcl_aff_test_types=>ty_cond_not_equal( ) ).
-    " Inequality swaps then and else, retaining the equality presence guard.
     assert_rule( '{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},"then":{"properties":{"disabledDetail":false}}}' ).
     assert_rule( index = 2 expected = '{"if":{"required":["count"],"properties":{"count":{"const":2}}},"else":{"required":["counted"]}}' ).
     assert_rule( index = 3 expected = '{"if":{"required":["mode"],"properties":{"mode":{"const":"cloudDevelopment"}}},"then":{"properties":{"localDetail":false}}}' ).

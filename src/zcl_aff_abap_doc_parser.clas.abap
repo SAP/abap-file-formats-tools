@@ -246,8 +246,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD find_annotations.
-    " Only conditions allow quoted literals; dollars inside those literals or links
-    " are values, not the start of another annotation.
     FIND ALL OCCURRENCES OF PCRE `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(candidates).
     DATA(conditional) = abap_false.
     DATA(quoted) = abap_false.
@@ -299,7 +297,6 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       result = '#invalid'.
       RETURN.
     ENDIF.
-    " Annotation boundaries already exclude dollars inside literals and links.
     result = substring( val = abap_doc_string off = start len = end - start ).
     remove_leading_trailing_spaces( CHANGING string_to_work_on = result ).
     IF result IS INITIAL.
