@@ -14,6 +14,7 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS enum_values FOR TESTING RAISING cx_static_check.
 
     METHODS default_with_link FOR TESTING RAISING cx_static_check.
+    METHODS short_links FOR TESTING RAISING cx_static_check.
     METHODS too_many_titles_and_showalways FOR TESTING RAISING cx_static_check.
     METHODS too_many_number_annotations FOR TESTING RAISING cx_static_check.
     METHODS too_many_default_mixed FOR TESTING RAISING cx_static_check.
@@ -76,6 +77,13 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( description = `This is the description.` title = `Title` ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD short_links.
+    DATA(doc) = parse_condition_doc( `$values {@link .data:co_mode} $default {@link .data:co_mode.standard}` ).
+    cl_abap_unit_assert=>assert_equals( act = doc-enumvalues_link exp = `.data:co_mode` ).
+    cl_abap_unit_assert=>assert_equals( act = doc-default exp = `@link .data:co_mode.standard` ).
     zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
   ENDMETHOD.
 
