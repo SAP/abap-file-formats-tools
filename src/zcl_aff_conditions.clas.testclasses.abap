@@ -13,7 +13,6 @@ ENDCLASS.
 CLASS ltcl_serialization IMPLEMENTATION.
   METHOD assert_contains.
     DATA(actual) = concat_lines_of( output ).
-    REPLACE ALL OCCURRENCES OF '&apos;' IN actual WITH `'`.
     cl_abap_unit_assert=>assert_true( act = xsdbool( actual CS expected ) msg = expected ).
   ENDMETHOD.
 

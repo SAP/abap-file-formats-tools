@@ -264,6 +264,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       index = sy-tabix.
       DATA(line) = condition_lines[ index ].
       DATA(attribute) = ' s-check="' && escape( val = expression format = cl_abap_format=>e_xml_attr ) && '"'.
+      REPLACE ALL OCCURRENCES OF '&apos;' IN attribute WITH `'`.
       DATA(line_content) = content[ line ].
       FIND FIRST OCCURRENCE OF PCRE ' s-check="[^"]*"' IN line_content MATCH OFFSET DATA(offset) MATCH LENGTH DATA(length).
       IF sy-subrc = 0.
