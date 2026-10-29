@@ -248,7 +248,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDIF.
     LOOP AT condition_loops INTO DATA(loop_line) WHERE table_line > 0.
       DATA(loop_index) = sy-tabix.
-      REPLACE FIRST OCCURRENCE OF '<tt:loop' IN content[ loop_line ] WITH |<tt:loop name="affRow{ loop_index }"|.
+      DATA(loop_content) = content[ loop_line ].
+      REPLACE FIRST OCCURRENCE OF '<tt:loop' IN loop_content WITH |<tt:loop name="affRow{ loop_index }"|.
+      content[ loop_line ] = loop_content.
     ENDLOOP.
     LOOP AT checks INTO DATA(check).
       DATA(index) = check-target.
@@ -262,10 +264,11 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       index = sy-tabix.
       DATA(line) = condition_lines[ index ].
       DATA(attribute) = ' s-check="' && escape( val = expression format = cl_abap_format=>e_xml_attr ) && '"'.
-      FIND FIRST OCCURRENCE OF PCRE ' s-check="[^"]*"' IN content[ line ] MATCH OFFSET DATA(offset) MATCH LENGTH DATA(length).
+      DATA(line_content) = content[ line ].
+      FIND FIRST OCCURRENCE OF PCRE ' s-check="[^"]*"' IN line_content MATCH OFFSET DATA(offset) MATCH LENGTH DATA(length).
       IF sy-subrc = 0.
-        content[ line ] = substring( val = content[ line ] len = offset ) && attribute
-          && substring( val = content[ line ] off = offset + length ).
+        content[ line ] = substring( val = line_content len = offset ) && attribute
+          && substring( val = line_content off = offset + length ).
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -321,6 +324,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_closing_tag( `</tt:group>` ).
     write_closing_tag( `</object>` ).
     write_closing_tag( `</tt:cond>` ).
+    IF condition_stack IS INITIAL.
+      finish_conditions( ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -331,11 +337,13 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     write_closing_tag( `</array>` ).
     write_closing_tag( `</tt:cond>` ).
     next_tag_without_name_and_ref = abap_false.
+    IF condition_stack IS INITIAL.
+      finish_conditions( ).
+    ENDIF.
   ENDMETHOD.
 
 
   METHOD append_before_output.
-    finish_conditions( ).
     APPEND `<?sap.transform simple?>` TO output.
     APPEND `<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">` TO output.
     APPEND LINES OF st_template_imports TO output.
