@@ -343,11 +343,6 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       ENDIF.
       DATA(expression) = |ref('{ node-st_ref }'){ operator }{ value }|.
       APPEND VALUE #( target = target_index expression = expression ) TO result.
-      DATA(ancestor) = target-parent.
-      WHILE ancestor > 1 AND occurrences[ ancestor ]-items = abap_false.
-        APPEND VALUE #( target = ancestor expression = expression ) TO result.
-        ancestor = occurrences[ ancestor ]-parent.
-      ENDWHILE.
     ENDLOOP.
     SORT result BY target expression.
     DELETE ADJACENT DUPLICATES FROM result COMPARING target expression.

@@ -99,6 +99,7 @@ CLASS zcl_aff_test_types DEFINITION
         settings TYPE ty_cond_st_defaults,
         rows TYPE ty_cond_st_rows,
         other_rows TYPE ty_cond_st_rows,
+        plain_rows TYPE ty_cond_path_skills,
       END OF ty_cond_st_nested,
       BEGIN OF ty_cond_st_enum,
         mode TYPE ty_condition_mode,

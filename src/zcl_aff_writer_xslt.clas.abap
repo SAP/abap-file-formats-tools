@@ -248,6 +248,15 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     ENDIF.
     LOOP AT condition_loops INTO DATA(loop_line) WHERE table_line > 0.
       DATA(loop_index) = sy-tabix.
+      DATA(alias_reference) = |$affRow{ loop_index }.|.
+      DATA(alias_used) = abap_false.
+      LOOP AT checks TRANSPORTING NO FIELDS WHERE expression CS alias_reference.
+        alias_used = abap_true.
+        EXIT.
+      ENDLOOP.
+      IF alias_used = abap_false.
+        CONTINUE.
+      ENDIF.
       DATA(loop_content) = content[ loop_line ].
       REPLACE FIRST OCCURRENCE OF '<tt:loop' IN loop_content WITH |<tt:loop name="affRow{ loop_index }"|.
       content[ loop_line ] = loop_content.
@@ -260,13 +269,17 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ENDIF.
       condition_checks[ index ] = '(' && check-expression && ') or (' && original && ')'.
     ENDLOOP.
-    LOOP AT condition_checks INTO DATA(expression) WHERE table_line IS NOT INITIAL.
-      index = sy-tabix.
+    LOOP AT checks INTO check.
+      index = check-target.
+      IF condition_checks[ index ] IS INITIAL.
+        CONTINUE.
+      ENDIF.
+      DATA(expression) = condition_checks[ index ].
       DATA(line) = condition_lines[ index ].
       DATA(attribute) = ' s-check="' && escape( val = expression format = cl_abap_format=>e_xml_attr ) && '"'.
       REPLACE ALL OCCURRENCES OF '&apos;' IN attribute WITH `'`.
       DATA(line_content) = content[ line ].
-      FIND FIRST OCCURRENCE OF PCRE ' s-check="[^"]*"' IN line_content MATCH OFFSET DATA(offset) MATCH LENGTH DATA(length).
+      FIND FIRST OCCURRENCE OF PCRE '\s+s-check="[^"]*"' IN line_content MATCH OFFSET DATA(offset) MATCH LENGTH DATA(length).
       IF sy-subrc = 0.
         content[ line ] = substring( val = line_content len = offset ) && attribute
           && substring( val = line_content off = offset + length ).
