@@ -2506,6 +2506,10 @@ RISK LEVEL DANGEROUS.
 
       structure_different_default          FOR TESTING RAISING cx_static_check,
 
+      conditional_defaults                FOR TESTING RAISING cx_static_check,
+      conditional_rows                    FOR TESTING RAISING cx_static_check,
+      conditional_enum_default            FOR TESTING RAISING cx_static_check,
+
       structure_with_num_text              FOR TESTING RAISING cx_static_check,
 
       structure_with_include               FOR TESTING RAISING cx_static_check,
@@ -2958,6 +2962,42 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
         test_type = test_type
       CHANGING
         act_data  = test_type ).
+  ENDMETHOD.
+
+  METHOD conditional_defaults.
+    DATA(input) = VALUE zcl_aff_test_types=>ty_cond_st_defaults( enabled = abap_true detail = 'fallback' untouched = 'userValue' ).
+    DATA actual LIKE input.
+    exp_json = VALUE #( ( `{"enabled":true,"detail":"fallback","count":0,"flag":false,"untouched":"userValue"}` ) ).
+    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+    input-enabled = abap_false.
+    exp_json = VALUE #( ( `{"untouched":"userValue"}` ) ).
+    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+    input-enabled = abap_true.
+    CLEAR input-detail.
+    exp_json = VALUE #( ( `{"enabled":true,"detail":"","count":0,"flag":false,"untouched":"userValue"}` ) ).
+    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+  ENDMETHOD.
+
+  METHOD conditional_rows.
+    DATA(input) = VALUE zcl_aff_test_types=>ty_cond_st_nested(
+      settings-detail = 'fallback'
+      rows = VALUE #( ( enabled = abap_true detail = 'fallback' ) ( detail = 'fallback' ) )
+      other_rows = VALUE #( ( enabled = abap_true detail = 'fallback' ) ) ).
+    DATA actual LIKE input.
+    exp_json = VALUE #(
+      ( `{"settings":{},"rows":[{"enabled":true,"detail":"fallback","count":0,"flag":false},{}],` )
+      ( `"otherRows":[{"enabled":true,"detail":"fallback","count":0,"flag":false}]}` ) ).
+    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+  ENDMETHOD.
+
+  METHOD conditional_enum_default.
+    DATA(input) = VALUE zcl_aff_test_types=>ty_cond_st_enum( mode = 'S' detail = 'S' ).
+    DATA actual LIKE input.
+    exp_json = VALUE #( ( `{"mode":"standardMode","detail":"standardMode"}` ) ).
+    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+    input-mode = 'C'.
+    exp_json = VALUE #( ( `{"mode":"cloudDevelopment"}` ) ).
+    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
   ENDMETHOD.
 
   METHOD do_integration_test.

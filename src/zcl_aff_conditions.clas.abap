@@ -1,4 +1,82 @@
-CLASS lcl_aff_conditions IMPLEMENTATION.
+CLASS zcl_aff_conditions DEFINITION PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    TYPES:
+      BEGIN OF enum_member,
+        link TYPE string,
+        json TYPE string,
+        doc TYPE zcl_aff_abap_doc_parser=>abap_doc,
+        st_value TYPE string,
+      END OF enum_member,
+      enum_members TYPE STANDARD TABLE OF enum_member WITH EMPTY KEY,
+      BEGIN OF node,
+        parent TYPE i,
+        name TYPE string,
+        type_key TYPE string,
+        items TYPE abap_bool,
+        kind TYPE abap_typekind,
+        json_type TYPE string,
+        doc TYPE zcl_aff_abap_doc_parser=>abap_doc,
+        default_json TYPE string,
+        members TYPE enum_members,
+        st_ref TYPE string,
+      END OF node,
+      nodes TYPE STANDARD TABLE OF node WITH EMPTY KEY.
+    TYPES:
+      BEGIN OF serialization_check,
+        target TYPE i,
+        expression TYPE string,
+      END OF serialization_check,
+      serialization_checks TYPE STANDARD TABLE OF serialization_check WITH EMPTY KEY.
+    METHODS constructor IMPORTING occurrences TYPE nodes.
+    "! Returns the "allOf" member for the root schema, or nothing if there are no conditions
+    METHODS compile RETURNING VALUE(result) TYPE string RAISING zcx_aff_tools.
+    METHODS compile_serialization RETURNING VALUE(result) TYPE serialization_checks RAISING zcx_aff_tools.
+  PRIVATE SECTION.
+    DATA occurrences TYPE nodes.
+    DATA context TYPE i.
+    DATA component TYPE string.
+    METHODS compile_rule
+      IMPORTING target        TYPE node
+                condition     TYPE string
+                target_index  TYPE i OPTIONAL
+                member        TYPE enum_member OPTIONAL
+      RETURNING VALUE(result) TYPE string
+      RAISING   zcx_aff_tools.
+    METHODS restrict_enum
+      IMPORTING target        TYPE node
+                member        TYPE enum_member
+      RETURNING VALUE(result) TYPE string.
+    METHODS resolve IMPORTING link TYPE string RETURNING VALUE(result) TYPE i RAISING zcx_aff_tools.
+    METHODS descend
+      IMPORTING start         TYPE i
+                names         TYPE string_table
+      RETURNING VALUE(result) TYPE i.
+    METHODS literal
+      IMPORTING field         TYPE i
+                token         TYPE string
+      RETURNING VALUE(result) TYPE string
+      RAISING   zcx_aff_tools.
+    METHODS normalize_link
+      IMPORTING link          TYPE string
+                constant_link TYPE abap_bool DEFAULT abap_false
+      RETURNING VALUE(result) TYPE string
+      RAISING   zcx_aff_tools.
+    METHODS common_scope
+      IMPORTING first         TYPE i
+                second        TYPE i
+      RETURNING VALUE(result) TYPE i.
+    METHODS wrap
+      IMPORTING target        TYPE i
+                scope         TYPE i
+                json          TYPE string
+                guard         TYPE abap_bool DEFAULT abap_false
+      RETURNING VALUE(result) TYPE string
+      RAISING   zcx_aff_tools.
+    METHODS quote IMPORTING text TYPE string RETURNING VALUE(result) TYPE string.
+    METHODS fail IMPORTING text TYPE string RAISING zcx_aff_tools.
+ENDCLASS.
+
+CLASS zcl_aff_conditions IMPLEMENTATION.
   METHOD constructor.
     me->occurrences = occurrences.
   ENDMETHOD.
@@ -204,7 +282,6 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
     DATA(value) = literal( field = field token = value_token ).
     " The rule is built where both fields are reachable and then nested into the root schema.
     DATA(scope) = common_scope( first = target-parent second = node-parent ).
-
     DATA(presence) = COND string( WHEN node-doc-required = abap_false AND node-default_json <> value
       THEN '"required":[' && quote( node-name ) && '],' ).
     DATA(test) = wrap( target = node-parent scope = scope guard = abap_true
@@ -216,7 +293,6 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
     IF member IS NOT INITIAL.
       forbidden = wrap( target = target_index scope = scope json = restrict_enum( target = target member = member ) ).
     ENDIF.
-
     " The if schema tests equality, so != swaps then and else.
     DATA(negated) = xsdbool( operator = '!=' ).
     DATA(then_schema) = COND string( WHEN negated = abap_true THEN forbidden ELSE required ).
@@ -225,5 +301,55 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
       && COND string( WHEN then_schema IS NOT INITIAL THEN ',"then":' && then_schema )
       && COND string( WHEN else_schema IS NOT INITIAL THEN ',"else":' && else_schema ) && '}'.
     result = wrap( target = scope scope = 1 json = rule ).
+  ENDMETHOD.
+
+  METHOD compile_serialization.
+    LOOP AT occurrences INTO DATA(target) WHERE doc-required_when IS NOT INITIAL.
+      DATA(target_index) = sy-tabix.
+      context = target-parent.
+      component = target-type_key && '.' && target-name.
+      IF context = 0 OR target-items = abap_true.
+        fail( 'Conditional annotations must be on structure components' ).
+      ENDIF.
+      FIND FIRST OCCURRENCE OF PCRE
+        `^\s*(\{\s*@link[^{}]+\})\s*(!?=)\s*(\{\s*@link[^{}]+\}|'(?:''|[^'])*'|true|false|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?)\s*$`
+        IN target-doc-required_when SUBMATCHES DATA(field_link) DATA(operator) DATA(token).
+      IF sy-subrc <> 0.
+        fail( 'Only a single ABAP field link = or != literal or enum constant link is supported' ).
+      ENDIF.
+      DATA(field) = resolve( field_link ).
+      DATA(node) = occurrences[ field ].
+      IF node-json_type = 'array' OR node-json_type = 'object'.
+        fail( 'Only scalar fields can be compared' ).
+      ENDIF.
+      literal( field = field token = token ).
+      DATA(scope) = common_scope( first = target-parent second = node-parent ).
+      wrap( target = node-parent scope = scope guard = abap_true json = '' ).
+      DATA(value) = COND string( WHEN token = 'true' THEN `C('X')`
+        WHEN token = 'false' THEN `C('')`
+        WHEN token(1) = `'` THEN 'C(' && token && ')'
+        ELSE token ).
+      IF token(1) = '{'.
+        DATA(key) = normalize_link( link = token constant_link = abap_true ).
+        value = node-members[ link = key ]-st_value.
+      ELSEIF node-json_type = 'numeric'.
+        value = SWITCH #( node-kind
+          WHEN cl_abap_typedescr=>typekind_int8 THEN |INT8({ token })|
+          WHEN cl_abap_typedescr=>typekind_packed THEN |P({ token })|
+          WHEN cl_abap_typedescr=>typekind_float THEN |F('{ token }')|
+          WHEN cl_abap_typedescr=>typekind_decfloat16 THEN |DECFLOAT16('{ token }')|
+          WHEN cl_abap_typedescr=>typekind_decfloat34 THEN |DECFLOAT34('{ token }')|
+          ELSE |I({ token })| ).
+      ENDIF.
+      DATA(expression) = |ref('{ node-st_ref }'){ operator }{ value }|.
+      APPEND VALUE #( target = target_index expression = expression ) TO result.
+      DATA(ancestor) = target-parent.
+      WHILE ancestor > 1 AND occurrences[ ancestor ]-items = abap_false.
+        APPEND VALUE #( target = ancestor expression = expression ) TO result.
+        ancestor = occurrences[ ancestor ]-parent.
+      ENDWHILE.
+    ENDLOOP.
+    SORT result BY target expression.
+    DELETE ADJACENT DUPLICATES FROM result COMPARING target expression.
   ENDMETHOD.
 ENDCLASS.

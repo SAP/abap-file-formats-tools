@@ -59,7 +59,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       END OF ty_enum_properties.
 
 
-    DATA condition_nodes TYPE lcl_aff_conditions=>nodes.
+    DATA condition_nodes TYPE zcl_aff_conditions=>nodes.
     DATA condition_stack TYPE STANDARD TABLE OF i WITH EMPTY KEY.
     METHODS remember_condition_node
       IMPORTING name        TYPE string
@@ -1034,7 +1034,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     DATA(parts) = get_splitted_absolute_name( description->absolute_name ).
     DATA(type_key) = COND string( WHEN lines( parts ) >= 4 THEN parts[ 2 ] && '.' && parts[ 4 ] ).
     DATA(item) = xsdbool( parent > 0 AND last_operation( ) = zif_aff_writer=>operation-open_table ).
-    DATA(node) = VALUE lcl_aff_conditions=>node( parent = parent name = format_name( name )
+    DATA(node) = VALUE zcl_aff_conditions=>node( parent = parent name = format_name( name )
       type_key = type_key items = item json_type = json_type kind = description->type_kind doc = abap_doc ).
     IF json_type = 'boolean' AND abap_doc-default IS INITIAL.
       node-default_json = 'false'.
@@ -1060,7 +1060,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     DATA(nodes) = condition_nodes.
     condition_nodes = VALUE #( ).
     TRY.
-        DATA(conditions) = NEW lcl_aff_conditions( nodes )->compile( ).
+        DATA(conditions) = NEW zcl_aff_conditions( nodes )->compile( ).
       CATCH zcx_aff_tools INTO DATA(exception).
         log->add_exception( exception = exception component_name = fullname_of_type ).
         RAISE EXCEPTION exception.

@@ -2824,13 +2824,13 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
       ( `{@link zcl_aff_test_types.ty_cond_enum} = true` )
       ( `{@link zcl_aff_test_types.ty_cond_enum.mode} = {@link zcl_aff_test_types.co_condition_mode.cloud_mode}` ) ).
     LOOP AT conditions INTO DATA(condition).
-      DATA(nodes) = VALUE lcl_aff_conditions=>nodes(
+      DATA(nodes) = VALUE zcl_aff_conditions=>nodes(
         ( type_key = 'ZCL_AFF_TEST_TYPES.TY_COND_ENUM' json_type = 'object' )
         ( parent = 1 name = 'mode' json_type = 'string'
           members = VALUE #( ( link = 'ZCL_AFF_TEST_TYPES.CO_CONDITION_MODE.CLOUD_MODE' json = '"cloudDevelopment"' ) ) )
         ( parent = 1 name = 'detail' json_type = 'string' doc-available_when = condition ) ).
       TRY.
-          NEW lcl_aff_conditions( nodes )->compile( ).
+          NEW zcl_aff_conditions( nodes )->compile( ).
           cl_abap_unit_assert=>fail( 'Invalid link convention was silently accepted' ).
         CATCH zcx_aff_tools INTO DATA(exception).
           cl_abap_unit_assert=>assert_true( xsdbool( exception->get_text( ) CS 'links must use' ) ).

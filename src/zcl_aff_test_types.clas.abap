@@ -81,6 +81,31 @@ CLASS zcl_aff_test_types DEFINITION
         "! $requiredWhen {@link zcl_aff_test_types.ty_cond_required.enabled} = true
         detail TYPE string,
       END OF ty_cond_required,
+      BEGIN OF ty_cond_st_defaults,
+        enabled TYPE abap_bool,
+        "! $default 'fallback'
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_st_defaults.enabled} = true
+        detail TYPE string,
+        "! $default '0'
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_st_defaults.enabled} = true
+        count TYPE i,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_st_defaults.enabled} = true
+        flag TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_st_defaults.enabled} = false
+        untouched TYPE string,
+      END OF ty_cond_st_defaults,
+      ty_cond_st_rows TYPE STANDARD TABLE OF ty_cond_st_defaults WITH EMPTY KEY,
+      BEGIN OF ty_cond_st_nested,
+        settings TYPE ty_cond_st_defaults,
+        rows TYPE ty_cond_st_rows,
+        other_rows TYPE ty_cond_st_rows,
+      END OF ty_cond_st_nested,
+      BEGIN OF ty_cond_st_enum,
+        mode TYPE ty_condition_mode,
+        "! $default {@link zcl_aff_test_types.data:co_condition_mode.standard_mode}
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_st_enum.mode} != {@link zcl_aff_test_types.data:co_condition_mode.cloud_mode}
+        detail TYPE ty_condition_mode,
+      END OF ty_cond_st_enum,
       BEGIN OF ty_cond_invalid,
         "! $availableWhen {@link zcl_aff_test_types.ty_cond_invalid.missing} = true
         detail TYPE string,
