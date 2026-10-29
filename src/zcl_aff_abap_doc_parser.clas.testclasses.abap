@@ -44,6 +44,18 @@ CLASS ltcl_aff_abap_doc_parser DEFINITION FINAL FOR TESTING
     METHODS pattern_no_value FOR TESTING RAISING cx_static_check.
     METHODS pattern FOR TESTING RAISING cx_static_check.
     METHODS min_max_items FOR TESTING RAISING cx_static_check.
+    METHODS available_when FOR TESTING RAISING cx_static_check.
+    METHODS required_when FOR TESTING RAISING cx_static_check.
+    METHODS both_conditions FOR TESTING RAISING cx_static_check.
+    METHODS condition_followed_by_annot FOR TESTING RAISING cx_static_check.
+    METHODS condition_dollar_in_literal FOR TESTING RAISING cx_static_check.
+    METHODS condition_dollar_in_link FOR TESTING RAISING cx_static_check.
+    METHODS condition_escaped_quote FOR TESTING RAISING cx_static_check.
+    METHODS condition_duplicate FOR TESTING RAISING cx_static_check.
+    METHODS condition_empty FOR TESTING RAISING cx_static_check.
+    METHODS parse_condition_doc
+      IMPORTING abap_doc      TYPE string
+      RETURNING VALUE(result) TYPE zcl_aff_abap_doc_parser=>abap_doc.
 
 ENDCLASS.
 
@@ -625,6 +637,82 @@ CLASS ltcl_aff_abap_doc_parser IMPLEMENTATION.
         log            = log ).
     exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` min_items = '1' max_items = '5' ).
     cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+  ENDMETHOD.
+
+  METHOD parse_condition_doc.
+    result = parser->parse(
+      EXPORTING
+        component_name = `Component Name`
+        to_parse       = abap_doc
+      CHANGING
+        log            = log ).
+  ENDMETHOD.
+
+  METHOD available_when.
+    DATA(act_abap_doc) = parse_condition_doc( `<p class="shorttext">Title</p> This is the description. $availableWhen {@link .mode} = 'A'` ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` available_when = `{@link .mode} = 'A'` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD required_when.
+    DATA(act_abap_doc) = parse_condition_doc( `<p class="shorttext">Title</p> This is the description. $requiredWhen {@link .flag} = abap_true` ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` required_when = `{@link .flag} = abap_true` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD condition_followed_by_annot.
+    DATA(act_abap_doc) = parse_condition_doc( `<p class="shorttext">Title</p> This is the description. $availableWhen {@link .mode} = 'A' $minimum 1` ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` available_when = `{@link .mode} = 'A'` minimum = `1` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD both_conditions.
+    DATA(act_abap_doc) = parse_condition_doc(
+      `Description $requiredWhen {@link .flag} = true $availableWhen {@link .flag} = true` ).
+    exp_abap_doc = VALUE #( description = `Description` required_when = `{@link .flag} = true` available_when = `{@link .flag} = true` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-warning ).
+  ENDMETHOD.
+
+  METHOD condition_dollar_in_literal.
+    DATA(act_abap_doc) = parse_condition_doc( `<p class="shorttext">Title</p> This is the description. $availableWhen {@link .mode} = '$minimum'` ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` available_when = `{@link .mode} = '$minimum'` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD condition_dollar_in_link.
+    DATA(act_abap_doc) = parse_condition_doc( `<p class="shorttext">Title</p> This is the description. $availableWhen {@link $required} = 'A'` ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` available_when = `{@link $required} = 'A'` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+  ENDMETHOD.
+
+  METHOD condition_escaped_quote.
+    DATA(act_abap_doc) = parse_condition_doc( `<p class="shorttext">Title</p> This is the description. $availableWhen {@link .mode} = 'it''s $pattern' $minimum 1` ).
+    exp_abap_doc = VALUE #( title = `Title` description = `This is the description.` available_when = `{@link .mode} = 'it''s $pattern'` minimum = `1` ).
+    cl_abap_unit_assert=>assert_equals( exp = exp_abap_doc act = act_abap_doc ).
+    zcl_aff_tools_unit_test_helper=>assert_log_has_no_message( log = log message_severity_threshold = zif_aff_log=>c_message_type-info ).
+  ENDMETHOD.
+
+  METHOD condition_duplicate.
+    DATA(act_abap_doc) = parse_condition_doc( `<p class="shorttext">Title</p> This is the description. $availableWhen {@link .a} = 'A' $availableWhen {@link .b} = 'B'` ).
+    cl_abap_unit_assert=>assert_equals( exp = `#invalid` act = act_abap_doc-available_when ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = `Duplicate conditional annotation $availableWhen`
+                                                              exp_type           = zif_aff_log=>c_message_type-error
+                                                              exp_component_name = `Component Name` ).
+  ENDMETHOD.
+
+  METHOD condition_empty.
+    DATA(act_abap_doc) = parse_condition_doc( `<p class="shorttext">Title</p> This is the description. $requiredWhen $minimum 1` ).
+    cl_abap_unit_assert=>assert_equals( exp = `#invalid` act = act_abap_doc-required_when ).
+    zcl_aff_tools_unit_test_helper=>assert_log_contains_text( log                = log
+                                                              exp_text           = `Empty conditional annotation $requiredWhen`
+                                                              exp_type           = zif_aff_log=>c_message_type-error
+                                                              exp_component_name = `Component Name` ).
   ENDMETHOD.
 
 ENDCLASS.

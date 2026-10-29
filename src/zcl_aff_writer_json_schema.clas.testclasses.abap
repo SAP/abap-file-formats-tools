@@ -2548,3 +2548,308 @@ CLASS ltcl_json_writer_abap_doc IMPLEMENTATION.
   ENDMETHOD.
 
 ENDCLASS.
+
+CLASS lcl_condition_json DEFINITION FINAL.
+  PUBLIC SECTION.
+    TYPES:
+      BEGIN OF node,
+        parent TYPE i,
+        name TYPE string,
+        kind TYPE string,
+        value TYPE string,
+      END OF node,
+      tt_nodes TYPE STANDARD TABLE OF node WITH EMPTY KEY.
+    DATA nodes TYPE tt_nodes READ-ONLY.
+    METHODS constructor IMPORTING json TYPE string RAISING cx_static_check.
+    METHODS member
+      IMPORTING parent        TYPE i
+                name          TYPE string
+      RETURNING VALUE(result) TYPE i.
+    METHODS subtree
+      IMPORTING root TYPE i
+      RETURNING VALUE(result) TYPE tt_nodes.
+ENDCLASS.
+
+CLASS lcl_condition_json IMPLEMENTATION.
+  METHOD constructor.
+    DATA(reader) = cl_sxml_string_reader=>create( cl_abap_codepage=>convert_to( json ) ).
+    DATA stack TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+    DO.
+      DATA(token) = reader->read_next_node( ).
+      IF token IS NOT BOUND.
+        EXIT.
+      ENDIF.
+      CASE token->type.
+        WHEN if_sxml_node=>co_nt_element_open.
+          DATA(element) = CAST if_sxml_open_element( token ).
+          DATA(name) = ``.
+          LOOP AT element->get_attributes( ) INTO DATA(attribute).
+            IF attribute->qname-name = 'name'.
+              name = attribute->get_value( ).
+            ENDIF.
+          ENDLOOP.
+          APPEND VALUE #( parent = VALUE #( stack[ 1 ] OPTIONAL ) name = name kind = element->qname-name ) TO nodes.
+          INSERT lines( nodes ) INTO stack INDEX 1.
+        WHEN if_sxml_node=>co_nt_value.
+          nodes[ stack[ 1 ] ]-value = CAST if_sxml_value_node( token )->get_value( ).
+        WHEN if_sxml_node=>co_nt_element_close.
+          DELETE stack INDEX 1.
+      ENDCASE.
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD member.
+    result = line_index( nodes[ parent = parent name = name ] ).
+  ENDMETHOD.
+
+  METHOD subtree.
+    LOOP AT nodes INTO DATA(node) FROM root.
+      IF sy-tabix > root AND node-parent < root.
+        EXIT.
+      ENDIF.
+      node-parent = COND #( WHEN sy-tabix = root THEN 0 ELSE node-parent - root + 1 ).
+      APPEND node TO result.
+    ENDLOOP.
+    result[ 1 ]-name = ``.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
+  PRIVATE SECTION.
+    DATA writer TYPE REF TO zcl_aff_writer_json_schema.
+    DATA generator TYPE REF TO zif_aff_generator.
+    DATA schema TYPE REF TO lcl_condition_json.
+    METHODS setup.
+    METHODS initialize.
+    METHODS generate IMPORTING data TYPE data RAISING cx_static_check.
+    METHODS assert_rule
+      IMPORTING expected TYPE string
+                index TYPE i DEFAULT 1
+      RAISING   cx_static_check.
+    METHODS local_boolean FOR TESTING RAISING cx_static_check.
+    METHODS root_enum FOR TESTING RAISING cx_static_check.
+    METHODS enum_values FOR TESTING RAISING cx_static_check.
+    METHODS nested_enum_values FOR TESTING RAISING cx_static_check.
+    METHODS single_enum_value FOR TESTING RAISING cx_static_check.
+    METHODS canteen_enum_value FOR TESTING RAISING cx_static_check.
+    METHODS required_discriminator FOR TESTING RAISING cx_static_check.
+    METHODS repeated_rows FOR TESTING RAISING cx_static_check.
+    METHODS full_table_path FOR TESTING RAISING cx_static_check.
+    METHODS nested_table_path FOR TESTING RAISING cx_static_check.
+    METHODS outside_row_scope FOR TESTING RAISING cx_static_check.
+    METHODS not_equal FOR TESTING RAISING cx_static_check.
+    METHODS literals FOR TESTING RAISING cx_static_check.
+    METHODS optional_ancestor FOR TESTING RAISING cx_static_check.
+    METHODS explicit_defaults FOR TESTING RAISING cx_static_check.
+    METHODS invalid_definitions FOR TESTING RAISING cx_static_check.
+    METHODS invalid_link_conventions FOR TESTING RAISING cx_static_check.
+    METHODS reject
+      IMPORTING data     TYPE data
+                expected TYPE string
+      RAISING   cx_static_check.
+ENDCLASS.
+
+CLASS ltcl_conditional_schema IMPLEMENTATION.
+  METHOD setup.
+    initialize( ).
+  ENDMETHOD.
+
+  METHOD initialize.
+    writer = NEW #( schema_id = 'urn:aff:test:conditions' ).
+    generator = NEW zcl_aff_generator( writer ).
+  ENDMETHOD.
+
+  METHOD generate.
+    DATA(output) = generator->generate_type( data ).
+    cl_abap_unit_assert=>assert_true( writer->zif_aff_writer~validate( source = output log = generator->get_log( ) ) ).
+    LOOP AT output INTO DATA(line).
+      cl_abap_unit_assert=>assert_true( act = xsdbool( strlen( line ) <= 255 ) msg = 'Generated condition line exceeds include source limit' ).
+    ENDLOOP.
+    schema = NEW #( concat_lines_of( table = output sep = cl_abap_char_utilities=>newline ) ).
+  ENDMETHOD.
+
+  METHOD assert_rule.
+    DATA(all_of) = schema->member( parent = 1 name = 'allOf' ).
+    cl_abap_unit_assert=>assert_not_initial( all_of ).
+    DATA(rule_index) = 0.
+    LOOP AT schema->nodes TRANSPORTING NO FIELDS WHERE parent = all_of.
+      rule_index += 1.
+      IF rule_index = index.
+        DATA(root) = sy-tabix.
+        EXIT.
+      ENDIF.
+    ENDLOOP.
+    cl_abap_unit_assert=>assert_not_initial( root ).
+    DATA(expected_json) = NEW lcl_condition_json( expected ).
+    cl_abap_unit_assert=>assert_equals( act = schema->subtree( root ) exp = expected_json->nodes ).
+  ENDMETHOD.
+
+  METHOD local_boolean.
+    generate( VALUE zcl_aff_test_types=>ty_conditional( ) ).
+    DATA(properties) = schema->member( parent = 1 name = 'properties' ).
+    DATA(general) = schema->member( parent = properties name = 'generalInformation' ).
+    cl_abap_unit_assert=>assert_initial( schema->member( parent = general name = 'allOf' ) ).
+    DATA(all_of) = schema->member( parent = 1 name = 'allOf' ).
+    DATA(rule_count) = 0.
+    LOOP AT schema->nodes TRANSPORTING NO FIELDS WHERE parent = all_of.
+      rule_count += 1.
+    ENDLOOP.
+    cl_abap_unit_assert=>assert_equals( act = rule_count exp = 4 msg = 'Identical conditions must not produce duplicate rules' ).
+    assert_rule( '{"properties":{"generalInformation":{' &&
+      '"if":{"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}},' &&
+      '"then":{"required":["coffeeBrand"]},"else":{"properties":{"coffeeBrand":false}}}}}' ).
+  ENDMETHOD.
+
+  METHOD root_enum.
+    generate( VALUE zcl_aff_test_types=>ty_conditional( ) ).
+    cl_abap_unit_assert=>assert_initial( schema->member( parent = 1 name = 'if' ) ).
+    cl_abap_unit_assert=>assert_not_initial( schema->member( parent = 1 name = 'allOf' ) ).
+    assert_rule( index = 2 expected = '{"if":{"properties":{"header":{"properties":{"languageVersion":{"const":"standardMode"}}}}},' &&
+      '"else":{"properties":{"favorites":{"properties":{"wb2k":false}}}}}' ).
+    initialize( ).
+    generate( VALUE zcl_aff_test_types=>ty_cond_enum( ) ).
+    assert_rule( '{"if":{"properties":{"mode":{"const":"cloudDevelopment"}}},"else":{"properties":{"detail":false}}}' ).
+  ENDMETHOD.
+
+  METHOD required_discriminator.
+    generate( VALUE zcl_aff_test_types=>ty_cond_required( ) ).
+    assert_rule( '{"if":{"properties":{"enabled":{"const":true}}},' &&
+      '"then":{"required":["detail"]},"else":{"properties":{"detail":false}}}' ).
+  ENDMETHOD.
+
+  METHOD enum_values.
+    generate( VALUE zcl_aff_test_types=>ty_cond_enum_values( ) ).
+    assert_rule( '{"if":{"properties":{"mode":{"const":"cloudDevelopment"}}},"else":{"properties":{"otherExecution":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"else":{"properties":{"execution":{"enum":["modern","auto"]}}}}' ).
+    assert_rule( index = 3 expected = '{"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"then":{"properties":{"execution":{"enum":["classic","modern"]}}}}' ).
+    assert_rule( index = 4 expected = '{"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"else":{"properties":{"otherExecution":{"enum":["modern","auto"]}}}}' ).
+    assert_rule( index = 5 expected = '{"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"then":{"properties":{"otherExecution":{"enum":["classic","modern"]}}}}' ).
+    DATA(properties) = schema->member( parent = 1 name = 'properties' ).
+    DATA(execution) = schema->member( parent = properties name = 'execution' ).
+    DATA(enum_root) = schema->member( parent = execution name = 'enum' ).
+    DATA(expected) = NEW lcl_condition_json( '["classic","modern","auto"]' ).
+    cl_abap_unit_assert=>assert_equals( act = schema->subtree( enum_root ) exp = expected->nodes ).
+  ENDMETHOD.
+
+  METHOD nested_enum_values.
+    generate( VALUE zcl_aff_test_types=>ty_cond_enum_nested( ) ).
+    DATA(rule) = '"if":{"properties":{"mode":{"const":"standardMode"}}},' &&
+      '"else":{"properties":{"execution":{"enum":["modern","auto"]}}}'.
+    assert_rule( index = 4 expected = '{"properties":{"settings":{' && rule && '}}}' ).
+    assert_rule( index = 8 expected = '{"properties":{"rows":{"items":{' && rule && '}}}}' ).
+    assert_rule( index = 12 expected = '{"properties":{"otherRows":{"items":{' && rule && '}}}}' ).
+  ENDMETHOD.
+
+  METHOD single_enum_value.
+    generate( VALUE zcl_aff_test_types=>ty_cond_single_value( ) ).
+    assert_rule( '{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},' &&
+      '"else":{"properties":{"execution":false}}}' ).
+  ENDMETHOD.
+
+  METHOD canteen_enum_value.
+    generate( VALUE zcl_aff_test_types=>ty_cond_canteen_main( ) ).
+    assert_rule( index = 2 expected = '{"if":{"required":["generalInformation"],"properties":{"generalInformation":{' &&
+      '"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}}}},' &&
+      '"else":{"properties":{"favorites":{"properties":{"canteen":{"enum":["wdf01"]}}}}}}' ).
+  ENDMETHOD.
+
+  METHOD repeated_rows.
+    generate( VALUE zcl_aff_test_types=>ty_conditional( ) ).
+    DATA(row_rule) = '"items":{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},"then":{"required":["detail"]}}'.
+    assert_rule( index = 3 expected = '{"properties":{"skills":{' && row_rule && '}}}' ).
+    assert_rule( index = 4 expected = '{"properties":{"otherSkills":{' && row_rule && '}}}' ).
+  ENDMETHOD.
+
+  METHOD full_table_path.
+    generate( VALUE zcl_aff_test_types=>ty_cond_table_path( ) ).
+    assert_rule( '{"properties":{"skills":{"items":{' &&
+      '"if":{"required":["level"],"properties":{"level":{"const":"beginner"}}},' &&
+      '"else":{"properties":{"beginnerDetails":false}}}}}}' ).
+  ENDMETHOD.
+
+  METHOD nested_table_path.
+    generate( VALUE zcl_aff_test_types=>ty_cond_nested_path( ) ).
+    assert_rule( '{"properties":{"groups":{"items":{"properties":{"skills":{"items":{' &&
+      '"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},' &&
+      '"then":{"required":["detail"]}}}}}}}}' ).
+  ENDMETHOD.
+
+  METHOD outside_row_scope.
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_outside_row( ) expected = 'outside their own row scope' ).
+  ENDMETHOD.
+
+  METHOD literals.
+    generate( VALUE zcl_aff_test_types=>ty_cond_literals( ) ).
+    assert_rule( '{"if":{"required":["name"],"properties":{"name":{"const":"O''Brien"}}},"else":{"properties":{"named":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"required":["count"],"properties":{"count":{"const":2}}},"then":{"required":["counted"]}}' ).
+  ENDMETHOD.
+
+  METHOD not_equal.
+    generate( VALUE zcl_aff_test_types=>ty_cond_not_equal( ) ).
+    assert_rule( '{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},"then":{"properties":{"disabledDetail":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"required":["count"],"properties":{"count":{"const":2}}},"else":{"required":["counted"]}}' ).
+    assert_rule( index = 3 expected = '{"if":{"required":["mode"],"properties":{"mode":{"const":"cloudDevelopment"}}},"then":{"properties":{"localDetail":false}}}' ).
+  ENDMETHOD.
+
+  METHOD reject.
+    initialize( ).
+    TRY.
+        generator->generate_type( data ).
+        cl_abap_unit_assert=>fail( 'Invalid annotation was silently accepted' ).
+      CATCH zcx_aff_tools INTO DATA(exception).
+        cl_abap_unit_assert=>assert_true( xsdbool( exception->get_text( ) CS expected ) ).
+        cl_abap_unit_assert=>assert_equals( act = writer->zif_aff_writer~get_log( )->get_max_severity( ) exp = 'E' ).
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD invalid_definitions.
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_invalid( ) expected = 'Unknown' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_malformed( ) expected = 'Only a single' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_wrong_type( ) expected = 'String literal' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_ambiguous( ) expected = 'Ambiguous' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_duplicate( ) expected = 'Only a single' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_wrong_enum( ) expected = 'not a member' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_compound( ) expected = 'Only a single' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_invalid_enum_value( ) expected = 'Unknown' ).
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_execution( ) expected = 'enclosing structure' ).
+  ENDMETHOD.
+
+  METHOD invalid_link_conventions.
+    DATA(conditions) = VALUE string_table(
+      ( `{@link zcl_aff_test_types.data:ty_cond_enum.mode} = true` )
+      ( `{@link zcl_aff_test_types.ty_cond_enum} = true` )
+      ( `{@link zcl_aff_test_types.ty_cond_enum.mode} = {@link zcl_aff_test_types.co_condition_mode.cloud_mode}` ) ).
+    LOOP AT conditions INTO DATA(condition).
+      DATA(nodes) = VALUE zcl_aff_conditions=>nodes(
+        ( type_key = 'ZCL_AFF_TEST_TYPES.TY_COND_ENUM' json_type = 'object' )
+        ( parent = 1 name = 'mode' json_type = 'string'
+          members = VALUE #( ( link = 'ZCL_AFF_TEST_TYPES.CO_CONDITION_MODE.CLOUD_MODE' json = '"cloudDevelopment"' ) ) )
+        ( parent = 1 name = 'detail' json_type = 'string' doc-available_when = condition ) ).
+      TRY.
+          NEW zcl_aff_conditions( nodes )->compile( ).
+          cl_abap_unit_assert=>fail( 'Invalid link convention was silently accepted' ).
+        CATCH zcx_aff_tools INTO DATA(exception).
+          cl_abap_unit_assert=>assert_true( xsdbool( exception->get_text( ) CS 'links must use' ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD optional_ancestor.
+    generate( VALUE zcl_aff_test_types=>ty_cond_optional( ) ).
+    assert_rule( index = 2 expected = '{"if":{"required":["generalInformation"],"properties":{"generalInformation":{' &&
+      '"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}}}},"else":{"properties":{"detail":false}}}' ).
+  ENDMETHOD.
+
+  METHOD explicit_defaults.
+    generate( VALUE zcl_aff_test_types=>ty_cond_true_default( ) ).
+    assert_rule( '{"if":{"properties":{"enabled":{"const":true}}},"then":{"required":["detail"]}}' ).
+    initialize( ).
+    generate( VALUE zcl_aff_test_types=>ty_cond_zero_default( ) ).
+    assert_rule( '{"if":{"properties":{"count":{"const":0}}},"then":{"required":["detail"]}}' ).
+  ENDMETHOD.
+ENDCLASS.
+
