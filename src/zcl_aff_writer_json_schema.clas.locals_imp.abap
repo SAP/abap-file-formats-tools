@@ -32,6 +32,12 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
   METHOD descend.
     result = start.
     LOOP AT names INTO DATA(name).
+      WHILE occurrences[ result ]-json_type = 'array'.
+        result = line_index( occurrences[ parent = result items = abap_true ] ).
+        IF result = 0.
+          RETURN.
+        ENDIF.
+      ENDWHILE.
       result = line_index( occurrences[ parent = result name = to_mixed( to_lower( name ) ) items = abap_false ] ).
       IF result = 0.
         RETURN.
@@ -221,4 +227,3 @@ CLASS lcl_aff_conditions IMPLEMENTATION.
     result = wrap( target = scope scope = 1 json = rule ).
   ENDMETHOD.
 ENDCLASS.
-

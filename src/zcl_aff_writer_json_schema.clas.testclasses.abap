@@ -2634,6 +2634,9 @@ CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK L
     METHODS canteen_enum_value FOR TESTING RAISING cx_static_check.
     METHODS required_discriminator FOR TESTING RAISING cx_static_check.
     METHODS repeated_rows FOR TESTING RAISING cx_static_check.
+    METHODS full_table_path FOR TESTING RAISING cx_static_check.
+    METHODS nested_table_path FOR TESTING RAISING cx_static_check.
+    METHODS outside_row_scope FOR TESTING RAISING cx_static_check.
     METHODS not_equal FOR TESTING RAISING cx_static_check.
     METHODS literals FOR TESTING RAISING cx_static_check.
     METHODS optional_ancestor FOR TESTING RAISING cx_static_check.
@@ -2759,6 +2762,24 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     DATA(row_rule) = '"items":{"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},"then":{"required":["detail"]}}'.
     assert_rule( index = 3 expected = '{"properties":{"skills":{' && row_rule && '}}}' ).
     assert_rule( index = 4 expected = '{"properties":{"otherSkills":{' && row_rule && '}}}' ).
+  ENDMETHOD.
+
+  METHOD full_table_path.
+    generate( VALUE zcl_aff_test_types=>ty_cond_table_path( ) ).
+    assert_rule( '{"properties":{"skills":{"items":{' &&
+      '"if":{"required":["level"],"properties":{"level":{"const":"beginner"}}},' &&
+      '"else":{"properties":{"beginnerDetails":false}}}}}}' ).
+  ENDMETHOD.
+
+  METHOD nested_table_path.
+    generate( VALUE zcl_aff_test_types=>ty_cond_nested_path( ) ).
+    assert_rule( '{"properties":{"groups":{"items":{"properties":{"skills":{"items":{' &&
+      '"if":{"required":["enabled"],"properties":{"enabled":{"const":true}}},' &&
+      '"then":{"required":["detail"]}}}}}}}}' ).
+  ENDMETHOD.
+
+  METHOD outside_row_scope.
+    reject( data = VALUE zcl_aff_test_types=>ty_cond_outside_row( ) expected = 'outside their own row scope' ).
   ENDMETHOD.
 
   METHOD literals.
