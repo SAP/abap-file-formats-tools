@@ -133,7 +133,8 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
     METHODS:
       get_sval_data
         IMPORTING object_type   TYPE seu_objkey
-        RETURNING VALUE(result) TYPE cl_wb_objtype_data=>ty_object_data,
+        RETURNING VALUE(result) TYPE cl_wb_objtype_data=>ty_object_data
+        RAISING cx_swb_exception,
       get_replacing_table_and_intfs
         IMPORTING name_of_intf_of_mainobj TYPE tadir-obj_name
         RETURNING VALUE(interfaces)       TYPE string_table,
@@ -389,7 +390,12 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
 
       DATA(definition_part) = |[`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap)|.
-      DATA(sval_data) = get_sval_data( CONV #( object-object_type ) )-content-wvdata.
+      TRY.
+          DATA(sval_data) = get_sval_data( CONV #( object-object_type ) )-content-wvdata.
+        CATCH cx_swb_exception.
+          INSERT |No SVAL found for object type { object-object_type }. The README.md title, description and group are left blank and need manual adjustment.|
+            INTO TABLE report_log ##NO_TEXT.
+      ENDTRY.
       SELECT SINGLE FROM objtypegroups_t FIELDS group_name WHERE language = 'E' AND objtype_group = @sval_data-header_data-objtype_group INTO @DATA(object_group).
 
       DATA(readme) = VALUE string_table(
@@ -1024,20 +1030,13 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA: sval_data TYPE REF TO if_wb_object_data_model.
     sval_data = NEW cl_wb_objtype_data( ).
 
-    TRY.
-        NEW cl_wb_objtype_persist( )->if_wb_object_persist~get(
-          EXPORTING
-            p_object_key  = object_type
-            p_version     = 'A'
-            p_language    = 'E'
-          CHANGING
-            p_object_data = sval_data ).
-
-      CATCH cx_swb_exception.
-        INSERT |No SVAL found for object type { object_type }. The README.md title, description and group are left blank and need manual adjustment.|
-          INTO TABLE report_log ##NO_TEXT.
-        RETURN.
-    ENDTRY.
+    NEW cl_wb_objtype_persist( )->if_wb_object_persist~get(
+      EXPORTING
+        p_object_key  = object_type
+        p_version     = 'A'
+        p_language    = 'E'
+      CHANGING
+        p_object_data = sval_data ).
 
     sval_data->get_selected_data(
       EXPORTING
@@ -1858,3 +1857,4 @@ START-OF-SELECTION.
   helper->start_of_selection( ).
 
   helper->output( ).
+
