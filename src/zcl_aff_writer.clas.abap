@@ -127,6 +127,13 @@ CLASS zcl_aff_writer DEFINITION
           VALUE(name_of_constant)    TYPE string,
 
 
+      expand_local_links
+        IMPORTING
+          text TYPE string
+          name_of_source TYPE string
+        RETURNING
+          VALUE(result) TYPE string,
+
       get_abap_doc_for_absolute_name
         IMPORTING
           absolute_name   TYPE abap_abstypename
@@ -177,7 +184,7 @@ CLASS zcl_aff_writer DEFINITION
   PRIVATE SECTION.
     CONSTANTS:
       BEGIN OF c_abap_types,
-        boolean   TYPE string VALUE `ABAP_BOOLEAN;ABAP_BOOL;BOOLEAN;BOOLE_D;XFELD;XSDBOOLEAN;FLAG`,
+        boolean   TYPE string VALUE `ABAP_BOOLEAN;ABAP_BOOL;BOOLEAN;BOOLE_D;XFELD;XSDBOOLEAN;FLAG;B`,
         timestamp TYPE string VALUE `TIMESTAMP;TIMESTAMPL`,
       END OF c_abap_types.
 
@@ -237,11 +244,13 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
 
   METHOD get_json_type_from_description.
+    CONSTANTS typekind_bool TYPE abap_typekind VALUE 'B'. "See CL_ABAP_TYPEDESCR=>TYPEKIND_BOOL, no direct usage for compatibility
     CASE element_description->type_kind.
       WHEN cl_abap_typedescr=>typekind_string OR cl_abap_typedescr=>typekind_csequence OR
            cl_abap_typedescr=>typekind_clike OR cl_abap_typedescr=>typekind_char OR
            cl_abap_typedescr=>typekind_w OR cl_abap_typedescr=>typekind_xstring OR
-           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum.
+           cl_abap_typedescr=>typekind_hex OR cl_abap_typedescr=>typekind_num OR cl_abap_typedescr=>typekind_enum OR
+           typekind_bool.
         result = COND #( WHEN is_type_boolean( element_description ) THEN zif_aff_writer=>type_info-boolean
                          ELSE zif_aff_writer=>type_info-string ).
       WHEN cl_abap_typedescr=>typekind_float OR cl_abap_typedescr=>typekind_int OR
@@ -263,13 +272,15 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD is_type_boolean.
     DATA(type_name) = element_description->get_relative_name( ).
-    result = xsdbool( element_description->output_length = 1 AND ( type_name IS NOT INITIAL AND c_abap_types-boolean CS type_name ) ).
+    SPLIT c_abap_types-boolean AT ';' INTO TABLE DATA(booleans).
+    result = xsdbool( element_description->output_length = 1 AND ( type_name IS NOT INITIAL AND line_exists( booleans[ table_line = type_name ] ) ) ).
   ENDMETHOD.
 
 
   METHOD is_type_timestamp.
     DATA(type_name) = element_description->get_relative_name( ).
-    result = xsdbool( type_name IS NOT INITIAL AND c_abap_types-timestamp CS type_name ).
+    SPLIT c_abap_types-timestamp AT ';' INTO TABLE DATA(timestamps).
+    result = xsdbool( type_name IS NOT INITIAL AND line_exists( timestamps[ table_line = type_name ] ) ).
   ENDMETHOD.
 
 
@@ -379,8 +390,29 @@ CLASS zcl_aff_writer IMPLEMENTATION.
             to_parse       = result
           CHANGING
             log            = log ).
+        IF read_abap_doc-enumvalues_link CP '.*'.
+          read_abap_doc-enumvalues_link = to_lower( name_of_source ) && read_abap_doc-enumvalues_link.
+        ENDIF.
+        read_abap_doc-default = expand_local_links( text = read_abap_doc-default name_of_source = name_of_source ).
+        read_abap_doc-available_when = expand_local_links( text = read_abap_doc-available_when name_of_source = name_of_source ).
+        read_abap_doc-required_when = expand_local_links( text = read_abap_doc-required_when name_of_source = name_of_source ).
       CATCH cx_root ##NO_HANDLER ##CATCH_ALL.
     ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD expand_local_links.
+    result = text.
+    FIND ALL OCCURRENCES OF PCRE `'(?:''|[^'])*'|@link\s+\.(?=[A-Za-z0-9_/])` IN text RESULTS DATA(matches).
+    DATA(index) = lines( matches ).
+    WHILE index > 0.
+      DATA(match) = matches[ index ].
+      IF text+match-offset(1) <> `'`.
+        DATA(offset) = match-offset + match-length - 1.
+        result = substring( val = result len = offset ) && to_lower( name_of_source ) && substring( val = result off = offset ).
+      ENDIF.
+      index -= 1.
+    ENDWHILE.
   ENDMETHOD.
 
 

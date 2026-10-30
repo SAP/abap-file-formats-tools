@@ -46,6 +46,7 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       get_type_info_boolean1 FOR TESTING RAISING cx_static_check,
       get_type_info_boolean2 FOR TESTING RAISING cx_static_check,
       get_type_info_boolean3 FOR TESTING RAISING cx_static_check,
+      get_type_info_boolean4 FOR TESTING RAISING cx_static_check,
       get_type_info_numeric FOR TESTING RAISING cx_static_check,
       get_type_info_date_time FOR TESTING RAISING cx_static_check,
       stack_stores_operations FOR TESTING RAISING cx_static_check,
@@ -57,6 +58,8 @@ CLASS ltcl_type_writer DEFINITION FINAL FOR TESTING
       call_reader_and_decode5 FOR TESTING RAISING cx_static_check,
       call_reader_and_decode6 FOR TESTING RAISING cx_static_check,
       call_reader_and_decode7 FOR TESTING RAISING cx_static_check,
+      expand_local_links FOR TESTING RAISING cx_static_check,
+      decode_short_links FOR TESTING RAISING cx_static_check,
       delete_first_of_struc_stack FOR TESTING RAISING cx_static_check,
       get_all_path_information FOR TESTING RAISING cx_static_check,
       get_abap_doc_for_absolute_name FOR TESTING RAISING cx_static_check,
@@ -127,6 +130,16 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-boolean act = cut->get_json_type_from_description( get_element_description( VALUE flag( ) ) ) ).
   ENDMETHOD.
 
+  METHOD get_type_info_boolean4.
+    TRY.
+        DATA built_in_bool TYPE REF TO data.
+        CREATE DATA built_in_bool TYPE ('B').
+        cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-boolean act = cut->get_json_type_from_description( get_element_description( built_in_bool->* ) ) ).
+      CATCH cx_sy_create_data_error.
+        cl_abap_unit_assert=>skip( 'Build in boolean type B is not available' ).
+    ENDTRY.
+  ENDMETHOD.
+
   METHOD get_type_info_numeric.
     DATA packed TYPE p.
     cl_abap_unit_assert=>assert_equals( exp = zif_aff_writer=>type_info-numeric act = cut->get_json_type_from_description( get_element_description( packed ) ) ).
@@ -191,6 +204,33 @@ CLASS ltcl_type_writer IMPLEMENTATION.
     DATA abap_doc_exp TYPE zcl_aff_abap_doc_parser=>abap_doc.
     abap_doc_exp = VALUE #( description = `This is an enum` title = `myCategory` enumvalues_link = `zcl_aff_test_types.data:enum_values` ).
     cl_abap_unit_assert=>assert_equals( exp = abap_doc_exp act = abap_doc_act ).
+  ENDMETHOD.
+
+  METHOD expand_local_links.
+    DATA(text) = `{@link .ty_settings.name} = 'text @link .data:not_a_link'`.
+    cl_abap_unit_assert=>assert_equals(
+      act = cut->expand_local_links( text = text name_of_source = 'ZIF_AFF_TEST_SHORT_LINKS' )
+      exp = `{@link zif_aff_test_short_links.ty_settings.name} = 'text @link .data:not_a_link'` ).
+    text = `{@link .ty_settings.mode} = { @link   .data:co_mode.cloud }`.
+    cl_abap_unit_assert=>assert_equals(
+      act = cut->expand_local_links( text = text name_of_source = 'ZIF_AFF_TEST_SHORT_LINKS' )
+      exp = `{@link zif_aff_test_short_links.ty_settings.mode} = { @link   zif_aff_test_short_links.data:co_mode.cloud }` ).
+    text = `{@link other_interface.ty_settings.mode} = {@link other_interface.data:co_mode.cloud}`.
+    cl_abap_unit_assert=>assert_equals(
+      act = cut->expand_local_links( text = text name_of_source = 'ZIF_AFF_TEST_SHORT_LINKS' ) exp = text ).
+    text = `{@link .ty_settings.name} = 'O''Brien @link .data:not_a_link'`.
+    cl_abap_unit_assert=>assert_equals(
+      act = cut->expand_local_links( text = text name_of_source = 'ZIF_AFF_TEST_SHORT_LINKS' )
+      exp = `{@link zif_aff_test_short_links.ty_settings.name} = 'O''Brien @link .data:not_a_link'` ).
+  ENDMETHOD.
+
+  METHOD decode_short_links.
+    DATA(doc) = cut->call_reader_and_decode( name_of_source = 'ZIF_AFF_TEST_SHORT_LINKS' element_name = 'TY_MODE' ).
+    cl_abap_unit_assert=>assert_equals( act = doc-enumvalues_link exp = `zif_aff_test_short_links.data:co_mode` ).
+    cl_abap_unit_assert=>assert_equals( act = doc-default exp = `@link zif_aff_test_short_links.data:co_mode.standard` ).
+    doc = cut->call_reader_and_decode( name_of_source = 'ZCL_AFF_TEST_TYPES' element_name = 'TY_SHORT_LINK_MODE' ).
+    cl_abap_unit_assert=>assert_equals( act = doc-enumvalues_link exp = `zcl_aff_test_types.data:co_condition_mode` ).
+    cl_abap_unit_assert=>assert_equals( act = doc-default exp = `@link zcl_aff_test_types.data:co_condition_mode.standard_mode` ).
   ENDMETHOD.
 
   METHOD call_reader_and_decode2.

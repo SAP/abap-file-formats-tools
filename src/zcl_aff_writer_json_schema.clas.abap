@@ -48,6 +48,7 @@ CLASS zcl_aff_writer_json_schema DEFINITION
       BEGIN OF ty_enum_value,
         value             TYPE string,
         overwritten_value TYPE string,
+        doc               TYPE zcl_aff_abap_doc_parser=>abap_doc,
       END OF ty_enum_value.
 
     TYPES:
@@ -57,6 +58,20 @@ CLASS zcl_aff_writer_json_schema DEFINITION
         descriptions TYPE string_table,
       END OF ty_enum_properties.
 
+
+    DATA condition_nodes TYPE zcl_aff_conditions=>nodes.
+    DATA condition_stack TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+    METHODS remember_condition_node
+      IMPORTING name        TYPE string
+                description TYPE REF TO cl_abap_typedescr
+                json_type   TYPE string
+                members     TYPE ty_enum_properties OPTIONAL
+      RETURNING VALUE(result) TYPE i.
+    METHODS finish_conditions RAISING zcx_aff_tools.
+    METHODS format_condition_json
+      IMPORTING json          TYPE string
+                indent        TYPE i
+      RETURNING VALUE(result) TYPE string_table.
 
     CONSTANTS:
       c_format_version            TYPE string VALUE 'FORMAT_VERSION',
@@ -251,6 +266,9 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       json_type = zif_aff_writer=>type_info-string.
     ENDIF.
 
+    remember_condition_node( name = element_name description = element_description
+      json_type = json_type members = enum_properties ).
+
     DATA(check_not_needed) = abap_false.
 
     IF last_operation( ) = zif_aff_writer=>operation-open_table AND lines( splitted_prev_name ) = 2 AND splitted_prev_name[ 2 ] = element_name.
@@ -299,6 +317,9 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
 
     IF last_operation( ) <> zif_aff_writer=>operation-open_table.
       write_closing_tag( `}` ).
+    ENDIF.
+    IF condition_stack IS INITIAL.
+      finish_conditions( ).
     ENDIF.
   ENDMETHOD.
 
@@ -510,6 +531,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       RETURN.
     ENDIF.
 
+    condition_nodes[ lines( condition_nodes ) ]-default_json = default.
     write_tag( |"default": { default },| ).
   ENDMETHOD.
 
@@ -522,6 +544,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       add_required_table_to_stack( ).
       open_json_schema_for_structure( structure_name = structure_name structure_description = structure_description ).
       INSERT VALUE #( name = structure_name number_brackets = 2 ) INTO me->structure_buffer INDEX 1.
+      INSERT remember_condition_node( name = structure_name description = structure_description json_type = 'object' ) INTO condition_stack INDEX 1.
       RETURN.
     ENDIF.
 
@@ -540,6 +563,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       INSERT VALUE #( name = structure_name number_brackets = 1 ) INTO me->structure_buffer INDEX 1.
     ENDIF.
 
+    INSERT remember_condition_node( name = structure_name description = structure_description json_type = 'object' ) INTO condition_stack INDEX 1.
     write_title_and_description( structure_description ).
 
     IF abap_doc-required = abap_true.
@@ -565,6 +589,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       ENDIF.
     ENDDO.
     DELETE me->structure_buffer INDEX 1.
+    DELETE condition_stack INDEX 1.
+    IF condition_stack IS INITIAL.
+      finish_conditions( ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -573,6 +601,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     IF last_operation( ) = zif_aff_writer=>operation-initial.
       open_json_schema_for_table( table_name = table_name  table_description = CAST cl_abap_tabledescr( table_description ) ).
       INSERT VALUE #( name = table_name number_brackets = 2 ) INTO TABLE me->table_buffer.
+      INSERT remember_condition_node( name = table_name description = table_description json_type = 'array' ) INTO condition_stack INDEX 1.
       RETURN.
     ENDIF.
     append_comma_to_prev_line( ).
@@ -593,6 +622,7 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       INSERT VALUE #( name = table_name number_brackets = 1 ) INTO me->table_buffer INDEX 1.
     ENDIF.
 
+    INSERT remember_condition_node( name = table_name description = table_description json_type = 'array' ) INTO condition_stack INDEX 1.
     write_title_and_description( table_description ).
 
     write_tag( `"type": "array",` ).
@@ -614,6 +644,10 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
       write_closing_tag( `}` ).
     ENDDO.
     DELETE me->table_buffer INDEX line_index( me->table_buffer[ name = table_name ] ).
+    DELETE condition_stack INDEX 1.
+    IF condition_stack IS INITIAL.
+      finish_conditions( ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -866,7 +900,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         DATA(fullname_of_value) = name_of_constant && '-' && <component>-name.
         DATA(abap_doc_of_component) = call_reader_and_decode( name_of_source = name_of_source element_name = fullname_of_value ).
 
-        APPEND VALUE ty_enum_value( value = format_to_camel_case( CONV #( <component>-name ) )  overwritten_value = abap_doc_of_component-enum_value ) TO result-values.
+        APPEND VALUE ty_enum_value( value = format_to_camel_case( CONV #( <component>-name ) )
+          overwritten_value = abap_doc_of_component-enum_value doc = abap_doc_of_component ) TO result-values.
         APPEND abap_doc_of_component-description TO result-descriptions.
         APPEND abap_doc_of_component-title TO result-titles.
 
@@ -993,6 +1028,86 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     write_tag( `"minLength": 2,` ).
   ENDMETHOD.
 
+
+  METHOD remember_condition_node.
+    DATA(parent) = VALUE i( condition_stack[ 1 ] OPTIONAL ).
+    DATA(parts) = get_splitted_absolute_name( description->absolute_name ).
+    DATA(type_key) = COND string( WHEN lines( parts ) >= 4 THEN parts[ 2 ] && '.' && parts[ 4 ] ).
+    DATA(item) = xsdbool( parent > 0 AND last_operation( ) = zif_aff_writer=>operation-open_table ).
+    DATA(node) = VALUE zcl_aff_conditions=>node( parent = parent name = format_name( name )
+      type_key = type_key items = item json_type = json_type kind = description->type_kind doc = abap_doc ).
+    IF json_type = 'boolean' AND abap_doc-default IS INITIAL.
+      node-default_json = 'false'.
+    ENDIF.
+    IF members IS NOT INITIAL AND abap_doc-enumvalues_link IS NOT INITIAL.
+      DATA(group_link) = abap_doc-enumvalues_link.
+      REPLACE ALL OCCURRENCES OF PCRE '(@link|data:|[{}\s])' IN group_link WITH ''.
+      get_structure_of_enum_values( EXPORTING link_to_values = abap_doc-enumvalues_link fullname_of_type = fullname_of_type
+        IMPORTING structure_of_values = DATA(enum_structure) ).
+      LOOP AT members-values INTO DATA(member).
+        DATA(member_index) = sy-tabix.
+        DATA(external) = COND string( WHEN member-overwritten_value IS NOT INITIAL THEN member-overwritten_value ELSE member-value ).
+        APPEND VALUE #( link = to_upper( group_link && '.' && enum_structure->components[ member_index ]-name )
+          json = '"' && escape( val = external format = cl_abap_format=>e_json_string ) && '"'
+          doc = member-doc ) TO node-members.
+      ENDLOOP.
+    ENDIF.
+    APPEND node TO condition_nodes.
+    result = lines( condition_nodes ).
+  ENDMETHOD.
+
+  METHOD finish_conditions.
+    DATA(nodes) = condition_nodes.
+    condition_nodes = VALUE #( ).
+    TRY.
+        DATA(conditions) = NEW zcl_aff_conditions( nodes )->compile( ).
+      CATCH zcx_aff_tools INTO DATA(exception).
+        log->add_exception( exception = exception component_name = fullname_of_type ).
+        RAISE EXCEPTION exception.
+    ENDTRY.
+    IF conditions IS INITIAL.
+      RETURN.
+    ENDIF.
+    " Append the conditions as last member of the root schema, before its closing brace.
+    DATA(closing_line) = lines( content ).
+    DATA(last_member) = content[ closing_line - 1 ].
+    FIND FIRST OCCURRENCE OF PCRE '\S' IN last_member MATCH OFFSET DATA(indent).
+    content[ closing_line - 1 ] &&= ','.
+    LOOP AT format_condition_json( json = conditions indent = indent ) INTO DATA(condition_line).
+      INSERT condition_line INTO content INDEX closing_line.
+      closing_line += 1.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD format_condition_json.
+    FIND ALL OCCURRENCES OF PCRE `"(?:\\.|[^"\\])*"|[{}\[\],:]|[^\s{}\[\],:"]+` IN json RESULTS DATA(tokens).
+    DATA(level) = 0.
+    DATA(line) = ``.
+    LOOP AT tokens INTO DATA(token_match).
+      DATA(token) = substring( val = json off = token_match-offset len = token_match-length ).
+      DATA(margin) = repeat( val = ` ` occ = indent + level * c_indent_number_characters ).
+      CASE token.
+        WHEN `{` OR `[`.
+          APPEND margin && line && token TO result.
+          line = ``.
+          level += 1.
+        WHEN `}` OR `]`.
+          IF line IS NOT INITIAL.
+            APPEND margin && line TO result.
+          ENDIF.
+          line = token.
+          level -= 1.
+        WHEN `,`.
+          APPEND margin && line && token TO result.
+          line = ``.
+        WHEN `:`.
+          line &&= `: `.
+        WHEN OTHERS.
+          line &&= token.
+      ENDCASE.
+    ENDLOOP.
+    APPEND repeat( val = ` ` occ = indent ) && line TO result.
+  ENDMETHOD.
 
   METHOD get_max_length.
     IF element_description->output_length > 0.

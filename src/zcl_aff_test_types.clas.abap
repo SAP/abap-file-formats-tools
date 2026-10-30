@@ -7,6 +7,266 @@ CLASS zcl_aff_test_types DEFINITION
   PUBLIC SECTION.
 
     TYPES:
+      BEGIN OF ty_short_links_consumer,
+        mode TYPE zif_aff_test_short_links=>ty_mode,
+        settings TYPE zif_aff_test_short_links=>ty_settings,
+      END OF ty_short_links_consumer.
+
+    "! $values {@link .data:co_condition_mode}
+    "! $default {@link .data:co_condition_mode.standard_mode}
+    TYPES ty_short_link_mode TYPE c LENGTH 1.
+
+    "! $values {@link zcl_aff_test_types.data:co_condition_mode}
+    "! $default {@link zcl_aff_test_types.data:co_condition_mode.standard_mode}
+    TYPES ty_condition_mode TYPE c LENGTH 1.
+    CONSTANTS:
+      BEGIN OF co_condition_mode,
+        standard_mode TYPE ty_condition_mode VALUE 'S',
+        "! $enumValue 'cloudDevelopment'
+        cloud_mode TYPE ty_condition_mode VALUE 'C',
+        key_user TYPE ty_condition_mode VALUE 'K',
+      END OF co_condition_mode.
+    TYPES:
+      BEGIN OF ty_cond_header,
+        language_version TYPE ty_condition_mode,
+      END OF ty_cond_header,
+      BEGIN OF ty_cond_general,
+        drinks_coffee TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_general.drinks_coffee} = true
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_general.drinks_coffee} = true
+        coffee_brand TYPE string,
+      END OF ty_cond_general,
+      BEGIN OF ty_cond_favorites,
+        "! $availableWhen {@link zcl_aff_test_types.ty_conditional.header.language_version} = {@link zcl_aff_test_types.data:co_condition_mode.standard_mode}
+        wb2k TYPE string,
+      END OF ty_cond_favorites,
+      BEGIN OF ty_cond_skill,
+        name TYPE string,
+        enabled TYPE abap_bool,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_skill.enabled} = true
+        detail TYPE string,
+      END OF ty_cond_skill,
+      ty_cond_skills TYPE STANDARD TABLE OF ty_cond_skill WITH EMPTY KEY,
+      BEGIN OF ty_conditional,
+        "! $required
+        format_version TYPE string,
+        "! $required
+        header TYPE ty_cond_header,
+        general_information TYPE ty_cond_general,
+        favorites TYPE ty_cond_favorites,
+        skills TYPE ty_cond_skills,
+        other_skills TYPE ty_cond_skills,
+      END OF ty_conditional,
+      BEGIN OF ty_cond_path_skill,
+        level TYPE string,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_table_path.skills.level} = 'beginner'
+        beginner_details TYPE string,
+      END OF ty_cond_path_skill,
+      ty_cond_path_skills TYPE STANDARD TABLE OF ty_cond_path_skill WITH EMPTY KEY,
+      BEGIN OF ty_cond_table_path,
+        skills TYPE ty_cond_path_skills,
+      END OF ty_cond_table_path,
+      BEGIN OF ty_cond_nested_skill,
+        enabled TYPE abap_bool,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_nested_path.groups.skills.enabled} = true
+        detail TYPE string,
+      END OF ty_cond_nested_skill,
+      ty_cond_nested_skills TYPE STANDARD TABLE OF ty_cond_nested_skill WITH EMPTY KEY,
+      BEGIN OF ty_cond_group,
+        skills TYPE ty_cond_nested_skills,
+      END OF ty_cond_group,
+      ty_cond_groups TYPE STANDARD TABLE OF ty_cond_group WITH EMPTY KEY,
+      BEGIN OF ty_cond_nested_path,
+        groups TYPE ty_cond_groups,
+      END OF ty_cond_nested_path,
+      BEGIN OF ty_cond_outside_row,
+        settings TYPE ty_cond_table_path,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_table_path.skills.level} = 'beginner'
+        detail TYPE string,
+      END OF ty_cond_outside_row,
+      BEGIN OF ty_cond_required,
+        "! $required
+        enabled TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_required.enabled} = true
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_required.enabled} = true
+        detail TYPE string,
+      END OF ty_cond_required,
+      BEGIN OF ty_cond_st_defaults,
+        enabled TYPE abap_bool,
+        "! $default 'fallback'
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_st_defaults.enabled} = true
+        detail TYPE string,
+        "! $default '0'
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_st_defaults.enabled} = true
+        count TYPE i,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_st_defaults.enabled} = true
+        flag TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_st_defaults.enabled} = false
+        untouched TYPE string,
+      END OF ty_cond_st_defaults,
+      ty_cond_st_rows TYPE STANDARD TABLE OF ty_cond_st_defaults WITH EMPTY KEY,
+      BEGIN OF ty_cond_st_nested,
+        settings TYPE ty_cond_st_defaults,
+        rows TYPE ty_cond_st_rows,
+        other_rows TYPE ty_cond_st_rows,
+        plain_rows TYPE ty_cond_path_skills,
+      END OF ty_cond_st_nested,
+      BEGIN OF ty_cond_st_enum,
+        mode TYPE ty_condition_mode,
+        "! $default {@link zcl_aff_test_types.data:co_condition_mode.standard_mode}
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_st_enum.mode} != {@link zcl_aff_test_types.data:co_condition_mode.cloud_mode}
+        detail TYPE ty_condition_mode,
+      END OF ty_cond_st_enum,
+      BEGIN OF ty_cond_invalid,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_invalid.missing} = true
+        detail TYPE string,
+      END OF ty_cond_invalid,
+      BEGIN OF ty_cond_malformed,
+        enabled TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_malformed.enabled} = true garbage
+        detail TYPE string,
+      END OF ty_cond_malformed,
+      BEGIN OF ty_cond_wrong_type,
+        enabled TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_wrong_type.enabled} = 'true'
+        detail TYPE string,
+      END OF ty_cond_wrong_type,
+      BEGIN OF ty_cond_ambiguous,
+        first TYPE ty_cond_general,
+        second TYPE ty_cond_general,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_general.drinks_coffee} = true
+        detail TYPE string,
+      END OF ty_cond_ambiguous,
+      BEGIN OF ty_cond_enum,
+        "! $required
+        mode TYPE ty_condition_mode,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_enum.mode} = {@link zcl_aff_test_types.data:co_condition_mode.cloud_mode}
+        detail TYPE string,
+      END OF ty_cond_enum,
+      BEGIN OF ty_cond_literals,
+        name TYPE string,
+        count TYPE i,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_literals.name} = 'O''Brien'
+        named TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_literals.count} = 2
+        counted TYPE string,
+      END OF ty_cond_literals,
+      BEGIN OF ty_cond_not_equal,
+        enabled TYPE abap_bool,
+        count TYPE i,
+        mode TYPE ty_condition_mode,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_not_equal.enabled} != true
+        disabled_detail TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_not_equal.count} != 2
+        counted TYPE string,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_not_equal.mode} != {@link zcl_aff_test_types.data:co_condition_mode.cloud_mode}
+        local_detail TYPE string,
+      END OF ty_cond_not_equal,
+      BEGIN OF ty_cond_duplicate,
+        enabled TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_duplicate.enabled} = true
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_duplicate.enabled} = false
+        detail TYPE string,
+      END OF ty_cond_duplicate,
+      BEGIN OF ty_cond_wrong_enum,
+        mode TYPE ty_condition_mode,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_wrong_enum.mode} = {@link zcl_aff_test_types.data:co_test.test}
+        detail TYPE string,
+      END OF ty_cond_wrong_enum,
+      BEGIN OF ty_cond_optional,
+        general_information TYPE ty_cond_general,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_optional.general_information.drinks_coffee} = true
+        detail TYPE string,
+      END OF ty_cond_optional,
+      BEGIN OF ty_cond_true_default,
+        "! $default 'X'
+        enabled TYPE abap_bool,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_true_default.enabled} = true
+        detail TYPE string,
+      END OF ty_cond_true_default,
+      BEGIN OF ty_cond_zero_default,
+        "! $default '0'
+        count TYPE i,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_zero_default.count} = 0
+        detail TYPE string,
+      END OF ty_cond_zero_default,
+      BEGIN OF ty_cond_compound,
+        enabled TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_compound.enabled} = true or true
+        detail TYPE string,
+      END OF ty_cond_compound.
+
+
+    "! $values {@link zcl_aff_test_types.data:co_cond_execution}
+    TYPES ty_cond_execution TYPE c LENGTH 1.
+    CONSTANTS:
+      BEGIN OF co_cond_execution,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_enum_values.mode} = {@link zcl_aff_test_types.data:co_condition_mode.standard_mode}
+        classic TYPE ty_cond_execution VALUE 'C',
+        modern TYPE ty_cond_execution VALUE 'M',
+        "! $enumValue 'auto'
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_enum_values.mode} != {@link zcl_aff_test_types.data:co_condition_mode.standard_mode}
+        automatic TYPE ty_cond_execution VALUE 'A',
+      END OF co_cond_execution.
+    TYPES:
+      BEGIN OF ty_cond_enum_values,
+        "! $required
+        mode TYPE ty_condition_mode,
+        execution TYPE ty_cond_execution,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_enum_values.mode} = {@link zcl_aff_test_types.data:co_condition_mode.cloud_mode}
+        other_execution TYPE ty_cond_execution,
+      END OF ty_cond_enum_values,
+      ty_cond_enum_rows TYPE STANDARD TABLE OF ty_cond_enum_values WITH EMPTY KEY,
+      BEGIN OF ty_cond_enum_nested,
+        settings TYPE ty_cond_enum_values,
+        rows TYPE ty_cond_enum_rows,
+        other_rows TYPE ty_cond_enum_rows,
+      END OF ty_cond_enum_nested.
+
+    "! $values {@link zcl_aff_test_types.data:co_cond_single}
+    TYPES ty_cond_single TYPE c LENGTH 1.
+    CONSTANTS:
+      BEGIN OF co_cond_single,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_single_value.enabled} = true
+        only TYPE ty_cond_single VALUE 'O',
+      END OF co_cond_single.
+    TYPES:
+      BEGIN OF ty_cond_single_value,
+        enabled TYPE abap_bool,
+        execution TYPE ty_cond_single,
+      END OF ty_cond_single_value.
+
+    "! $values {@link zcl_aff_test_types.data:co_cond_invalid_enum}
+    TYPES ty_cond_invalid_enum TYPE c LENGTH 1.
+    CONSTANTS:
+      BEGIN OF co_cond_invalid_enum,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_single_value.missing} = true
+        invalid TYPE ty_cond_invalid_enum VALUE 'I',
+      END OF co_cond_invalid_enum.
+    TYPES:
+      BEGIN OF ty_cond_invalid_enum_value,
+        execution TYPE ty_cond_invalid_enum,
+      END OF ty_cond_invalid_enum_value.
+
+    "! $values {@link zcl_aff_test_types.data:co_cond_canteen}
+    "! $default {@link zcl_aff_test_types.data:co_cond_canteen.wdf55}
+    TYPES ty_cond_canteen TYPE c LENGTH 5.
+    CONSTANTS:
+      BEGIN OF co_cond_canteen,
+        wdf01 TYPE ty_cond_canteen VALUE 'WDF01',
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_canteen_main.general_information.drinks_coffee} = true
+        wdf55 TYPE ty_cond_canteen VALUE 'WDF55',
+      END OF co_cond_canteen.
+    TYPES:
+      BEGIN OF ty_cond_canteen_favorites,
+        canteen TYPE ty_cond_canteen,
+      END OF ty_cond_canteen_favorites,
+      BEGIN OF ty_cond_canteen_main,
+        general_information TYPE ty_cond_general,
+        favorites TYPE ty_cond_canteen_favorites,
+      END OF ty_cond_canteen_main.
+
+    TYPES:
       "! $hiddenabc
       unknown_annotation TYPE string.
 

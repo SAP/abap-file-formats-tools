@@ -7,6 +7,8 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
     CONSTANTS: BEGIN OF abap_doc_annotation,
                  default            TYPE string VALUE `$default`,
                  values             TYPE string VALUE `$values`,
+                 available_when     TYPE string VALUE `$availableWhen`,
+                 required_when      TYPE string VALUE `$requiredWhen`,
                  required           TYPE string VALUE `$required`,
                  show_always        TYPE string VALUE `$showAlways`,
                  minimum            TYPE string VALUE `$minimum`,
@@ -45,6 +47,8 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
         content_encoding   TYPE string,
         enum_value         TYPE string,
         pattern            TYPE string,
+        available_when     TYPE string,
+        required_when      TYPE string,
       END OF abap_doc.
 
     METHODS: parse
@@ -88,6 +92,11 @@ CLASS zcl_aff_abap_doc_parser DEFINITION
           remove_whitespaces      TYPE abap_boolean
         RETURNING
           VALUE(annotation_value) TYPE string,
+      find_annotations RETURNING VALUE(result) TYPE match_result_tab,
+      parse_condition
+        IMPORTING annotation TYPE string
+                  annotations TYPE match_result_tab
+        RETURNING VALUE(result) TYPE string,
       parse_default,
       parse_enum_values,
       parse_required,
@@ -170,7 +179,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
   METHOD parse_description.
     DATA(annotation_pattern) = `(\$callbackClass|\$default|\$values|\$required|\$showAlways|\$minimum|\$maximum|` &&
                                `\$exclusiveMinimum|\$exclusiveMaximum|\$multipleOf|\$maxLength|\$minLength|\$maxItems|` &&
-                               `\$minItems|\$enumValue|\$contentMediaType|\$contentEncoding|\$pattern)`.
+                               `\$minItems|\$enumValue|\$contentMediaType|\$contentEncoding|\$pattern|\$availableWhen|\$requiredWhen)`.
     FIND FIRST OCCURRENCE OF PCRE annotation_pattern IN abap_doc_string MATCH OFFSET DATA(offset).
     IF sy-subrc = 0.
       DATA(description) = abap_doc_string+0(offset).
@@ -184,13 +193,17 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD parse_annotations.
-    FIND ALL OCCURRENCES OF PCRE `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(result_table) ##NO_TEXT.
+    DATA(result_table) = find_annotations( ).
     DATA(modified_abap_doc_string) = abap_doc_string.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).
       DATA(offset) = <entry>-offset.
       DATA(length) = <entry>-length.
       DATA(key_word) = abap_doc_string+offset(length).
       CASE key_word.
+        WHEN abap_doc_annotation-available_when.
+          decoded_abap_doc-available_when = parse_condition( annotation = key_word annotations = result_table ).
+        WHEN abap_doc_annotation-required_when.
+          decoded_abap_doc-required_when = parse_condition( annotation = key_word annotations = result_table ).
         WHEN abap_doc_annotation-default.
           parse_default( ).
         WHEN abap_doc_annotation-values.
@@ -231,6 +244,66 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     annotation_value = value.
   ENDMETHOD.
 
+
+  METHOD find_annotations.
+    FIND ALL OCCURRENCES OF PCRE `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(candidates).
+    DATA(conditional) = abap_false.
+    DATA(quoted) = abap_false.
+    DATA(in_link) = abap_false.
+    DATA(position) = 0.
+    LOOP AT candidates INTO DATA(candidate).
+      WHILE position < candidate-offset.
+        DATA(character) = abap_doc_string+position(1).
+        IF conditional = abap_true.
+          IF character = `'` AND in_link = abap_false.
+            IF quoted = abap_true AND position + 1 < candidate-offset AND substring( val = abap_doc_string off = position + 1 len = 1 ) = `'`.
+              position += 2.
+              CONTINUE.
+            ENDIF.
+            quoted = xsdbool( quoted = abap_false ).
+          ELSEIF quoted = abap_false.
+            IF character = '{'.
+              in_link = abap_true.
+            ELSEIF character = '}'.
+              in_link = abap_false.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+        position += 1.
+      ENDWHILE.
+      IF quoted = abap_true OR in_link = abap_true.
+        CONTINUE.
+      ENDIF.
+      APPEND candidate TO result.
+      DATA(keyword) = substring( val = abap_doc_string off = candidate-offset len = candidate-length ).
+      conditional = xsdbool( keyword = abap_doc_annotation-available_when OR keyword = abap_doc_annotation-required_when ).
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD parse_condition.
+    DATA start TYPE i.
+    DATA(end) = strlen( abap_doc_string ).
+    DATA(occurrences) = 0.
+    LOOP AT annotations INTO DATA(found).
+      IF substring( val = abap_doc_string off = found-offset len = found-length ) = annotation.
+        occurrences += 1.
+        start = found-offset + found-length.
+      ELSEIF occurrences = 1 AND end = strlen( abap_doc_string ).
+        end = found-offset.
+      ENDIF.
+    ENDLOOP.
+    IF occurrences <> 1.
+      parser_log->add_error( message_text = |Duplicate conditional annotation { annotation }| component_name = component_name ).
+      result = '#invalid'.
+      RETURN.
+    ENDIF.
+    result = substring( val = abap_doc_string off = start len = end - start ).
+    remove_leading_trailing_spaces( CHANGING string_to_work_on = result ).
+    IF result IS INITIAL.
+      parser_log->add_error( message_text = |Empty conditional annotation { annotation }| component_name = component_name ).
+      result = '#invalid'.
+    ENDIF.
+  ENDMETHOD.
 
   METHOD parse_default.
     IF decoded_abap_doc-default IS NOT INITIAL.
@@ -322,7 +395,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     IF decoded_abap_doc-required IS NOT INITIAL.
       RETURN.
     ENDIF.
-    FIND ALL OCCURRENCES OF abap_doc_annotation-required IN abap_doc_string RESULTS DATA(result_table).
+    FIND ALL OCCURRENCES OF PCRE `\$required(?![A-Za-z])` IN abap_doc_string RESULTS DATA(result_table).
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-required ).
     decoded_abap_doc-required = abap_true.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).

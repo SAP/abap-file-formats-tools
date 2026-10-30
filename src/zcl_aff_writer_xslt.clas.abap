@@ -62,6 +62,20 @@ CLASS zcl_aff_writer_xslt DEFINITION
       next_tag_without_name_and_ref TYPE abap_boolean,
       stack_default_comp_of_struc   TYPE tt_components_with_default,
       ignore_next_elements          TYPE abap_boolean.
+    DATA condition_nodes TYPE zcl_aff_conditions=>nodes.
+    DATA condition_stack TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+    DATA condition_lines TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+    DATA condition_checks TYPE string_table.
+    DATA condition_loops TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+
+    METHODS remember_condition_node
+      IMPORTING description TYPE REF TO cl_abap_typedescr
+                name        TYPE string
+                json_type   TYPE string
+                enum_values TYPE tt_enum_values OPTIONAL
+      RETURNING VALUE(result) TYPE i
+      RAISING   zcx_aff_tools.
+    METHODS finish_conditions RAISING zcx_aff_tools.
 
     METHODS: get_tag_from_type
       IMPORTING
@@ -199,6 +213,80 @@ ENDCLASS.
 
 
 CLASS zcl_aff_writer_xslt IMPLEMENTATION.
+  METHOD remember_condition_node.
+    DATA(parent) = VALUE i( condition_stack[ 1 ] OPTIONAL ).
+    DATA(parts) = get_splitted_absolute_name( description->absolute_name ).
+    DATA(type_key) = COND string( WHEN lines( parts ) >= 4 THEN parts[ 2 ] && '.' && parts[ 4 ] ).
+    DATA(items) = xsdbool( parent > 0 AND condition_nodes[ parent ]-json_type = 'array' ).
+    DATA(st_ref) = COND string( WHEN parent = 0 THEN '.' && st_root_name
+      WHEN items = abap_true THEN |$affRow{ parent }|
+      ELSE condition_nodes[ parent ]-st_ref && '.' && name ).
+    DATA(node) = VALUE zcl_aff_conditions=>node( parent = parent name = format_name( name ) type_key = type_key
+      items = items json_type = json_type kind = description->type_kind doc = abap_doc st_ref = st_ref ).
+    IF abap_doc-enumvalues_link IS NOT INITIAL AND description->kind = cl_abap_typedescr=>kind_elem.
+      get_structure_of_enum_values( EXPORTING link_to_values = abap_doc-enumvalues_link fullname_of_type = fullname_of_type
+        IMPORTING structure_of_values = DATA(enum_structure) name_of_source = DATA(source) name_of_constant = DATA(constant) ).
+      LOOP AT enum_values INTO DATA(mapping).
+        DATA(index) = sy-tabix.
+        DATA(external) = COND string( WHEN mapping-overwritten_json_value IS NOT INITIAL THEN mapping-overwritten_json_value ELSE mapping-json_value ).
+        APPEND VALUE #( link = to_upper( source && '.' && constant && '.' && enum_structure->components[ index ]-name )
+          json = '"' && escape( val = external format = cl_abap_format=>e_json_string ) && '"'
+          st_value = get_prefixed_default( value = mapping-abap_value element_description = CAST #( description ) ) ) TO node-members.
+      ENDLOOP.
+    ENDIF.
+    APPEND node TO condition_nodes.
+    APPEND lines( content ) + 1 TO condition_lines.
+    APPEND `` TO condition_checks.
+    APPEND 0 TO condition_loops.
+    result = lines( condition_nodes ).
+  ENDMETHOD.
+
+  METHOD finish_conditions.
+    DATA(checks) = NEW zcl_aff_conditions( condition_nodes )->compile_serialization( ).
+    IF checks IS INITIAL.
+      RETURN.
+    ENDIF.
+    LOOP AT condition_loops INTO DATA(loop_line) WHERE table_line > 0.
+      DATA(loop_index) = sy-tabix.
+      DATA(alias_reference) = |$affRow{ loop_index }.|.
+      DATA(alias_used) = abap_false.
+      LOOP AT checks TRANSPORTING NO FIELDS WHERE expression CS alias_reference.
+        alias_used = abap_true.
+        EXIT.
+      ENDLOOP.
+      IF alias_used = abap_false.
+        CONTINUE.
+      ENDIF.
+      DATA(loop_content) = content[ loop_line ].
+      REPLACE FIRST OCCURRENCE OF '<tt:loop' IN loop_content WITH |<tt:loop name="affRow{ loop_index }"|.
+      content[ loop_line ] = loop_content.
+    ENDLOOP.
+    LOOP AT checks INTO DATA(check).
+      DATA(index) = check-target.
+      DATA(original) = condition_checks[ index ].
+      IF original IS INITIAL.
+        CONTINUE.
+      ENDIF.
+      condition_checks[ index ] = '(' && check-expression && ') or (' && original && ')'.
+    ENDLOOP.
+    LOOP AT checks INTO check.
+      index = check-target.
+      IF condition_checks[ index ] IS INITIAL.
+        CONTINUE.
+      ENDIF.
+      DATA(expression) = condition_checks[ index ].
+      DATA(line) = condition_lines[ index ].
+      DATA(attribute) = ' s-check="' && escape( val = expression format = cl_abap_format=>e_xml_attr ) && '"'.
+      REPLACE ALL OCCURRENCES OF '&apos;' IN attribute WITH `'`.
+      DATA(line_content) = content[ line ].
+      FIND FIRST OCCURRENCE OF PCRE '\s+s-check="[^"]*"' IN line_content MATCH OFFSET DATA(offset) MATCH LENGTH DATA(length).
+      IF sy-subrc = 0.
+        content[ line ] = substring( val = line_content len = offset ) && attribute
+          && substring( val = line_content off = offset + length ).
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
 
 
   METHOD constructor.
@@ -217,8 +305,10 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   METHOD write_open_structure.
     clear_type_specifics( ).
     set_abapdoc_fullname_tab_struc( type_description = structure_description type_name = structure_name ).
+    DATA(condition_node) = remember_condition_node( description = structure_description name = structure_name json_type = 'object' ).
 
     write_open_tag( |<tt:cond{ get_condition_tab_or_struc( structure_name ) }>| ).
+    INSERT condition_node INTO condition_stack INDEX 1.
     write_open_tag( |<object{ get_name( name = structure_name ) }{ get_ref_for_structure( structure_name ) }>| ).
     INSERT VALUE #( line_to_insert = lines( content ) ) INTO me->stack_default_comp_of_struc INDEX 1.
     write_open_tag( `<tt:group>` ).
@@ -228,31 +318,42 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
   METHOD open_table.
     clear_type_specifics( ).
     set_abapdoc_fullname_tab_struc( type_description = table_description type_name = table_name ).
+    DATA(condition_node) = remember_condition_node( description = table_description name = table_name json_type = 'array' ).
 
     write_open_tag( |<tt:cond{ get_condition_tab_or_struc( table_name ) }>| ).
+    INSERT condition_node INTO condition_stack INDEX 1.
     write_open_tag( |<array{ get_name( name = table_name ) }>| ).
     write_open_tag( |<tt:loop{ get_ref( table_name ) }>| ).
+    condition_loops[ condition_node ] = lines( content ).
     write_open_tag( `<tt:group>` ).
     next_tag_without_name_and_ref = abap_true.
   ENDMETHOD.
 
 
   METHOD close_structure.
+    DELETE condition_stack INDEX 1.
     delete_first_of_struc_stack( ).
     write_defaults( ).
     enable_extension( CAST #( structure_description ) ).
     write_closing_tag( `</tt:group>` ).
     write_closing_tag( `</object>` ).
     write_closing_tag( `</tt:cond>` ).
+    IF condition_stack IS INITIAL.
+      finish_conditions( ).
+    ENDIF.
   ENDMETHOD.
 
 
   METHOD close_table.
+    DELETE condition_stack INDEX 1.
     write_closing_tag( `</tt:group>` ).
     write_closing_tag( `</tt:loop>` ).
     write_closing_tag( `</array>` ).
     write_closing_tag( `</tt:cond>` ).
     next_tag_without_name_and_ref = abap_false.
+    IF condition_stack IS INITIAL.
+      finish_conditions( ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -287,6 +388,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
                          ELSE get_json_type_from_description( element_description ) ).
 
     DATA(tag) = get_tag_from_type( type ).
+    remember_condition_node( description = element_description name = element_name json_type = type enum_values = enum_values ).
 
     write_open_tag( |<tt:cond{ get_condition_for_element( element_name = element_name element_description = element_description enum_values = enum_values type = type ) }>| ).
     write_open_tag( |<{ tag }{ get_name( name = element_name ) }>| ).
@@ -480,6 +582,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     IF abap_doc-required = abap_false AND abap_doc-showalways = abap_false.
       condition = | s-check="not-initial({ type_name })"| ##NO_TEXT.
     ENDIF.
+    condition_checks[ lines( condition_nodes ) ] = COND #( WHEN condition IS NOT INITIAL THEN |not-initial({ type_name })| ).
     condition = |{ condition } frq="?"| ##NO_TEXT.
   ENDMETHOD.
 
@@ -498,6 +601,11 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ELSE.
         condition = | s-check="not-initial({ element_name })"| ##NO_TEXT.
       ENDIF.
+    ENDIF.
+
+    IF condition IS NOT INITIAL.
+      condition_checks[ lines( condition_nodes ) ] = COND #( WHEN default IS NOT INITIAL
+        THEN |{ element_name }!={ default }| ELSE |not-initial({ element_name })| ).
     ENDIF.
 
     condition = |{ condition } frq="?"| ##NO_TEXT.
@@ -598,7 +706,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
   METHOD get_prefixed_default.
     DATA value_copy TYPE string.
-    CASE element_description->type_kind.
+    CASE element_description->type_kind.                "#EC CI_BOOL_OK
       WHEN cl_abap_typedescr=>typekind_int OR cl_abap_typedescr=>typekind_int1 OR cl_abap_typedescr=>typekind_int2.
         value_copy = value.
         CONDENSE value_copy.
@@ -638,7 +746,21 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     LOOP AT actual_entry-table_of_defaults ASSIGNING FIELD-SYMBOL(<default>).
       APPEND |{ repeat( val = ` `  occ = ( indent_level * c_indent_number_characters ) - c_indent_number_characters ) }<tt:assign to-ref="{ <default>-var_name }" val="{ <default>-default_value }"/>| TO list_of_applies.
     ENDLOOP.
-    INSERT LINES OF list_of_applies INTO content INDEX actual_entry-line_to_insert + 1.
+    LOOP AT condition_lines ASSIGNING FIELD-SYMBOL(<line>).
+      IF <line> > actual_entry-line_to_insert.
+        <line> += lines( list_of_applies ).
+      ENDIF.
+    ENDLOOP.
+    LOOP AT condition_loops ASSIGNING <line>.
+      IF <line> > actual_entry-line_to_insert.
+        <line> += lines( list_of_applies ).
+      ENDIF.
+    ENDLOOP.
+    DATA(insert_at) = actual_entry-line_to_insert + 1.
+    LOOP AT list_of_applies INTO DATA(assignment).
+      INSERT assignment INTO content INDEX insert_at.
+      insert_at += 1.
+    ENDLOOP.
     DELETE me->stack_default_comp_of_struc INDEX 1.
   ENDMETHOD.
 
