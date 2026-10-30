@@ -398,7 +398,7 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDTRY.
 
       IF sval_data IS NOT INITIAL.
-        data(object_description) = sval_data-langu_data-description.
+        DATA(object_description) = sval_data-langu_data-description.
         SELECT SINGLE FROM objtypegroups_t FIELDS group_name WHERE language = 'E' AND objtype_group = @sval_data-header_data-objtype_group INTO @DATA(object_group).
       ELSE.
         object_description = 'ENTER OBJECT DESCRIPTION HERE'.
