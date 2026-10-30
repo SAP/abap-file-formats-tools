@@ -396,16 +396,23 @@ CLASS lcl_generator IMPLEMENTATION.
           INSERT |No SVAL found for object type { object-object_type }. The README.md title, description and group are left blank and need manual adjustment.|
             INTO TABLE report_log ##NO_TEXT.
       ENDTRY.
-      SELECT SINGLE FROM objtypegroups_t FIELDS group_name WHERE language = 'E' AND objtype_group = @sval_data-header_data-objtype_group INTO @DATA(object_group).
+
+      IF sval_data IS NOT INITIAL.
+        data(object_description) = sval_data-langu_data-description.
+        SELECT SINGLE FROM objtypegroups_t FIELDS group_name WHERE language = 'E' AND objtype_group = @sval_data-header_data-objtype_group INTO @DATA(object_group).
+      ELSE.
+        object_description = 'ENTER OBJECT DESCRIPTION HERE'.
+        object_group = 'ENTER OBJECT GROUP HERE'.
+      ENDIF.
 
       DATA(readme) = VALUE string_table(
-              ( |# { sval_data-langu_data-description } File Format| )
+              ( |# { object_description } File Format| )
               ( `` )
               ( `## Object Type Information` )
               ( `` )
               ( `Object Type | Description | Group` )
               ( `:--- | :--- | :---` )
-              ( |{ object-object_type }  \| { sval_data-langu_data-description } \| { object_group }| )
+              ( |{ object-object_type }  \| { object_description } \| { object_group }| )
               ( `` )
               ( `## File Structure` )
               ( `` )
@@ -415,7 +422,6 @@ CLASS lcl_generator IMPLEMENTATION.
                  example_part )
               ( `` )
       ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
-
 
       add_file_to_zip( i_stringtab_content = readme
                        i_file_name         = |{ object_type_folder_name }/README.md|
