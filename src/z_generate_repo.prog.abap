@@ -133,7 +133,8 @@ CLASS lcl_generator DEFINITION FINAL CREATE PUBLIC.
     METHODS:
       get_sval_data
         IMPORTING object_type   TYPE seu_objkey
-        RETURNING VALUE(result) TYPE cl_wb_objtype_data=>ty_object_data,
+        RETURNING VALUE(result) TYPE cl_wb_objtype_data=>ty_object_data
+        RAISING cx_swb_exception,
       get_replacing_table_and_intfs
         IMPORTING name_of_intf_of_mainobj TYPE tadir-obj_name
         RETURNING VALUE(interfaces)       TYPE string_table,
@@ -389,17 +390,29 @@ CLASS lcl_generator IMPLEMENTATION.
       ENDIF.
 
       DATA(definition_part) = |[`{ interfacename }.intf.abap`](./type/{ interfacename }.intf.abap)|.
-      DATA(sval_data) = get_sval_data( CONV #( object-object_type ) )-content-wvdata.
-      SELECT SINGLE FROM objtypegroups_t FIELDS group_name WHERE language = 'E' AND objtype_group = @sval_data-header_data-objtype_group INTO @DATA(object_group).
+      TRY.
+          DATA(sval_data) = get_sval_data( CONV #( object-object_type ) )-content-wvdata.
+        CATCH cx_swb_exception.
+          INSERT |No SVAL found for object type { object-object_type }. The README.md title, description and group are left blank and need manual adjustment.|
+            INTO TABLE report_log ##NO_TEXT.
+      ENDTRY.
+
+      IF sval_data IS NOT INITIAL.
+        DATA(object_description) = sval_data-langu_data-description.
+        SELECT SINGLE FROM objtypegroups_t FIELDS group_name WHERE language = 'E' AND objtype_group = @sval_data-header_data-objtype_group INTO @DATA(object_group).
+      ELSE.
+        object_description = 'ENTER OBJECT DESCRIPTION HERE'.
+        object_group = 'ENTER OBJECT GROUP HERE'.
+      ENDIF.
 
       DATA(readme) = VALUE string_table(
-              ( |# { sval_data-langu_data-description } File Format| )
+              ( |# { object_description } File Format| )
               ( `` )
               ( `## Object Type Information` )
               ( `` )
               ( `Object Type | Description | Group` )
               ( `:--- | :--- | :---` )
-              ( |{ object-object_type }  \| { sval_data-langu_data-description } \| { object_group }| )
+              ( |{ object-object_type }  \| { object_description } \| { object_group }| )
               ( `` )
               ( `## File Structure` )
               ( `` )
@@ -409,7 +422,6 @@ CLASS lcl_generator IMPLEMENTATION.
                  example_part )
               ( `` )
       ) ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT ##NO_TEXT.
-
 
       add_file_to_zip( i_stringtab_content = readme
                        i_file_name         = |{ object_type_folder_name }/README.md|
@@ -1851,3 +1863,4 @@ START-OF-SELECTION.
   helper->start_of_selection( ).
 
   helper->output( ).
+
