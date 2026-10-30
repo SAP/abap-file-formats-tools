@@ -1024,13 +1024,20 @@ CLASS lcl_generator IMPLEMENTATION.
     DATA: sval_data TYPE REF TO if_wb_object_data_model.
     sval_data = NEW cl_wb_objtype_data( ).
 
-    NEW cl_wb_objtype_persist( )->if_wb_object_persist~get(
-      EXPORTING
-        p_object_key  = object_type
-        p_version     = 'A'
-        p_language    = 'E'
-      CHANGING
-        p_object_data = sval_data ).
+    TRY.
+        NEW cl_wb_objtype_persist( )->if_wb_object_persist~get(
+          EXPORTING
+            p_object_key  = object_type
+            p_version     = 'A'
+            p_language    = 'E'
+          CHANGING
+            p_object_data = sval_data ).
+
+      CATCH cx_swb_exception.
+        INSERT |No SVAL found for object type { object_type }. The README.md title, description and group are left blank and need manual adjustment.|
+          INTO TABLE report_log ##NO_TEXT.
+        RETURN.
+    ENDTRY.
 
     sval_data->get_selected_data(
       EXPORTING
