@@ -6,10 +6,16 @@ CLASS zcl_aff_demo_greeting DEFINITION PUBLIC FINAL CREATE PUBLIC.
     METHODS greet
       IMPORTING name          TYPE string
       RETURNING VALUE(result) TYPE string.
+protected section.
+private section.
 ENDCLASS.
 
-CLASS zcl_aff_demo_greeting IMPLEMENTATION.
+
+
+CLASS ZCL_AFF_DEMO_GREETING IMPLEMENTATION.
+
+
   METHOD greet.
-    result = |Hello, { name }!|.
+    result = |Hello, { name }, good morning|.
   ENDMETHOD.
 ENDCLASS.
