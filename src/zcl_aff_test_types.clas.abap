@@ -42,6 +42,34 @@ CLASS zcl_aff_test_types DEFINITION
         "! $availableWhen {@link zcl_aff_test_types.ty_cond_initial_enum.mode} = {@link zcl_aff_test_types.data:co_initial_mode.append_mode}
         append_detail TYPE string,
       END OF ty_cond_initial_enum,
+      BEGIN OF ty_cond_in,
+        kind TYPE string,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_in.kind} in ('static', 'dynamic')
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_in.kind} in ('static', 'dynamic')
+        detail TYPE string,
+        mode TYPE ty_condition_mode,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_in.mode} IN (
+        "! {@link zcl_aff_test_types.data:co_condition_mode.standard_mode},
+        "! {@link zcl_aff_test_types.data:co_condition_mode.cloud_mode})
+        enum_detail TYPE string,
+        enabled TYPE abap_bool,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_in.enabled} in (false)
+        disabled_detail TYPE string,
+        count TYPE i,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_in.count} in (-1, 0, 2)
+        counted TYPE string,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_in.kind} in ('O''Brien, (a)', '$requiredWhen', 'static', 'static')
+        quoted TYPE string,
+      END OF ty_cond_in,
+      ty_cond_in_rows TYPE STANDARD TABLE OF ty_cond_in WITH EMPTY KEY,
+      BEGIN OF ty_cond_in_nested,
+        settings TYPE ty_cond_in,
+        rows TYPE ty_cond_in_rows,
+        other_rows TYPE ty_cond_in_rows,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_in_nested.settings.enabled} in (false, true)
+        detail TYPE string,
+      END OF ty_cond_in_nested.
+    TYPES:
       BEGIN OF ty_cond_header,
         language_version TYPE ty_condition_mode,
       END OF ty_cond_header,
