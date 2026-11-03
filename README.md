@@ -29,13 +29,6 @@ This repository mainly consists of two programs:
 To add more information to the JSON Schema than that provided by the ABAP type, ABAP Doc is parsed.
 Different possibilities for adding more information via annotations are listed [here](https://github.com/SAP/abap-file-formats/blob/main/docs/json.md#writing-JSON-schema-with-ABAP-types).
 
-For `$availableWhen` and `$requiredWhen`, an omitted discriminator is compared using its explicit
-`$default`, or its ABAP initial value if no default is declared (for example, `""` for character
-fields, `0` for numbers, and `false` for booleans). This also applies when an enclosing structure
-is omitted. Implicit initial values are used for comparisons only; they do not add a `default`
-keyword to the generated schema. For AFF enums, an implicit initial value matches the JSON value
-of an initial-valued enum constant, if one exists.
-
 Additionally to the ABAP-file-formats-related annotations, one can also use the following:
 ### Content Media Type
  To specify the content media type of the content of a string field, the annotation
