@@ -1045,7 +1045,8 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
         node-default_json = '0'.
       ELSEIF json_type = 'string' AND abap_doc-enumvalues_link IS INITIAL.
         DATA initial_value TYPE REF TO data.
-        CREATE DATA initial_value TYPE HANDLE description.
+        DATA(initial_description) = CAST cl_abap_datadescr( description ).
+        CREATE DATA initial_value TYPE HANDLE initial_description.
         ASSIGN initial_value->* TO FIELD-SYMBOL(<initial_value>).
         DATA(initial_string) = CONV string( <initial_value> ).
         node-default_json = '"' && escape( val = initial_string format = cl_abap_format=>e_json_string ) && '"'.
