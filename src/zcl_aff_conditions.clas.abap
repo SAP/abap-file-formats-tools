@@ -70,6 +70,7 @@ CLASS zcl_aff_conditions DEFINITION PUBLIC FINAL CREATE PUBLIC.
                 scope         TYPE i
                 json          TYPE string
                 guard         TYPE abap_bool DEFAULT abap_false
+                allow_missing TYPE abap_bool DEFAULT abap_false
       RETURNING VALUE(result) TYPE string
       RAISING   zcx_aff_tools.
     METHODS quote IMPORTING text TYPE string RETURNING VALUE(result) TYPE string.
@@ -215,7 +216,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
         ENDIF.
         result = '{"items":' && result && '}'.
       ELSE.
-        DATA(required) = COND string( WHEN guard = abap_true AND node-doc-required = abap_false
+        DATA(required) = COND string( WHEN guard = abap_true AND allow_missing = abap_false AND node-doc-required = abap_false
           THEN '"required":[' && quote( node-name ) && '],' ).
         result = '{' && required && '"properties":{' && quote( node-name ) && ':' && result && '}}'.
       ENDIF.
@@ -285,6 +286,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
     DATA(presence) = COND string( WHEN node-doc-required = abap_false AND node-default_json <> value
       THEN '"required":[' && quote( node-name ) && '],' ).
     DATA(test) = wrap( target = node-parent scope = scope guard = abap_true
+      allow_missing = xsdbool( node-default_json = value )
       json = '{' && presence && '"properties":{' && quote( node-name ) && ':{"const":' && value && '}}}' ).
     DATA(required) = COND string( WHEN member IS INITIAL AND condition = target-doc-required_when THEN
       wrap( target = target-parent scope = scope json = '{"required":[' && quote( target-name ) && ']}' ) ).

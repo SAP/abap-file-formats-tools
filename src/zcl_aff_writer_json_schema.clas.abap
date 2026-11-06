@@ -1036,20 +1036,39 @@ CLASS zcl_aff_writer_json_schema IMPLEMENTATION.
     DATA(item) = xsdbool( parent > 0 AND last_operation( ) = zif_aff_writer=>operation-open_table ).
     DATA(node) = VALUE zcl_aff_conditions=>node( parent = parent name = format_name( name )
       type_key = type_key items = item json_type = json_type kind = description->type_kind doc = abap_doc ).
-    IF json_type = 'boolean' AND abap_doc-default IS INITIAL.
-      node-default_json = 'false'.
+    " Missing scalar fields deserialize to their ABAP initial value unless a default is declared.
+    " Keep this comparison fallback separate from the schema's explicit default annotation.
+    IF abap_doc-default IS INITIAL.
+      IF json_type = 'boolean'.
+        node-default_json = 'false'.
+      ELSEIF json_type = 'numeric'.
+        node-default_json = '0'.
+      ELSEIF json_type = 'string' AND abap_doc-enumvalues_link IS INITIAL.
+        DATA initial_value TYPE REF TO data.
+        DATA(initial_description) = CAST cl_abap_datadescr( description ).
+        CREATE DATA initial_value TYPE HANDLE initial_description.
+        ASSIGN initial_value->* TO FIELD-SYMBOL(<initial_value>).
+        DATA(initial_string) = CONV string( <initial_value> ).
+        node-default_json = '"' && escape( val = initial_string format = cl_abap_format=>e_json_string ) && '"'.
+      ENDIF.
     ENDIF.
     IF members IS NOT INITIAL AND abap_doc-enumvalues_link IS NOT INITIAL.
       DATA(group_link) = abap_doc-enumvalues_link.
       REPLACE ALL OCCURRENCES OF PCRE '(@link|data:|[{}\s])' IN group_link WITH ''.
       get_structure_of_enum_values( EXPORTING link_to_values = abap_doc-enumvalues_link fullname_of_type = fullname_of_type
-        IMPORTING structure_of_values = DATA(enum_structure) ).
+        IMPORTING structure_of_values = DATA(enum_structure)
+          name_of_source = DATA(enum_source) name_of_constant = DATA(enum_constant) ).
+      ASSIGN (enum_source)=>(enum_constant) TO FIELD-SYMBOL(<enum_group>).
       LOOP AT members-values INTO DATA(member).
         DATA(member_index) = sy-tabix.
         DATA(external) = COND string( WHEN member-overwritten_value IS NOT INITIAL THEN member-overwritten_value ELSE member-value ).
         APPEND VALUE #( link = to_upper( group_link && '.' && enum_structure->components[ member_index ]-name )
           json = '"' && escape( val = external format = cl_abap_format=>e_json_string ) && '"'
           doc = member-doc ) TO node-members.
+        ASSIGN COMPONENT enum_structure->components[ member_index ]-name OF STRUCTURE <enum_group> TO FIELD-SYMBOL(<enum_value>).
+        IF sy-subrc = 0 AND abap_doc-default IS INITIAL AND <enum_value> IS INITIAL.
+          node-default_json = node-members[ member_index ]-json.
+        ENDIF.
       ENDLOOP.
     ENDIF.
     APPEND node TO condition_nodes.

@@ -1,6 +1,7 @@
 CLASS ltcl_serialization DEFINITION FINAL FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
   PRIVATE SECTION.
     METHODS defaults FOR TESTING RAISING cx_static_check.
+    METHODS implicit_initial FOR TESTING RAISING cx_static_check.
     METHODS nested_rows FOR TESTING RAISING cx_static_check.
     METHODS enum_value FOR TESTING RAISING cx_static_check.
     METHODS numeric_condition FOR TESTING RAISING cx_static_check.
@@ -26,6 +27,13 @@ CLASS ltcl_serialization IMPLEMENTATION.
     assert_contains( output = output expected = `s-check="(ref('.root.ENABLED')=C('X')) or (not-initial(FLAG))"` ).
     assert_contains( output = output expected = `<tt:cond s-check="not-initial(UNTOUCHED)" frq="?">` ).
     assert_contains( output = output expected = `<tt:assign to-ref="DETAIL" val="C('fallback')"/>` ).
+  ENDMETHOD.
+
+  METHOD implicit_initial.
+    DATA(writer) = NEW zcl_aff_writer_xslt( ).
+    DATA(generator) = NEW zcl_aff_generator( writer ).
+    DATA(output) = generator->zif_aff_generator~generate_type( VALUE zcl_aff_test_types=>ty_cond_domain( ) ).
+    assert_contains( output = output expected = `s-check="(ref('.root.SETTINGS.BASE_DOMAIN.NAME')=C('')) or (not-initial(FORMAT))"` ).
   ENDMETHOD.
 
   METHOD nested_rows.

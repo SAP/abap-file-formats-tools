@@ -2643,6 +2643,10 @@ CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK L
     METHODS literals FOR TESTING RAISING cx_static_check.
     METHODS optional_ancestor FOR TESTING RAISING cx_static_check.
     METHODS explicit_defaults FOR TESTING RAISING cx_static_check.
+    METHODS implicit_initial_values FOR TESTING RAISING cx_static_check.
+    METHODS omitted_parent_structures FOR TESTING RAISING cx_static_check.
+    METHODS defaults_override_initial FOR TESTING RAISING cx_static_check.
+    METHODS initial_enum_value FOR TESTING RAISING cx_static_check.
     METHODS invalid_definitions FOR TESTING RAISING cx_static_check.
     METHODS invalid_link_conventions FOR TESTING RAISING cx_static_check.
     METHODS reject
@@ -2879,5 +2883,44 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     initialize( ).
     generate( VALUE zcl_aff_test_types=>ty_cond_zero_default( ) ).
     assert_rule( '{"if":{"properties":{"count":{"const":0}}},"then":{"required":["detail"]}}' ).
+  ENDMETHOD.
+
+  METHOD implicit_initial_values.
+    generate( VALUE zcl_aff_test_types=>ty_cond_initial( ) ).
+    assert_rule( '{"if":{"properties":{"name":{"const":""}}},' &&
+      '"then":{"required":["format"]},"else":{"properties":{"format":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"properties":{"text":{"const":""}}},"then":{"required":["textDetail"]}}' ).
+    assert_rule( index = 3 expected = '{"if":{"properties":{"count":{"const":0}}},"then":{"required":["countDetail"]}}' ).
+    assert_rule( index = 4 expected = '{"if":{"properties":{"enabled":{"const":false}}},"then":{"required":["booleanDetail"]}}' ).
+    assert_rule( index = 5 expected = '{"if":{"properties":{"name":{"const":""}}},"then":{"properties":{"namedDetail":false}}}' ).
+    assert_rule( index = 6 expected = '{"if":{"properties":{"digits":{"const":"000"}}},"then":{"required":["digitDetail"]}}' ).
+    DATA(properties) = schema->member( parent = 1 name = 'properties' ).
+    DATA(name) = schema->member( parent = properties name = 'name' ).
+    cl_abap_unit_assert=>assert_initial( schema->member( parent = name name = 'default' ) ).
+  ENDMETHOD.
+
+  METHOD omitted_parent_structures.
+    generate( VALUE zcl_aff_test_types=>ty_cond_domain( ) ).
+    DATA(test) = '"if":{"properties":{"settings":{"properties":{"baseDomain":{"properties":{"name":{"const":""}}}}}}}'.
+    assert_rule( '{' && test && ',"then":{"required":["format"]},"else":{"properties":{"format":false}}}' ).
+    assert_rule( index = 2 expected = '{' && test && ',"then":{"properties":{"appendDetail":false}}}' ).
+    assert_rule( index = 3 expected = '{"if":{"required":["settings"],"properties":{"settings":{' &&
+      '"required":["baseDomain"],"properties":{"baseDomain":{"required":["name"],"properties":{"name":{"const":"Z_BASE"}}}}}}},' &&
+      '"then":{"required":["namedDetail"]}}' ).
+  ENDMETHOD.
+
+  METHOD defaults_override_initial.
+    generate( VALUE zcl_aff_test_types=>ty_cond_noninitial_default( ) ).
+    assert_rule( '{"if":{"required":["name"],"properties":{"name":{"const":""}}},"then":{"required":["emptyDetail"]}}' ).
+    assert_rule( index = 2 expected = '{"if":{"properties":{"name":{"const":"fallback"}}},"then":{"required":["defaultDetail"]}}' ).
+    assert_rule( index = 3 expected = '{"if":{"required":["count"],"properties":{"count":{"const":0}}},"then":{"required":["zeroDetail"]}}' ).
+    assert_rule( index = 4 expected = '{"if":{"properties":{"count":{"const":2}}},"then":{"required":["countDetail"]}}' ).
+  ENDMETHOD.
+
+  METHOD initial_enum_value.
+    generate( VALUE zcl_aff_test_types=>ty_cond_initial_enum( ) ).
+    assert_rule( '{"if":{"properties":{"mode":{"const":"normal"}}},"then":{"required":["normalDetail"]}}' ).
+    assert_rule( index = 2 expected = '{"if":{"required":["mode"],"properties":{"mode":{"const":"appendMode"}}},' &&
+      '"else":{"properties":{"appendDetail":false}}}' ).
   ENDMETHOD.
 ENDCLASS.

@@ -26,7 +26,22 @@ CLASS zcl_aff_test_types DEFINITION
         cloud_mode TYPE ty_condition_mode VALUE 'C',
         key_user TYPE ty_condition_mode VALUE 'K',
       END OF co_condition_mode.
+    "! $values {@link zcl_aff_test_types.data:co_initial_mode}
+    TYPES ty_initial_mode TYPE c LENGTH 1.
+    CONSTANTS:
+      BEGIN OF co_initial_mode,
+        "! $enumValue 'normal'
+        initial_mode TYPE ty_initial_mode VALUE space,
+        append_mode TYPE ty_initial_mode VALUE 'A',
+      END OF co_initial_mode.
     TYPES:
+      BEGIN OF ty_cond_initial_enum,
+        mode TYPE ty_initial_mode,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_initial_enum.mode} = {@link zcl_aff_test_types.data:co_initial_mode.initial_mode}
+        normal_detail TYPE string,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_initial_enum.mode} = {@link zcl_aff_test_types.data:co_initial_mode.append_mode}
+        append_detail TYPE string,
+      END OF ty_cond_initial_enum,
       BEGIN OF ty_cond_header,
         language_version TYPE ty_condition_mode,
       END OF ty_cond_header,
@@ -151,6 +166,56 @@ CLASS zcl_aff_test_types DEFINITION
         "! $requiredWhen {@link zcl_aff_test_types.ty_cond_literals.count} = 2
         counted TYPE string,
       END OF ty_cond_literals,
+      BEGIN OF ty_cond_initial,
+        name TYPE c LENGTH 30,
+        text TYPE string,
+        count TYPE i,
+        enabled TYPE abap_bool,
+        digits TYPE n LENGTH 3,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_initial.name} = ''
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_initial.name} = ''
+        format TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_initial.text} = ''
+        text_detail TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_initial.count} = 0
+        count_detail TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_initial.enabled} = false
+        boolean_detail TYPE string,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_initial.name} != ''
+        named_detail TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_initial.digits} = '000'
+        digit_detail TYPE string,
+      END OF ty_cond_initial,
+      BEGIN OF ty_cond_base_domain,
+        name TYPE c LENGTH 30,
+      END OF ty_cond_base_domain,
+      BEGIN OF ty_cond_domain_settings,
+        base_domain TYPE ty_cond_base_domain,
+      END OF ty_cond_domain_settings,
+      BEGIN OF ty_cond_domain,
+        settings TYPE ty_cond_domain_settings,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_domain.settings.base_domain.name} = ''
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_domain.settings.base_domain.name} = ''
+        format TYPE string,
+        "! $availableWhen {@link zcl_aff_test_types.ty_cond_domain.settings.base_domain.name} != ''
+        append_detail TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_domain.settings.base_domain.name} = 'Z_BASE'
+        named_detail TYPE string,
+      END OF ty_cond_domain,
+      BEGIN OF ty_cond_noninitial_default,
+        "! $default 'fallback'
+        name TYPE string,
+        "! $default '2'
+        count TYPE i,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_noninitial_default.name} = ''
+        empty_detail TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_noninitial_default.name} = 'fallback'
+        default_detail TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_noninitial_default.count} = 0
+        zero_detail TYPE string,
+        "! $requiredWhen {@link zcl_aff_test_types.ty_cond_noninitial_default.count} = 2
+        count_detail TYPE string,
+      END OF ty_cond_noninitial_default,
       BEGIN OF ty_cond_not_equal,
         enabled TYPE abap_bool,
         count TYPE i,
