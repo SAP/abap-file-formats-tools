@@ -2716,7 +2716,7 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
       '"then":{"required":["enumDetail"]}}' ).
     assert_rule( index = 3 expected = '{"if":{"properties":{"enabled":{"enum":[false]}}},' &&
       '"else":{"properties":{"disabledDetail":false}}}' ).
-    assert_rule( index = 4 expected = '{"if":{"required":["count"],"properties":{"count":{"enum":[-1,0,2]}}},' &&
+    assert_rule( index = 4 expected = '{"if":{"properties":{"count":{"enum":[-1,0,2]}}},' &&
       '"then":{"required":["counted"]}}' ).
     assert_rule( index = 5 expected = '{"if":{"required":["kind"],"properties":{"kind":{"enum":["O''Brien, (a)","$requiredWhen","static"]}}},' &&
       '"else":{"properties":{"quoted":false}}}' ).
@@ -2729,7 +2729,7 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     assert_rule( expected = '{"properties":{"settings":{' && rule && '}}}' ).
     assert_rule( index = 6 expected = '{"properties":{"rows":{"items":{' && rule && '}}}}' ).
     assert_rule( index = 11 expected = '{"properties":{"otherRows":{"items":{' && rule && '}}}}' ).
-    assert_rule( index = 16 expected = '{"if":{"required":["settings"],"properties":{"settings":{' &&
+    assert_rule( index = 16 expected = '{"if":{"properties":{"settings":{' &&
       '"properties":{"enabled":{"enum":[false,true]}}}}},"else":{"properties":{"detail":false}}}' ).
   ENDMETHOD.
 
