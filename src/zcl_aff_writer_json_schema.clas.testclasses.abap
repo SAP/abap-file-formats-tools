@@ -2627,6 +2627,8 @@ CLASS ltcl_conditional_schema DEFINITION FINAL FOR TESTING DURATION SHORT RISK L
                 index TYPE i DEFAULT 1
       RAISING   cx_static_check.
     METHODS local_boolean FOR TESTING RAISING cx_static_check.
+    METHODS membership FOR TESTING RAISING cx_static_check.
+    METHODS membership_scope FOR TESTING RAISING cx_static_check.
     METHODS short_links FOR TESTING RAISING cx_static_check.
     METHODS reused_short_links FOR TESTING RAISING cx_static_check.
     METHODS root_enum FOR TESTING RAISING cx_static_check.
@@ -2704,6 +2706,31 @@ CLASS ltcl_conditional_schema IMPLEMENTATION.
     assert_rule( '{"properties":{"generalInformation":{' &&
       '"if":{"required":["drinksCoffee"],"properties":{"drinksCoffee":{"const":true}}},' &&
       '"then":{"required":["coffeeBrand"]},"else":{"properties":{"coffeeBrand":false}}}}}' ).
+  ENDMETHOD.
+
+  METHOD membership.
+    generate( VALUE zcl_aff_test_types=>ty_cond_in( ) ).
+    assert_rule( '{"if":{"required":["kind"],"properties":{"kind":{"enum":["static","dynamic"]}}},' &&
+      '"then":{"required":["detail"]},"else":{"properties":{"detail":false}}}' ).
+    assert_rule( index = 2 expected = '{"if":{"properties":{"mode":{"enum":["standardMode","cloudDevelopment"]}}},' &&
+      '"then":{"required":["enumDetail"]}}' ).
+    assert_rule( index = 3 expected = '{"if":{"properties":{"enabled":{"enum":[false]}}},' &&
+      '"else":{"properties":{"disabledDetail":false}}}' ).
+    assert_rule( index = 4 expected = '{"if":{"properties":{"count":{"enum":[-1,0,2]}}},' &&
+      '"then":{"required":["counted"]}}' ).
+    assert_rule( index = 5 expected = '{"if":{"required":["kind"],"properties":{"kind":{"enum":["O''Brien, (a)","$requiredWhen","static"]}}},' &&
+      '"else":{"properties":{"quoted":false}}}' ).
+  ENDMETHOD.
+
+  METHOD membership_scope.
+    generate( VALUE zcl_aff_test_types=>ty_cond_in_nested( ) ).
+    DATA(rule) = '"if":{"required":["kind"],"properties":{"kind":{"enum":["static","dynamic"]}}},' &&
+      '"then":{"required":["detail"]},"else":{"properties":{"detail":false}}'.
+    assert_rule( expected = '{"properties":{"settings":{' && rule && '}}}' ).
+    assert_rule( index = 6 expected = '{"properties":{"rows":{"items":{' && rule && '}}}}' ).
+    assert_rule( index = 11 expected = '{"properties":{"otherRows":{"items":{' && rule && '}}}}' ).
+    assert_rule( index = 16 expected = '{"if":{"properties":{"settings":{' &&
+      '"properties":{"enabled":{"enum":[false,true]}}}}},"else":{"properties":{"detail":false}}}' ).
   ENDMETHOD.
 
   METHOD short_links.

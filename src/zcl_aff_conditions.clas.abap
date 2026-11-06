@@ -32,9 +32,20 @@ CLASS zcl_aff_conditions DEFINITION PUBLIC FINAL CREATE PUBLIC.
     METHODS compile RETURNING VALUE(result) TYPE string RAISING zcx_aff_tools.
     METHODS compile_serialization RETURNING VALUE(result) TYPE serialization_checks RAISING zcx_aff_tools.
   PRIVATE SECTION.
+    TYPES:
+      BEGIN OF predicate,
+        field TYPE i,
+        operator TYPE string,
+        tokens TYPE string_table,
+      END OF predicate.
     DATA occurrences TYPE nodes.
     DATA context TYPE i.
     DATA component TYPE string.
+    METHODS parse IMPORTING condition TYPE string RETURNING VALUE(result) TYPE predicate RAISING zcx_aff_tools.
+    METHODS serialization_literal
+      IMPORTING field TYPE i
+                token TYPE string
+      RETURNING VALUE(result) TYPE string RAISING zcx_aff_tools.
     METHODS compile_rule
       IMPORTING target        TYPE node
                 condition     TYPE string
@@ -267,27 +278,52 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       ELSE '{"enum":[' && concat_lines_of( table = values sep = ',' ) && ']}' ).
   ENDMETHOD.
 
+  METHOD parse.
+    DATA(atom) = `(?:\{\s*@link[^{}]+\}|'(?:''|[^'])*'|true|false|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?)`.
+    DATA(pattern) = `^\s*(\{\s*@link[^{}]+\})\s*(!?=)\s*(` && atom && `)\s*$`.
+    FIND FIRST OCCURRENCE OF PCRE
+      pattern IN condition SUBMATCHES DATA(field_link) result-operator DATA(value_token).
+    IF sy-subrc <> 0.
+      pattern = `^\s*(\{\s*@link[^{}]+\})\s+[iI][nN]\s*\(\s*(` && atom && `(?:\s*,\s*` && atom && `)*)\s*\)\s*$`.
+      FIND FIRST OCCURRENCE OF PCRE pattern IN condition SUBMATCHES field_link value_token.
+      IF sy-subrc <> 0.
+        fail( 'Only a single ABAP field link =, != or IN (literal or enum constant link, ...) is supported' ).
+      ENDIF.
+      result-operator = 'in'.
+    ENDIF.
+    result-field = resolve( field_link ).
+    FIND ALL OCCURRENCES OF PCRE atom IN value_token RESULTS DATA(matches).
+    LOOP AT matches INTO DATA(match).
+      APPEND substring( val = value_token off = match-offset len = match-length ) TO result-tokens.
+    ENDLOOP.
+  ENDMETHOD.
+
   METHOD compile_rule.
     context = target-parent.
-    FIND FIRST OCCURRENCE OF PCRE
-          `^\s*(\{\s*@link[^{}]+\})\s*(!?=)\s*(\{\s*@link[^{}]+\}|'(?:''|[^'])*'|true|false|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?)\s*$`
-      IN condition SUBMATCHES DATA(field_link) DATA(operator) DATA(value_token).
-    IF sy-subrc <> 0.
-      fail( 'Only a single ABAP field link = or != literal or enum constant link is supported' ).
-    ENDIF.
-    DATA(field) = resolve( field_link ).
+    DATA(predicate) = parse( condition ).
+    DATA(field) = predicate-field.
     DATA(node) = occurrences[ field ].
     IF node-json_type = 'array' OR node-json_type = 'object'.
       fail( 'Only scalar fields can be compared' ).
     ENDIF.
-    DATA(value) = literal( field = field token = value_token ).
+    DATA(values) = VALUE string_table( ).
+    LOOP AT predicate-tokens INTO DATA(token).
+      DATA(value) = literal( field = field token = token ).
+      IF NOT line_exists( values[ table_line = value ] ).
+        APPEND value TO values.
+      ENDIF.
+    ENDLOOP.
+    DATA(value_schema) = COND string( WHEN predicate-operator = 'in'
+      THEN '{"enum":[' && concat_lines_of( table = values sep = ',' ) && ']}'
+      ELSE '{"const":' && values[ 1 ] && '}' ).
+    DATA(default_matches) = xsdbool( line_exists( values[ table_line = node-default_json ] ) ).
     " The rule is built where both fields are reachable and then nested into the root schema.
     DATA(scope) = common_scope( first = target-parent second = node-parent ).
-    DATA(presence) = COND string( WHEN node-doc-required = abap_false AND node-default_json <> value
+    DATA(presence) = COND string( WHEN node-doc-required = abap_false AND default_matches = abap_false
       THEN '"required":[' && quote( node-name ) && '],' ).
     DATA(test) = wrap( target = node-parent scope = scope guard = abap_true
-      allow_missing = xsdbool( node-default_json = value )
-      json = '{' && presence && '"properties":{' && quote( node-name ) && ':{"const":' && value && '}}}' ).
+      allow_missing = default_matches
+      json = '{' && presence && '"properties":{' && quote( node-name ) && ':' && value_schema && '}}' ).
     DATA(required) = COND string( WHEN member IS INITIAL AND condition = target-doc-required_when THEN
       wrap( target = target-parent scope = scope json = '{"required":[' && quote( target-name ) && ']}' ) ).
     DATA(forbidden) = COND string( WHEN condition = target-doc-available_when THEN
@@ -296,7 +332,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       forbidden = wrap( target = target_index scope = scope json = restrict_enum( target = target member = member ) ).
     ENDIF.
     " The if schema tests equality, so != swaps then and else.
-    DATA(negated) = xsdbool( operator = '!=' ).
+    DATA(negated) = xsdbool( predicate-operator = '!=' ).
     DATA(then_schema) = COND string( WHEN negated = abap_true THEN forbidden ELSE required ).
     DATA(else_schema) = COND string( WHEN negated = abap_true THEN required ELSE forbidden ).
     DATA(rule) = '{"if":' && test
@@ -313,40 +349,50 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       IF context = 0 OR target-items = abap_true.
         fail( 'Conditional annotations must be on structure components' ).
       ENDIF.
-      FIND FIRST OCCURRENCE OF PCRE
-        `^\s*(\{\s*@link[^{}]+\})\s*(!?=)\s*(\{\s*@link[^{}]+\}|'(?:''|[^'])*'|true|false|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?)\s*$`
-        IN target-doc-required_when SUBMATCHES DATA(field_link) DATA(operator) DATA(token).
-      IF sy-subrc <> 0.
-        fail( 'Only a single ABAP field link = or != literal or enum constant link is supported' ).
-      ENDIF.
-      DATA(field) = resolve( field_link ).
+      DATA(predicate) = parse( target-doc-required_when ).
+      DATA(field) = predicate-field.
       DATA(node) = occurrences[ field ].
       IF node-json_type = 'array' OR node-json_type = 'object'.
         fail( 'Only scalar fields can be compared' ).
       ENDIF.
-      literal( field = field token = token ).
       DATA(scope) = common_scope( first = target-parent second = node-parent ).
       wrap( target = node-parent scope = scope guard = abap_true json = '' ).
-      DATA(value) = COND string( WHEN token = 'true' THEN `C('X')`
+      DATA(comparisons) = VALUE string_table( ).
+      LOOP AT predicate-tokens INTO DATA(token).
+        DATA(value) = serialization_literal( field = field token = token ).
+        DATA(operator) = COND string( WHEN predicate-operator = 'in' THEN '=' ELSE predicate-operator ).
+        DATA(comparison) = |ref('{ node-st_ref }'){ operator }{ value }|.
+        IF predicate-operator = 'in'.
+          comparison = '(' && comparison && ')'.
+        ENDIF.
+        IF NOT line_exists( comparisons[ table_line = comparison ] ).
+          APPEND comparison TO comparisons.
+        ENDIF.
+      ENDLOOP.
+      APPEND VALUE #( target = target_index expression = concat_lines_of( table = comparisons sep = ' or ' ) ) TO result.
+    ENDLOOP.
+    SORT result BY target expression.
+    DELETE ADJACENT DUPLICATES FROM result COMPARING target expression.
+  ENDMETHOD.
+
+  METHOD serialization_literal.
+    DATA(node) = occurrences[ field ].
+    literal( field = field token = token ).
+    result = COND string( WHEN token = 'true' THEN `C('X')`
         WHEN token = 'false' THEN `C('')`
         WHEN token(1) = `'` THEN 'C(' && token && ')'
         ELSE token ).
-      IF token(1) = '{'.
-        DATA(key) = normalize_link( link = token constant_link = abap_true ).
-        value = node-members[ link = key ]-st_value.
-      ELSEIF node-json_type = 'numeric'.
-        value = SWITCH #( node-kind
+    IF token(1) = '{'.
+      DATA(key) = normalize_link( link = token constant_link = abap_true ).
+      result = node-members[ link = key ]-st_value.
+    ELSEIF node-json_type = 'numeric'.
+      result = SWITCH #( node-kind
           WHEN cl_abap_typedescr=>typekind_int8 THEN |INT8({ token })|
           WHEN cl_abap_typedescr=>typekind_packed THEN |P({ token })|
           WHEN cl_abap_typedescr=>typekind_float THEN |F('{ token }')|
           WHEN cl_abap_typedescr=>typekind_decfloat16 THEN |DECFLOAT16('{ token }')|
           WHEN cl_abap_typedescr=>typekind_decfloat34 THEN |DECFLOAT34('{ token }')|
           ELSE |I({ token })| ).
-      ENDIF.
-      DATA(expression) = |ref('{ node-st_ref }'){ operator }{ value }|.
-      APPEND VALUE #( target = target_index expression = expression ) TO result.
-    ENDLOOP.
-    SORT result BY target expression.
-    DELETE ADJACENT DUPLICATES FROM result COMPARING target expression.
+    ENDIF.
   ENDMETHOD.
 ENDCLASS.
