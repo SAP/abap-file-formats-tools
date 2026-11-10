@@ -2,6 +2,8 @@ CLASS ltcl_serialization DEFINITION FINAL FOR TESTING DURATION SHORT RISK LEVEL 
   PRIVATE SECTION.
     METHODS defaults FOR TESTING RAISING cx_static_check.
     METHODS implicit_initial FOR TESTING RAISING cx_static_check.
+    METHODS membership FOR TESTING RAISING cx_static_check.
+    METHODS invalid_membership FOR TESTING RAISING cx_static_check.
     METHODS nested_rows FOR TESTING RAISING cx_static_check.
     METHODS enum_value FOR TESTING RAISING cx_static_check.
     METHODS numeric_condition FOR TESTING RAISING cx_static_check.
@@ -34,6 +36,41 @@ CLASS ltcl_serialization IMPLEMENTATION.
     DATA(generator) = NEW zcl_aff_generator( writer ).
     DATA(output) = generator->zif_aff_generator~generate_type( VALUE zcl_aff_test_types=>ty_cond_domain( ) ).
     assert_contains( output = output expected = `s-check="(ref('.root.SETTINGS.BASE_DOMAIN.NAME')=C('')) or (not-initial(FORMAT))"` ).
+  ENDMETHOD.
+
+  METHOD membership.
+    DATA(writer) = NEW zcl_aff_writer_xslt( ).
+    DATA(generator) = NEW zcl_aff_generator( writer ).
+    DATA(output) = generator->zif_aff_generator~generate_type( VALUE zcl_aff_test_types=>ty_cond_in_nested( ) ).
+    assert_contains( output = output expected = `(ref('.root.SETTINGS.KIND')=C('static')) or (ref('.root.SETTINGS.KIND')=C('dynamic'))` ).
+    assert_contains( output = output expected = `(ref('.root.SETTINGS.MODE')=C('S')) or (ref('.root.SETTINGS.MODE')=C('C'))` ).
+    assert_contains( output = output expected = `(ref('.root.SETTINGS.COUNT')=I(-1)) or (ref('.root.SETTINGS.COUNT')=I(0))` ).
+    assert_contains( output = output expected = `(ref('$affRow12.KIND')=C('static')) or (ref('$affRow12.KIND')=C('dynamic'))` ).
+    assert_contains( output = output expected = `(ref('$affRow23.KIND')=C('static')) or (ref('$affRow23.KIND')=C('dynamic'))` ).
+  ENDMETHOD.
+
+  METHOD invalid_membership.
+    DATA(conditions) = VALUE string_table(
+      ( `in ()` ) ( `in ('a',)` ) ( `in (, 'a')` ) ( `in ('a' 'b')` )
+      ( `in ('a', 'b') garbage` ) ( `in ('a', true)` ) ( `in ('a', unknown)` )
+      ( `in ('a', {@link zcl_aff_test_types.data:co_condition_mode.cloud_mode})` ) ).
+    LOOP AT conditions INTO DATA(condition).
+      DATA(nodes) = VALUE zcl_aff_conditions=>nodes(
+        ( type_key = 'ZCL_AFF_TEST_TYPES.TY_COND_IN' json_type = 'object' )
+        ( parent = 1 name = 'kind' json_type = 'string' )
+        ( parent = 1 name = 'detail' json_type = 'string'
+          doc-required_when = `{@link zcl_aff_test_types.ty_cond_in.kind} ` && condition ) ).
+      TRY.
+          NEW zcl_aff_conditions( nodes )->compile( ).
+          cl_abap_unit_assert=>fail( 'Invalid IN schema condition was accepted' ).
+        CATCH zcx_aff_tools.
+      ENDTRY.
+      TRY.
+          NEW zcl_aff_conditions( nodes )->compile_serialization( ).
+          cl_abap_unit_assert=>fail( 'Invalid IN serialization condition was accepted' ).
+        CATCH zcx_aff_tools.
+      ENDTRY.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD nested_rows.
