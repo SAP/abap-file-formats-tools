@@ -67,9 +67,7 @@ CLASS ZCL_AFF_ABAP_DOC_READER IMPLEMENTATION.
     DATA l_scanned_elem_name TYPE string.
     DATA element_was_found   TYPE abap_bool.
 
-    l_element_name = element_name.
-    TRANSLATE l_element_name TO UPPER CASE.
-    CONDENSE l_element_name.
+    l_element_name = condense( to_upper( element_name ) ).
 
     IF lines( blocks ) = 0.
       parse( ).
