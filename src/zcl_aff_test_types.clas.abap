@@ -1276,6 +1276,92 @@ CLASS zcl_aff_test_types DEFINITION
         enum_component TYPE c LENGTH 2,
       END OF struc_with_own_enum_values.
 
+    CONSTANTS:
+      BEGIN OF co_special_chars,
+        "! <p class="shorttext">None</p>
+        "! None
+        none           TYPE c LENGTH 1 VALUE 'X',
+        "! <p class="shorttext">Less Than</p>
+        "! Less than
+        less_than      TYPE c LENGTH 1 VALUE '<',
+        "! <p class="shorttext">Greater Than</p>
+        "! Greater than
+        greater_than   TYPE c LENGTH 1 VALUE '>',
+        "! <p class="shorttext">Ampersand</p>
+        "! Ampersand
+        ampersand      TYPE c LENGTH 1 VALUE '&',
+        "! <p class="shorttext">Quotation Mark</p>
+        "! Quotation mark
+        quotation_mark TYPE c LENGTH 1 VALUE '"',
+      END OF co_special_chars.
+
+    CONSTANTS:
+      BEGIN OF co_special_chars_json,
+        "! <p class="shorttext">None</p>
+        "! None
+        none           TYPE c LENGTH 1 VALUE 'X',
+        "! <p class="shorttext">Less Than</p>
+        "! Less than
+        "! $enumValue '<'
+        less_than      TYPE c LENGTH 1 VALUE '<',
+        "! <p class="shorttext">Greater Than</p>
+        "! Greater than
+        "! $enumValue '>'
+        greater_than   TYPE c LENGTH 1 VALUE '>',
+        "! <p class="shorttext">Ampersand</p>
+        "! Ampersand
+        "! $enumValue '&'
+        ampersand      TYPE c LENGTH 1 VALUE '&',
+        "! <p class="shorttext">Quotation Mark</p>
+        "! Quotation mark
+        "! $enumValue '"'
+        quotation_mark TYPE c LENGTH 1 VALUE '"',
+      END OF co_special_chars_json.
+
+    TYPES:
+      "! <p class="shorttext">Special Characters in ABAP Values</p>
+      "! Enum with XML special characters in its ABAP values
+      BEGIN OF struc_with_special_char_enum,
+        "! <p class="shorttext">Enum Component</p>
+        "! Enum component
+        "! $values  {@link zcl_aff_test_types.data:co_special_chars }
+        "! $default {@link zcl_aff_test_types.data:co_special_chars.none }
+        special_char_enum TYPE c LENGTH 1,
+      END OF struc_with_special_char_enum.
+
+    TYPES:
+      "! <p class="shorttext">Special Characters in JSON Values</p>
+      "! Enum with XML special characters in its ABAP and JSON values
+      BEGIN OF struc_with_special_char_json,
+        "! <p class="shorttext">Enum Component</p>
+        "! Enum component
+        "! $values  {@link zcl_aff_test_types.data:co_special_chars_json }
+        "! $default {@link zcl_aff_test_types.data:co_special_chars_json.none }
+        special_char_enum TYPE c LENGTH 1,
+      END OF struc_with_special_char_json.
+
+    TYPES:
+      "! <p class="shorttext">Special Character as Default</p>
+      "! Enum with an XML special character as default value
+      BEGIN OF struc_with_special_char_dflt,
+        "! <p class="shorttext">Enum Component</p>
+        "! Enum component
+        "! $values  {@link zcl_aff_test_types.data:co_special_chars }
+        "! $default {@link zcl_aff_test_types.data:co_special_chars.less_than }
+        special_char_enum TYPE c LENGTH 1,
+      END OF struc_with_special_char_dflt.
+
+    TYPES:
+      "! <p class="shorttext">Required Enum With Special Characters</p>
+      "! Required enum without default with XML special characters in its values
+      BEGIN OF struc_with_special_char_req,
+        "! <p class="shorttext">Enum Component</p>
+        "! Enum component
+        "! $values  {@link zcl_aff_test_types.data:co_special_chars_json }
+        "! $required
+        special_char_enum TYPE c LENGTH 1,
+      END OF struc_with_special_char_req.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
