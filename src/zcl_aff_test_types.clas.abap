@@ -1277,7 +1277,7 @@ CLASS zcl_aff_test_types DEFINITION
       END OF struc_with_own_enum_values.
 
     CONSTANTS:
-      BEGIN OF co_enho_comparator,
+      BEGIN OF co_enum_xml_special,
         "! <p class="shorttext">Equal</p>
         "! $enumValue '='
         equal TYPE c LENGTH 2 VALUE '=',
@@ -1290,57 +1290,32 @@ CLASS zcl_aff_test_types DEFINITION
         "! <p class="shorttext">Less Equal</p>
         "! $enumValue '<='
         less_equal TYPE c LENGTH 2 VALUE '<=',
-        "! <p class="shorttext">Greater Equal</p>
-        "! $enumValue '>='
-        greater_equal TYPE c LENGTH 2 VALUE '>=',
         "! <p class="shorttext">Not Equal</p>
         "! $enumValue '<>'
         not_equal TYPE c LENGTH 2 VALUE '<>',
-        "! <p class="shorttext">Conforms to Pattern</p>
-        "! $enumValue 'CP'
-        conforms_to_pattern TYPE c LENGTH 2 VALUE 'CP',
-        "! <p class="shorttext">Does Not Conform to Pattern</p>
-        "! $enumValue 'NP'
-        does_not_conform_to_pattern TYPE c LENGTH 2 VALUE 'NP',
-        "! <p class="shorttext">Contains String</p>
-        "! $enumValue 'CS'
-        contains_string TYPE c LENGTH 2 VALUE 'CS',
-        "! <p class="shorttext">Contains No String</p>
-        "! $enumValue 'NS'
-        contains_no_string TYPE c LENGTH 2 VALUE 'NS',
         "! <p class="shorttext">Not Specified</p>
         not_specified TYPE c LENGTH 2 VALUE 'XX',
-      END OF co_enho_comparator.
-
-    CONSTANTS:
-      BEGIN OF co_enho_range_comparator,
-        "! <p class="shorttext">Less Than</p>
-        "! $enumValue '<'
-        less_than TYPE c LENGTH 2 VALUE '<',
-        "! <p class="shorttext">Less Equal</p>
-        "! $enumValue '<='
-        less_equal TYPE c LENGTH 2 VALUE '<=',
-      END OF co_enho_range_comparator.
+      END OF co_enum_xml_special.
 
     TYPES:
-      "! <p class="shorttext">ENHO Comparator</p>
-      "! Comparator enum and default from ENHO v2
-      BEGIN OF struc_with_enho_comparator,
+      "! <p class="shorttext">Enum With XML Special Characters</p>
+      "! Required enum whose values contain XML special characters
+      BEGIN OF struc_enum_xml_special_req,
         "! <p class="shorttext">Comparator</p>
-        "! $values {@link zcl_aff_test_types.data:co_enho_comparator}
-        "! $default {@link zcl_aff_test_types.data:co_enho_comparator.not_specified}
-        comparator TYPE c LENGTH 2,
-      END OF struc_with_enho_comparator.
-
-    TYPES:
-      "! <p class="shorttext">ENHO Range Comparator</p>
-      "! Required range comparator enum from ENHO v2
-      BEGIN OF struc_with_enho_range,
-        "! <p class="shorttext">Comparator</p>
-        "! $values {@link zcl_aff_test_types.data:co_enho_range_comparator}
+        "! $values {@link zcl_aff_test_types.data:co_enum_xml_special}
         "! $required
         comparator TYPE c LENGTH 2,
-      END OF struc_with_enho_range.
+      END OF struc_enum_xml_special_req.
+
+    TYPES:
+      "! <p class="shorttext">Enum With XML Special Characters</p>
+      "! Enum with default whose values contain XML special characters
+      BEGIN OF struc_enum_xml_special_default,
+        "! <p class="shorttext">Comparator</p>
+        "! $values {@link zcl_aff_test_types.data:co_enum_xml_special}
+        "! $default {@link zcl_aff_test_types.data:co_enum_xml_special.not_specified}
+        comparator TYPE c LENGTH 2,
+      END OF struc_enum_xml_special_default.
 
   PROTECTED SECTION.
   PRIVATE SECTION.

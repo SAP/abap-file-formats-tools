@@ -1368,7 +1368,8 @@ CLASS ltcl_type_writer_xslt_ad DEFINITION FINAL FOR TESTING
       structure_with_default_problem FOR TESTING RAISING cx_static_check,
       struc_with_own_enum_values     FOR TESTING RAISING cx_static_check,
       enable_extension               FOR TESTING RAISING cx_static_check,
-      struc_with_enho_range          FOR TESTING RAISING cx_static_check.
+      struc_enum_xml_special_req     FOR TESTING RAISING cx_static_check,
+      struc_enum_xml_special_default FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
@@ -2442,8 +2443,8 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
     validate_output( act_output ).
   ENDMETHOD.
 
-  METHOD struc_with_enho_range.
-    DATA test_type TYPE zcl_aff_test_types=>struc_with_enho_range.
+  METHOD struc_enum_xml_special_req.
+    DATA test_type TYPE zcl_aff_test_types=>struc_enum_xml_special_req.
     DATA(act_output) = test_generator->generate_type( test_type ).
     me->exp_transformation = VALUE #(
         ( `<tt:cond>` )
@@ -2452,9 +2453,73 @@ CLASS ltcl_type_writer_xslt_ad IMPLEMENTATION.
         ( `      <tt:cond frq="?">` )
         ( `        <str name="comparator">` )
         ( `          <tt:value ref="COMPARATOR" map="` )
+        ( `            val('=')=xml('='),` )
         ( `            val('&lt;')=xml('&lt;'),` )
-        ( `            val('&lt;=')=xml('&lt;=')"` )
+        ( `            val('>')=xml('>'),` )
+        ( `            val('&lt;=')=xml('&lt;='),` )
+        ( `            val('&lt;>')=xml('&lt;>'),` )
+        ( `            val('XX')=xml('notSpecified')"` )
         ( `          />` )
+        ( `        </str>` )
+        ( `      </tt:cond>` )
+        ( `      <tt:d-cond frq="*">` )
+        ( `         <_ tt:lax="on">` )
+        ( `          <tt:call-method class="CL_AFF_XSLT_CALLBACK_TYPE" name="RAISE_DIFFERENT_TYPE_EXCEPTION" reader="IO_READER">` )
+        ( `            <tt:with-parameter name="MEMBERS" val="'comparator;'"/>` )
+        ( `          </tt:call-method>` )
+        ( `          <tt:skip/>` )
+        ( `        </_>` )
+        ( `      </tt:d-cond>` )
+        ( `      <tt:d-cond frq="?">` )
+        ( `        <__/>` )
+        ( `      </tt:d-cond>` )
+        ( `    </tt:group>` )
+        ( `  </object>` )
+        ( `</tt:cond>` ) ).
+    validate_output( act_output ).
+  ENDMETHOD.
+
+  METHOD struc_enum_xml_special_default.
+    DATA test_type TYPE zcl_aff_test_types=>struc_enum_xml_special_default.
+    DATA(act_output) = test_generator->generate_type( test_type ).
+    me->exp_transformation = VALUE #(
+        ( `<tt:cond>` )
+        ( `  <object>` )
+        ( `    <tt:assign to-ref="COMPARATOR" val="C('XX')"/>` )
+        ( `    <tt:group>` )
+        ( `      <tt:cond s-check="COMPARATOR!=C('XX')" frq="?">` )
+        ( `        <str name="comparator">` )
+        ( `          <tt:deserialize>` )
+        ( `            <tt:read type="C" var="VARIABLE"/>` )
+        ( `            <tt:cond-var check="VARIABLE='='">` )
+        ( `              <tt:assign to-ref="COMPARATOR" val="'='"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='&lt;'">` )
+        ( `              <tt:assign to-ref="COMPARATOR" val="'&lt;'"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='>'">` )
+        ( `              <tt:assign to-ref="COMPARATOR" val="'>'"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='&lt;='">` )
+        ( `              <tt:assign to-ref="COMPARATOR" val="'&lt;='"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='&lt;>'">` )
+        ( `              <tt:assign to-ref="COMPARATOR" val="'&lt;>'"/>` )
+        ( `            </tt:cond-var>` )
+        ( `            <tt:cond-var check="VARIABLE='notSpecified'">` )
+        ( `              <tt:assign to-ref="COMPARATOR" val="'XX'"/>` )
+        ( `            </tt:cond-var>` )
+        ( `           </tt:deserialize>` )
+        ( `          <tt:serialize>` )
+        ( `            <tt:value ref="COMPARATOR" map="` )
+        ( `              val('=')=xml('='),` )
+        ( `              val('&lt;')=xml('&lt;'),` )
+        ( `              val('>')=xml('>'),` )
+        ( `              val('&lt;=')=xml('&lt;='),` )
+        ( `              val('&lt;>')=xml('&lt;>'),` )
+        ( `              val('XX')=xml('notSpecified')"` )
+        ( `            />` )
+        ( `          </tt:serialize>` )
         ( `        </str>` )
         ( `      </tt:cond>` )
         ( `      <tt:d-cond frq="*">` )
@@ -2551,8 +2616,8 @@ RISK LEVEL DANGEROUS.
 
       struc_with_own_enum_values           FOR TESTING RAISING cx_static_check,
 
-      struc_with_enho_comparator           FOR TESTING RAISING cx_static_check,
-      struc_with_enho_range                FOR TESTING RAISING cx_static_check,
+      struc_enum_xml_special_req           FOR TESTING RAISING cx_static_check,
+      struc_enum_xml_special_default       FOR TESTING RAISING cx_static_check,
 
     from_abap_to_json
         IMPORTING
@@ -3036,30 +3101,32 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
     do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
   ENDMETHOD.
 
-  METHOD struc_with_enho_comparator.
-    DATA input TYPE zcl_aff_test_types=>struc_with_enho_comparator.
-    DATA actual LIKE input.
-    DATA comparators TYPE STANDARD TABLE OF string WITH EMPTY KEY.
-    comparators = VALUE #( ( `=` ) ( `<` ) ( `>` ) ( `<=` ) ( `>=` ) ( `<>` )
-                           ( `CP` ) ( `NP` ) ( `CS` ) ( `NS` ) ).
-    LOOP AT comparators INTO DATA(comparator).
-      input-comparator = comparator.
-      exp_json = VALUE #( ( `{"comparator":"` && comparator && `"}` ) ).
-      do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
-    ENDLOOP.
-    input-comparator = 'XX'.
-    exp_json = VALUE #( ( `{}` ) ).
-    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
-  ENDMETHOD.
-
-  METHOD struc_with_enho_range.
-    DATA input TYPE zcl_aff_test_types=>struc_with_enho_range.
+  METHOD struc_enum_xml_special_req.
+    DATA input TYPE zcl_aff_test_types=>struc_enum_xml_special_req.
     DATA actual LIKE input.
     input-comparator = '<'.
     exp_json = VALUE #( ( `{"comparator":"<"}` ) ).
     do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
-    input-comparator = '<='.
-    exp_json = VALUE #( ( `{"comparator":"<="}` ) ).
+    CLEAR actual.
+    input-comparator = '<>'.
+    exp_json = VALUE #( ( `{"comparator":"<>"}` ) ).
+    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+  ENDMETHOD.
+
+  METHOD struc_enum_xml_special_default.
+    DATA input TYPE zcl_aff_test_types=>struc_enum_xml_special_default.
+    DATA actual LIKE input.
+    DATA comparators TYPE STANDARD TABLE OF string WITH EMPTY KEY.
+    comparators = VALUE #( ( `=` ) ( `<` ) ( `>` ) ( `<=` ) ( `<>` ) ).
+    LOOP AT comparators INTO DATA(comparator).
+      CLEAR actual.
+      input-comparator = comparator.
+      exp_json = VALUE #( ( `{"comparator":"` && comparator && `"}` ) ).
+      do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+    ENDLOOP.
+    CLEAR actual.
+    input-comparator = 'XX'.
+    exp_json = VALUE #( ( `{}` ) ).
     do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
   ENDMETHOD.
 
