@@ -3102,32 +3102,56 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD struc_enum_xml_special_req.
+    " Supported XML special characters in enum values (ABAP value -> JSON):
+    " '<' is escaped in the generated transformation, '>' and '=' are written as-is.
+    " '&' and '"' are not supported yet.
     DATA input TYPE zcl_aff_test_types=>struc_enum_xml_special_req.
     DATA actual LIKE input.
-    input-comparator = '<'.
-    exp_json = VALUE #( ( `{"comparator":"<"}` ) ).
-    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
-    CLEAR actual.
-    input-comparator = '<>'.
-    exp_json = VALUE #( ( `{"comparator":"<>"}` ) ).
-    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+    TYPES:
+      BEGIN OF ty_case,
+        abap_value TYPE c LENGTH 2,
+        json       TYPE string,
+      END OF ty_case,
+      ty_cases TYPE STANDARD TABLE OF ty_case WITH EMPTY KEY.
+    DATA(cases) = VALUE ty_cases(
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-equal         json = `{"comparator":"="}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-less_than     json = `{"comparator":"<"}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-greater_than  json = `{"comparator":">"}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-less_equal    json = `{"comparator":"<="}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-not_equal     json = `{"comparator":"<>"}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-not_specified json = `{"comparator":"notSpecified"}` ) ).
+    LOOP AT cases INTO DATA(test_case).
+      CLEAR actual.
+      input-comparator = test_case-abap_value.
+      exp_json = VALUE #( ( test_case-json ) ).
+      do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD struc_enum_xml_special_default.
+    " Same characters as struc_enum_xml_special_req, read back via the default-aware deserialization;
+    " the default value is omitted in JSON.
     DATA input TYPE zcl_aff_test_types=>struc_enum_xml_special_default.
     DATA actual LIKE input.
-    DATA comparators TYPE STANDARD TABLE OF string WITH EMPTY KEY.
-    comparators = VALUE #( ( `=` ) ( `<` ) ( `>` ) ( `<=` ) ( `<>` ) ).
-    LOOP AT comparators INTO DATA(comparator).
+    TYPES:
+      BEGIN OF ty_case,
+        abap_value TYPE c LENGTH 2,
+        json       TYPE string,
+      END OF ty_case,
+      ty_cases TYPE STANDARD TABLE OF ty_case WITH EMPTY KEY.
+    DATA(cases) = VALUE ty_cases(
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-equal         json = `{"comparator":"="}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-less_than     json = `{"comparator":"<"}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-greater_than  json = `{"comparator":">"}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-less_equal    json = `{"comparator":"<="}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-not_equal     json = `{"comparator":"<>"}` )
+      ( abap_value = zcl_aff_test_types=>co_enum_xml_special-not_specified json = `{}` ) ).
+    LOOP AT cases INTO DATA(test_case).
       CLEAR actual.
-      input-comparator = comparator.
-      exp_json = VALUE #( ( `{"comparator":"` && comparator && `"}` ) ).
+      input-comparator = test_case-abap_value.
+      exp_json = VALUE #( ( test_case-json ) ).
       do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
     ENDLOOP.
-    CLEAR actual.
-    input-comparator = 'XX'.
-    exp_json = VALUE #( ( `{}` ) ).
-    do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
   ENDMETHOD.
 
   METHOD do_integration_test.
