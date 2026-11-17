@@ -207,9 +207,8 @@ CLASS zcl_aff_writer_xslt DEFINITION
         IMPORTING
                   name          TYPE string
         RETURNING VALUE(result) TYPE string,
-      "! Escapes a value for use inside a double-quoted XML attribute.
-      "! Single quotes are kept, as they delimit literals in ST expressions.
-      escape_attribute_value
+      "! Escapes less-than signs in ENHO comparator enum attributes.
+      escape_less_than
         IMPORTING
                   value         TYPE string
         RETURNING VALUE(result) TYPE string.
@@ -282,7 +281,8 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ENDIF.
       DATA(expression) = condition_checks[ index ].
       DATA(line) = condition_lines[ index ].
-      DATA(attribute) = ' s-check="' && escape_attribute_value( expression ) && '"'.
+      DATA(attribute) = ' s-check="' && escape( val = expression format = cl_abap_format=>e_xml_attr ) && '"'.
+      REPLACE ALL OCCURRENCES OF '&apos;' IN attribute WITH `'`.
       DATA(line_content) = content[ line ].
       FIND FIRST OCCURRENCE OF PCRE '\s+s-check="[^"]*"' IN line_content MATCH OFFSET DATA(offset) MATCH LENGTH DATA(length).
       IF sy-subrc = 0.
@@ -527,9 +527,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         xml_value = <enum_value>-overwritten_json_value.
       ENDIF.
       IF index < lines( enum_values ).
-        write_tag( |  val({ escape_attribute_value( abap_value ) })=xml('{ escape_attribute_value( xml_value ) }'),| ) ##NO_TEXT.
+        write_tag( |  val({ escape_less_than( abap_value ) })=xml('{ escape_less_than( xml_value ) }'),| ) ##NO_TEXT.
       ELSE.
-        write_tag( |  val({ escape_attribute_value( abap_value ) })=xml('{ escape_attribute_value( xml_value ) }')"| ) ##NO_TEXT.
+        write_tag( |  val({ escape_less_than( abap_value ) })=xml('{ escape_less_than( xml_value ) }')"| ) ##NO_TEXT.
         write_tag( `/>` ).
       ENDIF.
       index += 1.
@@ -602,7 +602,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
 
     IF abap_doc-required = abap_false AND abap_doc-showalways = abap_false.
       IF default IS NOT INITIAL.
-        condition = | s-check="{ element_name }!={ escape_attribute_value( default ) }"| ##NO_TEXT.
+        condition = | s-check="{ element_name }!={ default }"| ##NO_TEXT.
       ELSE.
         condition = | s-check="not-initial({ element_name })"| ##NO_TEXT.
       ENDIF.
@@ -749,7 +749,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
     DATA(actual_entry) = me->stack_default_comp_of_struc[ 1 ].
     DATA list_of_applies LIKE content.
     LOOP AT actual_entry-table_of_defaults ASSIGNING FIELD-SYMBOL(<default>).
-      APPEND |{ repeat( val = ` `  occ = ( indent_level * c_indent_number_characters ) - c_indent_number_characters ) }<tt:assign to-ref="{ <default>-var_name }" val="{ escape_attribute_value( <default>-default_value ) }"/>| TO list_of_applies.
+      APPEND |{ repeat( val = ` `  occ = ( indent_level * c_indent_number_characters ) - c_indent_number_characters ) }<tt:assign to-ref="{ <default>-var_name }" val="{ <default>-default_value }"/>| TO list_of_applies.
     ENDLOOP.
     LOOP AT condition_lines ASSIGNING FIELD-SYMBOL(<line>).
       IF <line> > actual_entry-line_to_insert.
@@ -850,16 +850,15 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ELSE.
         xml_value = <enum_value>-overwritten_json_value.
       ENDIF.
-      write_open_tag( |<tt:cond-var check="VARIABLE='{ escape_attribute_value( xml_value ) }'">| ).
-      write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ escape_attribute_value( abap_value ) }"/>| ).
+      write_open_tag( |<tt:cond-var check="VARIABLE='{ escape_less_than( xml_value ) }'">| ).
+      write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ escape_less_than( abap_value ) }"/>| ).
       write_closing_tag( `</tt:cond-var>` ).
     ENDLOOP.
   ENDMETHOD.
 
 
-  METHOD escape_attribute_value.
-    result = escape( val = value format = cl_abap_format=>e_xml_attr ).
-    REPLACE ALL OCCURRENCES OF '&apos;' IN result WITH `'`.
+  METHOD escape_less_than.
+    result = replace( val = value sub = '<' with = '&lt;' occ = 0 ).
   ENDMETHOD.
 
 ENDCLASS.
