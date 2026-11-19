@@ -1276,6 +1276,47 @@ CLASS zcl_aff_test_types DEFINITION
         enum_component TYPE c LENGTH 2,
       END OF struc_with_own_enum_values.
 
+    CONSTANTS:
+      BEGIN OF co_enum_xml_special,
+        "! <p class="shorttext">Equal</p>
+        "! $enumValue '='
+        equal TYPE c LENGTH 2 VALUE '=',
+        "! <p class="shorttext">Less Than</p>
+        "! $enumValue '<'
+        less_than TYPE c LENGTH 2 VALUE '<',
+        "! <p class="shorttext">Greater Than</p>
+        "! $enumValue '>'
+        greater_than TYPE c LENGTH 2 VALUE '>',
+        "! <p class="shorttext">Less Equal</p>
+        "! $enumValue '<='
+        less_equal TYPE c LENGTH 2 VALUE '<=',
+        "! <p class="shorttext">Not Equal</p>
+        "! $enumValue '<>'
+        not_equal TYPE c LENGTH 2 VALUE '<>',
+        "! <p class="shorttext">Not Specified</p>
+        not_specified TYPE c LENGTH 2 VALUE 'XX',
+      END OF co_enum_xml_special.
+
+    TYPES:
+      "! <p class="shorttext">Enum With XML Special Characters</p>
+      "! Required enum whose values contain XML special characters
+      BEGIN OF struc_enum_xml_special_req,
+        "! <p class="shorttext">Comparator</p>
+        "! $values {@link zcl_aff_test_types.data:co_enum_xml_special}
+        "! $required
+        comparator TYPE c LENGTH 2,
+      END OF struc_enum_xml_special_req.
+
+    TYPES:
+      "! <p class="shorttext">Enum With XML Special Characters</p>
+      "! Enum with default whose values contain XML special characters
+      BEGIN OF struc_enum_xml_special_default,
+        "! <p class="shorttext">Comparator</p>
+        "! $values {@link zcl_aff_test_types.data:co_enum_xml_special}
+        "! $default {@link zcl_aff_test_types.data:co_enum_xml_special.not_specified}
+        comparator TYPE c LENGTH 2,
+      END OF struc_enum_xml_special_default.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.

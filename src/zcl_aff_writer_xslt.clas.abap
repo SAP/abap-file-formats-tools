@@ -206,6 +206,12 @@ CLASS zcl_aff_writer_xslt DEFINITION
       get_to_ref
         IMPORTING
                   name          TYPE string
+        RETURNING VALUE(result) TYPE string,
+      "! Escapes a value for use inside an XML attribute of the generated transformation.
+      "! Currently only the less-than sign is escaped; extend here for further characters.
+      escape_xml_attribute
+        IMPORTING
+                  value         TYPE string
         RETURNING VALUE(result) TYPE string.
 
 
@@ -522,9 +528,9 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
         xml_value = <enum_value>-overwritten_json_value.
       ENDIF.
       IF index < lines( enum_values ).
-        write_tag( |  val({ abap_value })=xml('{ xml_value }'),| ) ##NO_TEXT.
+        write_tag( |  val({ escape_xml_attribute( abap_value ) })=xml('{ escape_xml_attribute( xml_value ) }'),| ) ##NO_TEXT.
       ELSE.
-        write_tag( |  val({ abap_value })=xml('{ xml_value }')"| ) ##NO_TEXT.
+        write_tag( |  val({ escape_xml_attribute( abap_value ) })=xml('{ escape_xml_attribute( xml_value ) }')"| ) ##NO_TEXT.
         write_tag( `/>` ).
       ENDIF.
       index += 1.
@@ -845,10 +851,15 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       ELSE.
         xml_value = <enum_value>-overwritten_json_value.
       ENDIF.
-      write_open_tag( |<tt:cond-var check="VARIABLE='{ xml_value }'">| ).
-      write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ abap_value }"/>| ).
+      write_open_tag( |<tt:cond-var check="VARIABLE='{ escape_xml_attribute( xml_value ) }'">| ).
+      write_tag( |<tt:assign { get_to_ref( element_name ) } val="{ escape_xml_attribute( abap_value ) }"/>| ).
       write_closing_tag( `</tt:cond-var>` ).
     ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD escape_xml_attribute.
+    result = replace( val = value sub = '<' with = '&lt;' occ = 0 ).
   ENDMETHOD.
 
 ENDCLASS.
