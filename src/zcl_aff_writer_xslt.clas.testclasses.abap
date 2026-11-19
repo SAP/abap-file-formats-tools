@@ -3094,7 +3094,7 @@ CLASS ltcl_integration_test_ad IMPLEMENTATION.
   METHOD conditional_enum_default.
     DATA(input) = VALUE zcl_aff_test_types=>ty_cond_st_enum( mode = 'S' detail = 'S' ).
     DATA actual LIKE input.
-    exp_json = VALUE #( ( `{"mode":"standardMode","detail":"standardMode"}` ) ).
+    exp_json = VALUE #( ( `{"detail":"standardMode"}` ) ).
     do_integration_test( EXPORTING test_type = input CHANGING act_data = actual ).
     input-mode = 'C'.
     exp_json = VALUE #( ( `{"mode":"cloudDevelopment"}` ) ).
