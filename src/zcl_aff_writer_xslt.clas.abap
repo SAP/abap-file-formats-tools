@@ -267,7 +267,7 @@ CLASS zcl_aff_writer_xslt IMPLEMENTATION.
       IF original IS INITIAL.
         CONTINUE.
       ENDIF.
-      condition_checks[ index ] = '(' && check-expression && ') or (' && original && ')'.
+      condition_checks[ index ] = '(' && check-expression && ') or (' && original && ')' ##NO_TEXT.
     ENDLOOP.
     LOOP AT checks INTO check.
       index = check-target.
