@@ -98,24 +98,24 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD fail.
-    RAISE EXCEPTION NEW zcx_aff_tools( message = |Conditional annotation on { component }: { text }| ).
+    RAISE EXCEPTION NEW zcx_aff_tools( message = |Conditional annotation on { component }: { text }| ) ##NO_TEXT.
   ENDMETHOD.
 
   METHOD normalize_link.
     result = link.
     REPLACE ALL OCCURRENCES OF PCRE '\s' IN result WITH ''.
     IF NOT matches( val = result pcre = '\{@link[^{}]+\}' ).
-      fail( 'Expected an ABAP Doc link' ).
+      fail( 'Expected an ABAP Doc link' ) ##NO_TEXT.
     ENDIF.
     result = substring( val = result off = 6 len = strlen( result ) - 7 ).
     result = to_upper( result ).
     IF constant_link = abap_true.
       IF NOT matches( val = result pcre = '[A-Z0-9_/]+\.DATA:[A-Z0-9_]+(\.[A-Z0-9_]+)+' ).
-        fail( 'Constant links must use class.data:constant.member' ).
+        fail( 'Constant links must use class.data:constant.member' ) ##NO_TEXT.
       ENDIF.
       REPLACE FIRST OCCURRENCE OF '.DATA:' IN result WITH '.'.
     ELSEIF NOT matches( val = result pcre = '[A-Z0-9_/]+\.[A-Z0-9_]+(\.[A-Z0-9_]+)+' ).
-      fail( 'Field links must use class.type.component without .data:' ).
+      fail( 'Field links must use class.type.component without .data:' ) ##NO_TEXT.
     ENDIF.
   ENDMETHOD.
 
@@ -146,7 +146,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       IF occurrences[ ancestor ]-type_key = type_key.
         result = descend( start = ancestor names = parts ).
         IF result = 0.
-          fail( |Unknown component in { key }| ).
+          fail( |Unknown component in { key }| ) ##NO_TEXT.
         ENDIF.
         RETURN.
       ENDIF.
@@ -157,13 +157,13 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       DATA(candidate) = descend( start = sy-tabix names = parts ).
       IF candidate > 0.
         IF result > 0.
-          fail( |Ambiguous field link { key }| ).
+          fail( |Ambiguous field link { key }| ) ##NO_TEXT.
         ENDIF.
         result = candidate.
       ENDIF.
     ENDLOOP.
     IF result = 0.
-      fail( |Unknown or unreachable field link { key }| ).
+      fail( |Unknown or unreachable field link { key }| ) ##NO_TEXT.
     ENDIF.
   ENDMETHOD.
 
@@ -172,30 +172,30 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
     IF token(1) = '{'.
       DATA(key) = normalize_link( link = token constant_link = abap_true ).
       IF node-members IS INITIAL.
-        fail( 'Constant links require a declared AFF enum' ).
+        fail( 'Constant links require a declared AFF enum' ) ##NO_TEXT.
       ENDIF.
       result = VALUE #( node-members[ link = key ]-json OPTIONAL ).
       IF result IS INITIAL.
-        fail( |Constant { key } is not a member of the field enum| ).
+        fail( |Constant { key } is not a member of the field enum| ) ##NO_TEXT.
       ENDIF.
       RETURN.
     ENDIF.
     IF node-members IS NOT INITIAL.
-      fail( 'Enum comparison values must use constant links' ).
+      fail( 'Enum comparison values must use constant links' ) ##NO_TEXT.
     ENDIF.
     " The condition pattern only admits boolean, quoted string and numeric literals.
     DATA(literal_type) = COND string( WHEN token = 'true' OR token = 'false' THEN 'boolean'
                                       WHEN token(1) = `'` THEN 'string'
                                       ELSE 'numeric' ).
     IF literal_type <> node-json_type.
-      fail( |{ literal_type } literal used for a { node-json_type } field| ).
+      fail( |{ literal_type } literal used for a { node-json_type } field| ) ##NO_TEXT.
     ENDIF.
     DATA(decimal_kinds) = cl_abap_typedescr=>typekind_packed && cl_abap_typedescr=>typekind_float
       && cl_abap_typedescr=>typekind_decfloat16 && cl_abap_typedescr=>typekind_decfloat34.
     IF literal_type = 'string'.
       result = quote( replace( val = substring( val = token off = 1 len = strlen( token ) - 2 ) sub = `''` with = `'` occ = 0 ) ).
     ELSEIF literal_type = 'numeric' AND token CS '.' AND node-kind NA decimal_kinds.
-      fail( 'Non-integral literal used for an integer field' ).
+      fail( 'Non-integral literal used for an integer field' ) ##NO_TEXT.
     ELSE.
       result = token.
     ENDIF.
@@ -223,7 +223,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       DATA(node) = occurrences[ current ].
       IF node-items = abap_true.
         IF guard = abap_true.
-          fail( 'Comparisons cannot traverse table rows outside their own row scope' ).
+          fail( 'Comparisons cannot traverse table rows outside their own row scope' ) ##NO_TEXT.
         ENDIF.
         result = '{"items":' && result && '}'.
       ELSE.
@@ -240,7 +240,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
     LOOP AT occurrences INTO DATA(target) WHERE doc-available_when IS NOT INITIAL OR doc-required_when IS NOT INITIAL.
       component = COND #( WHEN target-parent > 0 THEN occurrences[ target-parent ]-type_key && '.' ) && target-name.
       IF target-parent = 0 OR target-items = abap_true.
-        fail( 'Conditional annotations must be on structure components' ).
+        fail( 'Conditional annotations must be on structure components' ) ##NO_TEXT.
       ENDIF.
       DATA(conditions) = VALUE string_table( ( target-doc-available_when ) ( target-doc-required_when ) ).
       DELETE conditions WHERE table_line IS INITIAL.
@@ -254,10 +254,10 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       LOOP AT target-members INTO DATA(member) WHERE doc-available_when IS NOT INITIAL OR doc-required_when IS NOT INITIAL.
         component = member-link.
         IF member-doc-required_when IS NOT INITIAL.
-          fail( '$requiredWhen is not supported on enum constants' ).
+          fail( '$requiredWhen is not supported on enum constants' ) ##NO_TEXT.
         ENDIF.
         IF target-parent = 0.
-          fail( 'Conditional enum values require an enclosing structure' ).
+          fail( 'Conditional enum values require an enclosing structure' ) ##NO_TEXT.
         ENDIF.
         APPEND compile_rule( target = target condition = member-doc-available_when
           target_index = target_index member = member ) TO rules.
@@ -287,7 +287,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       pattern = `^\s*(\{\s*@link[^{}]+\})\s+[iI][nN]\s*\(\s*(` && atom && `(?:\s*,\s*` && atom && `)*)\s*\)\s*$`.
       FIND FIRST OCCURRENCE OF PCRE pattern IN condition SUBMATCHES field_link value_token.
       IF sy-subrc <> 0.
-        fail( 'Only a single ABAP field link =, != or IN (literal or enum constant link, ...) is supported' ).
+        fail( 'Only a single ABAP field link =, != or IN (literal or enum constant link, ...) is supported' ) ##NO_TEXT.
       ENDIF.
       result-operator = 'in'.
     ENDIF.
@@ -304,7 +304,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
     DATA(field) = predicate-field.
     DATA(node) = occurrences[ field ].
     IF node-json_type = 'array' OR node-json_type = 'object'.
-      fail( 'Only scalar fields can be compared' ).
+      fail( 'Only scalar fields can be compared' ) ##NO_TEXT.
     ENDIF.
     DATA(values) = VALUE string_table( ).
     LOOP AT predicate-tokens INTO DATA(token).
@@ -347,13 +347,13 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
       context = target-parent.
       component = target-type_key && '.' && target-name.
       IF context = 0 OR target-items = abap_true.
-        fail( 'Conditional annotations must be on structure components' ).
+        fail( 'Conditional annotations must be on structure components' ) ##NO_TEXT.
       ENDIF.
       DATA(predicate) = parse( target-doc-required_when ).
       DATA(field) = predicate-field.
       DATA(node) = occurrences[ field ].
       IF node-json_type = 'array' OR node-json_type = 'object'.
-        fail( 'Only scalar fields can be compared' ).
+        fail( 'Only scalar fields can be compared' ) ##NO_TEXT.
       ENDIF.
       DATA(scope) = common_scope( first = target-parent second = node-parent ).
       wrap( target = node-parent scope = scope guard = abap_true json = '' ).

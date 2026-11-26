@@ -246,7 +246,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
 
 
   METHOD find_annotations.
-    FIND ALL OCCURRENCES OF PCRE `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(candidates).
+    FIND ALL OCCURRENCES OF PCRE `\$[a-zA-Z]+` IN abap_doc_string RESULTS DATA(candidates) ##NO_TEXT.
     DATA(conditional) = abap_false.
     DATA(quoted) = abap_false.
     DATA(in_link) = abap_false.
@@ -293,14 +293,14 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
     IF occurrences <> 1.
-      parser_log->add_error( message_text = |Duplicate conditional annotation { annotation }| component_name = component_name ).
+      parser_log->add_error( message_text = |Duplicate conditional annotation { annotation }| component_name = component_name ) ##NO_TEXT.
       result = '#invalid'.
       RETURN.
     ENDIF.
     result = substring( val = abap_doc_string off = start len = end - start ).
     remove_leading_trailing_spaces( CHANGING string_to_work_on = result ).
     IF result IS INITIAL.
-      parser_log->add_error( message_text = |Empty conditional annotation { annotation }| component_name = component_name ).
+      parser_log->add_error( message_text = |Empty conditional annotation { annotation }| component_name = component_name ) ##NO_TEXT.
       result = '#invalid'.
     ENDIF.
   ENDMETHOD.
@@ -395,7 +395,7 @@ CLASS zcl_aff_abap_doc_parser IMPLEMENTATION.
     IF decoded_abap_doc-required IS NOT INITIAL.
       RETURN.
     ENDIF.
-    FIND ALL OCCURRENCES OF PCRE `\$required(?![A-Za-z])` IN abap_doc_string RESULTS DATA(result_table).
+    FIND ALL OCCURRENCES OF PCRE `\$required(?![A-Za-z])` IN abap_doc_string RESULTS DATA(result_table) ##NO_TEXT.
     write_log_for_multiple_entries( result_table = result_table annotaion = abap_doc_annotation-required ).
     decoded_abap_doc-required = abap_true.
     LOOP AT result_table ASSIGNING FIELD-SYMBOL(<entry>).

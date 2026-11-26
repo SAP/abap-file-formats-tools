@@ -403,7 +403,7 @@ CLASS zcl_aff_writer IMPLEMENTATION.
 
   METHOD expand_local_links.
     result = text.
-    FIND ALL OCCURRENCES OF PCRE `'(?:''|[^'])*'|@link\s+\.(?=[A-Za-z0-9_/])` IN text RESULTS DATA(matches).
+    FIND ALL OCCURRENCES OF PCRE `'(?:''|[^'])*'|@link\s+\.(?=[A-Za-z0-9_/])` IN text RESULTS DATA(matches) ##NO_TEXT.
     DATA(index) = lines( matches ).
     WHILE index > 0.
       DATA(match) = matches[ index ].
