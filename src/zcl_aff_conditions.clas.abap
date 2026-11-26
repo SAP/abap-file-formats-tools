@@ -369,7 +369,7 @@ CLASS zcl_aff_conditions IMPLEMENTATION.
           APPEND comparison TO comparisons.
         ENDIF.
       ENDLOOP.
-      APPEND VALUE #( target = target_index expression = concat_lines_of( table = comparisons sep = ' or ' ) ) TO result.
+      APPEND VALUE #( target = target_index expression = concat_lines_of( table = comparisons sep = ` or ` ) ) TO result.
     ENDLOOP.
     SORT result BY target expression.
     DELETE ADJACENT DUPLICATES FROM result COMPARING target expression.
